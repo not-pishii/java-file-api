@@ -7,10 +7,12 @@ import me.supcheg.javafile.facts.AnnotationValue;
 import me.supcheg.javafile.facts.ArrayToken;
 import me.supcheg.javafile.facts.ClassToken;
 import me.supcheg.javafile.facts.EnumToken;
+import me.supcheg.javafile.facts.FinalClassToken;
 import me.supcheg.javafile.facts.InterfaceToken;
 import me.supcheg.javafile.facts.TargetClasspath;
 import me.supcheg.javafile.facts.TypeToken;
 import me.supcheg.javafile.model.AnnotationElementDecl;
+import me.supcheg.javafile.model.TypeDecl;
 
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
@@ -40,6 +42,7 @@ public final class TypedAnnotationTypeBuilder<Self> {
     private final String described;
     private final List<AnnotationRef<?>> annotations = new ArrayList<>();
     private final List<AnnotationElementDecl> elements = new ArrayList<>();
+    private final List<TypeDecl> memberTypes = new ArrayList<>();
     private boolean complete;
 
     TypedAnnotationTypeBuilder(TargetClasspath target, ClassDesc desc) {
@@ -62,15 +65,242 @@ public final class TypedAnnotationTypeBuilder<Self> {
         return this;
     }
 
-    /// Refuses a member type of an annotation type: an annotation type declares elements alone (JLS
-    /// 9.6), and no member class, interface, record, enum or annotation type.
+    /// Adds a member class to the annotation type, implicitly `static` and `public` as a member
+    /// class of an interface is (JLS 9.5): `public @interface A { class B {} }` is legal Java.
     ///
-    /// @param name the simple name of the member type
+    /// @param name the simple name of the member class
+    /// @param spec declares the member class, given the first stage of its header
+    /// @param <N> the brand of the member class
+    /// @return the token of the member class
+    /// @throws IllegalArgumentException if `name` cannot name a type
+    /// @throws IllegalStateException if the declaration is complete
+    public <N> FinalClassToken<N> declareNestedClass(String name, TypedJavaFile.TypedClassHeaderSpec spec) {
+        requireDeclaring("a member class of " + described);
+        NestedDeclarations.NestedType<FinalClassToken<N>> nested =
+                NestedDeclarations.class_(target, desc, name, List.of(), List.of(), spec);
+        memberTypes.add(nested.type());
+        return nested.token();
+    }
+
+    /// Adds a member interface to the annotation type, implicitly `static` and `public`.
+    ///
+    /// @param name the simple name of the member interface
+    /// @param spec declares the interface, given its builder
+    /// @param <I> the brand of the member interface
+    /// @return the token of the member interface
+    /// @throws IllegalStateException if the declaration is complete
+    public <I> InterfaceToken<I> declareNestedInterface(String name, TypedJavaFile.TypedInterfaceSpec spec) {
+        requireDeclaring("a member interface of " + described);
+        NestedDeclarations.NestedType<InterfaceToken<I>> nested =
+                NestedDeclarations.interface_(target, desc, name, spec);
+        memberTypes.add(nested.type());
+        return nested.token();
+    }
+
+    /// Adds a generic member interface to the annotation type with one type parameter, see
+    /// [#declareNestedInterface(String, TypedJavaFile.TypedInterfaceSpec)].
+    ///
+    /// @param name the simple name of the member interface
+    /// @param p1 the type parameter
+    /// @param spec declares the interface, given its builder and the token of the type parameter
+    /// @param <I> the brand of the member interface
+    /// @param <B1> the leftmost bound of the type parameter
+    /// @return the token of the member interface
+    public <I, B1> InterfaceToken<I> declareNestedInterface(
+            String name, TypeParameter<B1> p1, TypedJavaFile.TypedGenericInterfaceSpec1<B1> spec) {
+        requireDeclaring("a member interface of " + described);
+        NestedDeclarations.NestedType<InterfaceToken<I>> nested =
+                NestedDeclarations.interface_(target, desc, name, p1, spec);
+        memberTypes.add(nested.type());
+        return nested.token();
+    }
+
+    /// Adds a generic member interface to the annotation type with two type parameters, see
+    /// [#declareNestedInterface(String, TypeParameter, TypedJavaFile.TypedGenericInterfaceSpec1)].
+    ///
+    /// @param name the simple name of the member interface
+    /// @param p1 the first type parameter
+    /// @param p2 the second type parameter
+    /// @param spec declares the interface, given its builder and the tokens of its type parameters
+    /// @param <I> the brand of the member interface
+    /// @param <B1> the leftmost bound of the first type parameter
+    /// @param <B2> the leftmost bound of the second type parameter
+    /// @return the token of the member interface
+    public <I, B1, B2> InterfaceToken<I> declareNestedInterface(
+            String name,
+            TypeParameter<B1> p1,
+            TypeParameter<B2> p2,
+            TypedJavaFile.TypedGenericInterfaceSpec2<B1, B2> spec) {
+        requireDeclaring("a member interface of " + described);
+        NestedDeclarations.NestedType<InterfaceToken<I>> nested =
+                NestedDeclarations.interface_(target, desc, name, p1, p2, spec);
+        memberTypes.add(nested.type());
+        return nested.token();
+    }
+
+    /// Adds a generic member interface to the annotation type with three type parameters, see
+    /// [#declareNestedInterface(String, TypeParameter, TypedJavaFile.TypedGenericInterfaceSpec1)].
+    ///
+    /// @param name the simple name of the member interface
+    /// @param p1 the first type parameter
+    /// @param p2 the second type parameter
+    /// @param p3 the third type parameter
+    /// @param spec declares the interface, given its builder and the tokens of its type parameters
+    /// @param <I> the brand of the member interface
+    /// @param <B1> the leftmost bound of the first type parameter
+    /// @param <B2> the leftmost bound of the second type parameter
+    /// @param <B3> the leftmost bound of the third type parameter
+    /// @return the token of the member interface
+    public <I, B1, B2, B3> InterfaceToken<I> declareNestedInterface(
+            String name,
+            TypeParameter<B1> p1,
+            TypeParameter<B2> p2,
+            TypeParameter<B3> p3,
+            TypedJavaFile.TypedGenericInterfaceSpec3<B1, B2, B3> spec) {
+        requireDeclaring("a member interface of " + described);
+        NestedDeclarations.NestedType<InterfaceToken<I>> nested =
+                NestedDeclarations.interface_(target, desc, name, p1, p2, p3, spec);
+        memberTypes.add(nested.type());
+        return nested.token();
+    }
+
+    /// Adds a member record to the annotation type, implicitly `static` and `public`.
+    ///
+    /// @param name the simple name of the member record
+    /// @param spec declares the record, given its builder
+    /// @param <R> the brand of the member record
+    /// @return the token of the member record
+    /// @throws IllegalStateException if the declaration is complete
+    public <R> FinalClassToken<R> declareNestedRecord(String name, TypedJavaFile.TypedRecordSpec spec) {
+        requireDeclaring("a member record of " + described);
+        NestedDeclarations.NestedType<FinalClassToken<R>> nested = NestedDeclarations.record(target, desc, name, spec);
+        memberTypes.add(nested.type());
+        return nested.token();
+    }
+
+    /// Adds a generic member record to the annotation type with one type parameter, see
+    /// [#declareNestedRecord(String, TypedJavaFile.TypedRecordSpec)].
+    ///
+    /// @param name the simple name of the member record
+    /// @param p1 the type parameter
+    /// @param spec declares the record, given its builder and the token of the type parameter
+    /// @param <R> the brand of the member record
+    /// @param <B1> the leftmost bound of the type parameter
+    /// @return the token of the member record
+    public <R, B1> FinalClassToken<R> declareNestedRecord(
+            String name, TypeParameter<B1> p1, TypedJavaFile.TypedGenericRecordSpec1<B1> spec) {
+        requireDeclaring("a member record of " + described);
+        NestedDeclarations.NestedType<FinalClassToken<R>> nested =
+                NestedDeclarations.record(target, desc, name, p1, spec);
+        memberTypes.add(nested.type());
+        return nested.token();
+    }
+
+    /// Adds a generic member record to the annotation type with two type parameters, see
+    /// [#declareNestedRecord(String, TypeParameter, TypedJavaFile.TypedGenericRecordSpec1)].
+    ///
+    /// @param name the simple name of the member record
+    /// @param p1 the first type parameter
+    /// @param p2 the second type parameter
+    /// @param spec declares the record, given its builder and the tokens of its type parameters
+    /// @param <R> the brand of the member record
+    /// @param <B1> the leftmost bound of the first type parameter
+    /// @param <B2> the leftmost bound of the second type parameter
+    /// @return the token of the member record
+    public <R, B1, B2> FinalClassToken<R> declareNestedRecord(
+            String name,
+            TypeParameter<B1> p1,
+            TypeParameter<B2> p2,
+            TypedJavaFile.TypedGenericRecordSpec2<B1, B2> spec) {
+        requireDeclaring("a member record of " + described);
+        NestedDeclarations.NestedType<FinalClassToken<R>> nested =
+                NestedDeclarations.record(target, desc, name, p1, p2, spec);
+        memberTypes.add(nested.type());
+        return nested.token();
+    }
+
+    /// Adds a generic member record to the annotation type with three type parameters, see
+    /// [#declareNestedRecord(String, TypeParameter, TypedJavaFile.TypedGenericRecordSpec1)].
+    ///
+    /// @param name the simple name of the member record
+    /// @param p1 the first type parameter
+    /// @param p2 the second type parameter
+    /// @param p3 the third type parameter
+    /// @param spec declares the record, given its builder and the tokens of its type parameters
+    /// @param <R> the brand of the member record
+    /// @param <B1> the leftmost bound of the first type parameter
+    /// @param <B2> the leftmost bound of the second type parameter
+    /// @param <B3> the leftmost bound of the third type parameter
+    /// @return the token of the member record
+    public <R, B1, B2, B3> FinalClassToken<R> declareNestedRecord(
+            String name,
+            TypeParameter<B1> p1,
+            TypeParameter<B2> p2,
+            TypeParameter<B3> p3,
+            TypedJavaFile.TypedGenericRecordSpec3<B1, B2, B3> spec) {
+        requireDeclaring("a member record of " + described);
+        NestedDeclarations.NestedType<FinalClassToken<R>> nested =
+                NestedDeclarations.record(target, desc, name, p1, p2, p3, spec);
+        memberTypes.add(nested.type());
+        return nested.token();
+    }
+
+    /// Adds a member enum to the annotation type, implicitly `static` and `public`.
+    ///
+    /// @param name the simple name of the member enum
+    /// @param spec declares the enum, given its builder
+    /// @param <E> the brand of the member enum
+    /// @return the token of the member enum
+    /// @throws IllegalStateException if the declaration is complete
+    public <E> EnumToken<E> declareNestedEnum(String name, TypedJavaFile.TypedEnumSpec spec) {
+        requireDeclaring("a member enum of " + described);
+        NestedDeclarations.NestedType<EnumToken<E>> nested = NestedDeclarations.enum_(target, desc, name, spec);
+        memberTypes.add(nested.type());
+        return nested.token();
+    }
+
+    /// Refuses type parameters on a member enum: javac rejects `enum E<T>` (JLS 8.9).
+    ///
+    /// @param name the simple name of the member enum
+    /// @param p1 the type parameter
+    /// @param spec declares the enum, which is never called
+    /// @param <E> the brand of the member enum
+    /// @param <B1> the leftmost bound of the type parameter
     /// @return never
-    /// @throws IllegalArgumentException always
-    public java.lang.constant.ClassDesc nestedType(String name) {
-        throw new IllegalArgumentException("cannot declare the member type " + name + " in " + described
-                + ": an annotation type declares elements alone, and no member type (JLS 9.6)");
+    /// @throws IllegalArgumentException always, naming the enum and the type parameter
+    public <E, B1> EnumToken<E> declareNestedEnum(String name, TypeParameter<B1> p1, TypedJavaFile.TypedEnumSpec spec) {
+        throw new IllegalArgumentException("cannot declare the member enum " + name + " of " + described
+                + " with a type parameter: an enum has no type parameters (JLS 8.9), and the typed layer declares"
+                + " only what javac accepts");
+    }
+
+    /// Adds a member annotation type to the annotation type, implicitly `static` and `public`.
+    ///
+    /// @param name the simple name of the member annotation type
+    /// @param spec declares the annotation type, given its builder
+    /// @return the binary name of the member annotation type
+    /// @throws IllegalStateException if the declaration is complete
+    public ClassDesc declareNestedAnnotationType(String name, TypedJavaFile.TypedAnnotationTypeSpec spec) {
+        requireDeclaring("a member annotation type of " + described);
+        NestedDeclarations.NestedType<ClassDesc> nested = NestedDeclarations.annotationType(target, desc, name, spec);
+        memberTypes.add(nested.type());
+        return nested.token();
+    }
+
+    /// Refuses type parameters on a member annotation type: javac rejects `@interface A<T>` (JLS
+    /// 9.6).
+    ///
+    /// @param name the simple name of the member annotation type
+    /// @param p1 the type parameter
+    /// @param spec declares the annotation type, which is never called
+    /// @param <B1> the leftmost bound of the type parameter
+    /// @return never
+    /// @throws IllegalArgumentException always, naming the annotation type and the type parameter
+    public <B1> ClassDesc declareNestedAnnotationType(
+            String name, TypeParameter<B1> p1, TypedJavaFile.TypedAnnotationTypeSpec spec) {
+        throw new IllegalArgumentException("cannot declare the member annotation type " + name + " of " + described
+                + " with a type parameter: an annotation type has no type parameters (JLS 9.6), and the typed"
+                + " layer declares only what javac accepts");
     }
 
     /// Adds an element with no default value.
@@ -235,5 +465,6 @@ public final class TypedAnnotationTypeBuilder<Self> {
     private void populate(me.supcheg.javafile.builder.AnnotationTypeBuilder ab) {
         annotations.forEach(annotation -> ab.withAnnotation(annotation.toUse()));
         elements.forEach(ab::accept);
+        memberTypes.forEach(ab::withType);
     }
 }

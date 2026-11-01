@@ -10,6 +10,7 @@ import me.supcheg.javafile.facts.Invocable;
 import me.supcheg.javafile.facts.MemberTraits;
 import me.supcheg.javafile.facts.TargetClasspath;
 import me.supcheg.javafile.facts.TypeToken;
+import me.supcheg.javafile.facts.TypeVarToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.model.RecordComponent;
@@ -75,6 +76,28 @@ public final class TypedRecordBuilder<Self> extends RecordConstructorArities<Sel
         return false;
     }
 
+    @Override
+    boolean allowNativeMethod() {
+        return false;
+    }
+
+    /// Gives a type parameter of the record one more bound, an interface, before its components:
+    /// `record R<T extends A & B>(T value)`. The leftmost bound is the token `typeParam` was given;
+    /// each further bound is said here, and gives the witness by which an expression of the type
+    /// parameter is one of it.
+    ///
+    /// @param variable the token of the type parameter, as the specification was given it
+    /// @param bound the interface, with its type arguments
+    /// @param <T> the type parameter
+    /// @param <B> the interface
+    /// @return the witness that the type parameter is of the interface
+    /// @throws IllegalArgumentException if `variable` is no type parameter of this record; the bound
+    ///     is raw, has a wildcard type argument or is a bound already; or the bounds clash
+    /// @throws IllegalStateException if the components have begun, or the bound is out of scope
+    public <T, B> Upcast<T, B> bound(TypeVarToken<T> variable, InterfaceToken<B> bound) {
+        return addBound(variable, bound);
+    }
+
     /// Adds a component, in declaration order.
     ///
     /// @param name the component name
@@ -110,6 +133,7 @@ public final class TypedRecordBuilder<Self> extends RecordConstructorArities<Sel
         var accessor = UnsafeInvocables.method(self(), name, type, MemberTraits.FINAL);
         var field = UnsafeFacts.field(self(), name, type);
         components.add(new Component(name, type, List.of(annotations)));
+        componentDeclared();
         return new TypedRecordComponent<>(name, type, accessor, field);
     }
 

@@ -1056,6 +1056,26 @@ class TypeDeclRendererTest {
     }
 
     @Test
+    void rendersAMemberTypeOfAnAnnotationType() {
+        ClassDesc desc = ClassDesc.of("me.supcheg.example", "Marker");
+        AnnotationTypeBuilder builder = new AnnotationTypeBuilder(desc);
+        builder.withElement("value", Types.of(ClassDesc.of("java.lang", "String")))
+                .withType(new ClassBuilder(desc.nested("Member")).build());
+
+        String rendered = TypeDeclRenderer.renderTypeDecl(
+                builder.build(), Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
+
+        assertThat(rendered).isEqualTo("""
+                        public @interface Marker {
+                            String value();
+
+                            public class Member {
+                            }
+                        }
+                        """);
+    }
+
+    @Test
     void rendersStaticNestedClassUsingTheLeafSimpleNameOfARealNestedClassDesc() {
         ClassDesc outer = ClassDesc.of("me.supcheg.example", "Outer");
         ClassDecl nested = new ClassDecl(
@@ -1262,6 +1282,7 @@ class TypeDeclRendererTest {
                 outer.nested("Marker"),
                 List.of(),
                 Set.of(Modifier.PUBLIC, Modifier.STATIC),
+                List.of(),
                 List.of(),
                 java.util.Optional.empty());
         ClassDecl decl = new ClassDecl(

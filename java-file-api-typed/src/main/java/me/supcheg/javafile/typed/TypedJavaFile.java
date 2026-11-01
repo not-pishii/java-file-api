@@ -908,6 +908,22 @@ public final class TypedJavaFile {
         <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h);
     }
 
+    /// The specification of an inner member class, which receives the handle that ties it to the
+    /// class that encloses it: the handle gives `Outer.this` and an inner instance created from an
+    /// outer one ([InnerClass]).
+    ///
+    /// @param <Outer> the class the inner class is declared in
+    public interface TypedInnerClassSpec<Outer> {
+        /// Declares the inner class through `h`, branded with a fresh `Inner` unique to this
+        /// declaration.
+        ///
+        /// @param h the first stage of the header of the inner class
+        /// @param inner the handle of the inner class, tied to the class that encloses it
+        /// @param <Inner> the brand of the inner class being declared
+        /// @return the bodies of the members: the stage the declaration of the inner class ends in
+        <Inner> MemberBodies<Inner, ?> build(ClassHeader<Inner> h, InnerClass<Outer, Inner> inner);
+    }
+
     /// A self-branded class specification (§3.1, §6.5) of a class that extends `Object` and
     /// implements nothing: its members alone.
     public interface TypedClassSpec {

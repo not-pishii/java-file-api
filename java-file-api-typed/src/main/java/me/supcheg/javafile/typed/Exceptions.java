@@ -471,6 +471,7 @@ final class Exceptions {
             case Node.SuperCall(var _, var _, var method, var _, var _) -> new Act.Invokes(method);
             case Node.StaticCall(var method, var _, var _) -> new Act.Invokes(method);
             case Node.New(var ctor, var _, var _) -> new Act.Invokes(ctor);
+            case Node.InnerNew(var _, var ctor, var _, var _) -> new Act.Invokes(ctor);
             case Node.Lambda lambda ->
                 switch (lambda.body()) {
                     case Node.LambdaBody.Value(var scope, var value) -> new Act.Defers(scope, value);
@@ -481,6 +482,7 @@ final class Exceptions {
             case Node.Null _ -> new Act.Computes();
             case Node.Local _ -> new Act.Computes();
             case Node.This _ -> new Act.Computes();
+            case Node.OuterThis _ -> new Act.Computes();
             case Node.Box _ -> new Act.Computes();
             case Node.Unbox _ -> new Act.Computes();
             case Node.FieldGet _ -> new Act.Computes();
@@ -568,6 +570,7 @@ final class Exceptions {
             case Node.Null _ -> Stream.empty();
             case Node.Local _ -> Stream.empty();
             case Node.This _ -> Stream.empty();
+            case Node.OuterThis _ -> Stream.empty();
             case Node.StaticFieldGet _ -> Stream.empty();
             case Node.EnumConst _ -> Stream.empty();
             case Node.Raw _ -> Stream.empty();
@@ -589,6 +592,8 @@ final class Exceptions {
                 args.stream().map(Node.Operand::node);
             case Node.StaticCall(var _, var args, var _) -> args.stream().map(Node.Operand::node);
             case Node.New(var _, var args, var _) -> args.stream().map(Node.Operand::node);
+            case Node.InnerNew(var enclosing, var _, var args, var _) ->
+                Stream.concat(Stream.of(enclosing.node()), args.stream().map(Node.Operand::node));
             case Node.ArrayAt(var array, var index) -> Stream.of(array, index);
             case Node.Binary(var _, var left, var right) -> Stream.of(left, right);
             case Node.Cond(var condition, var whenTrue, var whenFalse) -> Stream.of(condition, whenTrue, whenFalse);

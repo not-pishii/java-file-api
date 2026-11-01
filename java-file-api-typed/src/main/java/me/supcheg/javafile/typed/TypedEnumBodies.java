@@ -51,14 +51,28 @@ public final class TypedEnumBodies<Self> extends TypedTypeBodies<Self, EnumMembe
             List<Param> params,
             List<ClassOrInterfaceTypeRef> throwsClause,
             List<AnnotationUse> annotations) {
-        Set<Modifier> modifiers = declared.kind() == Member.Kind.STATIC
-                ? Set.of(Modifier.PUBLIC, Modifier.STATIC)
-                : Set.of(Modifier.PUBLIC);
+        Set<Modifier> modifiers = new java.util.LinkedHashSet<>();
+        modifiers.add(Modifier.PUBLIC);
+        if (declared.kind() == Member.Kind.STATIC) {
+            modifiers.add(Modifier.STATIC);
+        }
+        modifiers.addAll(declared.modifiers());
+        if (declared.modifiers().contains(Modifier.NATIVE)) {
+            return new me.supcheg.javafile.model.NativeMethodDecl(
+                    declared.fact().name(),
+                    declared.fact().resultType().map(type -> type.typeRef()),
+                    List.of(),
+                    params,
+                    annotations,
+                    Set.copyOf(modifiers),
+                    throwsClause,
+                    Optional.empty());
+        }
         return new MethodDecl(
                 declared.fact().name(),
                 declared.fact().resultType().map(type -> type.typeRef()),
                 annotations,
-                modifiers,
+                Set.copyOf(modifiers),
                 List.of(),
                 params,
                 code,

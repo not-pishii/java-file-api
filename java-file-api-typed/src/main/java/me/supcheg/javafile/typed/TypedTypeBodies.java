@@ -41,6 +41,7 @@ import me.supcheg.javafile.facts.VoidStaticMethodRef1;
 import me.supcheg.javafile.facts.VoidStaticMethodRef2;
 import me.supcheg.javafile.facts.VoidStaticMethodRef3;
 import me.supcheg.javafile.facts.VoidStaticMethodRef4;
+import me.supcheg.javafile.model.Modifier;
 import me.supcheg.javafile.model.Param;
 import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody0;
 import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody1;
@@ -104,7 +105,9 @@ abstract class TypedTypeBodies<Self, M> {
                     case Member.Callable callable ->
                         callable.kind() == Member.Kind.ABSTRACT
                                 ? new Slot.Defined(callable, abstractMethod(callable))
-                                : new Slot.Awaiting(callable);
+                                : callable.modifiers().contains(Modifier.NATIVE)
+                                        ? new Slot.Defined(callable, nativeMethod(callable))
+                                        : new Slot.Awaiting(callable);
                     case Member.Field field -> new Slot.Blank(field);
                     case Member.Constant constant -> new Slot.BlankConstant(constant);
                     case Member.StaticField staticField -> new Slot.BlankStatic(staticField);
@@ -956,6 +959,19 @@ abstract class TypedTypeBodies<Self, M> {
         List<me.supcheg.javafile.annotation.AnnotationUse> annotations = List.of();
         List<me.supcheg.javafile.type.ClassOrInterfaceTypeRef> throwsClause = List.of();
         return abstractMethod(declared, params, throwsClause, annotations);
+    }
+
+    /// The declaration of a `native` method of the type: it has no body, and is there whole when it
+    /// is declared, as an abstract method is. Its kind's `method` renders it without a body.
+    private M nativeMethod(Member.Callable declared) {
+        List<Param> params = IntStream.range(0, declared.fact().params().size())
+                .mapToObj(index -> new Param(
+                        "v" + index, declared.fact().params().get(index).typeRef()))
+                .toList();
+        List<me.supcheg.javafile.annotation.AnnotationUse> annotations = declared.annotations().stream()
+                .map(me.supcheg.javafile.facts.AnnotationRef::toUse)
+                .toList();
+        return method(declared, CodeBody.EMPTY, params, List.of(), annotations);
     }
 
     // ------------------------------------------------------------------

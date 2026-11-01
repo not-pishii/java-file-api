@@ -27,9 +27,11 @@ import me.supcheg.javafile.facts.VoidStaticMethodRef1;
 import me.supcheg.javafile.facts.VoidStaticMethodRef2;
 import me.supcheg.javafile.facts.VoidStaticMethodRef3;
 import me.supcheg.javafile.facts.VoidStaticMethodRef4;
+import me.supcheg.javafile.model.Modifier;
 import me.supcheg.javafile.typed.TypeDeclarationSupport.Member.Kind;
 
 import java.util.List;
+import java.util.Set;
 
 /// The declarations of the methods of a type that is not a `final` class (§6.5): an interface, a record
 /// or an enum. Each returns the fact of the member it declares; the bodies ([TypedTypeBodies]) define
@@ -59,8 +61,8 @@ abstract class TypeMemberDeclarations<Self> extends TypeDeclarationSupport<Self>
     /// @return the token of the member class
     public final <N> FinalClassToken<N> declareNestedClass(String name, TypedJavaFile.TypedClassHeaderSpec spec) {
         requireDeclaring("a member class of " + described());
-        NestedDeclarations.NestedType<FinalClassToken<N>> nested = NestedDeclarations.class_(
-                target(), desc(), name, java.util.List.of(), java.util.List.of(), false, spec);
+        NestedDeclarations.NestedType<FinalClassToken<N>> nested =
+                NestedDeclarations.class_(target(), desc(), name, java.util.List.of(), java.util.List.of(), spec);
         declaredNested(nested.type());
         return nested.token();
     }
@@ -79,6 +81,73 @@ abstract class TypeMemberDeclarations<Self> extends TypeDeclarationSupport<Self>
         return nested.token();
     }
 
+    /// Declares a generic `public` member interface of the type with one type parameter, implicitly
+    /// `static`; see [#declareNestedInterface(String, TypedJavaFile.TypedInterfaceSpec)].
+    ///
+    /// @param name the simple name of the member interface
+    /// @param p1 the type parameter
+    /// @param spec declares the interface, given its builder and the token of the type parameter
+    /// @param <I> the brand of the member interface
+    /// @param <B1> the leftmost bound of the type parameter
+    /// @return the token of the member interface
+    public final <I, B1> InterfaceToken<I> declareNestedInterface(
+            String name, TypeParameter<B1> p1, TypedJavaFile.TypedGenericInterfaceSpec1<B1> spec) {
+        requireDeclaring("a member interface of " + described());
+        NestedDeclarations.NestedType<InterfaceToken<I>> nested =
+                NestedDeclarations.interface_(target(), desc(), name, p1, spec);
+        declaredNested(nested.type());
+        return nested.token();
+    }
+
+    /// Declares a generic `public` member interface of the type with two type parameters, see
+    /// [#declareNestedInterface(String, TypeParameter, TypedJavaFile.TypedGenericInterfaceSpec1)].
+    ///
+    /// @param name the simple name of the member interface
+    /// @param p1 the first type parameter
+    /// @param p2 the second type parameter
+    /// @param spec declares the interface, given its builder and the tokens of its type parameters
+    /// @param <I> the brand of the member interface
+    /// @param <B1> the leftmost bound of the first type parameter
+    /// @param <B2> the leftmost bound of the second type parameter
+    /// @return the token of the member interface
+    public final <I, B1, B2> InterfaceToken<I> declareNestedInterface(
+            String name,
+            TypeParameter<B1> p1,
+            TypeParameter<B2> p2,
+            TypedJavaFile.TypedGenericInterfaceSpec2<B1, B2> spec) {
+        requireDeclaring("a member interface of " + described());
+        NestedDeclarations.NestedType<InterfaceToken<I>> nested =
+                NestedDeclarations.interface_(target(), desc(), name, p1, p2, spec);
+        declaredNested(nested.type());
+        return nested.token();
+    }
+
+    /// Declares a generic `public` member interface of the type with three type parameters, see
+    /// [#declareNestedInterface(String, TypeParameter, TypedJavaFile.TypedGenericInterfaceSpec1)].
+    ///
+    /// @param name the simple name of the member interface
+    /// @param p1 the first type parameter
+    /// @param p2 the second type parameter
+    /// @param p3 the third type parameter
+    /// @param spec declares the interface, given its builder and the tokens of its type parameters
+    /// @param <I> the brand of the member interface
+    /// @param <B1> the leftmost bound of the first type parameter
+    /// @param <B2> the leftmost bound of the second type parameter
+    /// @param <B3> the leftmost bound of the third type parameter
+    /// @return the token of the member interface
+    public final <I, B1, B2, B3> InterfaceToken<I> declareNestedInterface(
+            String name,
+            TypeParameter<B1> p1,
+            TypeParameter<B2> p2,
+            TypeParameter<B3> p3,
+            TypedJavaFile.TypedGenericInterfaceSpec3<B1, B2, B3> spec) {
+        requireDeclaring("a member interface of " + described());
+        NestedDeclarations.NestedType<InterfaceToken<I>> nested =
+                NestedDeclarations.interface_(target(), desc(), name, p1, p2, p3, spec);
+        declaredNested(nested.type());
+        return nested.token();
+    }
+
     /// Declares a `public` member record of the type, implicitly `static`.
     ///
     /// @param name the simple name of the member record
@@ -91,6 +160,106 @@ abstract class TypeMemberDeclarations<Self> extends TypeDeclarationSupport<Self>
                 NestedDeclarations.record(target(), desc(), name, spec);
         declaredNested(nested.type());
         return nested.token();
+    }
+
+    /// Declares a generic `public` member record of the type with one type parameter, implicitly
+    /// `static`; see [#declareNestedRecord(String, TypedJavaFile.TypedRecordSpec)].
+    ///
+    /// @param name the simple name of the member record
+    /// @param p1 the type parameter
+    /// @param spec declares the record, given its builder and the token of the type parameter
+    /// @param <R> the brand of the member record
+    /// @param <B1> the leftmost bound of the type parameter
+    /// @return the token of the member record
+    public final <R, B1> FinalClassToken<R> declareNestedRecord(
+            String name, TypeParameter<B1> p1, TypedJavaFile.TypedGenericRecordSpec1<B1> spec) {
+        requireDeclaring("a member record of " + described());
+        NestedDeclarations.NestedType<FinalClassToken<R>> nested =
+                NestedDeclarations.record(target(), desc(), name, p1, spec);
+        declaredNested(nested.type());
+        return nested.token();
+    }
+
+    /// Declares a generic `public` member record of the type with two type parameters, see
+    /// [#declareNestedRecord(String, TypeParameter, TypedJavaFile.TypedGenericRecordSpec1)].
+    ///
+    /// @param name the simple name of the member record
+    /// @param p1 the first type parameter
+    /// @param p2 the second type parameter
+    /// @param spec declares the record, given its builder and the tokens of its type parameters
+    /// @param <R> the brand of the member record
+    /// @param <B1> the leftmost bound of the first type parameter
+    /// @param <B2> the leftmost bound of the second type parameter
+    /// @return the token of the member record
+    public final <R, B1, B2> FinalClassToken<R> declareNestedRecord(
+            String name,
+            TypeParameter<B1> p1,
+            TypeParameter<B2> p2,
+            TypedJavaFile.TypedGenericRecordSpec2<B1, B2> spec) {
+        requireDeclaring("a member record of " + described());
+        NestedDeclarations.NestedType<FinalClassToken<R>> nested =
+                NestedDeclarations.record(target(), desc(), name, p1, p2, spec);
+        declaredNested(nested.type());
+        return nested.token();
+    }
+
+    /// Declares a generic `public` member record of the type with three type parameters, see
+    /// [#declareNestedRecord(String, TypeParameter, TypedJavaFile.TypedGenericRecordSpec1)].
+    ///
+    /// @param name the simple name of the member record
+    /// @param p1 the first type parameter
+    /// @param p2 the second type parameter
+    /// @param p3 the third type parameter
+    /// @param spec declares the record, given its builder and the tokens of its type parameters
+    /// @param <R> the brand of the member record
+    /// @param <B1> the leftmost bound of the first type parameter
+    /// @param <B2> the leftmost bound of the second type parameter
+    /// @param <B3> the leftmost bound of the third type parameter
+    /// @return the token of the member record
+    public final <R, B1, B2, B3> FinalClassToken<R> declareNestedRecord(
+            String name,
+            TypeParameter<B1> p1,
+            TypeParameter<B2> p2,
+            TypeParameter<B3> p3,
+            TypedJavaFile.TypedGenericRecordSpec3<B1, B2, B3> spec) {
+        requireDeclaring("a member record of " + described());
+        NestedDeclarations.NestedType<FinalClassToken<R>> nested =
+                NestedDeclarations.record(target(), desc(), name, p1, p2, p3, spec);
+        declaredNested(nested.type());
+        return nested.token();
+    }
+
+    /// Refuses type parameters on a member enum: javac rejects `enum E<T>` (JLS 8.9).
+    ///
+    /// @param name the simple name of the member enum
+    /// @param p1 the type parameter
+    /// @param spec declares the enum, which is never called
+    /// @param <E> the brand of the member enum
+    /// @param <B1> the leftmost bound of the type parameter
+    /// @return never
+    /// @throws IllegalArgumentException always, naming the enum and the type parameter
+    public final <E, B1> EnumToken<E> declareNestedEnum(
+            String name, TypeParameter<B1> p1, TypedJavaFile.TypedEnumSpec spec) {
+        throw genericNested("enum", name, "an enum has no type parameters (JLS 8.9)");
+    }
+
+    /// Refuses type parameters on a member annotation type: javac rejects `@interface A<T>` (JLS
+    /// 9.6).
+    ///
+    /// @param name the simple name of the member annotation type
+    /// @param p1 the type parameter
+    /// @param spec declares the annotation type, which is never called
+    /// @param <B1> the leftmost bound of the type parameter
+    /// @return never
+    /// @throws IllegalArgumentException always, naming the annotation type and the type parameter
+    public final <B1> java.lang.constant.ClassDesc declareNestedAnnotationType(
+            String name, TypeParameter<B1> p1, TypedJavaFile.TypedAnnotationTypeSpec spec) {
+        throw genericNested("annotation type", name, "an annotation type has no type parameters (JLS 9.6)");
+    }
+
+    private IllegalArgumentException genericNested(String kind, String name, String why) {
+        return new IllegalArgumentException("cannot declare the member " + kind + " " + name + " of " + described()
+                + " with a type parameter: " + why + ", and the typed layer declares only what javac accepts");
     }
 
     /// Declares a `public` member enum of the type, implicitly `static`.
@@ -124,6 +293,60 @@ abstract class TypeMemberDeclarations<Self> extends TypeDeclarationSupport<Self>
     /// subclass can override, `DEFAULT` for an enum, whose constant bodies may.
     MemberTraits instanceTraits() {
         return MemberTraits.DEFAULT;
+    }
+
+    /// Whether the kind has `synchronized` and `native` methods: an enum has both, an interface
+    /// neither, and a record has `synchronized` alone — javac rejects a native method of a record
+    /// (JLS 8.10.3).
+    boolean allowSynchronizedAndNative() {
+        return true;
+    }
+
+    /// Whether the kind has `native` methods: a record does not (JLS 8.10.3).
+    boolean allowNativeMethod() {
+        return true;
+    }
+
+    /// Declares methods that are rendered with `modifiers` beside those their form fixes:
+    ///
+    /// ```java
+    /// var spin = rb.modified(Modifier.SYNCHRONIZED).declareVoidMethod("spin");
+    /// var read = eb.modified(Modifier.NATIVE).declareMethod("read", PrimitiveToken.INT);
+    /// ```
+    ///
+    /// A `synchronized` method has a body, which the bodies define; a `native` method has none, and
+    /// is there whole when it is declared. An interface has neither, and a constructor is neither.
+    ///
+    /// @param modifiers the modifiers to add, in any order
+    /// @return the declarations that render the methods they declare with them
+    /// @throws IllegalArgumentException if the kind or the method cannot be one, naming it
+    /// @throws IllegalStateException if the declarations have ended
+    public final TypeModifiedDeclarations<Self> modified(Modifier... modifiers) {
+        requireDeclaring("the modifiers of a method of " + described());
+        if (!allowSynchronizedAndNative()) {
+            throw new IllegalArgumentException("cannot declare a method of " + described() + " " + Set.of(modifiers)
+                    + ": an interface has no synchronized or native method — its methods are abstract,"
+                    + " default, static or private (JLS 9.4)");
+        }
+        boolean native_ = false;
+        for (Modifier modifier : modifiers) {
+            if (modifier != Modifier.SYNCHRONIZED && modifier != Modifier.NATIVE) {
+                throw new IllegalArgumentException("a method of " + described() + " cannot add the modifier "
+                        + modifier + " here: the declarations render the methods synchronized or native, and the"
+                        + " rest of a method's modifiers is that of its form");
+            }
+            native_ |= modifier == Modifier.NATIVE;
+        }
+        if (native_ && !allowNativeMethod()) {
+            throw new IllegalArgumentException("cannot declare a method of " + described() + " native: javac"
+                    + " rejects a native method of a record (JLS 8.10.3), and the typed layer declares only what"
+                    + " javac accepts");
+        }
+        return new TypeModifiedDeclarations<>(this, Set.of(modifiers));
+    }
+
+    final <F extends Invocable> F declare(F fact, Kind kind, Set<Modifier> modifiers) {
+        return declare(fact, kind, List.of(), List.of(), List.of(), modifiers);
     }
 
     private static MemberTraits abstractTraits() {

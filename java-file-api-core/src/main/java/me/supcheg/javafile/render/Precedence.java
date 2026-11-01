@@ -15,6 +15,7 @@ import me.supcheg.javafile.code.Expr;
 import me.supcheg.javafile.code.FieldAccessExpr;
 import me.supcheg.javafile.code.FloatLiteral;
 import me.supcheg.javafile.code.IncDecExpr;
+import me.supcheg.javafile.code.InnerNewExpr;
 import me.supcheg.javafile.code.InstanceOfExpr;
 import me.supcheg.javafile.code.IntLiteral;
 import me.supcheg.javafile.code.LambdaExpr;
@@ -23,6 +24,7 @@ import me.supcheg.javafile.code.MethodCallExpr;
 import me.supcheg.javafile.code.MethodRefExpr;
 import me.supcheg.javafile.code.NewExpr;
 import me.supcheg.javafile.code.NullLiteral;
+import me.supcheg.javafile.code.QualifiedThisExpr;
 import me.supcheg.javafile.code.StaticFieldAccessExpr;
 import me.supcheg.javafile.code.StaticMethodCallExpr;
 import me.supcheg.javafile.code.StringLiteral;
@@ -80,6 +82,8 @@ final class Precedence {
             // a switch expression is a unary expression, not a primary (JLS 15.15): `(switch ...).m()`
             case SwitchExpr ignored -> UNARY_LEVEL;
             case ThisExpr ignored -> PRIMARY_LEVEL;
+            case QualifiedThisExpr ignored -> PRIMARY_LEVEL;
+            case InnerNewExpr ignored -> PRIMARY_LEVEL;
             case SuperExpr ignored -> PRIMARY_LEVEL;
             case ClassLiteralExpr ignored -> PRIMARY_LEVEL;
             case MethodRefExpr ignored -> PRIMARY_LEVEL;

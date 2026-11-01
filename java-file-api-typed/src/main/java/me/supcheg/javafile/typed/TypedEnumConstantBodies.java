@@ -45,7 +45,7 @@ public final class TypedEnumConstantBodies<Self> extends TypedTypeBodies<Self, E
     /// @return the token of the member class
     public <N> FinalClassToken<N> declareNestedClass(String name, TypedJavaFile.TypedClassHeaderSpec spec) {
         NestedDeclarations.NestedType<FinalClassToken<N>> type =
-                NestedDeclarations.class_(owner().target(), owner().desc(), name, List.of(), List.of(), false, spec);
+                NestedDeclarations.class_(owner().target(), owner().desc(), name, List.of(), List.of(), spec);
         nested = java.util.stream.Stream.concat(nested.stream(), java.util.stream.Stream.of(type.type()))
                 .toList();
         return type.token();
@@ -124,6 +124,7 @@ public final class TypedEnumConstantBodies<Self> extends TypedTypeBodies<Self, E
                                 .toList(),
                         owner.scope("the body of " + method),
                         true,
+                        Set.of(),
                         Site.here()))
                 .toList();
         return new Declared(owner.self(), owner.inherited(), members, owner::table);

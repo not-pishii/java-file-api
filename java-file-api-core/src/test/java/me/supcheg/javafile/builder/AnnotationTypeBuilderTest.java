@@ -85,6 +85,20 @@ class AnnotationTypeBuilderTest {
     }
 
     @Test
+    void withTypeAppendsAMemberType() {
+        AnnotationTypeBuilder builder = new AnnotationTypeBuilder(ClassDesc.of("ast", "Marker"));
+        ClassDesc member = ClassDesc.of("ast", "Marker").nested("Member");
+
+        builder.withType(new ClassBuilder(member).build());
+
+        assertThat(builder.build().members())
+                .singleElement()
+                .isInstanceOfSatisfying(
+                        me.supcheg.javafile.model.ClassDecl.class,
+                        decl -> assertThat(decl.desc()).isEqualTo(member));
+    }
+
+    @Test
     void acceptAppendsAPreBuiltElement() {
         AnnotationTypeBuilder builder = new AnnotationTypeBuilder(ClassDesc.of("ast", "Marker"));
         AnnotationElementDecl element =

@@ -56,16 +56,20 @@ final class NestedDeclarations {
         return (TypeVarToken<T>) declaration.variable(index);
     }
 
+    @SuppressWarnings("unchecked")
+    static <T> TypeVarToken<T> variable(TypeDeclarationSupport<?> declaration, int index) {
+        return (TypeVarToken<T>) declaration.variable(index);
+    }
+
     static <N> NestedType<FinalClassToken<N>> class_(
             TargetClasspath target,
             ClassDesc outer,
             String name,
             List<TypeParameter<?>> parameters,
             List<DeclarationIdentity> enclosing,
-            boolean inner,
             ClassBodies spec) {
         ClassDeclaration<N> declaration =
-                new ClassDeclaration<>(target, desc(outer, name), parameters, enclosing, inner, !inner, true);
+                new ClassDeclaration<>(target, desc(outer, name), parameters, enclosing, false, true, true);
         MemberBodies<N, ?> bodies = Objects.requireNonNull(
                 spec.build(new ClassHeader<>(declaration), declaration),
                 "a specification returns the bodies of the members of the class");
@@ -79,9 +83,8 @@ final class NestedDeclarations {
             String name,
             List<TypeParameter<?>> parameters,
             List<DeclarationIdentity> enclosing,
-            boolean inner,
             TypedJavaFile.TypedClassHeaderSpec spec) {
-        return class_(target, outer, name, parameters, enclosing, inner, new ClassBodies() {
+        return class_(target, outer, name, parameters, enclosing, new ClassBodies() {
             @Override
             public <N2> MemberBodies<N2, ?> build(ClassHeader<N2> header, ClassDeclaration<N2> declaration) {
                 return spec.build(header);
@@ -89,24 +92,145 @@ final class NestedDeclarations {
         });
     }
 
+    /// Declares an inner member class and returns the handle that ties its body to the instance of
+    /// the class it is declared in: `Outer.this` and `outer.new Inner(...)`.
+    static <O, N> NestedType<InnerClass<O, N>> innerClass(
+            TargetClasspath target,
+            ClassDesc outer,
+            String name,
+            FinalClassToken<O> outerToken,
+            List<DeclarationIdentity> enclosing,
+            TypedJavaFile.TypedInnerClassSpec<O> spec) {
+        ClassDeclaration<N> declaration =
+                new ClassDeclaration<>(target, desc(outer, name), List.of(), enclosing, true, false, true);
+        InnerClass<O, N> inner = new InnerClass<>(outerToken, declaration.self());
+        MemberBodies<N, ?> bodies = Objects.requireNonNull(
+                spec.build(new ClassHeader<>(declaration), inner),
+                "a specification returns the bodies of the members of the inner class");
+        TypeDecl type = declaration.completeNested(bodies);
+        return new NestedType<>(inner, type);
+    }
+
     static <I> NestedType<InterfaceToken<I>> interface_(
             TargetClasspath target, ClassDesc outer, String name, TypedJavaFile.TypedInterfaceSpec spec) {
         TypedInterfaceBuilder<I> builder = new TypedInterfaceBuilder<>(target, desc(outer, name), List.of(), List.of());
         TypeDecl type = builder.completeNested(Objects.requireNonNull(
                 spec.build(builder), "a specification returns the bodies of the members of the interface"));
-        @SuppressWarnings("unchecked")
-        InterfaceToken<I> token = (InterfaceToken<I>) builder.self();
-        return new NestedType<>(token, type);
+        return new NestedType<>(builderToken(builder), type);
+    }
+
+    static <I, B1> NestedType<InterfaceToken<I>> interface_(
+            TargetClasspath target,
+            ClassDesc outer,
+            String name,
+            TypeParameter<B1> p1,
+            TypedJavaFile.TypedGenericInterfaceSpec1<B1> spec) {
+        TypedInterfaceBuilder<I> builder =
+                new TypedInterfaceBuilder<>(target, desc(outer, name), List.of(p1), List.of());
+        TypeDecl type = builder.completeNested(Objects.requireNonNull(
+                spec.build(builder, NestedDeclarations.variable(builder, 0)),
+                "a specification returns the bodies of the members of the interface"));
+        return new NestedType<>(builderToken(builder), type);
+    }
+
+    static <I, B1, B2> NestedType<InterfaceToken<I>> interface_(
+            TargetClasspath target,
+            ClassDesc outer,
+            String name,
+            TypeParameter<B1> p1,
+            TypeParameter<B2> p2,
+            TypedJavaFile.TypedGenericInterfaceSpec2<B1, B2> spec) {
+        TypedInterfaceBuilder<I> builder =
+                new TypedInterfaceBuilder<>(target, desc(outer, name), List.of(p1, p2), List.of());
+        TypeDecl type = builder.completeNested(Objects.requireNonNull(
+                spec.build(builder, NestedDeclarations.variable(builder, 0), NestedDeclarations.variable(builder, 1)),
+                "a specification returns the bodies of the members of the interface"));
+        return new NestedType<>(builderToken(builder), type);
+    }
+
+    static <I, B1, B2, B3> NestedType<InterfaceToken<I>> interface_(
+            TargetClasspath target,
+            ClassDesc outer,
+            String name,
+            TypeParameter<B1> p1,
+            TypeParameter<B2> p2,
+            TypeParameter<B3> p3,
+            TypedJavaFile.TypedGenericInterfaceSpec3<B1, B2, B3> spec) {
+        TypedInterfaceBuilder<I> builder =
+                new TypedInterfaceBuilder<>(target, desc(outer, name), List.of(p1, p2, p3), List.of());
+        TypeDecl type = builder.completeNested(Objects.requireNonNull(
+                spec.build(
+                        builder,
+                        NestedDeclarations.variable(builder, 0),
+                        NestedDeclarations.variable(builder, 1),
+                        NestedDeclarations.variable(builder, 2)),
+                "a specification returns the bodies of the members of the interface"));
+        return new NestedType<>(builderToken(builder), type);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <I> InterfaceToken<I> builderToken(TypedInterfaceBuilder<I> builder) {
+        return (InterfaceToken<I>) builder.self();
     }
 
     static <R> NestedType<FinalClassToken<R>> record(
             TargetClasspath target, ClassDesc outer, String name, TypedJavaFile.TypedRecordSpec spec) {
         TypedRecordBuilder<R> builder = new TypedRecordBuilder<>(target, desc(outer, name), List.of(), List.of());
-        TypeDecl type = builder.completeNested(Objects.requireNonNull(
-                spec.build(builder), "a specification returns the bodies of the members of the record"));
-        @SuppressWarnings("unchecked")
-        FinalClassToken<R> token = (FinalClassToken<R>) builder.self();
-        return new NestedType<>(token, type);
+        return recordBuilt(builder, spec.build(builder));
+    }
+
+    static <R, B1> NestedType<FinalClassToken<R>> record(
+            TargetClasspath target,
+            ClassDesc outer,
+            String name,
+            TypeParameter<B1> p1,
+            TypedJavaFile.TypedGenericRecordSpec1<B1> spec) {
+        TypedRecordBuilder<R> builder = new TypedRecordBuilder<>(target, desc(outer, name), List.of(p1), List.of());
+        return recordBuilt(builder, spec.build(builder, NestedDeclarations.variable(builder, 0)));
+    }
+
+    static <R, B1, B2> NestedType<FinalClassToken<R>> record(
+            TargetClasspath target,
+            ClassDesc outer,
+            String name,
+            TypeParameter<B1> p1,
+            TypeParameter<B2> p2,
+            TypedJavaFile.TypedGenericRecordSpec2<B1, B2> spec) {
+        TypedRecordBuilder<R> builder = new TypedRecordBuilder<>(target, desc(outer, name), List.of(p1, p2), List.of());
+        return recordBuilt(
+                builder,
+                spec.build(builder, NestedDeclarations.variable(builder, 0), NestedDeclarations.variable(builder, 1)));
+    }
+
+    static <R, B1, B2, B3> NestedType<FinalClassToken<R>> record(
+            TargetClasspath target,
+            ClassDesc outer,
+            String name,
+            TypeParameter<B1> p1,
+            TypeParameter<B2> p2,
+            TypeParameter<B3> p3,
+            TypedJavaFile.TypedGenericRecordSpec3<B1, B2, B3> spec) {
+        TypedRecordBuilder<R> builder =
+                new TypedRecordBuilder<>(target, desc(outer, name), List.of(p1, p2, p3), List.of());
+        return recordBuilt(
+                builder,
+                spec.build(
+                        builder,
+                        NestedDeclarations.variable(builder, 0),
+                        NestedDeclarations.variable(builder, 1),
+                        NestedDeclarations.variable(builder, 2)));
+    }
+
+    private static <R> NestedType<FinalClassToken<R>> recordBuilt(
+            TypedRecordBuilder<R> builder, TypedRecordBodies<R> bodies) {
+        TypeDecl type = builder.completeNested(
+                Objects.requireNonNull(bodies, "a specification returns the bodies of the members of the record"));
+        return new NestedType<>(builderToken(builder), type);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <R> FinalClassToken<R> builderToken(TypedRecordBuilder<R> builder) {
+        return (FinalClassToken<R>) builder.self();
     }
 
     static <E> NestedType<EnumToken<E>> enum_(

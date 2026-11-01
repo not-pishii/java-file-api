@@ -41,6 +41,7 @@ import me.supcheg.javafile.code.ForStmt;
 import me.supcheg.javafile.code.IfStmt;
 import me.supcheg.javafile.code.IncDecExpr;
 import me.supcheg.javafile.code.InferredLambdaParams;
+import me.supcheg.javafile.code.InnerNewExpr;
 import me.supcheg.javafile.code.InstanceOfExpr;
 import me.supcheg.javafile.code.IntLiteral;
 import me.supcheg.javafile.code.LabeledStmt;
@@ -54,6 +55,7 @@ import me.supcheg.javafile.code.NewExpr;
 import me.supcheg.javafile.code.NullLiteral;
 import me.supcheg.javafile.code.Pattern;
 import me.supcheg.javafile.code.PatternLabel;
+import me.supcheg.javafile.code.QualifiedThisExpr;
 import me.supcheg.javafile.code.RecordPattern;
 import me.supcheg.javafile.code.Resource;
 import me.supcheg.javafile.code.ReturnStmt;
@@ -80,6 +82,7 @@ import me.supcheg.javafile.code.VariableInitializer;
 import me.supcheg.javafile.code.WhileStmt;
 import me.supcheg.javafile.code.YieldStmt;
 import me.supcheg.javafile.type.ArrayTypeRef;
+import me.supcheg.javafile.type.ClassDescNames;
 import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.type.PrimitiveTypeRef;
 import me.supcheg.javafile.type.TypeRef;
@@ -197,6 +200,18 @@ final class ExprRenderer {
                         };
                     }
                     case ThisExpr ignored -> "this";
+                    case QualifiedThisExpr(var owner) -> ClassDescNames.leafSimpleName(owner) + ".this";
+                    case InnerNewExpr(var enclosing, var target, var args) -> {
+                        String argsStr =
+                                args.stream().map(a -> renderExpr(a, ctx)).collect(Collectors.joining(", "));
+                        String targetStr =
+                                switch (target) {
+                                    case TypedNewTarget(var type) -> TypeRefRenderer.renderType(type, ctx);
+                                    case DiamondNewTarget(var raw) -> ClassDescNames.leafSimpleName(raw) + "<>";
+                                };
+                        yield renderExpr(enclosing, ctx, Precedence.PRIMARY_LEVEL) + ".new " + targetStr + "(" + argsStr
+                                + ")";
+                    }
                     case SuperExpr ignored -> "super";
                     case StaticFieldAccessExpr(var type, var name) ->
                         TypeRefRenderer.renderQualifier(type, ctx) + "." + name;

@@ -5,6 +5,7 @@ import me.supcheg.javafile.builder.InterfaceBuilder;
 import me.supcheg.javafile.facts.DeclarationIdentity;
 import me.supcheg.javafile.facts.InterfaceToken;
 import me.supcheg.javafile.facts.TargetClasspath;
+import me.supcheg.javafile.facts.TypeVarToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.model.InterfaceMember;
 import me.supcheg.javafile.model.TypeDecl;
@@ -61,6 +62,11 @@ public final class TypedInterfaceBuilder<Self> extends TypeMemberDeclarations<Se
         return true;
     }
 
+    @Override
+    boolean allowSynchronizedAndNative() {
+        return false;
+    }
+
     /// Adds an interface to the `extends` clause.
     ///
     /// @param supertype the interface, with its type arguments
@@ -72,6 +78,23 @@ public final class TypedInterfaceBuilder<Self> extends TypeMemberDeclarations<Se
         Upcast<Self, I> upcast = addSupertype(supertype);
         extendsInterfaces.add(supertype.typeRef());
         return upcast;
+    }
+
+    /// Gives a type parameter of the interface one more bound, an interface, before the members
+    /// begin: `interface X<T extends A & B>`. The leftmost bound is the token `typeParam` was given;
+    /// each further bound is said here, and gives the witness by which an expression of the type
+    /// parameter is one of it.
+    ///
+    /// @param variable the token of the type parameter, as the specification was given it
+    /// @param bound the interface, with its type arguments
+    /// @param <T> the type parameter
+    /// @param <B> the interface
+    /// @return the witness that the type parameter is of the interface
+    /// @throws IllegalArgumentException if `variable` is no type parameter of this interface; the bound
+    ///     is raw, has a wildcard type argument or is a bound already; or the bounds clash
+    /// @throws IllegalStateException if the members have begun, or the bound is out of scope
+    public <T, B> Upcast<T, B> bound(TypeVarToken<T> variable, InterfaceToken<B> bound) {
+        return addBound(variable, bound);
     }
 
     /// Names a subtype in the `permits` clause, which makes the interface `sealed`.

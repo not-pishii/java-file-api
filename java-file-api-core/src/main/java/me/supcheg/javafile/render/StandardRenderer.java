@@ -138,7 +138,7 @@ public final class StandardRenderer implements SourceRenderer {
                     }
                     case AnnotationTypeDecl a -> {
                         found.add(a.desc());
-                        yield List.of();
+                        yield a.members();
                     }
                 };
         for (Object member : members) {
@@ -167,7 +167,7 @@ public final class StandardRenderer implements SourceRenderer {
                     case EnumDecl e ->
                         Stream.concat(e.constants().stream().flatMap(c -> c.body().stream()), e.members().stream())
                                 .toList();
-                    case AnnotationTypeDecl _ -> List.of();
+                    case AnnotationTypeDecl a -> a.members();
                 };
         return Stream.concat(own.stream(), members.stream().flatMap(member -> switch (member) {
             case TypeDecl nested -> typeVariables(nested);

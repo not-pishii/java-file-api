@@ -8,6 +8,7 @@ import me.supcheg.javafile.facts.Invocable;
 import me.supcheg.javafile.facts.InvocableKind;
 import me.supcheg.javafile.facts.MethodSignature;
 import me.supcheg.javafile.facts.MethodTableTemplate;
+import me.supcheg.javafile.facts.Overridability;
 import me.supcheg.javafile.facts.TypeNames;
 import me.supcheg.javafile.facts.TypeToken;
 import me.supcheg.javafile.type.ArrayTypeRef;
@@ -559,20 +560,43 @@ final class SignatureRegistry {
     /// The methods and constructors of the class: the instance methods declared and those
     /// inherited, the `static` ones, declared and inherited from the superclass — javac takes both
     /// kinds for the candidates of a call on a value of the class (JLS 15.12.2.1) —, and the
-    /// constructors it declares. The class is final, so no method is abstract. Each signature tells
-    /// the form of its last parameter, which a call of a member of variable arity reads (JLS
-    /// 15.12.2.4): the class knows its own before any body is lowered.
+    /// constructors it declares. An instance method without an implementation is abstract. Each
+    /// signature tells the form of its last parameter, which a call of a member of variable arity
+    /// reads (JLS 15.12.2.4): the class knows its own before any body is lowered.
     MethodTableTemplate table() {
-        Map<Boolean, Set<MethodTableTemplate.Signature>> declared = members.methods().stream()
-                .collect(Collectors.partitioningBy(
-                        method -> method.kind() == InvocableKind.INSTANCE_METHOD,
-                        Collectors.mapping(Invocable::declared, Collectors.toSet())));
+        Set<MethodTableTemplate.Signature> abstractDeclared = members.methods().stream()
+                .filter(method -> method.traits().overridability() == Overridability.ABSTRACT)
+                .map(Invocable::declared)
+                .collect(Collectors.toSet());
+        Set<MethodTableTemplate.Signature> staticDeclared = members.methods().stream()
+                .filter(method -> method.kind() == InvocableKind.STATIC_METHOD)
+                .map(Invocable::declared)
+                .collect(Collectors.toSet());
+        Set<MethodTableTemplate.Signature> concreteDeclared = members.methods().stream()
+                .filter(method -> method.kind() == InvocableKind.INSTANCE_METHOD
+                        && method.traits().overridability() != Overridability.ABSTRACT)
+                .map(Invocable::declared)
+                .collect(Collectors.toSet());
         Map<Boolean, List<Inheritance.Group>> had = inherited
                 .groups()
-                .collect(Collectors.partitioningBy(group -> switch (group.standing()) {
-                    case ABSTRACT, DEFAULT, CONCRETE, FINAL -> true;
-                    case STATIC -> false;
-                }));
+                .collect(Collectors.partitioningBy(group -> group.standing() == Heritage.Dispatch.STATIC));
+        Set<MethodTableTemplate.Signature> abstractInherited = had.get(false).stream()
+                .filter(group -> group.standing() == Heritage.Dispatch.ABSTRACT)
+                .map(SignatureRegistry::inherited)
+                .collect(Collectors.toSet());
+        Set<MethodTableTemplate.Signature> concreteInherited = had.get(false).stream()
+                .filter(group -> group.standing() != Heritage.Dispatch.ABSTRACT)
+                .map(SignatureRegistry::inherited)
+                .collect(Collectors.toSet());
+        Set<MethodTableTemplate.Signature> staticInherited =
+                had.get(true).stream().map(SignatureRegistry::inherited).collect(Collectors.toSet());
+        Set<MethodTableTemplate.Signature> declaredSignatures = Stream.of(
+                        abstractDeclared, concreteDeclared, staticDeclared)
+                .flatMap(Set::stream)
+                .collect(Collectors.toSet());
+        abstractInherited.removeAll(declaredSignatures);
+        concreteInherited.removeAll(declaredSignatures);
+        staticInherited.removeAll(declaredSignatures);
         Set<MethodTableTemplate.Signature> constructors =
                 members.constructors().stream().map(Invocable::declared).collect(Collectors.toSet());
         Set<MethodTableTemplate.Signature> variableArity = Stream.concat(
@@ -583,21 +607,16 @@ final class SignatureRegistry {
                                 .filter(constructor -> constructor.arity() instanceof Arity.Variable)
                                 .map(Invocable::declared))
                 .collect(Collectors.toSet());
-        had.values().stream()
-                .flatMap(List::stream)
+        had.get(false).stream()
                 .filter(group -> group.arity() instanceof Arity.Variable)
                 .map(SignatureRegistry::inherited)
                 .forEach(variableArity::add);
         return new MethodTableTemplate(
-                Set.of(),
-                Stream.concat(
-                                declared.get(true).stream(),
-                                had.get(true).stream().map(SignatureRegistry::inherited))
+                Stream.concat(abstractDeclared.stream(), abstractInherited.stream())
                         .collect(Collectors.toSet()),
-                Stream.concat(
-                                declared.get(false).stream(),
-                                had.get(false).stream().map(SignatureRegistry::inherited))
+                Stream.concat(concreteDeclared.stream(), concreteInherited.stream())
                         .collect(Collectors.toSet()),
+                Stream.concat(staticDeclared.stream(), staticInherited.stream()).collect(Collectors.toSet()),
                 constructors,
                 variableArity);
     }

@@ -546,7 +546,7 @@ public abstract sealed class MemberBodies<Self, S> extends MemberBodyArities<Sel
                         declared.annotations().stream().map(AnnotationRef::toUse),
                         switch (declared.kind()) {
                             case OVERRIDES -> Stream.of(new AnnotationUse(OVERRIDE, List.of()));
-                            case DECLARES -> Stream.<AnnotationUse>empty();
+                            case DECLARES, ABSTRACT -> Stream.<AnnotationUse>empty();
                         },
                         safeVarargs(declared.arity()))
                 .flatMap(Function.identity())

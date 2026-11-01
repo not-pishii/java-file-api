@@ -93,6 +93,7 @@ final class ScopeCheck {
             case Node.Lit ignored -> {}
             case Node.Null ignored -> {}
             case Node.This(var owner) -> requireThisInScope(owner, use, where);
+            case Node.OuterThis ignored -> {}
             case Node.StaticFieldGet ignored -> {}
             case Node.EnumConst ignored -> {}
             case Node.Raw ignored -> {}
@@ -108,6 +109,10 @@ final class ScopeCheck {
             }
             case Node.StaticCall(var ignored, var args, var ignoredPassing) -> operands(args, use, where);
             case Node.New(var ignored, var args, var ignoredPassing) -> operands(args, use, where);
+            case Node.InnerNew(var enclosing, var ignored, var args, var ignoredPassing) -> {
+                node(enclosing.node(), use, where);
+                operands(args, use, where);
+            }
             case Node.FieldGet(var target, var ignored) -> node(target.node(), use, where);
             case Node.ArrayAt(var array, var index) -> {
                 arrayOperand(array, use, where);

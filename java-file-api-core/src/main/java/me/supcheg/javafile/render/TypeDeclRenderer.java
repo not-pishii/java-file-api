@@ -571,6 +571,12 @@ final class TypeDeclRenderer {
                     .ifPresent(v -> sb.append(" default ").append(AnnotationRenderer.renderValue(v, inner)));
             sb.append(";").append(inner.newline());
         }
+        for (TypeDecl member : decl.members()) {
+            if (!decl.elements().isEmpty()) {
+                sb.append(inner.newline());
+            }
+            sb.append(renderTypeDecl(member, inner));
+        }
         sb.append(ctx.pad()).append("}").append(ctx.newline());
         return sb.toString();
     }

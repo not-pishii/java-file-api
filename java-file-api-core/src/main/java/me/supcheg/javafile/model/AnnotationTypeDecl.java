@@ -17,12 +17,15 @@ import java.util.Set;
 ///                   `protected` are accepted because `AnnotationTypeDecl` also models a nested
 ///                   member annotation type
 /// @param elements the annotation type's elements, in declaration order
+/// @param members the member types of the annotation type, in declaration order; an annotation type
+///                declares constants, member types and elements (JLS 9.6.1)
 /// @param doc the documentation comment, if any
 public record AnnotationTypeDecl(
         ClassDesc desc,
         List<AnnotationUse> annotations,
         Set<Modifier> modifiers,
         List<AnnotationElementDecl> elements,
+        List<TypeDecl> members,
         Optional<DocComment> doc)
         implements TypeDecl {
     public AnnotationTypeDecl {
@@ -33,5 +36,6 @@ public record AnnotationTypeDecl(
                 "annotation type");
         annotations = List.copyOf(annotations);
         elements = List.copyOf(elements);
+        members = List.copyOf(members);
     }
 }

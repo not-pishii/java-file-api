@@ -10,6 +10,12 @@ import me.supcheg.javafile.facts.InterfaceToken;
 import me.supcheg.javafile.facts.Invocable;
 import me.supcheg.javafile.facts.InvocableKind;
 import me.supcheg.javafile.facts.MemberFact;
+import me.supcheg.javafile.facts.MemberTraits;
+import me.supcheg.javafile.facts.MethodRef0;
+import me.supcheg.javafile.facts.MethodRef1;
+import me.supcheg.javafile.facts.MethodRef2;
+import me.supcheg.javafile.facts.MethodRef3;
+import me.supcheg.javafile.facts.MethodRef4;
 import me.supcheg.javafile.facts.MutableFieldRef;
 import me.supcheg.javafile.facts.MutableStaticFieldRef;
 import me.supcheg.javafile.facts.Overridability;
@@ -17,6 +23,13 @@ import me.supcheg.javafile.facts.Protected;
 import me.supcheg.javafile.facts.StaticFieldRef;
 import me.supcheg.javafile.facts.TypeToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.facts.UnsafeInvocables;
+import me.supcheg.javafile.facts.VoidMethodRef0;
+import me.supcheg.javafile.facts.VoidMethodRef1;
+import me.supcheg.javafile.facts.VoidMethodRef2;
+import me.supcheg.javafile.facts.VoidMethodRef3;
+import me.supcheg.javafile.facts.VoidMethodRef4;
+import me.supcheg.javafile.model.AbstractMethodDecl;
 import me.supcheg.javafile.model.ClassMember;
 import me.supcheg.javafile.model.Modifier;
 import me.supcheg.javafile.model.NativeMethodDecl;
@@ -97,7 +110,7 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
     /// @throws IllegalStateException if the declarations of the class have ended, or a member of the
     ///     member class is not defined
     public final <N> FinalClassToken<N> declareNestedClass(String name, TypedJavaFile.TypedClassHeaderSpec spec) {
-        return nestedClass(name, List.of(), List.of(), false, new NestedDeclarations.ClassBodies() {
+        return nestedClass(name, List.of(), List.of(), new NestedDeclarations.ClassBodies() {
             @Override
             public <N2> MemberBodies<N2, ?> build(ClassHeader<N2> h, ClassDeclaration<N2> declaration) {
                 return spec.build(h);
@@ -106,19 +119,36 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
     }
 
     /// Declares an inner member class of the class: `public final class Inner`, which captures the
-    /// instance of the class it is declared in and sees its type parameters (JLS 8.1.3).
+    /// instance of the class it is declared in and sees its type parameters (JLS 8.1.3). The handle
+    /// it returns ties its body to that instance: `inner.outerThis()` is `Outer.this`, and
+    /// `inner.new_(outer)` is `outer.new Inner()`.
     ///
     /// @param name the simple name of the member class
     /// @param spec declares the member class, given the first stage of its header
     /// @param <N> the brand of the member class
-    /// @return the token of the member class
-    public final <N> FinalClassToken<N> declareInnerClass(String name, TypedJavaFile.TypedClassHeaderSpec spec) {
-        return nestedClass(name, List.of(), owner.scopeDeclarations(), true, new NestedDeclarations.ClassBodies() {
+    /// @return the handle of the inner class
+    public final <N> InnerClass<Self, N> declareInnerClass(String name, TypedJavaFile.TypedClassHeaderSpec spec) {
+        return declareInnerClass(name, new TypedJavaFile.TypedInnerClassSpec<Self>() {
             @Override
-            public <N2> MemberBodies<N2, ?> build(ClassHeader<N2> h, ClassDeclaration<N2> declaration) {
+            public <N2> MemberBodies<N2, ?> build(ClassHeader<N2> h, InnerClass<Self, N2> inner) {
                 return spec.build(h);
             }
         });
+    }
+
+    /// Declares an inner member class whose specification receives the handle of the inner class,
+    /// see [#declareInnerClass(String, TypedJavaFile.TypedClassHeaderSpec)].
+    ///
+    /// @param name the simple name of the member class
+    /// @param spec declares the member class, given its header and the handle tied to the enclosing class
+    /// @param <N> the brand of the member class
+    /// @return the handle of the inner class
+    public final <N> InnerClass<Self, N> declareInnerClass(String name, TypedJavaFile.TypedInnerClassSpec<Self> spec) {
+        owner.requireDeclaring("an inner class of " + owner.described());
+        NestedDeclarations.NestedType<InnerClass<Self, N>> nested = NestedDeclarations.innerClass(
+                owner.target(), owner.desc(), name, self, owner.scopeDeclarations(), spec);
+        owner.declareNested(nested.type());
+        return nested.token();
     }
 
     /// Declares a generic `public static final` member class with one type parameter, see
@@ -132,7 +162,7 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
     /// @return the token of the member class
     public final <N, B1> FinalClassToken<N> declareNestedClass(
             String name, TypeParameter<B1> p1, TypedJavaFile.TypedGenericClassSpec1<B1> spec) {
-        return nestedClass(name, List.of(p1), List.of(), false, new NestedDeclarations.ClassBodies() {
+        return nestedClass(name, List.of(p1), List.of(), new NestedDeclarations.ClassBodies() {
             @Override
             public <N2> MemberBodies<N2, ?> build(ClassHeader<N2> h, ClassDeclaration<N2> declaration) {
                 return spec.build(h, NestedDeclarations.variable(declaration, 0));
@@ -155,7 +185,7 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
             TypeParameter<B1> p1,
             TypeParameter<B2> p2,
             TypedJavaFile.TypedGenericClassSpec2<B1, B2> spec) {
-        return nestedClass(name, List.of(p1, p2), List.of(), false, new NestedDeclarations.ClassBodies() {
+        return nestedClass(name, List.of(p1, p2), List.of(), new NestedDeclarations.ClassBodies() {
             @Override
             public <N2> MemberBodies<N2, ?> build(ClassHeader<N2> h, ClassDeclaration<N2> declaration) {
                 return spec.build(
@@ -182,7 +212,7 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
             TypeParameter<B2> p2,
             TypeParameter<B3> p3,
             TypedJavaFile.TypedGenericClassSpec3<B1, B2, B3> spec) {
-        return nestedClass(name, List.of(p1, p2, p3), List.of(), false, new NestedDeclarations.ClassBodies() {
+        return nestedClass(name, List.of(p1, p2, p3), List.of(), new NestedDeclarations.ClassBodies() {
             @Override
             public <N2> MemberBodies<N2, ?> build(ClassHeader<N2> h, ClassDeclaration<N2> declaration) {
                 return spec.build(
@@ -208,6 +238,73 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
         return nested.token();
     }
 
+    /// Declares a generic `public` member interface of the class with one type parameter, see
+    /// [#declareNestedInterface(String, TypedJavaFile.TypedInterfaceSpec)].
+    ///
+    /// @param name the simple name of the member interface
+    /// @param p1 the type parameter
+    /// @param spec declares the interface, given its builder and the token of the type parameter
+    /// @param <I> the brand of the member interface
+    /// @param <B1> the leftmost bound of the type parameter
+    /// @return the token of the member interface
+    public final <I, B1> InterfaceToken<I> declareNestedInterface(
+            String name, TypeParameter<B1> p1, TypedJavaFile.TypedGenericInterfaceSpec1<B1> spec) {
+        owner.requireDeclaring("a member interface of " + owner.described());
+        NestedDeclarations.NestedType<InterfaceToken<I>> nested =
+                NestedDeclarations.interface_(owner.target(), owner.desc(), name, p1, spec);
+        owner.declareNested(nested.type());
+        return nested.token();
+    }
+
+    /// Declares a generic `public` member interface of the class with two type parameters, see
+    /// [#declareNestedInterface(String, TypeParameter, TypedJavaFile.TypedGenericInterfaceSpec1)].
+    ///
+    /// @param name the simple name of the member interface
+    /// @param p1 the first type parameter
+    /// @param p2 the second type parameter
+    /// @param spec declares the interface, given its builder and the tokens of its type parameters
+    /// @param <I> the brand of the member interface
+    /// @param <B1> the leftmost bound of the first type parameter
+    /// @param <B2> the leftmost bound of the second type parameter
+    /// @return the token of the member interface
+    public final <I, B1, B2> InterfaceToken<I> declareNestedInterface(
+            String name,
+            TypeParameter<B1> p1,
+            TypeParameter<B2> p2,
+            TypedJavaFile.TypedGenericInterfaceSpec2<B1, B2> spec) {
+        owner.requireDeclaring("a member interface of " + owner.described());
+        NestedDeclarations.NestedType<InterfaceToken<I>> nested =
+                NestedDeclarations.interface_(owner.target(), owner.desc(), name, p1, p2, spec);
+        owner.declareNested(nested.type());
+        return nested.token();
+    }
+
+    /// Declares a generic `public` member interface of the class with three type parameters, see
+    /// [#declareNestedInterface(String, TypeParameter, TypedJavaFile.TypedGenericInterfaceSpec1)].
+    ///
+    /// @param name the simple name of the member interface
+    /// @param p1 the first type parameter
+    /// @param p2 the second type parameter
+    /// @param p3 the third type parameter
+    /// @param spec declares the interface, given its builder and the tokens of its type parameters
+    /// @param <I> the brand of the member interface
+    /// @param <B1> the leftmost bound of the first type parameter
+    /// @param <B2> the leftmost bound of the second type parameter
+    /// @param <B3> the leftmost bound of the third type parameter
+    /// @return the token of the member interface
+    public final <I, B1, B2, B3> InterfaceToken<I> declareNestedInterface(
+            String name,
+            TypeParameter<B1> p1,
+            TypeParameter<B2> p2,
+            TypeParameter<B3> p3,
+            TypedJavaFile.TypedGenericInterfaceSpec3<B1, B2, B3> spec) {
+        owner.requireDeclaring("a member interface of " + owner.described());
+        NestedDeclarations.NestedType<InterfaceToken<I>> nested =
+                NestedDeclarations.interface_(owner.target(), owner.desc(), name, p1, p2, p3, spec);
+        owner.declareNested(nested.type());
+        return nested.token();
+    }
+
     /// Declares a `public` member record of the class, implicitly `static`.
     ///
     /// @param name the simple name of the member record
@@ -218,6 +315,73 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
         owner.requireDeclaring("a member record of " + owner.described());
         NestedDeclarations.NestedType<FinalClassToken<R>> nested =
                 NestedDeclarations.record(owner.target(), owner.desc(), name, spec);
+        owner.declareNested(nested.type());
+        return nested.token();
+    }
+
+    /// Declares a generic `public` member record of the class with one type parameter, see
+    /// [#declareNestedRecord(String, TypedJavaFile.TypedRecordSpec)].
+    ///
+    /// @param name the simple name of the member record
+    /// @param p1 the type parameter
+    /// @param spec declares the record, given its builder and the token of the type parameter
+    /// @param <R> the brand of the member record
+    /// @param <B1> the leftmost bound of the type parameter
+    /// @return the token of the member record
+    public final <R, B1> FinalClassToken<R> declareNestedRecord(
+            String name, TypeParameter<B1> p1, TypedJavaFile.TypedGenericRecordSpec1<B1> spec) {
+        owner.requireDeclaring("a member record of " + owner.described());
+        NestedDeclarations.NestedType<FinalClassToken<R>> nested =
+                NestedDeclarations.record(owner.target(), owner.desc(), name, p1, spec);
+        owner.declareNested(nested.type());
+        return nested.token();
+    }
+
+    /// Declares a generic `public` member record of the class with two type parameters, see
+    /// [#declareNestedRecord(String, TypeParameter, TypedJavaFile.TypedGenericRecordSpec1)].
+    ///
+    /// @param name the simple name of the member record
+    /// @param p1 the first type parameter
+    /// @param p2 the second type parameter
+    /// @param spec declares the record, given its builder and the tokens of its type parameters
+    /// @param <R> the brand of the member record
+    /// @param <B1> the leftmost bound of the first type parameter
+    /// @param <B2> the leftmost bound of the second type parameter
+    /// @return the token of the member record
+    public final <R, B1, B2> FinalClassToken<R> declareNestedRecord(
+            String name,
+            TypeParameter<B1> p1,
+            TypeParameter<B2> p2,
+            TypedJavaFile.TypedGenericRecordSpec2<B1, B2> spec) {
+        owner.requireDeclaring("a member record of " + owner.described());
+        NestedDeclarations.NestedType<FinalClassToken<R>> nested =
+                NestedDeclarations.record(owner.target(), owner.desc(), name, p1, p2, spec);
+        owner.declareNested(nested.type());
+        return nested.token();
+    }
+
+    /// Declares a generic `public` member record of the class with three type parameters, see
+    /// [#declareNestedRecord(String, TypeParameter, TypedJavaFile.TypedGenericRecordSpec1)].
+    ///
+    /// @param name the simple name of the member record
+    /// @param p1 the first type parameter
+    /// @param p2 the second type parameter
+    /// @param p3 the third type parameter
+    /// @param spec declares the record, given its builder and the tokens of its type parameters
+    /// @param <R> the brand of the member record
+    /// @param <B1> the leftmost bound of the first type parameter
+    /// @param <B2> the leftmost bound of the second type parameter
+    /// @param <B3> the leftmost bound of the third type parameter
+    /// @return the token of the member record
+    public final <R, B1, B2, B3> FinalClassToken<R> declareNestedRecord(
+            String name,
+            TypeParameter<B1> p1,
+            TypeParameter<B2> p2,
+            TypeParameter<B3> p3,
+            TypedJavaFile.TypedGenericRecordSpec3<B1, B2, B3> spec) {
+        owner.requireDeclaring("a member record of " + owner.described());
+        NestedDeclarations.NestedType<FinalClassToken<R>> nested =
+                NestedDeclarations.record(owner.target(), owner.desc(), name, p1, p2, p3, spec);
         owner.declareNested(nested.type());
         return nested.token();
     }
@@ -236,6 +400,22 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
         return nested.token();
     }
 
+    /// Refuses type parameters on a member enum: javac rejects `enum E<T>` (JLS 8.9).
+    ///
+    /// @param name the simple name of the member enum
+    /// @param p1 the type parameter
+    /// @param spec declares the enum, which is never called
+    /// @param <E> the brand of the member enum
+    /// @param <B1> the leftmost bound of the type parameter
+    /// @return never
+    /// @throws IllegalArgumentException always, naming the enum and the type parameter
+    public final <E, B1> EnumToken<E> declareNestedEnum(
+            String name, TypeParameter<B1> p1, TypedJavaFile.TypedEnumSpec spec) {
+        throw new IllegalArgumentException("cannot declare the member enum " + name + " of " + owner.described()
+                + " with a type parameter: an enum has no type parameters (JLS 8.9), and the typed layer declares"
+                + " only what javac accepts");
+    }
+
     /// Declares a `public` member annotation type of the class, implicitly `static`.
     ///
     /// @param name the simple name of the member annotation type
@@ -249,15 +429,30 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
         return nested.token();
     }
 
+    /// Refuses type parameters on a member annotation type: javac rejects `@interface A<T>` (JLS
+    /// 9.6).
+    ///
+    /// @param name the simple name of the member annotation type
+    /// @param p1 the type parameter
+    /// @param spec declares the annotation type, which is never called
+    /// @param <B1> the leftmost bound of the type parameter
+    /// @return never
+    /// @throws IllegalArgumentException always, naming the annotation type and the type parameter
+    public final <B1> ClassDesc declareNestedAnnotationType(
+            String name, TypeParameter<B1> p1, TypedJavaFile.TypedAnnotationTypeSpec spec) {
+        throw new IllegalArgumentException("cannot declare the member annotation type " + name + " of "
+                + owner.described() + " with a type parameter: an annotation type has no type parameters (JLS"
+                + " 9.6), and the typed layer declares only what javac accepts");
+    }
+
     private <N> FinalClassToken<N> nestedClass(
             String name,
             List<TypeParameter<?>> parameters,
             List<me.supcheg.javafile.facts.DeclarationIdentity> enclosing,
-            boolean inner,
             NestedDeclarations.ClassBodies spec) {
         owner.requireDeclaring("a member class of " + owner.described());
         NestedDeclarations.NestedType<FinalClassToken<N>> nested =
-                NestedDeclarations.class_(owner.target(), owner.desc(), name, parameters, enclosing, inner, spec);
+                NestedDeclarations.class_(owner.target(), owner.desc(), name, parameters, enclosing, spec);
         owner.declareNested(nested.type());
         return nested.token();
     }
@@ -761,6 +956,192 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
                 Optional.empty());
     }
 
+    // ------------------------------------------------------------------
+    // Abstract methods
+    // ------------------------------------------------------------------
+
+    /// Declares an abstract method of the class, `public abstract R name(...)`, which has no body:
+    /// it is there whole when it is declared, and the bodies neither define it nor wait for it. An
+    /// abstract method is legal in an abstract class alone (JLS 8.4.3.1): a class that is not
+    /// abstract implements every abstract method it inherits.
+    ///
+    /// @param name the method name
+    /// @param result the result type
+    /// @param <R> the result type
+    /// @return the fact of the abstract method
+    /// @throws IllegalArgumentException if the class is not abstract, or javac would reject the method
+    /// @throws IllegalStateException if the declarations of the class have ended
+    public final <R> MethodRef0<Self, R> declareAbstractMethod(String name, TypeToken<R> result) {
+        return declaredAbstract(UnsafeInvocables.method(self, name, result, MemberTraits.ABSTRACT));
+    }
+
+    /// Declares a `public abstract void` method, see [#declareAbstractMethod(String, TypeToken)].
+    ///
+    /// @param name the method name
+    /// @return the fact of the abstract method
+    /// @throws IllegalArgumentException if the class is not abstract, or javac would reject the method
+    /// @throws IllegalStateException if the declarations of the class have ended
+    public final VoidMethodRef0<Self> declareVoidAbstractMethod(String name) {
+        return declaredAbstract(UnsafeInvocables.voidMethod(self, name, MemberTraits.ABSTRACT));
+    }
+
+    /// Declares an abstract method with one parameter, see
+    /// [#declareAbstractMethod(String, TypeToken)].
+    ///
+    /// @param name the method name
+    /// @param result the result type
+    /// @param p1 the parameter type
+    /// @param <R> the result type
+    /// @param <A1> the parameter type
+    /// @return the fact of the abstract method
+    public final <R, A1> MethodRef1<Self, R, A1> declareAbstractMethod(
+            String name, TypeToken<R> result, TypeToken<A1> p1) {
+        return declaredAbstract(UnsafeInvocables.method(self, name, result, p1, MemberTraits.ABSTRACT));
+    }
+
+    /// Declares a `public abstract void` method with one parameter, see
+    /// [#declareAbstractMethod(String, TypeToken)].
+    ///
+    /// @param name the method name
+    /// @param p1 the parameter type
+    /// @param <A1> the parameter type
+    /// @return the fact of the abstract method
+    public final <A1> VoidMethodRef1<Self, A1> declareVoidAbstractMethod(String name, TypeToken<A1> p1) {
+        return declaredAbstract(UnsafeInvocables.voidMethod(self, name, p1, MemberTraits.ABSTRACT));
+    }
+
+    /// Declares an abstract method with two parameters, see
+    /// [#declareAbstractMethod(String, TypeToken)].
+    ///
+    /// @param name the method name
+    /// @param result the result type
+    /// @param p1 the first parameter type
+    /// @param p2 the second parameter type
+    /// @param <R> the result type
+    /// @param <A1> the first parameter type
+    /// @param <A2> the second parameter type
+    /// @return the fact of the abstract method
+    public final <R, A1, A2> MethodRef2<Self, R, A1, A2> declareAbstractMethod(
+            String name, TypeToken<R> result, TypeToken<A1> p1, TypeToken<A2> p2) {
+        return declaredAbstract(UnsafeInvocables.method(self, name, result, p1, p2, MemberTraits.ABSTRACT));
+    }
+
+    /// Declares a `public abstract void` method with two parameters, see
+    /// [#declareAbstractMethod(String, TypeToken)].
+    ///
+    /// @param name the method name
+    /// @param p1 the first parameter type
+    /// @param p2 the second parameter type
+    /// @param <A1> the first parameter type
+    /// @param <A2> the second parameter type
+    /// @return the fact of the abstract method
+    public final <A1, A2> VoidMethodRef2<Self, A1, A2> declareVoidAbstractMethod(
+            String name, TypeToken<A1> p1, TypeToken<A2> p2) {
+        return declaredAbstract(UnsafeInvocables.voidMethod(self, name, p1, p2, MemberTraits.ABSTRACT));
+    }
+
+    /// Declares an abstract method with three parameters, see
+    /// [#declareAbstractMethod(String, TypeToken)].
+    ///
+    /// @param name the method name
+    /// @param result the result type
+    /// @param p1 the first parameter type
+    /// @param p2 the second parameter type
+    /// @param p3 the third parameter type
+    /// @param <R> the result type
+    /// @param <A1> the first parameter type
+    /// @param <A2> the second parameter type
+    /// @param <A3> the third parameter type
+    /// @return the fact of the abstract method
+    public final <R, A1, A2, A3> MethodRef3<Self, R, A1, A2, A3> declareAbstractMethod(
+            String name, TypeToken<R> result, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3) {
+        return declaredAbstract(UnsafeInvocables.method(self, name, result, p1, p2, p3, MemberTraits.ABSTRACT));
+    }
+
+    /// Declares a `public abstract void` method with three parameters, see
+    /// [#declareAbstractMethod(String, TypeToken)].
+    ///
+    /// @param name the method name
+    /// @param p1 the first parameter type
+    /// @param p2 the second parameter type
+    /// @param p3 the third parameter type
+    /// @param <A1> the first parameter type
+    /// @param <A2> the second parameter type
+    /// @param <A3> the third parameter type
+    /// @return the fact of the abstract method
+    public final <A1, A2, A3> VoidMethodRef3<Self, A1, A2, A3> declareVoidAbstractMethod(
+            String name, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3) {
+        return declaredAbstract(UnsafeInvocables.voidMethod(self, name, p1, p2, p3, MemberTraits.ABSTRACT));
+    }
+
+    /// Declares an abstract method with four parameters, see
+    /// [#declareAbstractMethod(String, TypeToken)].
+    ///
+    /// @param name the method name
+    /// @param result the result type
+    /// @param p1 the first parameter type
+    /// @param p2 the second parameter type
+    /// @param p3 the third parameter type
+    /// @param p4 the fourth parameter type
+    /// @param <R> the result type
+    /// @param <A1> the first parameter type
+    /// @param <A2> the second parameter type
+    /// @param <A3> the third parameter type
+    /// @param <A4> the fourth parameter type
+    /// @return the fact of the abstract method
+    public final <R, A1, A2, A3, A4> MethodRef4<Self, R, A1, A2, A3, A4> declareAbstractMethod(
+            String name, TypeToken<R> result, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4) {
+        return declaredAbstract(UnsafeInvocables.method(self, name, result, p1, p2, p3, p4, MemberTraits.ABSTRACT));
+    }
+
+    /// Declares a `public abstract void` method with four parameters, see
+    /// [#declareAbstractMethod(String, TypeToken)].
+    ///
+    /// @param name the method name
+    /// @param p1 the first parameter type
+    /// @param p2 the second parameter type
+    /// @param p3 the third parameter type
+    /// @param p4 the fourth parameter type
+    /// @param <A1> the first parameter type
+    /// @param <A2> the second parameter type
+    /// @param <A3> the third parameter type
+    /// @param <A4> the fourth parameter type
+    /// @return the fact of the abstract method
+    public final <A1, A2, A3, A4> VoidMethodRef4<Self, A1, A2, A3, A4> declareVoidAbstractMethod(
+            String name, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4) {
+        return declaredAbstract(UnsafeInvocables.voidMethod(self, name, p1, p2, p3, p4, MemberTraits.ABSTRACT));
+    }
+
+    private <F extends Invocable> F declaredAbstract(F method) {
+        owner.requireDeclaring(method.toString());
+        requireInScope(method);
+        if (!owner.isAbstract()) {
+            throw new IllegalArgumentException("cannot declare the abstract method " + method + " of " + described
+                    + ": the class is not abstract, and a class that is not abstract implements every abstract"
+                    + " method it inherits (JLS 8.4.3.1) — declare the class abstract_() first");
+        }
+        registry.member(method);
+        declared(new Member.Given(abstractMethod(method)));
+        return method;
+    }
+
+    /// The core declaration of an abstract method of the class, without a body.
+    private static AbstractMethodDecl abstractMethod(Invocable method) {
+        List<Param> params = java.util.stream.IntStream.range(0, method.params().size())
+                .mapToObj(index ->
+                        new Param("v" + index, method.params().get(index).typeRef()))
+                .toList();
+        return new AbstractMethodDecl(
+                method.name(),
+                method.resultType().map(TypeToken::typeRef),
+                List.of(),
+                params,
+                List.of(),
+                Set.of(Modifier.PUBLIC, Modifier.ABSTRACT),
+                List.of(),
+                Optional.empty());
+    }
+
     /// Declares a method of the class that overrides the methods of its signature the class
     /// inherits; rendered with `@Override`.
     ///
@@ -828,6 +1209,8 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
         enum Kind {
             /// A method or constructor declared by its name.
             DECLARES,
+            /// An abstract method declared by its name, which has no body.
+            ABSTRACT,
             /// A method that overrides.
             OVERRIDES
         }

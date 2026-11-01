@@ -147,6 +147,7 @@ public final class Transforms {
         for (AnnotationElementDecl element : decl.elements()) {
             transform.accept(builder, element);
         }
+        decl.members().forEach(builder::withType);
         return builder.build();
     }
 

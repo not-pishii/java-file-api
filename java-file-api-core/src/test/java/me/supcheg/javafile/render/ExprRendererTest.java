@@ -24,12 +24,14 @@ import me.supcheg.javafile.code.Exprs;
 import me.supcheg.javafile.code.FieldAccessExpr;
 import me.supcheg.javafile.code.ForStmt;
 import me.supcheg.javafile.code.IfStmt;
+import me.supcheg.javafile.code.InnerNewExpr;
 import me.supcheg.javafile.code.LabeledStmt;
 import me.supcheg.javafile.code.LocalTypeDeclStmt;
 import me.supcheg.javafile.code.LocalVarDeclStmt;
 import me.supcheg.javafile.code.NonEmptyList;
 import me.supcheg.javafile.code.Pattern;
 import me.supcheg.javafile.code.PatternLabel;
+import me.supcheg.javafile.code.QualifiedThisExpr;
 import me.supcheg.javafile.code.RecordPattern;
 import me.supcheg.javafile.code.Resource;
 import me.supcheg.javafile.code.ReturnStmt;
@@ -1343,5 +1345,25 @@ class ExprRendererTest {
         Expr expr = cond(lt(field("x"), literal(0)), literal(4), inner);
         assertThat(ExprRenderer.renderExpr(expr, Context.of(standardFormat(), new ImportManager("p"))))
                 .isEqualTo("x < 0 ? 4 : true ? 1 : 2");
+    }
+
+    @Test
+    void innerInstanceCreationIsQualifiedAndItsTargetMayBeDiamondOrTyped() {
+        Context ctx = Context.of(standardFormat(), new ImportManager("p"));
+        ClassDesc inner = ClassDesc.of("p", "Outer$Inner");
+
+        assertThat(ExprRenderer.renderExpr(
+                        new InnerNewExpr(this_(), new me.supcheg.javafile.code.DiamondNewTarget(inner), List.of()),
+                        ctx))
+                .isEqualTo("this.new Inner<>()");
+        assertThat(ExprRenderer.renderExpr(
+                        new InnerNewExpr(
+                                this_(),
+                                new me.supcheg.javafile.code.TypedNewTarget(Types.of(inner)),
+                                List.of(literal(1))),
+                        ctx))
+                .isEqualTo("this.new Inner(1)");
+        assertThat(ExprRenderer.renderExpr(new QualifiedThisExpr(ClassDesc.of("p", "Outer$Inner")), ctx))
+                .isEqualTo("Inner.this");
     }
 }

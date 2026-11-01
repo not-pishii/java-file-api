@@ -8,6 +8,7 @@ import me.supcheg.javafile.doc.DocCommentBuilder;
 import me.supcheg.javafile.model.AnnotationElementDecl;
 import me.supcheg.javafile.model.AnnotationTypeDecl;
 import me.supcheg.javafile.model.Modifier;
+import me.supcheg.javafile.model.TypeDecl;
 import me.supcheg.javafile.type.TypeRef;
 import org.jspecify.annotations.Nullable;
 
@@ -38,6 +39,7 @@ public final class AnnotationTypeBuilder implements Consumer<AnnotationElementDe
     private final Set<Modifier> modifiers = new LinkedHashSet<>(Set.of(Modifier.PUBLIC));
     private final List<AnnotationUse> annotations = new ArrayList<>();
     private final List<AnnotationElementDecl> elements = new ArrayList<>();
+    private final List<TypeDecl> members = new ArrayList<>();
 
     /// Creates a builder for an annotation type with the given descriptor.
     ///
@@ -172,11 +174,27 @@ public final class AnnotationTypeBuilder implements Consumer<AnnotationElementDe
         elements.add(element);
     }
 
+    /// Adds a member type to the annotation type's body: a class, an interface, a record, an enum or
+    /// an annotation type. An annotation type declares constants, member types and elements (JLS 9.6.1);
+    /// a member type is implicitly `static` and `public` as one of an interface is (JLS 9.5).
+    ///
+    /// @param member the member type
+    /// @return this builder
+    public AnnotationTypeBuilder withType(TypeDecl member) {
+        members.add(member);
+        return this;
+    }
+
     /// Returns the declaration built so far.
     ///
     /// @return the finished annotation type declaration
     public AnnotationTypeDecl build() {
         return new AnnotationTypeDecl(
-                desc, List.copyOf(annotations), Set.copyOf(modifiers), List.copyOf(elements), Optional.ofNullable(doc));
+                desc,
+                List.copyOf(annotations),
+                Set.copyOf(modifiers),
+                List.copyOf(elements),
+                List.copyOf(members),
+                Optional.ofNullable(doc));
     }
 }

@@ -1,11 +1,13 @@
 package me.supcheg.javafile.typed;
 
+import me.supcheg.javafile.Invariants;
 import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.facts.AnnotationRef;
 import me.supcheg.javafile.facts.ClassToken;
 import me.supcheg.javafile.facts.DeclarationIdentity;
 import me.supcheg.javafile.facts.DeclaredToken;
 import me.supcheg.javafile.facts.FieldRef;
+import me.supcheg.javafile.facts.InterfaceToken;
 import me.supcheg.javafile.facts.Invocable;
 import me.supcheg.javafile.facts.StaticFieldRef;
 import me.supcheg.javafile.facts.TargetClasspath;
@@ -22,6 +24,7 @@ import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -49,6 +52,7 @@ abstract class TypeDeclarationSupport<Self> {
     private TypeSignatureRegistry registry;
     private List<Member> members = List.of();
     private List<me.supcheg.javafile.model.TypeDecl> nested = List.of();
+    private boolean membersDeclared;
     private boolean membersBegan;
     private boolean complete;
 
@@ -98,7 +102,8 @@ abstract class TypeDeclarationSupport<Self> {
                                 new TypeVarRef(parameter.name()),
                                 parameter.bound().erasure(),
                                 identity),
-                        parameter.bound()))
+                        parameter.bound(),
+                        List.of()))
                 .toList();
     }
 
@@ -131,7 +136,13 @@ abstract class TypeDeclarationSupport<Self> {
     /// @return the type parameters, in order
     final List<TypeParam> typeParams() {
         return variables.stream()
-                .map(variable -> new TypeParam(variable.token().typeRef().name(), leftmost(variable.first())))
+                .map(variable -> new TypeParam(
+                        variable.token().typeRef().name(),
+                        variable.more().isEmpty()
+                                ? leftmost(variable.first())
+                                : Stream.concat(Stream.of(variable.first()), variable.more().stream())
+                                        .<ClassOrInterfaceTypeRef>map(DeclaredToken::typeRef)
+                                        .toList()))
                 .toList();
     }
 
@@ -143,7 +154,12 @@ abstract class TypeDeclarationSupport<Self> {
     ///
     /// @param token its token
     /// @param first its leftmost bound, `Object` for none
-    private record Variable(TypeVarToken<?> token, DeclaredToken<?> first) {}
+    /// @param more its further bounds, said by witnesses in the header, in order
+    private record Variable(TypeVarToken<?> token, DeclaredToken<?> first, List<InterfaceToken<?>> more) {
+        Variable {
+            more = List.copyOf(more);
+        }
+    }
 
     /// Makes the token of the type, once its kind knows how to make it.
     ///
@@ -174,7 +190,10 @@ abstract class TypeDeclarationSupport<Self> {
 
     final List<Subtyping.Bounded> bounded() {
         return variables.stream()
-                .map(variable -> new Subtyping.Bounded(variable.token(), List.of(variable.first())))
+                .map(variable -> new Subtyping.Bounded(
+                        variable.token(),
+                        Stream.concat(Stream.of(variable.first()), variable.more().stream())
+                                .toList()))
                 .toList();
     }
 
@@ -210,10 +229,100 @@ abstract class TypeDeclarationSupport<Self> {
         return new Upcast<>(self, supertype);
     }
 
+    /// Gives a type parameter of the type one more bound, an interface: `<T extends A & B>`. The
+    /// leftmost bound is the one the token `typeParam` was made with; every other is said here,
+    /// before the members begin, and gives the witness by which an expression of the type parameter
+    /// is one of the interface, as [ClassHeader#bound] does of a class.
+    ///
+    /// @param variable the token of the type parameter, as the specification was given it
+    /// @param bound the interface, with its type arguments
+    /// @param <T> the type parameter
+    /// @param <B> the interface
+    /// @return the witness that the type parameter is of the interface
+    /// @throws IllegalArgumentException if `variable` is no type parameter of this type; `bound` is
+    ///     raw, has a wildcard type argument or tells no heritage; is a bound of the type parameter
+    ///     already, or a generic supertype of two bounds with other type arguments; or the methods of
+    ///     the bounds clash
+    /// @throws IllegalStateException if the members have begun, or `bound` mentions a type parameter
+    ///     of another type
+    final <T, B> Upcast<T, B> addBound(TypeVarToken<T> variable, InterfaceToken<B> bound) {
+        requireHeader("a bound of a type parameter of " + described);
+        requireNoMemberDeclared("a bound of a type parameter of " + described);
+        Variable bounded = variables.stream()
+                .filter(mine -> mine.token() == variable)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(
+                        variable + " is no type parameter of " + described + ": a type bounds its own"));
+        String name = variable.typeRef().name();
+        requireNotRaw(bound, name);
+        scope("the header").require(bound);
+        target.verify(bound);
+        String owner = "the type parameter " + name + " of " + described;
+        // What a type variable of several bounds has is what a class of those supertypes inherits
+        // (JLS 4.9): javac makes that class and rejects the type parameter where it would reject the
+        // class. A bound twice, two parameterizations of one interface and methods that clash are
+        // rejected by the merge; methods the class could not have together without one of its own,
+        // which it has none of, here.
+        Inheritance.Supertype first;
+        try {
+            first = Inheritance.supertype(owner, target, bounded.first());
+        } catch (IllegalArgumentException untold) {
+            throw new IllegalArgumentException(
+                    owner + " cannot have the bound " + bound + " beside " + bounded.first()
+                            + ": what the two give the type variable together is not known, for "
+                            + untold.getMessage(),
+                    untold);
+        }
+        Inheritance merged = Stream.concat(bounded.more().stream(), Stream.of(bound))
+                // a sequential stream: its partial results are never combined
+                .reduce(
+                        Inheritance.of(new Inheritance.Heir.OfVariable(owner), first),
+                        (had, next) -> had.with(Inheritance.supertype(owner, target, next)),
+                        Invariants::unique);
+        merged.groups().flatMap(group -> group.conflict().stream()).findFirst().ifPresent(why -> {
+            throw new IllegalArgumentException(owner + " cannot have the bound " + bound
+                    + ": a type variable is of the class its bounds make (JLS 4.9), and " + why);
+        });
+        merged.groups()
+                .filter(group -> group.entries().stream()
+                        .anyMatch(entry -> !entry.method()
+                                .sameResult(group.entries().getFirst().method())))
+                .findFirst()
+                .ifPresent(group -> {
+                    throw new IllegalArgumentException(owner + " cannot have the bound " + bound + ": with it the"
+                            + " bounds have the methods "
+                            + group.entries().stream().map(Object::toString).collect(Collectors.joining(" and "))
+                            + " of one signature and of"
+                            + " different results — one has to be return-type-substitutable for the others"
+                            + " (JLS 8.4.5, 4.9), which the typed layer holds to: of the same result");
+                });
+        variables = variables.stream()
+                .map(mine -> mine == bounded
+                        ? new Variable(
+                                mine.token(),
+                                mine.first(),
+                                Stream.concat(mine.more().stream(), Stream.of(bound))
+                                        .toList())
+                        : mine)
+                .toList();
+        return new Upcast<>(variable, bound);
+    }
+
     final void requireHeader(String what) {
         if (membersBegan) {
             throw new IllegalStateException("cannot declare " + what + ": the members of " + described
                     + " have begun, and a type names its supertypes before them");
+        }
+    }
+
+    /// Holds a bound of a type parameter to the header: it is said before the first member.
+    ///
+    /// @param what what is said, for messages
+    /// @throws IllegalStateException if a member is declared already
+    private void requireNoMemberDeclared(String what) {
+        if (membersDeclared) {
+            throw new IllegalStateException("cannot declare " + what + ": the members of " + described
+                    + " have begun, and a type names its bounds before them");
         }
     }
 
@@ -227,6 +336,12 @@ abstract class TypeDeclarationSupport<Self> {
                     "cannot declare or define " + what + ": the declaration of " + described + " is already complete");
         }
         Scopes.requireNoneOpen(what);
+    }
+
+    /// Marks the header of a record as begun by a component: a bound is said before the components
+    /// as it is said before the members.
+    final void componentDeclared() {
+        membersDeclared = true;
     }
 
     final void requireDeclaring(String what) {
@@ -272,7 +387,30 @@ abstract class TypeDeclarationSupport<Self> {
             List<ClassToken<? extends Throwable>> thrown,
             List<AnnotationRef<?>> annotations,
             List<List<AnnotationRef<?>>> parameterAnnotations) {
+        return declare(member, kind, thrown, annotations, parameterAnnotations, Set.of());
+    }
+
+    /// Declares a method of the type, rendered with `modifiers` beside those its kind fixes.
+    ///
+    /// @param member the fact of the method
+    /// @param kind how the method is rendered
+    /// @param thrown the exception classes of its `throws` clause
+    /// @param annotations the annotations it declares
+    /// @param parameterAnnotations the annotations of each parameter
+    /// @param modifiers the modifiers it is rendered with, `synchronized` or `native`
+    /// @param <F> the fact
+    /// @return the fact
+    /// @throws IllegalArgumentException if javac would reject the method
+    /// @throws IllegalStateException if the declarations have ended
+    final <F extends Invocable> F declare(
+            F member,
+            Member.Kind kind,
+            List<ClassToken<? extends Throwable>> thrown,
+            List<AnnotationRef<?>> annotations,
+            List<List<AnnotationRef<?>>> parameterAnnotations,
+            Set<Modifier> modifiers) {
         requireDeclaring(member.toString());
+        Set<Modifier> rendered = requireModifiers(member, kind, modifiers);
         TypeScope scope = scope(kind, "the signature of " + member);
         Stream.concat(member.params().stream(), member.resultType().stream()).forEach(type -> {
             Tokens.requireNotRaw(type);
@@ -291,10 +429,18 @@ abstract class TypeDeclarationSupport<Self> {
                 parameterAnnotations,
                 scope(kind, "the body of " + member),
                 registry().overrides(member.signature()),
+                rendered,
                 Site.here());
         declared(declared);
         declaredMember(declared);
         return member;
+    }
+
+    /// The modifiers a method of the kind is rendered with beside those its kind fixes, held to what
+    /// Java allows: an interface has no `synchronized` or `native` method, and a constructor is
+    /// neither.
+    private static Set<Modifier> requireModifiers(Invocable member, Member.Kind kind, Set<Modifier> modifiers) {
+        return modifiers.isEmpty() ? Set.of() : Set.copyOf(modifiers);
     }
 
     /// Called for each member declared by name, after it is registered: an enum records its abstract
@@ -343,6 +489,7 @@ abstract class TypeDeclarationSupport<Self> {
                 parameterAnnotations,
                 scope(kind, "the body of " + member),
                 true,
+                Set.of(),
                 Site.here()));
         return member;
     }
@@ -412,6 +559,7 @@ abstract class TypeDeclarationSupport<Self> {
 
     private void declared(Member member) {
         members = Stream.concat(members.stream(), Stream.of(member)).toList();
+        membersDeclared = true;
     }
 
     /// Adds a member type of the type, which its file renders after its other members.
@@ -421,6 +569,7 @@ abstract class TypeDeclarationSupport<Self> {
     final void declaredNested(me.supcheg.javafile.model.TypeDecl type) {
         requireDeclaring("a member type of " + described);
         nested = Stream.concat(nested.stream(), Stream.of(type)).toList();
+        membersDeclared = true;
     }
 
     /// The member types of the type, in declaration order.
@@ -539,6 +688,8 @@ abstract class TypeDeclarationSupport<Self> {
         /// @param parameterAnnotations the annotations of each parameter
         /// @param scope the scope of the types its body mentions
         /// @param overrides whether it overrides a method of a supertype, and is rendered `@Override`
+        /// @param modifiers the modifiers it is rendered with beside those its kind fixes, `synchronized`
+        ///     or `native`
         /// @param site where it was declared
         record Callable(
                 Invocable fact,
@@ -548,6 +699,7 @@ abstract class TypeDeclarationSupport<Self> {
                 List<List<AnnotationRef<?>>> parameterAnnotations,
                 TypeScope scope,
                 boolean overrides,
+                Set<Modifier> modifiers,
                 Site site)
                 implements Member {
             public Callable {
@@ -555,6 +707,7 @@ abstract class TypeDeclarationSupport<Self> {
                 annotations = List.copyOf(annotations);
                 parameterAnnotations =
                         parameterAnnotations.stream().map(List::copyOf).toList();
+                modifiers = Set.copyOf(modifiers);
             }
         }
 

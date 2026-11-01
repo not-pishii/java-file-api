@@ -5,9 +5,18 @@ import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.TypeVarToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.testing.CompiledClasses;
+import me.supcheg.javafile.typed.fixtures.Named;
+import me.supcheg.javafile.typed.fixtures.Numbered;
 import me.supcheg.javafile.typed.testfacts.java.lang.Comparable_;
 import me.supcheg.javafile.typed.testfacts.java.lang.Number_;
 import me.supcheg.javafile.typed.testfacts.java.lang.Object_;
+import me.supcheg.javafile.typed.testfacts.java.lang.Runnable_;
+import me.supcheg.javafile.typed.testfacts.java.lang.String_;
+import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Named_;
+import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Numbered_;
+import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Origin_;
+import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Titled_;
+import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Worded_;
 import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;
@@ -17,6 +26,7 @@ import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.TypedJavaFile.typeParam;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /// A generic interface and a generic record (§8g): their type parameters are tokens the specification
 /// is given, in scope in the header, the components, the members and the member types. The declarations
@@ -287,5 +297,198 @@ class GenericDeclarationsTest {
                 .withMessageContaining(
                         "cannot declare the annotation type me.supcheg.example.Box with a type parameter")
                 .withMessageContaining("an annotation type has no type parameters (JLS 9.6)");
+    }
+
+    @Test
+    void anInterfaceAndARecordDeclareFurtherBoundsOnTheirTypeParameters() {
+        JavaFile anInterface = TypedJavaFile.interface_(
+                UnsafeFacts.unverifiedClasspath(),
+                DESC,
+                typeParam("T", Number_.TOKEN),
+                new TypedJavaFile.TypedGenericInterfaceSpec1<>() {
+                    @Override
+                    public <Self, T extends Number> TypedInterfaceBodies<Self> build(
+                            TypedInterfaceBuilder<Self> ib, TypeVarToken<T> t) {
+                        var comparable = new Comparable_<>(t);
+                        ib.bound(t, comparable.token);
+                        ib.declareAbstractMethod("compare", PrimitiveToken.INT, t);
+                        return ib.bodies();
+                    }
+                });
+        JavaFile aRecord = TypedJavaFile.record(
+                UnsafeFacts.unverifiedClasspath(),
+                DESC,
+                typeParam("T", Number_.TOKEN),
+                new TypedJavaFile.TypedGenericRecordSpec1<>() {
+                    @Override
+                    public <Self, T extends Number> TypedRecordBodies<Self> build(
+                            TypedRecordBuilder<Self> rb, TypeVarToken<T> t) {
+                        rb.bound(t, new Comparable_<>(t).token);
+                        rb.component("value", t);
+                        return rb.bodies();
+                    }
+                });
+
+        assertThat(anInterface.render()).isEqualTo("""
+                        package me.supcheg.example;
+
+                        public interface Box<T extends Number & Comparable<T>> {
+                            int compare(T v0);
+                        }
+                        """);
+        assertThat(aRecord.render()).isEqualTo("""
+                        package me.supcheg.example;
+
+                        public record Box<T extends Number & Comparable<T>>(T value) {
+                        }
+                        """);
+
+        CompiledClasses.of(anInterface);
+        CompiledClasses.of(aRecord);
+    }
+
+    @Test
+    void anInterfaceAndARecordRefuseFurtherBoundsTheyCannotHave() {
+        assertThatIllegalStateException()
+                .isThrownBy(() -> TypedJavaFile.interface_(
+                        UnsafeFacts.unverifiedClasspath(),
+                        DESC,
+                        typeParam("T", Number_.TOKEN),
+                        new TypedJavaFile.TypedGenericInterfaceSpec1<>() {
+                            @Override
+                            public <Self, T extends Number> TypedInterfaceBodies<Self> build(
+                                    TypedInterfaceBuilder<Self> ib, TypeVarToken<T> t) {
+                                ib.declareAbstractMethod("compare", PrimitiveToken.INT, t);
+                                ib.bound(t, new Comparable_<>(t).token);
+                                return ib.bodies();
+                            }
+                        }))
+                .withMessageContaining("the members of interface me.supcheg.example.Box have begun");
+
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> TypedJavaFile.record(
+                        UnsafeFacts.unverifiedClasspath(),
+                        DESC,
+                        typeParam("T", Number_.TOKEN),
+                        new TypedJavaFile.TypedGenericRecordSpec1<>() {
+                            @Override
+                            public <Self, T extends Number> TypedRecordBodies<Self> build(
+                                    TypedRecordBuilder<Self> rb, TypeVarToken<T> t) {
+                                rb.bound(t, Comparable_.ANY);
+                                return rb.bodies();
+                            }
+                        }))
+                .withMessageContaining("cannot have the supertype java.lang.Comparable");
+
+        TypeVarToken<?>[] kept = new TypeVarToken<?>[1];
+        TypedJavaFile.declareClass(
+                UnsafeFacts.unverifiedClasspath(),
+                ClassDesc.of("me.supcheg.example", "Other"),
+                typeParam("T", Number_.TOKEN),
+                new TypedJavaFile.TypedGenericClassSpec1<>() {
+                    @Override
+                    public <Self, T extends Number> MemberBodies<Self, ?> build(
+                            ClassHeader<Self> h, TypeVarToken<T> t) {
+                        kept[0] = t;
+                        return h.extendsObject().members().bodies();
+                    }
+                });
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> TypedJavaFile.interface_(
+                        UnsafeFacts.unverifiedClasspath(),
+                        DESC,
+                        typeParam("T", Number_.TOKEN),
+                        new TypedJavaFile.TypedGenericInterfaceSpec1<>() {
+                            @Override
+                            public <Self, T extends Number> TypedInterfaceBodies<Self> build(
+                                    TypedInterfaceBuilder<Self> ib, TypeVarToken<T> t) {
+                                ib.bound((TypeVarToken) kept[0], new Comparable_<>(t).token);
+                                return ib.bodies();
+                            }
+                        }))
+                .withMessageContaining("is no type parameter of interface me.supcheg.example.Box");
+    }
+
+    @Test
+    void anInterfaceRefusesFurtherBoundsWhoseBoundsCannotBeTogether() {
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> TypedJavaFile.interface_(
+                        UnsafeFacts.unverifiedClasspath(),
+                        DESC,
+                        typeParam("T", String_.TOKEN),
+                        new TypedJavaFile.TypedGenericInterfaceSpec1<String>() {
+                            @Override
+                            public <Self, T extends String> TypedInterfaceBodies<Self> build(
+                                    TypedInterfaceBuilder<Self> ib, TypeVarToken<T> t) {
+                                ib.bound(t, Runnable_.TOKEN);
+                                return ib.bodies();
+                            }
+                        }))
+                .withMessageContaining("cannot have the bound java.lang.Runnable beside java.lang.String");
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> TypedJavaFile.interface_(
+                        UnsafeFacts.unverifiedClasspath(),
+                        DESC,
+                        typeParam("T", Numbered_.TOKEN),
+                        new TypedJavaFile.TypedGenericInterfaceSpec1<Numbered>() {
+                            @Override
+                            public <Self, T extends Numbered> TypedInterfaceBodies<Self> build(
+                                    TypedInterfaceBuilder<Self> ib, TypeVarToken<T> t) {
+                                ib.bound(t, Worded_.TOKEN);
+                                return ib.bodies();
+                            }
+                        }))
+                .withMessageContaining("of one signature and of different results");
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> TypedJavaFile.interface_(
+                        UnsafeFacts.unverifiedClasspath(),
+                        DESC,
+                        typeParam("T", Named_.TOKEN),
+                        new TypedJavaFile.TypedGenericInterfaceSpec1<Named>() {
+                            @Override
+                            public <Self, T extends Named> TypedInterfaceBodies<Self> build(
+                                    TypedInterfaceBuilder<Self> ib, TypeVarToken<T> t) {
+                                ib.bound(t, Titled_.TOKEN);
+                                return ib.bodies();
+                            }
+                        }))
+                .withMessageContaining("cannot have the bound");
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> TypedJavaFile.interface_(
+                        UnsafeFacts.unverifiedClasspath(),
+                        DESC,
+                        typeParam("T", Origin_.TOKEN),
+                        new TypedJavaFile.TypedGenericInterfaceSpec1<me.supcheg.javafile.typed.fixtures.Origin>() {
+                            @Override
+                            public <Self, T extends me.supcheg.javafile.typed.fixtures.Origin>
+                                    TypedInterfaceBodies<Self> build(
+                                            TypedInterfaceBuilder<Self> ib, TypeVarToken<T> t) {
+                                ib.bound(t, Worded_.TOKEN);
+                                return ib.bodies();
+                            }
+                        }))
+                .withMessageContaining("of one signature and of different results");
+    }
+
+    @Test
+    void aBoundOfOneTypeParameterLeavesTheOtherAsItIs() {
+        JavaFile file = TypedJavaFile.interface_(
+                UnsafeFacts.unverifiedClasspath(),
+                DESC,
+                typeParam("A"),
+                typeParam("B", Number_.TOKEN),
+                new TypedJavaFile.TypedGenericInterfaceSpec2<>() {
+                    @Override
+                    public <Self, A, B extends Number> TypedInterfaceBodies<Self> build(
+                            TypedInterfaceBuilder<Self> ib, TypeVarToken<A> a, TypeVarToken<B> b) {
+                        ib.bound(a, Runnable_.TOKEN);
+                        ib.bound(b, new Comparable_<>(b).token);
+                        return ib.bodies();
+                    }
+                });
+
+        assertThat(file.render())
+                .contains("public interface Box<A extends Object & Runnable, B extends Number & Comparable<B>> {");
+        CompiledClasses.of(file);
     }
 }

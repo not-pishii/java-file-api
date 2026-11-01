@@ -625,6 +625,16 @@ final class Lowering {
             }
             case Node.Local(var v) -> new FieldAccessExpr(Optional.empty(), names.nameOf(v));
             case Node.This ignored -> new ThisExpr();
+            case Node.OuterThis(var outer) -> {
+                mentions(outer);
+                yield new me.supcheg.javafile.code.QualifiedThisExpr(outer.erasure());
+            }
+            case Node.InnerNew(var enclosing, var ctor, var args, var passing) ->
+                new me.supcheg.javafile.code.InnerNewExpr(
+                        expr(enclosing.node()),
+                        new me.supcheg.javafile.code.TypedNewTarget(
+                                written(ctor.owner()).typeRef()),
+                        arguments(ctor, new Searched.Unconsulted(), args, passing));
             case Node.Box(var type, var operand) ->
                 Exprs.staticCall(type.boxed().typeRef(), "valueOf", expr(operand));
             case Node.Unbox(var type, var operand) -> expr(operand).call(type.unboxMethodName());

@@ -50,14 +50,17 @@ public final class TypedRecordBodies<Self> extends TypedTypeBodies<Self, RecordM
             List<Param> params,
             List<ClassOrInterfaceTypeRef> throwsClause,
             List<AnnotationUse> annotations) {
-        Set<Modifier> modifiers = declared.kind() == Member.Kind.STATIC
-                ? Set.of(Modifier.PUBLIC, Modifier.STATIC)
-                : Set.of(Modifier.PUBLIC);
+        Set<Modifier> modifiers = new java.util.LinkedHashSet<>();
+        modifiers.add(Modifier.PUBLIC);
+        if (declared.kind() == Member.Kind.STATIC) {
+            modifiers.add(Modifier.STATIC);
+        }
+        modifiers.addAll(declared.modifiers());
         return new MethodDecl(
                 declared.fact().name(),
                 declared.fact().resultType().map(type -> type.typeRef()),
                 annotations,
-                modifiers,
+                Set.copyOf(modifiers),
                 List.of(),
                 params,
                 code,

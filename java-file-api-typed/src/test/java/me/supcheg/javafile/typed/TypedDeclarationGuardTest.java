@@ -818,6 +818,7 @@ class TypedDeclarationGuardTest {
                 List.of(),
                 declaration.scope("the guard"),
                 false,
+                Set.of(),
                 Site.here());
     }
 }

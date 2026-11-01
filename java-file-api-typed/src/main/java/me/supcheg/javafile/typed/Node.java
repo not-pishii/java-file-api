@@ -72,6 +72,17 @@ sealed interface Node {
     /// root block of that body, where `this` is in scope.
     record This(Block<?, ?> owner) implements Exact {}
 
+    /// `Outer.this`: the instance of the class that encloses the inner class
+    /// whose body names it (JLS 15.8.4).
+    ///
+    /// @param outer the enclosing class
+    record OuterThis(DeclaredToken<?> outer) implements Exact {}
+
+    /// An instance creation qualified by an enclosing instance,
+    /// `outer.new Inner(args)` (JLS 15.9.2): the constructor of an inner class
+    /// takes the instance of the class that encloses it.
+    record InnerNew(Operand enclosing, Invocable ctor, List<Operand> args, Passing passing) implements Exact {}
+
     /// Boxing of a primitive value, `Integer.valueOf(operand)`.
     record Box(PrimitiveToken<?, ?, ?> type, Node operand) implements Exact {}
 

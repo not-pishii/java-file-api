@@ -34,6 +34,8 @@ public sealed interface Expr extends VariableInitializer
                 StatementExpr,
                 ConstantExpr,
                 ThisExpr,
+                QualifiedThisExpr,
+                InnerNewExpr,
                 SuperExpr,
                 CastExpr,
                 ConditionalExpr,
