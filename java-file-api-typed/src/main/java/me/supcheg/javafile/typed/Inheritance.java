@@ -118,10 +118,16 @@ final class Inheritance {
     static Supertype supertype(String owner, TargetClasspath target, DeclaredToken<?> token) {
         TypeShape<?> shape = token.shape();
         return switch (target.heritage(shape)) {
-            case Heritage.Untold _ ->
+            case Heritage.Untold _ -> {
+                if (shape.sealed()) {
+                    throw new IllegalArgumentException(owner + " cannot have the supertype " + token
+                            + ": it is sealed, and only a subtype it permits extends or implements it; the"
+                            + " metamodel tells neither the permitted subtypes nor the heritage of the type");
+                }
                 throw new IllegalArgumentException(owner + " cannot have the supertype " + token
                         + ": its metamodel tells no heritage — the type cannot be extended, or the"
                         + " metamodel is not a full one");
+            }
             case Heritage.Told told -> {
                 List<TypeRef> arguments = arguments(owner, token);
                 yield new Supertype(token, arguments, told.applied(arguments));

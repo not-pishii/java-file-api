@@ -573,7 +573,7 @@ public abstract sealed class MemberBodies<Self, S> extends MemberBodyArities<Sel
                         fact.name(),
                         fact.resultType().map(TypeToken::typeRef),
                         annotations,
-                        finalIfSafeVarargs(declared.arity()),
+                        methodModifiers(declared, finalIfSafeVarargs(declared.arity())),
                         List.of(),
                         coreParams,
                         code,
@@ -586,7 +586,7 @@ public abstract sealed class MemberBodies<Self, S> extends MemberBodyArities<Sel
                         fact.name(),
                         fact.resultType().map(TypeToken::typeRef),
                         annotations,
-                        Set.of(Modifier.PUBLIC, Modifier.STATIC),
+                        methodModifiers(declared, Set.of(Modifier.PUBLIC, Modifier.STATIC)),
                         List.of(),
                         coreParams,
                         code,
@@ -594,6 +594,16 @@ public abstract sealed class MemberBodies<Self, S> extends MemberBodyArities<Sel
                         Optional.empty());
             }
         };
+    }
+
+    /// The modifiers of a method: those its form fixes, and the `synchronized`
+    /// or `native` it was declared with.
+    private static Set<Modifier> methodModifiers(Member.Callable declared, Set<Modifier> form) {
+        if (declared.modifiers().isEmpty()) {
+            return form;
+        }
+        return Stream.concat(form.stream(), declared.modifiers().stream())
+                .collect(java.util.stream.Collectors.toUnmodifiableSet());
     }
 
     /// `@SafeVarargs`, of a member of variable arity that vouches for the array of its last parameter: the one with

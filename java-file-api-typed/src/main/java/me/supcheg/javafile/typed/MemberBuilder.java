@@ -10,14 +10,21 @@ import me.supcheg.javafile.facts.InvocableKind;
 import me.supcheg.javafile.facts.MemberFact;
 import me.supcheg.javafile.facts.MutableFieldRef;
 import me.supcheg.javafile.facts.MutableStaticFieldRef;
+import me.supcheg.javafile.facts.Overridability;
 import me.supcheg.javafile.facts.Protected;
 import me.supcheg.javafile.facts.StaticFieldRef;
 import me.supcheg.javafile.facts.TypeToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.model.ClassMember;
 import me.supcheg.javafile.model.Modifier;
+import me.supcheg.javafile.model.NativeMethodDecl;
+import me.supcheg.javafile.model.Param;
+import me.supcheg.javafile.type.ArrayTypeRef;
+import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
+import me.supcheg.javafile.type.TypeRef;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -159,6 +166,45 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
                 UnsafeFacts.field(self, name, type), Set.of(Modifier.PUBLIC, Modifier.FINAL), List.of(annotations));
     }
 
+    /// Declares a `public final` field that is `transient`, or a `public`
+    /// field that is `transient` or `volatile`, by the exact modifiers it is
+    /// rendered with:
+    ///
+    /// ```java
+    /// var cache = cb.declareField("cache", PrimitiveToken.INT, Set.of(Modifier.PUBLIC, Modifier.TRANSIENT));
+    /// var counter = cb.declareMutableField("counter", PrimitiveToken.INT,
+    ///         Set.of(Modifier.PUBLIC, Modifier.VOLATILE));
+    /// ```
+    ///
+    /// The set is held to what a field of the class may be: `public final`, with
+    /// `transient` if the field is not serialized, or `public`, with `transient`
+    /// or `volatile`. A `volatile` field is not `final` (JLS 8.3.1.4), and neither
+    /// is `static`: a static field is declared by [#declareStaticField(String,
+    /// TypeToken)].
+    ///
+    /// @param name the field name
+    /// @param type the field type
+    /// @param modifiers the exact modifiers of the field
+    /// @param <T> the field type
+    /// @return the fact of the field, which can be read and, where it is not
+    ///     `final`, assigned
+    /// @throws IllegalArgumentException if the modifiers are not those of a field
+    ///     of the class, a field of that name is declared already, or an annotation
+    /// @throws IllegalStateException if the type mentions a type parameter of another class, or the
+    ///     declarations of the class have ended
+    public final <T> FieldRef<Self, T> declareField(String name, TypeToken<T> type, Set<Modifier> modifiers) {
+        boolean legal = modifiers.contains(Modifier.PUBLIC)
+                && modifiers.contains(Modifier.FINAL)
+                && modifiers.stream()
+                        .allMatch(m -> m == Modifier.PUBLIC || m == Modifier.FINAL || m == Modifier.TRANSIENT);
+        if (!legal) {
+            throw new IllegalArgumentException("field " + name + " of " + described + " cannot be " + modifiers
+                    + ": a field of the class is public final, with transient, and a mutable one is public, with"
+                    + " transient or volatile");
+        }
+        return declared(UnsafeFacts.field(self, name, type), modifiers, List.of());
+    }
+
     /// Declares a `public` field, not `final`, to be given its initializer by the bodies of the
     /// class ([MemberBodies#initialize]).
     ///
@@ -184,6 +230,32 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
     public final <T> MutableFieldRef<Self, T> declareMutableField(
             String name, TypeToken<T> type, AnnotationRef<?>... annotations) {
         return declared(UnsafeFacts.mutableField(self, name, type), Set.of(Modifier.PUBLIC), List.of(annotations));
+    }
+
+    /// Declares a `public` field, not `final`, that is `transient` or
+    /// `volatile` by the exact modifiers it is rendered with; see
+    /// [#declareField(String, TypeToken, Set)].
+    ///
+    /// @param name the field name
+    /// @param type the field type
+    /// @param modifiers the exact modifiers of the field: `public`, and `transient` or `volatile`
+    /// @param <T> the field type
+    /// @return the fact of the field, which can be read and assigned
+    /// @throws IllegalArgumentException if the modifiers are not those of a mutable field of the
+    ///     class, or a field of that name is declared already
+    /// @throws IllegalStateException if the type mentions a type parameter of another class, or the
+    ///     declarations of the class have ended
+    public final <T> MutableFieldRef<Self, T> declareMutableField(
+            String name, TypeToken<T> type, Set<Modifier> modifiers) {
+        boolean legal = modifiers.contains(Modifier.PUBLIC)
+                && !modifiers.contains(Modifier.FINAL)
+                && modifiers.stream()
+                        .allMatch(m -> m == Modifier.PUBLIC || m == Modifier.TRANSIENT || m == Modifier.VOLATILE);
+        if (!legal) {
+            throw new IllegalArgumentException("mutable field " + name + " of " + described + " cannot be " + modifiers
+                    + ": a mutable field of the class is public, with transient or volatile");
+        }
+        return declared(UnsafeFacts.mutableField(self, name, type), modifiers, List.of());
     }
 
     /// Declares a `public static final` field, to be given its initializer by the bodies of the class
@@ -382,15 +454,15 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
     /// @param member its fact
     /// @param thrown the exception classes of its `throws` clause, as its fact has them
     /// @return the fact, `member`
-    /// Declares a method or constructor of the class that declares
-    /// `annotations`, and whose parameters declare those of
-    /// `parameterAnnotations`.
+    /// Declares a method or constructor of the class, said at `site`, rendered
+    /// with `modifiers` beside those its form fixes.
     <F extends Invocable> F declare(
             F member,
             List<ClassToken<? extends Throwable>> thrown,
             List<AnnotationRef<?>> annotations,
-            List<List<AnnotationRef<?>>> parameterAnnotations) {
-        return declare(member, thrown, annotations, parameterAnnotations, Site.here());
+            List<List<AnnotationRef<?>>> parameterAnnotations,
+            Set<Modifier> modifiers) {
+        return declare(member, thrown, annotations, parameterAnnotations, modifiers, Site.here());
     }
 
     /// Declares a method or constructor of the class, said at `site`.
@@ -399,10 +471,15 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
             List<ClassToken<? extends Throwable>> thrown,
             List<AnnotationRef<?>> annotations,
             List<List<AnnotationRef<?>>> parameterAnnotations,
+            Set<Modifier> modifiers,
             Site site) {
         owner.requireDeclaring(member.toString());
         requireInScope(member);
-        registry.member(member);
+        if (member.kind() == InvocableKind.CONSTRUCTOR && owner.isAbstract()) {
+            throw new IllegalArgumentException(described + " cannot declare the constructor " + member
+                    + ": the class is abstract, and the typed layer declares a class no subclass in the same"
+                    + " generator instantiates");
+        }
         annotations.forEach(
                 annotation -> owner.target().verify(annotation.type().token()));
         List<List<AnnotationRef<?>>> parameters = java.util.stream.IntStream.range(
@@ -411,6 +488,12 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
                         ? parameterAnnotations.get(index)
                         : List.<AnnotationRef<?>>of())
                 .toList();
+        Set<Modifier> rendered = requireModifiers(member, modifiers);
+        registry.member(member);
+        if (rendered.contains(Modifier.NATIVE)) {
+            declared(new Member.Given(nativeMethod(member, thrown, annotations, parameters, rendered)));
+            return member;
+        }
         declared(new Member.Callable(
                 member,
                 thrown,
@@ -419,8 +502,77 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
                 Member.Kind.DECLARES,
                 member.arity(),
                 scope(member.kind(), "the body of " + member),
+                rendered,
                 site));
         return member;
+    }
+
+    /// The modifiers a member declared with `modifiers` is rendered with beside
+    /// those its form fixes, held to what Java allows of the member.
+    private static Set<Modifier> requireModifiers(Invocable member, Set<Modifier> modifiers) {
+        if (modifiers.isEmpty()) {
+            return Set.of();
+        }
+        if (member.kind() == InvocableKind.CONSTRUCTOR) {
+            throw new IllegalArgumentException("a constructor cannot be " + modifiers + ": it is neither"
+                    + " synchronized nor native, and has no other modifier to say here");
+        }
+        for (Modifier modifier : modifiers) {
+            if (modifier != Modifier.SYNCHRONIZED && modifier != Modifier.NATIVE) {
+                throw new IllegalArgumentException("a method cannot add the modifier " + modifier
+                        + " here: the declarations render the methods synchronized or native, and the rest"
+                        + " of a method's modifiers is that of its form");
+            }
+        }
+        if (member.traits().overridability() == Overridability.ABSTRACT) {
+            throw new IllegalArgumentException("the abstract method " + member + " cannot be " + modifiers
+                    + ": an abstract method is neither synchronized nor native (JLS 8.4.3.6)");
+        }
+        return Set.copyOf(modifiers);
+    }
+
+    /// The native method `member`, rendered without a body.
+    private NativeMethodDecl nativeMethod(
+            Invocable member,
+            List<ClassToken<? extends Throwable>> thrown,
+            List<AnnotationRef<?>> annotations,
+            List<List<AnnotationRef<?>>> parameterAnnotations,
+            Set<Modifier> modifiers) {
+        Set<Modifier> rendered = new java.util.LinkedHashSet<>();
+        rendered.add(Modifier.PUBLIC);
+        if (member.kind() == InvocableKind.STATIC_METHOD) {
+            rendered.add(Modifier.STATIC);
+        }
+        rendered.addAll(modifiers);
+        boolean variable = member.arity() instanceof Arity.Variable;
+        List<Param> params = java.util.stream.IntStream.range(0, member.params().size())
+                .mapToObj(index -> {
+                    TypeToken<?> type = member.params().get(index);
+                    boolean varargs = variable && index == member.params().size() - 1;
+                    TypeRef ref = type.typeRef();
+                    if (varargs) {
+                        ref = ((ArrayTypeRef) ref).component();
+                    }
+                    return new Param(
+                            "v" + index,
+                            ref,
+                            parameterAnnotations.get(index).stream()
+                                    .map(AnnotationRef::toUse)
+                                    .toList(),
+                            varargs);
+                })
+                .toList();
+        return new NativeMethodDecl(
+                member.name(),
+                member.resultType().map(TypeToken::typeRef),
+                List.of(),
+                params,
+                annotations.stream().map(AnnotationRef::toUse).toList(),
+                rendered,
+                thrown.stream()
+                        .<ClassOrInterfaceTypeRef>map(type -> type.typeRef())
+                        .toList(),
+                Optional.empty());
     }
 
     /// Declares a method of the class that overrides the methods of its signature the class
@@ -450,6 +602,7 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
                 Member.Kind.OVERRIDES,
                 registry.override(own),
                 scope(own.kind(), "the body of " + own),
+                Set.of(),
                 site));
         return own;
     }
@@ -503,6 +656,8 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
         /// @param arity whether its last parameter is of variable arity, and whether it vouches for the array
         ///     (`@SafeVarargs`): as that of the method it overrides is, and for a member declared by its name,
         ///     what `variableArity()` derives of the type of its elements
+        /// @param modifiers the modifiers it is rendered with beside those its form fixes, `synchronized` or
+        ///     `native`
         /// @param scope the scope of the types its body mentions
         /// @param site where it was declared
         record Callable(
@@ -513,6 +668,7 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
                 Kind kind,
                 Arity arity,
                 TypeScope scope,
+                Set<Modifier> modifiers,
                 Site site)
                 implements Member {
             public Callable {
@@ -520,6 +676,7 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
                 annotations = List.copyOf(annotations);
                 parameterAnnotations =
                         parameterAnnotations.stream().map(List::copyOf).toList();
+                modifiers = Set.copyOf(modifiers);
             }
         }
 

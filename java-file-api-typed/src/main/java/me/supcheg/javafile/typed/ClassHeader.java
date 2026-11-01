@@ -1,11 +1,14 @@
 package me.supcheg.javafile.typed;
 
 import me.supcheg.javafile.facts.AnnotationRef;
+import me.supcheg.javafile.facts.ClassToken;
 import me.supcheg.javafile.facts.Complete;
 import me.supcheg.javafile.facts.ExtendableClassToken;
 import me.supcheg.javafile.facts.InterfaceToken;
 import me.supcheg.javafile.facts.TargetClasspathMismatchException;
 import me.supcheg.javafile.facts.TypeVarToken;
+
+import java.lang.constant.ClassDesc;
 
 /// The first stage of the header of a class ([Header]): the class has a
 /// name, and says what it extends.
@@ -24,6 +27,79 @@ public final class ClassHeader<Self> extends Header<Self> {
     /// @throws IllegalArgumentException if the annotation type cannot annotate a type
     public ClassHeader<Self> withAnnotation(AnnotationRef<?> annotation) {
         declaration().annotate(annotation);
+        return this;
+    }
+
+    /// Declares the class `abstract` instead of `final`: `public abstract class Name`.
+    ///
+    /// An abstract class is no final class; its constructors are not declared
+    /// here, since nothing in the typed layer instantiates one — a subclass
+    /// that would is declared against the target classpath, not against a
+    /// class this specification is still declaring.
+    ///
+    /// @return this stage
+    /// @throws IllegalStateException if the class is abstract already, has its superclass, or its
+    ///     declaration is complete
+    public ClassHeader<Self> abstract_() {
+        declaration().abstract_();
+        return this;
+    }
+
+    /// Declares the class `non-sealed` instead of `final`: `public non-sealed class Name`.
+    ///
+    /// Java allows `non-sealed` only of a class that extends a sealed class or
+    /// implements a sealed interface (JLS 8.1.1.2); the end of the header holds
+    /// it to that.
+    ///
+    /// @return this stage
+    /// @throws IllegalStateException if the class is non-sealed already, has its superclass, or its
+    ///     declaration is complete
+    public ClassHeader<Self> nonSealed() {
+        declaration().nonSealed();
+        return this;
+    }
+
+    /// Names a permitted subtype: a non-empty `permits` clause renders the class `sealed`.
+    ///
+    /// The token is what proves the permitted type a class: a permitted subtype
+    /// of a class is a class, never an interface. The class must not be `final`
+    /// or `non-sealed`, and a subtype is named once.
+    ///
+    /// ```java
+    /// h.permits(Leaf_.TOKEN).extendsObject().members()
+    /// // public sealed class Node permits Leaf { ... }
+    /// ```
+    ///
+    /// @param subtype the permitted subtype
+    /// @return this stage
+    /// @throws IllegalArgumentException if the subtype is the class itself, or is named already
+    /// @throws IllegalStateException if the class has its superclass, or its declaration is complete
+    public ClassHeader<Self> permits(ClassToken<?> subtype) {
+        declaration().permit(subtype.shape().desc());
+        return this;
+    }
+
+    /// Names permitted subtypes; see [#permits(ClassToken)].
+    ///
+    /// @param subtypes the permitted subtypes, in order
+    /// @return this stage
+    public ClassHeader<Self> permits(ClassToken<?>... subtypes) {
+        for (ClassToken<?> subtype : subtypes) {
+            permits(subtype);
+        }
+        return this;
+    }
+
+    /// Names a permitted subtype by its name, as an interface names one: a
+    /// `ClassDesc` does not tell a class from an interface, so the typed layer
+    /// cannot hold it to being a class, and javac decides.
+    ///
+    /// @param subtype the permitted subtype
+    /// @return this stage
+    /// @throws IllegalArgumentException if the subtype is the class itself, or is named already
+    /// @throws IllegalStateException if the class has its superclass, or its declaration is complete
+    public ClassHeader<Self> permits(ClassDesc subtype) {
+        declaration().permit(subtype);
         return this;
     }
 

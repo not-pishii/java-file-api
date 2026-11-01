@@ -70,6 +70,8 @@ final class ClassDeclaration<Self> {
     private final FinalClassToken<Self> self;
     private List<Variable> variables;
     private List<AnnotationRef<?>> annotations = List.of();
+    private Set<Modifier> modifiers = Set.of(Modifier.PUBLIC, Modifier.FINAL);
+    private List<ClassDesc> permits = List.of();
     private Phase<Self> phase = new Phase.Named<>(new Said(List.of(), List.of()), List.of());
 
     /// @param target the classpath the class is compiled against
@@ -267,6 +269,88 @@ final class ClassDeclaration<Self> {
 
     private List<AnnotationUse> annotationUses() {
         return annotations.stream().map(AnnotationRef::toUse).toList();
+    }
+
+    /// Declares the class `abstract` instead of `final`.
+    ///
+    /// @throws IllegalStateException if the class is abstract already, has its superclass, or its
+    ///     declaration is complete
+    void abstract_() {
+        requireModifiable();
+        if (modifiers.contains(Modifier.ABSTRACT)) {
+            throw new IllegalStateException(described + " is abstract already");
+        }
+        modifiers = Stream.of(
+                        modifiers.stream().filter(modifier -> modifier != Modifier.FINAL), Stream.of(Modifier.ABSTRACT))
+                .flatMap(Function.identity())
+                .collect(Collectors.toUnmodifiableSet());
+    }
+
+    /// Declares the class `non-sealed` instead of `final`: it is neither final
+    /// nor sealed, and the class it extends, or the interface it implements,
+    /// must be sealed (JLS 8.1.1.2).
+    ///
+    /// @throws IllegalStateException if the class is non-sealed already, has its superclass, or its
+    ///     declaration is complete
+    void nonSealed() {
+        requireModifiable();
+        if (modifiers.contains(Modifier.NON_SEALED)) {
+            throw new IllegalStateException(described + " is non-sealed already");
+        }
+        modifiers = Stream.of(
+                        modifiers.stream().filter(modifier -> modifier != Modifier.FINAL),
+                        Stream.of(Modifier.NON_SEALED))
+                .flatMap(Function.identity())
+                .collect(Collectors.toUnmodifiableSet());
+    }
+
+    /// Names a permitted subtype: a non-empty list renders the class `sealed`.
+    ///
+    /// @param subtype the subtype
+    /// @throws IllegalStateException if the class has its superclass, or its declaration is complete
+    /// @throws IllegalArgumentException if the subtype is the class itself, or is named already
+    void permit(ClassDesc subtype) {
+        requireModifiable();
+        if (modifiers.contains(Modifier.NON_SEALED)) {
+            throw new IllegalArgumentException(
+                    described + " cannot be both non-sealed and sealed: a class with" + " a permits clause is sealed");
+        }
+        if (subtype.equals(desc)) {
+            throw new IllegalArgumentException(
+                    described + " cannot permit itself: a sealed class permits" + " the classes that extend it");
+        }
+        if (permits.contains(subtype)) {
+            throw new IllegalArgumentException(described + " permits " + subtype.displayName() + " already");
+        }
+        permits = Stream.concat(permits.stream(), Stream.of(subtype)).toList();
+        // a sealed class is not final: the permits clause says how it may be extended
+        modifiers = modifiers.stream()
+                .filter(modifier -> modifier != Modifier.FINAL)
+                .collect(Collectors.toUnmodifiableSet());
+    }
+
+    private void requireModifiable() {
+        Scopes.requireNoneOpen("the modifiers of " + described);
+        requireNamed();
+    }
+
+    boolean isAbstract() {
+        return modifiers.contains(Modifier.ABSTRACT);
+    }
+
+    /// Holds a `non-sealed` class to a sealed direct supertype, without which
+    /// javac rejects it (JLS 8.1.1.2).
+    private void requireSealedSupertype(Inheritance inherited) {
+        if (!modifiers.contains(Modifier.NON_SEALED)) {
+            return;
+        }
+        boolean sealedSupertype = inherited.supertypes().stream()
+                .map(Inheritance.Supertype::token)
+                .anyMatch(token -> token.shape().sealed());
+        if (!sealedSupertype) {
+            throw new IllegalArgumentException(described + " cannot be non-sealed: it extends or implements"
+                    + " no sealed type, and a non-sealed class is a subtype of a sealed one (JLS 8.1.1.2)");
+        }
     }
 
     TargetClasspath target() {
@@ -688,6 +772,7 @@ final class ClassDeclaration<Self> {
         Inheritance inherited = heading.inherited();
         Superclass superclass = heading.superclass();
         List<ClassOrInterfaceTypeRef> interfaces = heading.interfaces();
+        requireSealedSupertype(inherited);
         heading.said().promised().stream()
                 .filter(supertype ->
                         !Tokens.sameType(supertype, superclass.token()) && !interfaces.contains(supertype.typeRef()))
@@ -779,7 +864,7 @@ final class ClassDeclaration<Self> {
 
     private JavaFile file(Extended extended, List<ClassMember> members) {
         return JavaFile.class_(desc, cb -> {
-                    cb.withModifiers(Modifier.FINAL);
+                    cb.withExactModifiers(modifiers);
                     annotationUses().forEach(cb::withAnnotation);
                     typeParams().forEach(cb::withTypeParam);
                     switch (extended.superclass()) {
@@ -787,6 +872,7 @@ final class ClassDeclaration<Self> {
                         case Superclass.Named(var superclass, var _) -> cb.withSuperclass(superclass.typeRef());
                     }
                     extended.interfaces().forEach(cb::withInterface);
+                    permits.forEach(cb::withPermits);
                     members.forEach(cb);
                 })
                 .inheriting(extended.named());

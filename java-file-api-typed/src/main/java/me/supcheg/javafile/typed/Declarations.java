@@ -3,8 +3,10 @@ package me.supcheg.javafile.typed;
 import me.supcheg.javafile.facts.AnnotationRef;
 import me.supcheg.javafile.facts.Invocable;
 import me.supcheg.javafile.facts.MemberTraits;
+import me.supcheg.javafile.model.Modifier;
 
 import java.util.List;
+import java.util.Set;
 
 /// The declarations of the methods and constructors of a class being
 /// declared (§6.5): what the builder of its members ([MemberBuilder])
@@ -32,7 +34,7 @@ import java.util.List;
 /// @param <Self> the brand of the class being declared
 /// @param <S> the superclass of the class
 public abstract sealed class Declarations<Self, S> extends DeclarationArities<Self, S>
-        permits MemberBuilder, ThrowingDeclarations, AnnotatedDeclarations {
+        permits MemberBuilder, ThrowingDeclarations, AnnotatedDeclarations, ModifiedDeclarations {
 
     Declarations() {}
 
@@ -51,6 +53,14 @@ public abstract sealed class Declarations<Self, S> extends DeclarationArities<Se
         return List.of();
     }
 
+    /// The modifiers a member declared here is rendered with, beside those
+    /// its form fixes.
+    ///
+    /// @return the modifiers
+    Set<Modifier> modifiers() {
+        return Set.of();
+    }
+
     // The declarations of constructors, methods and static methods by name and types (`declareConstructor`,
     // `declareMethod`, `declareVoidMethod`, `declareStaticMethod`, `declareVoidStaticMethod`) and of the overrides
     // (`declareOverride`), of every arity, are generated into the superclass of this class (DeclarationArities, see
@@ -58,7 +68,7 @@ public abstract sealed class Declarations<Self, S> extends DeclarationArities<Se
 
     @Override
     <F extends Invocable> F declare(F member) {
-        return builder().declare(member, thrown(), annotations(), parameterAnnotations());
+        return builder().declare(member, thrown(), annotations(), parameterAnnotations(), modifiers());
     }
 
     /// The declarations of the members that declare `annotations`, the
@@ -89,6 +99,29 @@ public abstract sealed class Declarations<Self, S> extends DeclarationArities<Se
     @SuppressWarnings("varargs")
     public final AnnotatedDeclarations<Self, S> annotatedParameter(int parameter, AnnotationRef<?>... annotations) {
         return new AnnotatedDeclarations<>(this, List.of(), java.util.Map.of(parameter, List.of(annotations)));
+    }
+
+    /// The declarations of the methods of the class that are rendered with
+    /// `modifiers` beside those their form fixes:
+    ///
+    /// ```java
+    /// var spin = cb.modified(Modifier.SYNCHRONIZED).declareVoidMethod("spin");
+    /// var read = cb.modified(Modifier.NATIVE).declareMethod("read", PrimitiveToken.INT);
+    /// ```
+    ///
+    /// A `synchronized` method has a body, as any method declared here, and the
+    /// bodies define it. A `native` method has none: the declaration is whole,
+    /// its fact is there to call, and the bodies neither define it nor wait for
+    /// it. What a member can be is held to its form when it is declared: a
+    /// constructor is neither `synchronized` nor `native`, and a `native`
+    /// method is never `abstract`; the core model refuses every other
+    /// combination.
+    ///
+    /// @param modifiers the modifiers to add, in any order
+    /// @return the declarations that render the members they declare with them
+    /// @throws IllegalArgumentException if a modifier cannot be added to the member declared here
+    public final ModifiedDeclarations<Self, S> modified(Modifier... modifiers) {
+        return new ModifiedDeclarations<>(this, List.of(modifiers));
     }
 
     @Override
