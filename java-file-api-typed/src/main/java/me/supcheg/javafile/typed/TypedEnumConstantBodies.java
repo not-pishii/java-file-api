@@ -869,6 +869,22 @@ public final class TypedEnumConstantBodies<Self> extends TypedTypeBodies<Self, E
                 + " an anonymous class (JLS 9.6)");
     }
 
+    /// Refuses a generic member annotation type of a constant's body: an annotation type cannot be declared
+    /// there (JLS 9.6), and an annotation type has no type parameters either.
+    ///
+    /// @param name the simple name of the member annotation type
+    /// @param p1 the type parameter
+    /// @param spec declares the annotation type, which is never called
+    /// @param <B1> the leftmost bound of the type parameter
+    /// @return never
+    /// @throws IllegalArgumentException always
+    public <B1> java.lang.constant.ClassDesc declareNestedAnnotationType(
+            String name, TypeParameter<B1> p1, TypedJavaFile.TypedAnnotationTypeSpec spec) {
+        throw new IllegalArgumentException("cannot declare the member annotation type " + name + " of the body of a"
+                + " constant of " + owner().described() + " with a type parameter: an annotation type cannot be"
+                + " declared in the body of an anonymous class (JLS 9.6), and it has no type parameters");
+    }
+
     @Override
     List<EnumConstantMember> extraMembers() {
         return List.copyOf(nested);

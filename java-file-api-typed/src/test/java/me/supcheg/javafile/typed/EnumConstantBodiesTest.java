@@ -324,6 +324,29 @@ class EnumConstantBodiesTest {
     }
 
     @Test
+    void aGenericMemberAnnotationTypeOfAConstantBodyIsRefused() {
+        assertThatIllegalArgumentException()
+                .isThrownBy(() ->
+                        TypedJavaFile.enum_(UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedEnumSpec() {
+                            @Override
+                            public <Self> TypedEnumBodies<Self> build(TypedEnumBuilder<Self> eb) {
+                                eb.constant(
+                                        "A",
+                                        cb -> cb.declareNestedAnnotationType(
+                                                "Tag", typeParam("T"), new TypedJavaFile.TypedAnnotationTypeSpec() {
+                                                    @Override
+                                                    public <Inner> TypedAnnotationTypeBuilder<Inner> build(
+                                                            TypedAnnotationTypeBuilder<Inner> tag) {
+                                                        throw new AssertionError("never called");
+                                                    }
+                                                }));
+                                return eb.bodies();
+                            }
+                        }))
+                .withMessageContaining("an annotation type cannot be declared in the body of an anonymous class");
+    }
+
+    @Test
     void aStaticFieldOfAConstantBodyIsInitialized() throws Throwable {
         CompiledClasses compiled = CompiledClasses.of(TypedJavaFile.enum_(
                 UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedEnumSpec() {
