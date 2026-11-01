@@ -41,7 +41,13 @@ public record MethodDecl(
         annotations = List.copyOf(annotations);
         modifiers = ModifierValidation.requireValidMember(
                 Set.copyOf(modifiers),
-                EnumSet.of(Modifier.PUBLIC, Modifier.PROTECTED, Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL),
+                EnumSet.of(
+                        Modifier.PUBLIC,
+                        Modifier.PROTECTED,
+                        Modifier.PRIVATE,
+                        Modifier.STATIC,
+                        Modifier.FINAL,
+                        Modifier.SYNCHRONIZED),
                 "method");
         typeParams = List.copyOf(typeParams);
         params = ModifierValidation.requireVarargsOnlyLast(List.copyOf(params));

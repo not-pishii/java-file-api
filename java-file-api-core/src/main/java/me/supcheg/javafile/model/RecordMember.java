@@ -8,5 +8,6 @@ public sealed interface RecordMember
                 CanonicalConstructorDecl,
                 ConstructorDecl,
                 MethodDecl,
+                NativeMethodDecl,
                 StaticFieldDecl,
                 TypeDecl {}

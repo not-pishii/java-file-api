@@ -56,7 +56,7 @@ public record ClassDecl(
         annotations = List.copyOf(annotations);
         typeParams = List.copyOf(typeParams);
         interfaces = List.copyOf(interfaces);
-        permits = List.copyOf(permits);
+        permits = ModifierValidation.requireValidPermits(Set.copyOf(modifiers), List.copyOf(permits), "class");
         members = List.copyOf(members);
     }
 }

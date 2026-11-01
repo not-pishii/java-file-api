@@ -15,6 +15,7 @@ import me.supcheg.javafile.model.EnumDecl;
 import me.supcheg.javafile.model.InterfaceDecl;
 import me.supcheg.javafile.model.MethodDecl;
 import me.supcheg.javafile.model.ModuleDirective;
+import me.supcheg.javafile.model.NativeMethodDecl;
 import me.supcheg.javafile.model.PrivateMethodDecl;
 import me.supcheg.javafile.model.RecordDecl;
 import me.supcheg.javafile.model.StaticMethodDecl;
@@ -172,6 +173,7 @@ public final class StandardRenderer implements SourceRenderer {
             case TypeDecl nested -> typeVariables(nested);
             case MethodDecl method -> method.typeParams().stream();
             case AbstractMethodDecl method -> method.typeParams().stream();
+            case NativeMethodDecl method -> method.typeParams().stream();
             case DefaultMethodDecl method -> method.typeParams().stream();
             case StaticMethodDecl method -> method.typeParams().stream();
             case PrivateMethodDecl method -> method.typeParams().stream();

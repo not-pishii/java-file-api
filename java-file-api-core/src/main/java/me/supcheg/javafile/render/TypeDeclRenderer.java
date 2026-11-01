@@ -24,6 +24,7 @@ import me.supcheg.javafile.model.InitializerBlock;
 import me.supcheg.javafile.model.InterfaceDecl;
 import me.supcheg.javafile.model.InterfaceMember;
 import me.supcheg.javafile.model.MethodDecl;
+import me.supcheg.javafile.model.NativeMethodDecl;
 import me.supcheg.javafile.model.Param;
 import me.supcheg.javafile.model.PrivateMethodDecl;
 import me.supcheg.javafile.model.RecordComponent;
@@ -90,6 +91,7 @@ final class TypeDeclRenderer {
                     case MethodDecl m -> renderMethod(m, ctx);
                     case EnumConstructorDecl c -> renderEnumConstructor(c, ctx, ownerSimpleName);
                     case AbstractMethodDecl a -> renderAbstractMethodInClass(a, ctx);
+                    case NativeMethodDecl n -> renderNativeMethod(n, ctx);
                     case TypeDecl t -> renderTypeDecl(t, ctx);
                     case InitializerBlock b -> renderInitializerBlock(b, ctx);
                 })
@@ -103,6 +105,7 @@ final class TypeDeclRenderer {
                     case MethodDecl m -> renderMethod(m, ctx);
                     case ConstructorDecl c -> renderConstructor(c, ctx, ownerSimpleName);
                     case AbstractMethodDecl a -> renderAbstractMethodInClass(a, ctx);
+                    case NativeMethodDecl n -> renderNativeMethod(n, ctx);
                     case TypeDecl t -> renderTypeDecl(t, ctx);
                     case InitializerBlock b -> renderInitializerBlock(b, ctx);
                 })
@@ -119,6 +122,25 @@ final class TypeDeclRenderer {
     }
 
     private static String renderAbstractMethodInClass(AbstractMethodDecl m, Context ctx) {
+        String returnType =
+                m.returnType().map(t -> TypeRefRenderer.renderType(t, ctx)).orElse("void");
+        String typeParams = TypeRefRenderer.renderTypeParams(m.typeParams(), ctx);
+        return DocRenderer.render(m.doc(), ctx)
+                + AnnotationRenderer.renderAnnotations(m.annotations(), ctx)
+                + ctx.pad()
+                + TypeRefRenderer.renderModifiers(m.modifiers())
+                + (typeParams.isEmpty() ? "" : typeParams + " ")
+                + returnType
+                + " "
+                + m.name()
+                + "("
+                + TypeRefRenderer.renderParams(m.params(), ctx)
+                + ")"
+                + renderThrows(m.throwsTypes(), ctx)
+                + ";" + ctx.newline();
+    }
+
+    private static String renderNativeMethod(NativeMethodDecl m, Context ctx) {
         String returnType =
                 m.returnType().map(t -> TypeRefRenderer.renderType(t, ctx)).orElse("void");
         String typeParams = TypeRefRenderer.renderTypeParams(m.typeParams(), ctx);
@@ -384,6 +406,7 @@ final class TypeDeclRenderer {
                         renderCanonicalConstructor(cc, ctx, ownerSimpleName, components);
                     case ConstructorDecl c -> renderConstructor(c, ctx, ownerSimpleName);
                     case MethodDecl m -> renderMethod(m, ctx);
+                    case NativeMethodDecl n -> renderNativeMethod(n, ctx);
                     case StaticFieldDecl sf -> renderStaticField(sf, ctx);
                     case TypeDecl t -> renderTypeDecl(t, ctx);
                 })

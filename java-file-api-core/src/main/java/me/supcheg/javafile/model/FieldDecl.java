@@ -32,7 +32,14 @@ public record FieldDecl(
         annotations = List.copyOf(annotations);
         modifiers = ModifierValidation.requireValidMember(
                 Set.copyOf(modifiers),
-                EnumSet.of(Modifier.PUBLIC, Modifier.PROTECTED, Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL),
+                EnumSet.of(
+                        Modifier.PUBLIC,
+                        Modifier.PROTECTED,
+                        Modifier.PRIVATE,
+                        Modifier.STATIC,
+                        Modifier.FINAL,
+                        Modifier.TRANSIENT,
+                        Modifier.VOLATILE),
                 "field");
     }
 }

@@ -4,4 +4,10 @@ package me.supcheg.javafile.model;
 /// methods, the constructor, abstract methods, initializer blocks, and nested
 /// types.
 public sealed interface EnumMember
-        permits AbstractMethodDecl, EnumConstructorDecl, FieldDecl, MethodDecl, TypeDecl, InitializerBlock {}
+        permits AbstractMethodDecl,
+                EnumConstructorDecl,
+                FieldDecl,
+                MethodDecl,
+                NativeMethodDecl,
+                TypeDecl,
+                InitializerBlock {}

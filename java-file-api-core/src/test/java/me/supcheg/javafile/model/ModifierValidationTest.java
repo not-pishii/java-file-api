@@ -410,20 +410,251 @@ class ModifierValidationTest {
     // requireValidMember is unreachable through any real declaration constructor; exercised
     // directly here since it's still part of the method's documented contract.
     @Test
+    void classRejectsFinalAndNonSealedTogether() {
+        assertThatThrownBy(() -> new ClassDecl(
+                        DESC,
+                        List.of(),
+                        Set.of(Modifier.PUBLIC, Modifier.FINAL, Modifier.NON_SEALED),
+                        List.of(),
+                        Optional.empty(),
+                        List.of(),
+                        List.of(),
+                        List.of(),
+                        Optional.empty()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("cannot be both final and non-sealed");
+    }
+
+    @Test
+    void classRejectsFinalAndSealedTogether() {
+        assertThatThrownBy(() -> new ClassDecl(
+                        DESC,
+                        List.of(),
+                        Set.of(Modifier.PUBLIC, Modifier.FINAL),
+                        List.of(),
+                        Optional.empty(),
+                        List.of(),
+                        List.of(ClassDesc.of("p", "Sub")),
+                        List.of(),
+                        Optional.empty()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("cannot be both final and sealed");
+    }
+
+    @Test
+    void classRejectsNonSealedAndSealedTogether() {
+        assertThatThrownBy(() -> new ClassDecl(
+                        DESC,
+                        List.of(),
+                        Set.of(Modifier.PUBLIC, Modifier.NON_SEALED),
+                        List.of(),
+                        Optional.empty(),
+                        List.of(),
+                        List.of(ClassDesc.of("p", "Sub")),
+                        List.of(),
+                        Optional.empty()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("cannot be both non-sealed and sealed");
+    }
+
+    @Test
+    void classAllowsAbstractAndSealedTogether() {
+        assertThatCode(() -> new ClassDecl(
+                        DESC,
+                        List.of(),
+                        Set.of(Modifier.PUBLIC, Modifier.ABSTRACT),
+                        List.of(),
+                        Optional.empty(),
+                        List.of(),
+                        List.of(ClassDesc.of("p", "Sub")),
+                        List.of(),
+                        Optional.empty()))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    void classRejectsAPermittedSubtypeTwice() {
+        ClassDesc subtype = ClassDesc.of("p", "Sub");
+        assertThatThrownBy(() -> new ClassDecl(
+                        DESC,
+                        List.of(),
+                        Set.of(Modifier.PUBLIC),
+                        List.of(),
+                        Optional.empty(),
+                        List.of(),
+                        List.of(subtype, subtype),
+                        List.of(),
+                        Optional.empty()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("cannot permit Sub twice");
+    }
+
+    @Test
+    void interfaceRejectsNonSealedAndSealedTogether() {
+        assertThatThrownBy(() -> new InterfaceDecl(
+                        DESC,
+                        List.of(),
+                        Set.of(Modifier.PUBLIC, Modifier.NON_SEALED),
+                        List.of(),
+                        List.of(),
+                        List.of(ClassDesc.of("p", "Sub")),
+                        List.of(),
+                        Optional.empty()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("cannot be both non-sealed and sealed");
+    }
+
+    @Test
     void requireValidMemberRejectsAbstractCombinedWithFinalStaticOrPrivate() {
         Set<Modifier> allowed = EnumSet.of(Modifier.ABSTRACT, Modifier.FINAL, Modifier.STATIC, Modifier.PRIVATE);
 
         assertThatThrownBy(() -> ModifierValidation.requireValidMember(
                         Set.of(Modifier.ABSTRACT, Modifier.FINAL), allowed, "member"))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("abstract with final, static, or private");
+                .hasMessageContaining("abstract with final, static, private, synchronized, or native");
         assertThatThrownBy(() -> ModifierValidation.requireValidMember(
                         Set.of(Modifier.ABSTRACT, Modifier.STATIC), allowed, "member"))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("member cannot combine abstract with final, static, or private");
+                .hasMessageContaining(
+                        "member cannot combine abstract with final, static, private, synchronized, or native");
         assertThatThrownBy(() -> ModifierValidation.requireValidMember(
                         Set.of(Modifier.ABSTRACT, Modifier.PRIVATE), allowed, "member"))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("member cannot combine abstract with final, static, or private");
+                .hasMessageContaining(
+                        "member cannot combine abstract with final, static, private, synchronized, or native");
+        Set<Modifier> methods = EnumSet.of(Modifier.ABSTRACT, Modifier.SYNCHRONIZED, Modifier.NATIVE);
+        assertThatThrownBy(() -> ModifierValidation.requireValidMember(
+                        Set.of(Modifier.ABSTRACT, Modifier.SYNCHRONIZED), methods, "member"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("synchronized");
+        assertThatThrownBy(() -> ModifierValidation.requireValidMember(
+                        Set.of(Modifier.ABSTRACT, Modifier.NATIVE), methods, "member"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("native");
+    }
+
+    @Test
+    void fieldAllowsTransientAndVolatile() {
+        assertThatCode(() -> new FieldDecl(
+                        "x",
+                        PrimitiveTypeRef.INT,
+                        List.of(),
+                        Set.of(Modifier.PRIVATE, Modifier.FINAL, Modifier.TRANSIENT),
+                        Optional.empty(),
+                        Optional.empty()))
+                .doesNotThrowAnyException();
+        assertThatCode(() -> new FieldDecl(
+                        "x",
+                        PrimitiveTypeRef.INT,
+                        List.of(),
+                        Set.of(Modifier.PRIVATE, Modifier.VOLATILE),
+                        Optional.empty(),
+                        Optional.empty()))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    void fieldRejectsFinalVolatile() {
+        assertThatThrownBy(() -> new FieldDecl(
+                        "x",
+                        PrimitiveTypeRef.INT,
+                        List.of(),
+                        Set.of(Modifier.PRIVATE, Modifier.FINAL, Modifier.VOLATILE),
+                        Optional.empty(),
+                        Optional.empty()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("volatile with final or static");
+    }
+
+    @Test
+    void fieldRejectsStaticVolatile() {
+        assertThatThrownBy(() -> new FieldDecl(
+                        "x",
+                        PrimitiveTypeRef.INT,
+                        List.of(),
+                        Set.of(Modifier.PRIVATE, Modifier.STATIC, Modifier.VOLATILE),
+                        Optional.empty(),
+                        Optional.empty()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("volatile with final or static");
+    }
+
+    @Test
+    void fieldRejectsStaticTransient() {
+        assertThatThrownBy(() -> new FieldDecl(
+                        "x",
+                        PrimitiveTypeRef.INT,
+                        List.of(),
+                        Set.of(Modifier.PRIVATE, Modifier.STATIC, Modifier.TRANSIENT),
+                        Optional.empty(),
+                        Optional.empty()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("transient with static");
+    }
+
+    @Test
+    void methodAllowsSynchronizedAndStaticSynchronized() {
+        assertThatCode(() -> new MethodDecl(
+                        "m",
+                        Optional.empty(),
+                        List.of(),
+                        Set.of(Modifier.PUBLIC, Modifier.SYNCHRONIZED),
+                        List.of(),
+                        List.of(),
+                        CodeBody.EMPTY,
+                        List.of(),
+                        Optional.empty()))
+                .doesNotThrowAnyException();
+        assertThatCode(() -> new MethodDecl(
+                        "m",
+                        Optional.empty(),
+                        List.of(),
+                        Set.of(Modifier.PUBLIC, Modifier.STATIC, Modifier.SYNCHRONIZED),
+                        List.of(),
+                        List.of(),
+                        CodeBody.EMPTY,
+                        List.of(),
+                        Optional.empty()))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    void nativeMethodAllowsNativeStaticAndRejectsAbstract() {
+        assertThatCode(() -> new NativeMethodDecl(
+                        "m",
+                        Optional.empty(),
+                        List.of(),
+                        List.of(),
+                        List.of(),
+                        Set.of(Modifier.PUBLIC, Modifier.STATIC, Modifier.NATIVE),
+                        List.of(),
+                        Optional.empty()))
+                .doesNotThrowAnyException();
+        assertThatThrownBy(() -> new NativeMethodDecl(
+                        "m",
+                        Optional.empty(),
+                        List.of(),
+                        List.of(),
+                        List.of(),
+                        Set.of(Modifier.PUBLIC, Modifier.NATIVE, Modifier.ABSTRACT),
+                        List.of(),
+                        Optional.empty()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("native method cannot be 'ABSTRACT'");
+    }
+
+    @Test
+    void nativeMethodRequiresTheNativeModifier() {
+        assertThatThrownBy(() -> new NativeMethodDecl(
+                        "m",
+                        Optional.empty(),
+                        List.of(),
+                        List.of(),
+                        List.of(),
+                        Set.of(Modifier.PUBLIC),
+                        List.of(),
+                        Optional.empty()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("a native method is declared native");
     }
 }

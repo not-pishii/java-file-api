@@ -44,7 +44,7 @@ public record InterfaceDecl(
         annotations = List.copyOf(annotations);
         typeParams = List.copyOf(typeParams);
         extendsInterfaces = List.copyOf(extendsInterfaces);
-        permits = List.copyOf(permits);
+        permits = ModifierValidation.requireValidPermits(Set.copyOf(modifiers), List.copyOf(permits), "interface");
         members = List.copyOf(members);
     }
 }

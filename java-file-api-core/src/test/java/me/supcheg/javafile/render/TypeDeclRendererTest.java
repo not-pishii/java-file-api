@@ -32,6 +32,88 @@ import static org.assertj.core.api.Assertions.assertThat;
 class TypeDeclRendererTest {
 
     @Test
+    void rendersModifiersInTheOrderJavacPrintsThem() {
+        ClassBuilder builder = new ClassBuilder(ClassDesc.of("me.supcheg.example", "Flags"));
+        builder.withModifiers(Modifier.ABSTRACT)
+                .withField("counter", PrimitiveTypeRef.INT, fb -> fb.withModifiers(Modifier.PRIVATE, Modifier.VOLATILE))
+                .withField("cache", PrimitiveTypeRef.INT, fb -> fb.withModifiers(Modifier.PRIVATE, Modifier.TRANSIENT))
+                .withVoidMethod(
+                        "waitForIt", mb -> mb.withModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.SYNCHRONIZED));
+        builder.accept(new me.supcheg.javafile.model.NativeMethodDecl(
+                "read",
+                Optional.of(PrimitiveTypeRef.INT),
+                List.of(),
+                List.of(),
+                List.of(),
+                Set.of(Modifier.PUBLIC, Modifier.NATIVE),
+                List.of(),
+                Optional.empty()));
+
+        String rendered = TypeDeclRenderer.renderTypeDecl(
+                builder.build(), Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
+
+        assertThat(rendered).isEqualTo("""
+                        public abstract class Flags {
+                            private volatile int counter;
+
+                            private transient int cache;
+
+                            public static synchronized void waitForIt() {
+                            }
+
+                            public native int read();
+                        }
+                        """);
+    }
+
+    @Test
+    void rendersANativeMethodWithTypeParametersInARecordAndAnEnum() {
+        ClassDesc string = ClassDesc.of("java.lang", "String");
+        ClassDesc record = ClassDesc.of("p", "R");
+        RecordBuilder rb = new RecordBuilder(record);
+        rb.accept(new me.supcheg.javafile.model.NativeMethodDecl(
+                "read",
+                Optional.of(Types.of(string)),
+                List.of(),
+                List.of(),
+                List.of(),
+                Set.of(Modifier.PRIVATE, Modifier.NATIVE),
+                List.of(),
+                Optional.empty()));
+        assertThat(TypeDeclRenderer.renderTypeDecl(rb.build(), Context.of(standardFormat(), new ImportManager("p"))))
+                .contains("private native String read();");
+
+        ClassDesc enumeration = ClassDesc.of("p", "E");
+        EnumBuilder eb = new EnumBuilder(enumeration);
+        eb.accept(new me.supcheg.javafile.model.NativeMethodDecl(
+                "read",
+                Optional.of(Types.typeVar("T")),
+                List.of(new TypeParam("T", List.of())),
+                List.of(),
+                List.of(),
+                Set.of(Modifier.PUBLIC, Modifier.STATIC, Modifier.NATIVE),
+                List.of(),
+                Optional.empty()));
+        assertThat(TypeDeclRenderer.renderTypeDecl(eb.build(), Context.of(standardFormat(), new ImportManager("p"))))
+                .contains("public static native <T> T read();");
+    }
+
+    @Test
+    void rendersASealedClassWithPermits() {
+        ClassBuilder builder = new ClassBuilder(ClassDesc.of("ast", "Node"));
+        builder.withModifiers(Modifier.ABSTRACT)
+                .withPermits(ClassDesc.of("ast", "Leaf"), ClassDesc.of("ast", "Branch"));
+
+        String rendered = TypeDeclRenderer.renderTypeDecl(
+                builder.build(), Context.of(standardFormat(), new ImportManager("ast")));
+
+        assertThat(rendered).isEqualTo("""
+                        public abstract sealed class Node permits Leaf, Branch {
+                        }
+                        """);
+    }
+
+    @Test
     void rendersAClassWithFieldAndMethod() {
         ClassBuilder builder = new ClassBuilder(ClassDesc.of("me.supcheg.example", "Messages"));
         ClassDesc bundle = ClassDesc.of("java.util", "ResourceBundle");

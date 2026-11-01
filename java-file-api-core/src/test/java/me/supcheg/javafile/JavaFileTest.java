@@ -30,6 +30,29 @@ class JavaFileTest {
     }
 
     @Test
+    void renderCollectsTheTypeParametersOfANativeMethod() {
+        JavaFile file = JavaFile.class_(
+                ClassDesc.of("me.supcheg.example", "Reader"),
+                cb -> cb.accept(new me.supcheg.javafile.model.NativeMethodDecl(
+                        "read",
+                        java.util.Optional.of(Types.typeVar("T")),
+                        java.util.List.of(new me.supcheg.javafile.type.TypeParam("T", java.util.List.of())),
+                        java.util.List.of(),
+                        java.util.List.of(),
+                        java.util.Set.of(Modifier.PUBLIC, Modifier.NATIVE),
+                        java.util.List.of(),
+                        java.util.Optional.empty())));
+
+        assertThat(file.render()).isEqualTo("""
+                        package me.supcheg.example;
+
+                        public class Reader {
+                            public native <T> T read();
+                        }
+                        """);
+    }
+
+    @Test
     void renderProducesTheExpectedGreetingClass() {
         JavaFile file = JavaFile.class_(
                 ClassDesc.of("me.supcheg.example", "Messages"),
