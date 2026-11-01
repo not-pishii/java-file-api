@@ -689,6 +689,11 @@ metamodel of `p.q.T` is `<P>.facts.p.q.T_`, where `P` is the package of the anno
 sets another base). The supertypes of a listed type and the types of its signatures come with it, and a class of your
 own is no different from one of the JDK: `Signal` below is an enum of the example module.
 
+`-Ajavafile.facts.visibility=package` makes the metamodels package-private, and `-Ajavafile.facts.mirror=false`
+writes every one of them into the base package itself, `<P>.T_`, where the code of that package reaches them without
+exposing them to a user of the library; the typed layer keeps its own JDK metamodels so. `-Ajavafile.facts.index=false`
+keeps them out of the index the processors of other modules find reusable metamodels by.
+
 ```java
 @Facts({
     AbstractList.class,
