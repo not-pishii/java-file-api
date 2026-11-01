@@ -632,9 +632,12 @@ give javac an error or a warning (a division by a constant zero, a checked excep
 javac cannot tell apart) is refused with an exception, at the call that says it. The only way around is the
 `Unsafe*` API (`UnsafeFacts`, `UnsafeStmt`, `UnsafeMember`), which is named so.
 
-The typed layer declares `public final` top-level classes, and the result is an ordinary core `JavaFile`: it is rendered
-and written as any other, and [Inside an annotation processor](#inside-an-annotation-processor) applies to it unchanged.
-What it does not declare is told in [What stays in the core API](#what-stays-in-the-core-api).
+The typed layer declares every kind of top-level type — a class (abstract, sealed or non-sealed), an interface, a
+record, an enum, an annotation type, a package-info or a module-info — every member a type can have, member types of
+all those kinds, and the annotations, documentation, modifiers, generics and nesting of each. The result is an ordinary
+core `JavaFile` (a `PackageInfoFile` or `ModuleFile` for the last two): it is rendered and written as any other, and
+[Inside an annotation processor](#inside-an-annotation-processor) applies to it unchanged. What it does not declare is
+told in [What stays in the core API](#what-stays-in-the-core-api).
 
 ### Installing the typed layer
 
