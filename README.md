@@ -1314,7 +1314,9 @@ public enum Op {
 ```
 
 An annotation type has elements of the types JLS 9.6.1 allows, optional defaults, and meta-annotations through the
-same annotation API: `@Retention`, `@Target`, `@Repeatable` and user annotations.
+same annotation API: `@Retention`, `@Target`, `@Repeatable` and user annotations. An element is a method, so it takes
+annotations too, including the JDK's `@Deprecated`; an annotation whose targets do not include a method is refused where
+it is given (JLS 9.6.4.1).
 
 ```java
 JavaFile file = TypedJavaFile.annotationType(
@@ -1327,7 +1329,7 @@ JavaFile file = TypedJavaFile.annotationType(
                         .value(AnnotationValues.enum_(RetentionPolicy_.RUNTIME)).build());
                 ab.withAnnotation(Target_.annotation()
                         .value(AnnotationValues.array(AnnotationValues.enum_(ElementType_.TYPE))).build());
-                ab.element("value", String_.TOKEN);
+                ab.element("value", String_.TOKEN, Deprecated_.annotation().build());
                 ab.element("priority", PrimitiveToken.INT, AnnotationValues.int_(0));
                 return ab;
             }
@@ -1340,6 +1342,7 @@ JavaFile file = TypedJavaFile.annotationType(
     ElementType.TYPE
 })
 public @interface Route {
+    @Deprecated
     String value();
     int priority() default 0;
 }
@@ -1573,13 +1576,47 @@ no constructor in the typed layer: nothing it declares is instantiated there. A 
 shape tells the subtypes it permits: the typed layer extends or implements it exactly when the declared class is one of
 them, and otherwise says what the type permits. A type variable may be bounded by a sealed type, as in Java (JLS 4.4).
 
+### Documentation comments
+
+Every declaration builder takes a documentation comment. A type takes it with `withDoc`, a member with
+`documented`, and both take a `DocComment` or one paragraph of plain text:
+
+```java
+JavaFile file = TypedJavaFile.interface_(target, ClassDesc.of("com.example", "Greeter"),
+        new TypedJavaFile.TypedInterfaceSpec() {
+            @Override
+            public <Self> TypedInterfaceBodies<Self> build(TypedInterfaceBuilder<Self> ib) {
+                ib.withDoc(DocComment.of(d -> d.paragraph("Greets people by name.").since("1.0")));
+                ib.documented(DocComment.of(d -> d
+                        .paragraph("Greets one person.")
+                        .param("name", "who is greeted")
+                        .returns("the greeting"))).declareAbstractMethod("greet", String_.TOKEN, String_.TOKEN);
+                return ib.bodies();
+            }
+        });
+// /**
+//  * Greets people by name.
+//  *
+//  * @since 1.0
+//  */
+// public interface Greeter { ... }
+```
+
+A field, a constant, a record component, an annotation element and an enum constant have the overload that takes the
+comment where they are declared: `declareField("x", PrimitiveToken.INT, doc)`, `declareConstant("MAX", type, doc)`,
+`component("x", type, doc)`, `element("value", String_.TOKEN, doc, annotation)` and `constant("A", doc)`. A record
+component has no declaration of its own in the header, so its comment is written where javadoc reads it: as a `@param`
+tag of the record. A comment whose text contains `*/` is refused where it is given, since a traditional comment would
+end there instead of holding the text; the typed layer renders no broken source.
+
 ### What stays in the core API
 
 The typed layer declares every top-level kind: classes, interfaces, records, enums and annotation types, the
-`package-info.java` and `module-info.java` files, and the member types of each of them. What stays in the core API is
-what the typed layer does not model: [Transforming an existing declaration](#transforming-an-existing-declaration),
-documentation comments, initializer blocks, and the `Unsafe*` escape hatches. A generator may still use the core API
-for a declaration the typed layer does not express; the typed layer does not replace it.
+`package-info.java` and `module-info.java` files, the member types of each of them, and their documentation comments.
+What stays in the core API is what the typed layer does not model:
+[Transforming an existing declaration](#transforming-an-existing-declaration), initializer blocks, and the `Unsafe*`
+escape hatches. A generator may still use the core API for a declaration the typed layer does not express; the typed
+layer does not replace it.
 
 The methods of the typed declarations of §6.5 reach arity 4; their constructors and the class builder's forms reach
 arity 12. A record or enum that implements an interface names it with `implements_`, which gives a witness, and declares
