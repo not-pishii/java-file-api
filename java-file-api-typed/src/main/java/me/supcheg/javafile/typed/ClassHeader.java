@@ -62,8 +62,9 @@ public final class ClassHeader<Self> extends Header<Self> {
     /// Names a permitted subtype: a non-empty `permits` clause renders the class `sealed`.
     ///
     /// The token is what proves the permitted type a class: a permitted subtype
-    /// of a class is a class, never an interface. The class must not be `final`
-    /// or `non-sealed`, and a subtype is named once.
+    /// of a class is a class, never an interface. A `permits` clause makes the
+    /// class sealed, so it is no longer `final`; a class declared `non-sealed`
+    /// cannot permit one, and a subtype is named once.
     ///
     /// ```java
     /// h.permits(Leaf_.TOKEN).extendsObject().members()

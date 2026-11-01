@@ -297,6 +297,10 @@ final class ClassDeclaration<Self> {
         if (modifiers.contains(Modifier.NON_SEALED)) {
             throw new IllegalStateException(described + " is non-sealed already");
         }
+        if (!permits.isEmpty()) {
+            throw new IllegalArgumentException(
+                    described + " cannot be both non-sealed and sealed: a class with" + " a permits clause is sealed");
+        }
         modifiers = Stream.of(
                         modifiers.stream().filter(modifier -> modifier != Modifier.FINAL),
                         Stream.of(Modifier.NON_SEALED))

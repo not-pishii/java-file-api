@@ -404,6 +404,16 @@ class TypedModifierTest {
                         }))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("cannot be both non-sealed and sealed");
+        assertThatThrownBy(() -> TypedJavaFile.declareClass(
+                        UnsafeFacts.unverifiedClasspath(), node, new TypedJavaFile.TypedClassHeaderSpec() {
+                            @Override
+                            public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
+                                h.permits(leafToken).nonSealed();
+                                return h.extendsObject().members().bodies();
+                            }
+                        }))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("cannot be both non-sealed and sealed");
     }
 
     @Test
