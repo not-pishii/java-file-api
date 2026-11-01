@@ -458,6 +458,7 @@ final class TypeDeclRenderer {
                     case MethodDecl m -> renderMethod(m, ctx);
                     case NativeMethodDecl n -> renderNativeMethod(n, ctx);
                     case StaticFieldDecl sf -> renderStaticField(sf, ctx);
+                    case InitializerBlock b -> renderInitializerBlock(b, ctx);
                     case TypeDecl t -> renderTypeDecl(t, ctx);
                 })
                 .collect(Collectors.joining(ctx.newline()));

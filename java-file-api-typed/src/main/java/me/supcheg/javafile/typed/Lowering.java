@@ -242,8 +242,8 @@ final class Lowering {
     /// `return` statements; empty for a `void` body or an expression.
     private final Optional<TypeToken<?>> result;
 
-    /// The static initializer being lowered, if the code is one: the field it initializes, and the static
-    /// fields of the class it may not read (JLS 8.3.3).
+    /// The initializer being lowered, if the code is one: what it is, and the fields of the class whose
+    /// initializers have not run when it does, which it may not read (JLS 8.3.3).
     private final Optional<Forward> forward;
 
     /// The labels of the loops a `break` or a `continue` of an inner loop names.
@@ -280,9 +280,8 @@ final class Lowering {
         this(target, place, new NameEnv(), new Labels(), result, Optional.empty());
     }
 
-    /// A lowering of the initializer of a static field: `field` is the field it initializes, and `later` the
-    /// static fields of the class that are declared at or after it — itself among them —, which the initializer
-    /// may not read (JLS 8.3.3).
+    /// A lowering of the initializer of a static field: `later` the static fields of the class that are
+    /// declared at or after it — itself among them —, which the initializer may not read (JLS 8.3.3).
     ///
     /// @param target the classpath the lowered code is compiled against
     /// @param place the class whose initializer the code is
@@ -292,17 +291,61 @@ final class Lowering {
     static Lowering staticInitializer(
             TargetClasspath target, Place place, StaticFieldRef<?> field, List<StaticFieldRef<?>> later) {
         return new Lowering(
-                target, place, new NameEnv(), new Labels(), Optional.empty(), Optional.of(new Forward(field, later)));
+                target,
+                place,
+                new NameEnv(),
+                new Labels(),
+                Optional.empty(),
+                Optional.of(new Forward("the initializer of " + field, later, List.of())));
     }
 
-    /// What a static initializer may not read: the field it initializes, and the static fields of the class that
-    /// are declared at or after it, in the order of the declarations (JLS 8.3.3).
+    /// A lowering of an instance initializer block, or of the initializer of an instance field: `later` the
+    /// instance fields of the class that are declared at or after it — itself among them, for a field —,
+    /// which it may not read.
     ///
-    /// @param field the field the initializer initializes
-    /// @param later the fields it may not read, `field` first
-    private record Forward(StaticFieldRef<?> field, List<StaticFieldRef<?>> later) {
+    /// @param target the classpath the lowered code is compiled against
+    /// @param place the class whose initializer the code is
+    /// @param what the initializer, for the message
+    /// @param later the instance fields the code may not read
+    /// @return the lowering
+    static Lowering instanceInitializer(TargetClasspath target, Place place, String what, List<FieldRef<?, ?>> later) {
+        return new Lowering(
+                target,
+                place,
+                new NameEnv(),
+                new Labels(),
+                Optional.empty(),
+                Optional.of(new Forward(what, List.of(), later)));
+    }
+
+    /// A lowering of a static initializer block: `later` the static fields of the class that are declared at or
+    /// after the block, which it may not read (JLS 8.3.3).
+    ///
+    /// @param target the classpath the lowered code is compiled against
+    /// @param place the class whose initializer the code is
+    /// @param what the initializer, for the message
+    /// @param later the static fields the code may not read
+    /// @return the lowering
+    static Lowering staticInitializer(TargetClasspath target, Place place, String what, List<StaticFieldRef<?>> later) {
+        return new Lowering(
+                target,
+                place,
+                new NameEnv(),
+                new Labels(),
+                Optional.empty(),
+                Optional.of(new Forward(what, later, List.of())));
+    }
+
+    /// What an initializer may not read: the fields of the class whose initializers have not run when it does,
+    /// in the order of the declarations.
+    ///
+    /// @param what the initializer, for the message
+    /// @param staticFields the static fields it may not read
+    /// @param instanceFields the instance fields it may not read
+    private record Forward(String what, List<StaticFieldRef<?>> staticFields, List<FieldRef<?, ?>> instanceFields) {
         Forward {
-            later = List.copyOf(later);
+            staticFields = List.copyOf(staticFields);
+            instanceFields = List.copyOf(instanceFields);
         }
     }
 
@@ -711,8 +754,10 @@ final class Lowering {
                 yield Exprs.new_(
                         written(ctor.owner()).typeRef(), arguments(ctor, new Searched.Unconsulted(), args, passing));
             }
-            case Node.FieldGet(var receiver, var field) ->
-                fieldReceiver(receiver, field).field(field.name());
+            case Node.FieldGet(var receiver, var field) -> {
+                requireNotForward(field);
+                yield fieldReceiver(receiver, field).field(field.name());
+            }
             case Node.StaticFieldGet(var field) -> {
                 ClassTypeRef owner = staticOwner(field);
                 yield localStatic(field.owner(), field.name())
@@ -1475,25 +1520,39 @@ final class Lowering {
     /// generator reached the fact through, so no field of a subtype hides
     /// it and no other supertype of one makes the name ambiguous.
     ///
-    /// A static field read while a static initializer of the class is lowered is one of the fields that
-    /// initializer may not read if it is declared at or after the field initialized — itself among them —:
-    /// Java forbids reading such a field of the class being initialized by its simple name (JLS 8.3.3), and
-    /// the qualified name the typed layer writes has read no value yet, only the default one.
+    /// A static field read while an initializer of the class is lowered is one of the fields that initializer
+    /// may not read if it is declared at or after the field initialized — itself among them —: Java forbids
+    /// reading such a field of the class being initialized by its simple name (JLS 8.3.3), and the qualified
+    /// name the typed layer writes has read no value yet, only the default one.
     ///
-    /// @throws IllegalArgumentException if the code is a static initializer and reads a field it may not
+    /// @throws IllegalArgumentException if the code is an initializer and reads a field it may not
     private ClassTypeRef staticOwner(StaticFieldRef<?> field) {
-        if (forward.isPresent() && forward.get().later().contains(field)) {
-            throw new IllegalArgumentException(
-                    "the initializer of " + forward.get().field() + " reads " + field
-                            + ", which is declared at or after it: a static initializer reads no static field of its own"
-                            + " class before that field is declared (JLS 8.3.3), and the read would be of the field's"
-                            + " default value — declare " + field.name() + " before the field it is read by, or read it"
-                            + " from the body of a method");
+        if (forward.isPresent() && forward.get().staticFields().contains(field)) {
+            throw new IllegalArgumentException(forward.get().what() + " reads " + field
+                    + ", which is declared at or after it: a static initializer reads no static field of its own"
+                    + " class before that field is declared (JLS 8.3.3), and the read would be of the field's"
+                    + " default value — declare " + field.name() + " before the field or block that reads it, or"
+                    + " read it from the body of a method");
         }
         subclassReaching(field.access(), field.owner(), field);
         mentions(field.owner());
         mentions(field.type());
         return raw(field.owner());
+    }
+
+    /// Rejects a read of an instance field whose initializer has not run: the block or the field initializer
+    /// being lowered stands before that field's declaration, and the read would be of the field's default
+    /// value. Java accepts it; the typed layer, as it refuses a forward read of a static field, does not.
+    ///
+    /// @throws IllegalArgumentException if the code is an initializer and reads a field it may not
+    private void requireNotForward(FieldRef<?, ?> field) {
+        if (forward.isPresent() && forward.get().instanceFields().contains(field)) {
+            throw new IllegalArgumentException(forward.get().what() + " reads " + field
+                    + ", which is declared at or after it: instance initializer blocks and field initializers"
+                    + " run in source order, and the read would be of the field's default value — declare "
+                    + field.name() + " before the field or block that reads it, or read it from the body of a"
+                    + " method");
+        }
     }
 
     /// A method or constructor fact the lowered code calls: the types of

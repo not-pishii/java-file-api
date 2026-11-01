@@ -41,6 +41,7 @@ import me.supcheg.javafile.facts.VoidStaticMethodRef1;
 import me.supcheg.javafile.facts.VoidStaticMethodRef2;
 import me.supcheg.javafile.facts.VoidStaticMethodRef3;
 import me.supcheg.javafile.facts.VoidStaticMethodRef4;
+import me.supcheg.javafile.model.InitializerBlock;
 import me.supcheg.javafile.model.Modifier;
 import me.supcheg.javafile.model.Param;
 import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody0;
@@ -111,6 +112,7 @@ abstract class TypedTypeBodies<Self, M> {
                     case Member.Field field -> new Slot.Blank(field);
                     case Member.Constant constant -> new Slot.BlankConstant(constant);
                     case Member.StaticField staticField -> new Slot.BlankStatic(staticField);
+                    case Member.Initializer initializer -> new Slot.AwaitingBody(initializer);
                 })
                 .toList();
     }
@@ -175,6 +177,7 @@ abstract class TypedTypeBodies<Self, M> {
                     case Slot.Awaiting awaiting when awaiting.declared().fact() == member -> Stream.of(awaiting);
                     case Slot.Awaiting _ -> Stream.<Slot.Awaiting>empty();
                     case Slot.Blank _, Slot.BlankConstant _, Slot.BlankStatic _ -> Stream.<Slot.Awaiting>empty();
+                    case Slot.AwaitingBody _ -> Stream.<Slot.Awaiting>empty();
                     case Slot.Defined defined
                     when defined.declared() instanceof Member.Callable callable && callable.fact() == member ->
                         throw alreadyDefined(what);
@@ -192,6 +195,7 @@ abstract class TypedTypeBodies<Self, M> {
                     case Slot.Blank blank when blank.declared().fact() == field -> Stream.of(blank);
                     case Slot.Blank _ -> Stream.<Slot.Blank>empty();
                     case Slot.Awaiting _, Slot.BlankConstant _, Slot.BlankStatic _ -> Stream.<Slot.Blank>empty();
+                    case Slot.AwaitingBody _ -> Stream.<Slot.Blank>empty();
                     case Slot.Defined defined
                     when defined.declared() instanceof Member.Field declared && declared.fact() == field ->
                         throw alreadyDefined(what);
@@ -212,6 +216,7 @@ abstract class TypedTypeBodies<Self, M> {
                     case Slot.BlankStatic blank
                     when blank.declared().fact() == field -> Stream.<Slot.AwaitingInitializer>of(blank);
                     case Slot.BlankConstant _, Slot.BlankStatic _ -> Stream.<Slot.AwaitingInitializer>empty();
+                    case Slot.AwaitingBody _ -> Stream.<Slot.AwaitingInitializer>empty();
                     case Slot.Awaiting _, Slot.Blank _ -> Stream.<Slot.AwaitingInitializer>empty();
                     case Slot.Defined defined
                     when defined.declared() instanceof Member.Constant constant && constant.fact() == field ->
@@ -246,11 +251,12 @@ abstract class TypedTypeBodies<Self, M> {
         Slot.Blank slot = initializable(field);
         ScopeCheck.standalone(initializer.node(), "initializer of " + what);
         Exceptions.initializer(initializer.node(), "initializer of " + what);
-        Lowering lowering = new Lowering(
+        Lowering lowering = Lowering.instanceInitializer(
                 owner.target(),
                 new Lowering.Place.InClass(
                         self, owner.scope("the initializer of " + what), owner.bounded(), localStaticMembers()),
-                java.util.Optional.empty());
+                "the initializer of " + what,
+                instanceFieldsFrom(slot));
         VariableInitializer lowered = lowering.lowerInitializer(initializer.node(), field.type());
         defined(slot, field(slot.declared(), lowered), "the initializer of " + what);
     }
@@ -345,6 +351,110 @@ abstract class TypedTypeBodies<Self, M> {
                             + owner.described() + " is not a constant expression: a constant of an interface is"
                             + " initialized by one (JLS 9.3.1)");
         }
+    }
+
+    // ------------------------------------------------------------------
+    // Initializer blocks
+    // ------------------------------------------------------------------
+
+    /// Defines a declared instance initializer block. Its body is built and lowered here, with `this`, against
+    /// every member the type declared; it may throw a checked exception only if every constructor declares it
+    /// (JLS 11.2.3), and it reads only the instance fields whose initializers have run before it.
+    ///
+    /// @param block the declared block
+    /// @param body the body, given its block, `this`
+    /// @throws IllegalStateException if the block is defined already or was not declared by this type, if the
+    ///     body can throw a checked exception a constructor does not declare, or cannot be lowered or written
+    /// @throws IllegalArgumentException if the body reads an instance field declared at or after the block
+    public final void define(InstanceInitializerBlock block, InstanceBody0<Self, InitializerBody, Void> body) {
+        String what = "the instance initializer block of " + owner.described();
+        Slot.AwaitingBody slot = initializer(block, what);
+        InitializerBody root =
+                InitializerBody.root(what, new ExceptionScope.InstanceInitializer(initializerConstructors()));
+        This<Self> bodySelf = thisOf(root);
+        MemberBodies.requireCompletesNormally(MemberBodies.built(root, b -> body.build(b, bodySelf)), what, "8.6");
+        Lowering lowering = Lowering.instanceInitializer(
+                owner.target(),
+                new Lowering.Place.InClass(self(), owner.scope(what), owner.bounded(), localStaticMembers()),
+                what,
+                instanceFieldsFrom(slot));
+        definedInitializer(slot, new InitializerBlock(false, lowering.lowerBlock(root.instrs())), what);
+    }
+
+    /// Defines a declared static initializer block. Its body is built and lowered here, with no `this`, against
+    /// every member the type declared; it throws no checked exception at all (JLS 11.2.3), and it reads only
+    /// the static fields whose initializers have run before it.
+    ///
+    /// @param block the declared block
+    /// @param body the body, given its block
+    /// @throws IllegalStateException if the block is defined already or was not declared by this type, if the
+    ///     body can throw a checked exception, or cannot be lowered or written
+    /// @throws IllegalArgumentException if the body reads a static field declared at or after the block
+    public final void define(StaticInitializerBlock block, Function<InitializerBody, Terminated<Void>> body) {
+        String what = "the static initializer block of " + owner.described();
+        Slot.AwaitingBody slot = initializer(block, what);
+        InitializerBody root = InitializerBody.root(what, new ExceptionScope.StaticInitializer());
+        MemberBodies.requireCompletesNormally(MemberBodies.built(root, body), what, "8.7");
+        Lowering lowering = Lowering.staticInitializer(
+                owner.target(),
+                new Lowering.Place.InClass(self(), owner.staticScope(what), owner.bounded(), localStaticMembers()),
+                what,
+                staticFieldsFrom(slot));
+        definedInitializer(slot, new InitializerBlock(true, lowering.lowerBlock(root.instrs())), what);
+    }
+
+    /// The slot of an initializer block that is declared and has no body yet.
+    private Slot.AwaitingBody initializer(Object handle, String what) {
+        owner.requireDefining(what);
+        Slot found = slots.stream()
+                .filter(slot -> slot.declared() instanceof Member.Initializer)
+                .filter(slot -> ((Member.Initializer) slot.declared()).handle() == handle)
+                .findFirst()
+                .orElseThrow(() -> undeclared(what));
+        if (found instanceof Slot.Defined) {
+            throw alreadyDefined(((Member.Initializer) found.declared()).described());
+        }
+        return (Slot.AwaitingBody) found;
+    }
+
+    /// The constructors of the type, with what each declares, against which an instance initializer block is
+    /// checked: the type declares none in its slots — an enum declares them outside them —, so this is the
+    /// implicit one, which declares nothing, and an enum's bodies add its own.
+    ///
+    /// @return the implicit constructor
+    List<ExceptionScope.InstanceInitializer.Constructor> initializerConstructors() {
+        return List.of(new ExceptionScope.InstanceInitializer.Constructor(
+                "the implicit constructor of " + owner.described(), List.of()));
+    }
+
+    /// The instance fields of the type that `block` may not read: those declared at or after it, in the order of
+    /// the declarations.
+    private List<FieldRef<?, ?>> instanceFieldsFrom(Slot block) {
+        return slots.subList(slots.indexOf(block), slots.size()).stream()
+                .map(Slot::declared)
+                .flatMap(member -> member instanceof Member.Field field
+                        ? Stream.<FieldRef<?, ?>>of(field.fact())
+                        : Stream.<FieldRef<?, ?>>empty())
+                .toList();
+    }
+
+    /// The static fields of the type that `block` may not read: those declared at or after it, in the order of
+    /// the declarations.
+    private List<StaticFieldRef<?>> staticFieldsFrom(Slot block) {
+        return slots.subList(slots.indexOf(block), slots.size()).stream()
+                .map(Slot::declared)
+                .flatMap(member -> member instanceof Member.StaticField field
+                        ? Stream.<StaticFieldRef<?>>of(field.fact())
+                        : Stream.<StaticFieldRef<?>>empty())
+                .toList();
+    }
+
+    /// Puts the block in its slot, there whole.
+    private void definedInitializer(Slot.AwaitingBody from, InitializerBlock member, String what) {
+        List<Slot> with = slots.stream()
+                .map(slot -> slot == from ? new Slot.Defined(from.declared(), member) : slot)
+                .toList();
+        slots = with;
     }
 
     // ------------------------------------------------------------------
@@ -1038,6 +1148,8 @@ abstract class TypedTypeBodies<Self, M> {
                         Stream.of(new Undefined("constant " + declared.fact(), declared.site()));
                     case Slot.BlankStatic(var declared) ->
                         Stream.of(new Undefined("field " + declared.fact(), declared.site()));
+                    case Slot.AwaitingBody(var declared) ->
+                        Stream.of(new Undefined(declared.described(), declared.site()));
                     case Slot.Defined _ -> Stream.<Undefined>empty();
                 })
                 .toList();
@@ -1114,6 +1226,11 @@ abstract class TypedTypeBodies<Self, M> {
         record BlankConstant(Member.Constant declared) implements AwaitingInitializer {}
 
         record BlankStatic(Member.StaticField declared) implements AwaitingInitializer {}
+
+        /// An initializer block that has no body yet.
+        ///
+        /// @param declared the block as it was declared
+        record AwaitingBody(Member.Initializer declared) implements Open {}
 
         record Defined(Member declared, Object member) implements Slot {}
     }

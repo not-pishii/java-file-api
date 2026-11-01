@@ -63,7 +63,7 @@ import java.util.stream.Stream;
 /// @param <R> the result type of the enclosing method or lambda, or the type of the `switch` expression
 ///     this is a block of
 /// @param <B> the type of this block, which nested blocks share
-public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidBody, YieldBody {
+public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidBody, InitializerBody, YieldBody {
     /// What to do instead of a statement form that cannot complete normally and so
     /// cannot be continued: the way the author is told depends on the block the
     /// form is in, for the `finally` block ([FinallyBody]) has no form that ends it.
@@ -254,13 +254,17 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
 
     final Terminated<R> appendFinal(Instr instr, String form) {
         append(instr);
-        return endHere(form);
+        return endHere(form, false);
     }
 
     final Terminated<R> endHere(String form) {
+        return endHere(form, true);
+    }
+
+    private Terminated<R> endHere(String form, boolean completesNormally) {
         requireOpen();
         ending = new Ending.Ended(form);
-        return new Terminated<>(this);
+        return new Terminated<>(this, completesNormally);
     }
 
     /// Builds `child` from `spec`, with `child` the innermost scope.

@@ -19,12 +19,23 @@ package me.supcheg.javafile.typed;
 ///     the block is of
 public final class Terminated<R> {
     private final Block<?, ?> issuer;
+    private final boolean completesNormally;
 
-    Terminated(Block<?, ?> issuer) {
+    Terminated(Block<?, ?> issuer, boolean completesNormally) {
         this.issuer = issuer;
+        this.completesNormally = completesNormally;
     }
 
     Block<?, ?> issuer() {
         return issuer;
+    }
+
+    /// Whether the block that issued this token completes normally: it ended with `end()` rather than with a
+    /// statement that cannot complete normally (JLS 14.22). An initializer block must complete normally, so the
+    /// bodies of its type refuse a token that does not.
+    ///
+    /// @return whether the block completes normally
+    boolean completesNormally() {
+        return completesNormally;
     }
 }

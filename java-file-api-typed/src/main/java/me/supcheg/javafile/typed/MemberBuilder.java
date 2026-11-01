@@ -914,6 +914,43 @@ public abstract sealed class MemberBuilder<Self, S> extends MemberBuilderArities
                 Optional.of(Docs.requireSafe(doc, "static field " + name + " of " + described)));
     }
 
+    // ------------------------------------------------------------------
+    // Initializer blocks
+    // ------------------------------------------------------------------
+
+    /// Declares an instance initializer block, `{ ... }`, which the bodies of the class define exactly once
+    /// with `define`. The block runs before every constructor of the class, after the constructor of its
+    /// superclass, in source order among the field initializers and the other blocks: `this` is in scope in it,
+    /// so it reads and writes the instance fields and calls the instance methods, but no constructor's
+    /// parameters.
+    ///
+    /// The body is handed `this`, as the body of an instance method is. It may throw a checked exception only
+    /// when every constructor of the class declares that exception (JLS 11.2.3).
+    ///
+    /// @return the handle of the declared block
+    /// @throws IllegalStateException if the declarations of the class have ended
+    public final InstanceInitializerBlock declareInitializerBlock() {
+        owner.requireDeclaring("an instance initializer block of " + described);
+        InstanceInitializerBlock block = new InstanceInitializerBlock();
+        declared(new Member.Initializer(false, block, Site.here()));
+        return block;
+    }
+
+    /// Declares a static initializer block, `static { ... }`, which the bodies of the class define exactly once
+    /// ([MemberBodies#define(StaticInitializerBlock, java.util.function.Function)]). The block runs once, when
+    /// the class is initialized, in source order among the static field initializers and the other blocks. It
+    /// has no `this` and no instance member, and may touch the static fields and methods; it throws no checked
+    /// exception, caught inside or not at all (JLS 11.2.3).
+    ///
+    /// @return the handle of the declared block
+    /// @throws IllegalStateException if the declarations of the class have ended
+    public final StaticInitializerBlock declareStaticInitializerBlock() {
+        owner.requireDeclaring("a static initializer block of " + described);
+        StaticInitializerBlock block = new StaticInitializerBlock();
+        declared(new Member.Initializer(true, block, Site.here()));
+        return block;
+    }
+
     private <F extends FieldRef<Self, ?>> F declared(
             F field, Set<Modifier> modifiers, List<AnnotationRef<?>> annotations) {
         return declared(field, modifiers, annotations, Optional.empty());
@@ -2131,6 +2168,20 @@ public abstract sealed class MemberBuilder<Self, S> extends MemberBuilderArities
             public StaticField {
                 modifiers = Set.copyOf(modifiers);
                 annotations = List.copyOf(annotations);
+            }
+        }
+
+        /// An initializer block, which the bodies of the class define.
+        ///
+        /// @param isStatic whether it is a `static { ... }` block
+        /// @param handle the handle the declaration returned
+        /// @param site where it was declared
+        record Initializer(boolean isStatic, Object handle, Site site) implements Member {
+            /// The block, for messages.
+            ///
+            /// @return `instance initializer block` or `static initializer block`
+            String described() {
+                return (isStatic ? "static" : "instance") + " initializer block";
             }
         }
 

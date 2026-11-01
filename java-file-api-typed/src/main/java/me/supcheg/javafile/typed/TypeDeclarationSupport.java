@@ -683,6 +683,28 @@ abstract class TypeDeclarationSupport<Self> {
         return field;
     }
 
+    /// Declares an instance initializer block, which the bodies of the type define exactly once.
+    ///
+    /// @return the handle of the declared block
+    /// @throws IllegalStateException if the declarations have ended
+    final InstanceInitializerBlock initializerBlock() {
+        requireDeclaring("an instance initializer block of " + described);
+        InstanceInitializerBlock block = new InstanceInitializerBlock();
+        declared(new Member.Initializer(false, block, Site.here()));
+        return block;
+    }
+
+    /// Declares a static initializer block, which the bodies of the type define exactly once.
+    ///
+    /// @return the handle of the declared block
+    /// @throws IllegalStateException if the declarations have ended
+    final StaticInitializerBlock staticInitializerBlock() {
+        requireDeclaring("a static initializer block of " + described);
+        StaticInitializerBlock block = new StaticInitializerBlock();
+        declared(new Member.Initializer(true, block, Site.here()));
+        return block;
+    }
+
     private void declared(Member member) {
         members = Stream.concat(members.stream(), Stream.of(member)).toList();
         membersDeclared = true;
@@ -855,6 +877,20 @@ abstract class TypeDeclarationSupport<Self> {
             public Field {
                 modifiers = Set.copyOf(modifiers);
                 annotations = List.copyOf(annotations);
+            }
+        }
+
+        /// An initializer block, which the bodies of the type define.
+        ///
+        /// @param isStatic whether it is a `static { ... }` block
+        /// @param handle the handle the declaration returned
+        /// @param site where it was declared
+        record Initializer(boolean isStatic, Object handle, Site site) implements Member {
+            /// The block, for messages.
+            ///
+            /// @return `instance initializer block` or `static initializer block`
+            String described() {
+                return (isStatic ? "static" : "instance") + " initializer block";
             }
         }
 

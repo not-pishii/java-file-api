@@ -40,6 +40,34 @@ sealed interface ExceptionScope {
         }
     }
 
+    /// The block is the body of an instance initializer block: Java lets it
+    /// throw a checked exception only if every constructor of the class
+    /// declares it (JLS 11.2.3). What each constructor declares is known when
+    /// the block is defined, every constructor being declared by then.
+    ///
+    /// @param constructors the constructors of the class, each with the
+    ///     exception types its `throws` clause declares
+    record InstanceInitializer(List<Constructor> constructors) implements ExceptionScope {
+        public InstanceInitializer {
+            constructors = List.copyOf(constructors);
+        }
+
+        /// A constructor of the class.
+        ///
+        /// @param described the constructor, for the message
+        /// @param declared the exception types its `throws` clause declares
+        record Constructor(String described, List<ExceptionType> declared) {
+            public Constructor {
+                declared = List.copyOf(declared);
+            }
+        }
+    }
+
+    /// The block is the body of a static initializer block: it is in no body,
+    /// so nothing catches and nothing declares there, and it throws no checked
+    /// exception at all (JLS 11.2.3).
+    record StaticInitializer() implements ExceptionScope {}
+
     /// What a block that [Declares] is the body of: who declares, and what
     /// the author can do about an exception that is not declared.
     enum Boundary {

@@ -138,6 +138,17 @@ final class Exceptions {
 
         /// It reaches the body that declares, which does not declare it.
         record Uncovered(ExceptionScope.Declares by) implements Coverage {}
+
+        /// It reaches an instance initializer block, and these constructors
+        /// do not declare it.
+        record UncoveredInitializer(List<ExceptionScope.InstanceInitializer.Constructor> missing) implements Coverage {
+            public UncoveredInitializer {
+                missing = List.copyOf(missing);
+            }
+        }
+
+        /// It reaches a static initializer block, which declares nothing.
+        record UncoveredStatic() implements Coverage {}
     }
 
     /// What evaluating a node does itself, apart from its subexpressions.
@@ -248,6 +259,21 @@ final class Exceptions {
                         + uncovered.by().boundary().doesNotDeclare()
                         + " (declared: " + describe(uncovered.by().types()) + "): "
                         + uncovered.by().boundary().advice() + " (JLS 11.2.3)");
+            case Coverage.UncoveredInitializer(var missing) ->
+                throw new IllegalStateException(raise.by() + " in the " + block.path()
+                        + " can throw the checked exception " + raise.type() + ", which "
+                        + missing.stream()
+                                .map(ExceptionScope.InstanceInitializer.Constructor::described)
+                                .collect(Collectors.joining(", "))
+                        + (missing.size() == 1 ? " does not declare" : " do not declare")
+                        + ": an instance initializer may throw a checked exception only if every constructor of"
+                        + " the class declares it — catch it inside the block, or declare it through"
+                        + " cb.throwing(...) on every constructor (JLS 11.2.3)");
+            case Coverage.UncoveredStatic _ ->
+                throw new IllegalStateException(raise.by() + " in the " + block.path()
+                        + " can throw the checked exception " + raise.type()
+                        + ": a static initializer block is in no body and declares nothing, so catch it"
+                        + " inside the block (JLS 11.2.3)");
         }
     }
 
@@ -263,6 +289,13 @@ final class Exceptions {
                 declares.types().stream().anyMatch(type -> type.covers(thrown))
                         ? new Coverage.Covered()
                         : new Coverage.Uncovered(declares);
+            case ExceptionScope.InstanceInitializer(var constructors) -> {
+                List<ExceptionScope.InstanceInitializer.Constructor> missing = constructors.stream()
+                        .filter(constructor -> constructor.declared().stream().noneMatch(type -> type.covers(thrown)))
+                        .toList();
+                yield missing.isEmpty() ? new Coverage.Covered() : new Coverage.UncoveredInitializer(missing);
+            }
+            case ExceptionScope.StaticInitializer _ -> new Coverage.UncoveredStatic();
         };
     }
 

@@ -87,6 +87,27 @@ public final class TypedInterfaceBuilder<Self> extends TypeMemberDeclarations<Se
         return withDoc(Docs.of(text, described()));
     }
 
+    /// Refuses an instance initializer block: javac rejects `{ ... }` in an interface body, which has no
+    /// instance at all (JLS 9.4).
+    ///
+    /// @return never
+    /// @throws IllegalArgumentException always, naming the interface
+    public final InstanceInitializerBlock declareInitializerBlock() {
+        throw new IllegalArgumentException("cannot declare an instance initializer block of " + described()
+                + ": an interface has no initializer blocks - it has no instance initializer, and no static"
+                + " initializer either (JLS 9.4), and the typed layer declares only what javac accepts");
+    }
+
+    /// Refuses a static initializer block: javac rejects `static { ... }` in an interface body (JLS 9.4).
+    ///
+    /// @return never
+    /// @throws IllegalArgumentException always, naming the interface
+    public final StaticInitializerBlock declareStaticInitializerBlock() {
+        throw new IllegalArgumentException("cannot declare a static initializer block of " + described()
+                + ": an interface has no initializer blocks - it has no static initializer, and no instance"
+                + " initializer either (JLS 9.4), and the typed layer declares only what javac accepts");
+    }
+
     /// Adds an interface to the `extends` clause.
     ///
     /// @param supertype the interface, with its type arguments

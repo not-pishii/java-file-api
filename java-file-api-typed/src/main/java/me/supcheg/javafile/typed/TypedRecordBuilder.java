@@ -101,6 +101,28 @@ public final class TypedRecordBuilder<Self> extends RecordConstructorArities<Sel
         return withDoc(Docs.of(text, described()));
     }
 
+    /// Refuses an instance initializer block: javac rejects `{ ... }` in a record body, which a compact
+    /// constructor replaces (JLS 8.10.4).
+    ///
+    /// @return never
+    /// @throws IllegalArgumentException always, naming the record
+    public final InstanceInitializerBlock declareInitializerBlock() {
+        throw new IllegalArgumentException("cannot declare an instance initializer block of " + described()
+                + ": a record has no instance initializer block - its compact constructor replaces it"
+                + " (JLS 8.10.4), and the typed layer declares only what javac accepts");
+    }
+
+    /// Declares a static initializer block, `static { ... }`, which the bodies of the record define exactly
+    /// once. It runs once, when the record is initialized, in source order among the static field initializers
+    /// and the other blocks; it has no `this` and no instance member, and throws no checked exception (JLS
+    /// 11.2.3).
+    ///
+    /// @return the handle of the declared block
+    /// @throws IllegalStateException if the declarations of the record have ended
+    public final StaticInitializerBlock declareStaticInitializerBlock() {
+        return staticInitializerBlock();
+    }
+
     /// Gives a type parameter of the record one more bound, an interface, before its components:
     /// `record R<T extends A & B>(T value)`. The leftmost bound is the token `typeParam` was given;
     /// each further bound is said here, and gives the witness by which an expression of the type

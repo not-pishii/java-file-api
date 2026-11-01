@@ -10,6 +10,7 @@ import me.supcheg.javafile.facts.Arity;
 import me.supcheg.javafile.facts.FieldRef;
 import me.supcheg.javafile.facts.FinalClassToken;
 import me.supcheg.javafile.facts.Invocable;
+import me.supcheg.javafile.facts.InvocableKind;
 import me.supcheg.javafile.facts.MemberFact;
 import me.supcheg.javafile.facts.Protected;
 import me.supcheg.javafile.facts.StaticFieldRef;
@@ -18,6 +19,7 @@ import me.supcheg.javafile.facts.TypeToken;
 import me.supcheg.javafile.model.ClassMember;
 import me.supcheg.javafile.model.ConstructorDecl;
 import me.supcheg.javafile.model.FieldDecl;
+import me.supcheg.javafile.model.InitializerBlock;
 import me.supcheg.javafile.model.MethodDecl;
 import me.supcheg.javafile.model.Modifier;
 import me.supcheg.javafile.model.Param;
@@ -113,6 +115,7 @@ public abstract sealed class MemberBodies<Self, S> extends MemberBodyArities<Sel
                     case Member.Callable callable -> new Slot.Awaiting(callable);
                     case Member.Field field -> new Slot.Blank(field);
                     case Member.StaticField staticField -> new Slot.BlankStatic(staticField);
+                    case Member.Initializer initializer -> new Slot.AwaitingInitializer(initializer);
                     case Member.Given given -> new Slot.Defined(given, given.member());
                     case Member.SerialVersion serialVersion ->
                         new Slot.Defined(
@@ -165,14 +168,15 @@ public abstract sealed class MemberBodies<Self, S> extends MemberBodyArities<Sel
                                 .map(AnnotationRef::toUse)
                                 .toList(),
                         slot.declared().modifiers(),
-                        Optional.of(new Lowering(
+                        Optional.of(Lowering.instanceInitializer(
                                         target,
                                         new Lowering.Place.InClass(
                                                 self,
                                                 owner.scope("the initializer of field " + name),
                                                 owner.bounded(),
                                                 Set.of()),
-                                        Optional.empty())
+                                        "the initializer of field " + name,
+                                        instanceFieldsFrom(slot))
                                 .lowerInitializer(initializer.node(), field.type())),
                         slot.declared().doc()),
                 "the initializer of field " + name);
@@ -233,6 +237,108 @@ public abstract sealed class MemberBodies<Self, S> extends MemberBodyArities<Sel
                         : Stream.<StaticFieldRef<?>>empty())
                 .toList();
         return declared.subList(declared.indexOf(field), declared.size());
+    }
+
+    // ------------------------------------------------------------------
+    // Initializer blocks
+    // ------------------------------------------------------------------
+
+    /// Defines a declared instance initializer block. Its body is built and lowered here, with `this`, against
+    /// every member the class declared; it may throw a checked exception only if every constructor declares it
+    /// (JLS 11.2.3), and it reads only the instance fields whose initializers have run before it.
+    ///
+    /// @param block the declared block
+    /// @param body the body, given its block, `this`
+    /// @throws IllegalStateException if the block is defined already or was not declared by this class, if the
+    ///     body can throw a checked exception a constructor does not declare, or cannot be lowered or written
+    /// @throws IllegalArgumentException if the body reads an instance field declared at or after the block
+    public final void define(InstanceInitializerBlock block, InstanceBody0<Self, InitializerBody, Void> body) {
+        String what = "the instance initializer block of " + described;
+        Slot.AwaitingInitializer slot = initializer(block, what);
+        InitializerBody root = InitializerBody.root(what, new ExceptionScope.InstanceInitializer(constructors()));
+        This<Self> bodySelf = thisOf(root);
+        requireCompletesNormally(built(root, b -> body.build(b, bodySelf)), what, "8.6");
+        Lowering lowering = Lowering.instanceInitializer(
+                target,
+                new Lowering.Place.InClass(self(), owner.scope(what), owner.bounded(), Set.of()),
+                what,
+                instanceFieldsFrom(slot));
+        defined(slot, new InitializerBlock(false, lowering.lowerBlock(root.instrs())), what);
+    }
+
+    /// Defines a declared static initializer block. Its body is built and lowered here, with no `this`, against
+    /// every member the class declared; it throws no checked exception at all (JLS 11.2.3), and it reads only
+    /// the static fields whose initializers have run before it.
+    ///
+    /// @param block the declared block
+    /// @param body the body, given its block
+    /// @throws IllegalStateException if the block is defined already or was not declared by this class, if the
+    ///     body can throw a checked exception, or cannot be lowered or written
+    /// @throws IllegalArgumentException if the body reads a static field declared at or after the block
+    public final void define(StaticInitializerBlock block, Function<InitializerBody, Terminated<Void>> body) {
+        String what = "the static initializer block of " + described;
+        Slot.AwaitingInitializer slot = initializer(block, what);
+        InitializerBody root = InitializerBody.root(what, new ExceptionScope.StaticInitializer());
+        requireCompletesNormally(built(root, body), what, "8.7");
+        Lowering lowering = Lowering.staticInitializer(
+                target,
+                new Lowering.Place.InClass(self(), owner.staticScope(what), owner.bounded(), Set.of()),
+                what,
+                staticFieldsFrom(slot));
+        defined(slot, new InitializerBlock(true, lowering.lowerBlock(root.instrs())), what);
+    }
+
+    /// The slot of an initializer block that is declared and has no body yet.
+    private Slot.AwaitingInitializer initializer(Object handle, String what) {
+        owner.requireDefining(what);
+        Slot found = slots.stream()
+                .filter(slot -> slot.declared() instanceof Member.Initializer)
+                .filter(slot -> ((Member.Initializer) slot.declared()).handle() == handle)
+                .findFirst()
+                .orElseThrow(() -> undeclared(what));
+        if (found instanceof Slot.Defined) {
+            throw alreadyDefined(((Member.Initializer) found.declared()).described());
+        }
+        return (Slot.AwaitingInitializer) found;
+    }
+
+    /// The constructors of the class, with what each declares, against which an instance initializer block is
+    /// checked: a class that declares none has the implicit one, which declares nothing.
+    private List<ExceptionScope.InstanceInitializer.Constructor> constructors() {
+        List<ExceptionScope.InstanceInitializer.Constructor> declared = slots.stream()
+                .map(Slot::declared)
+                .filter(Member.Callable.class::isInstance)
+                .map(Member.Callable.class::cast)
+                .filter(callable -> callable.fact().kind() == InvocableKind.CONSTRUCTOR)
+                .map(callable -> new ExceptionScope.InstanceInitializer.Constructor(
+                        callable.fact().toString(), ExceptionType.ofAll(callable.thrown())))
+                .toList();
+        return declared.isEmpty()
+                ? List.of(new ExceptionScope.InstanceInitializer.Constructor(
+                        "the implicit constructor " + described + "()", List.of()))
+                : declared;
+    }
+
+    /// The instance fields of the class that `block` may not read: those declared at or after it, in the order of
+    /// the declarations.
+    private List<FieldRef<?, ?>> instanceFieldsFrom(Slot block) {
+        return slots.subList(slots.indexOf(block), slots.size()).stream()
+                .map(Slot::declared)
+                .flatMap(member -> member instanceof Member.Field field
+                        ? Stream.<FieldRef<?, ?>>of(field.fact())
+                        : Stream.<FieldRef<?, ?>>empty())
+                .toList();
+    }
+
+    /// The static fields of the class that `block` may not read: those declared at or after it, in the order of
+    /// the declarations.
+    private List<StaticFieldRef<?>> staticFieldsFrom(Slot block) {
+        return slots.subList(slots.indexOf(block), slots.size()).stream()
+                .map(Slot::declared)
+                .flatMap(member -> member instanceof Member.StaticField field
+                        ? Stream.<StaticFieldRef<?>>of(field.fact())
+                        : Stream.<StaticFieldRef<?>>empty())
+                .toList();
     }
 
     // ------------------------------------------------------------------
@@ -315,6 +421,8 @@ public abstract sealed class MemberBodies<Self, S> extends MemberBodyArities<Sel
                         Stream.of(new Undefined("field " + declared.fact(), declared.site()));
                     case Slot.BlankStatic(var declared) ->
                         Stream.of(new Undefined("field " + declared.fact(), declared.site()));
+                    case Slot.AwaitingInitializer(var declared) ->
+                        Stream.of(new Undefined(declared.described(), declared.site()));
                     case Slot.Defined _ -> Stream.<Undefined>empty();
                 })
                 .toList();
@@ -366,6 +474,7 @@ public abstract sealed class MemberBodies<Self, S> extends MemberBodyArities<Sel
                                 declared.modifiers(),
                                 Optional.empty(),
                                 declared.doc()));
+                    case Slot.AwaitingInitializer _ -> Stream.<ClassMember>empty();
                     case Slot.Defined(var _, var member) -> Stream.of(member);
                 })
                 .toList();
@@ -405,6 +514,7 @@ public abstract sealed class MemberBodies<Self, S> extends MemberBodyArities<Sel
                     case Slot.Awaiting _ -> Stream.<Slot.Awaiting>empty();
                     case Slot.Blank _ -> Stream.<Slot.Awaiting>empty();
                     case Slot.BlankStatic _ -> Stream.<Slot.Awaiting>empty();
+                    case Slot.AwaitingInitializer _ -> Stream.<Slot.Awaiting>empty();
                     case Slot.Defined(Member.Callable declared, var _)
                     when declared.fact() == member -> throw alreadyDefined(what);
                     case Slot.Defined _ -> Stream.<Slot.Awaiting>empty();
@@ -423,6 +533,7 @@ public abstract sealed class MemberBodies<Self, S> extends MemberBodyArities<Sel
                     case Slot.Blank _ -> Stream.<Slot.Blank>empty();
                     case Slot.Awaiting _ -> Stream.<Slot.Blank>empty();
                     case Slot.BlankStatic _ -> Stream.<Slot.Blank>empty();
+                    case Slot.AwaitingInitializer _ -> Stream.<Slot.Blank>empty();
                     case Slot.Defined(Member.Field declared, var _)
                     when declared.fact() == field -> throw alreadyDefined(what);
                     case Slot.Defined _ -> Stream.<Slot.Blank>empty();
@@ -441,6 +552,7 @@ public abstract sealed class MemberBodies<Self, S> extends MemberBodyArities<Sel
                     case Slot.BlankStatic _ -> Stream.<Slot.BlankStatic>empty();
                     case Slot.Awaiting _ -> Stream.<Slot.BlankStatic>empty();
                     case Slot.Blank _ -> Stream.<Slot.BlankStatic>empty();
+                    case Slot.AwaitingInitializer _ -> Stream.<Slot.BlankStatic>empty();
                     case Slot.Defined(Member.StaticField declared, var _)
                     when declared.fact() == field -> throw alreadyDefined(what);
                     case Slot.Defined _ -> Stream.<Slot.BlankStatic>empty();
@@ -481,9 +593,27 @@ public abstract sealed class MemberBodies<Self, S> extends MemberBodyArities<Sel
     }
 
     /// Builds `root` — the root of its scope tree — from `bodyFn`.
-    static <R, B extends Block<R, B>> void built(B root, Function<? super B, Terminated<R>> bodyFn) {
+    static <R, B extends Block<R, B>> Terminated<R> built(B root, Function<? super B, Terminated<R>> bodyFn) {
         Terminated<R> terminated = Scopes.within(root, () -> bodyFn.apply(root));
         Block.requireIssuedBy(terminated, root);
+        return terminated;
+    }
+
+    /// Holds an initializer block to what javac requires of it: it must be able to complete normally, so a
+    /// `throw` of a whole body, a `loopForever` or an `ifElse` whose both branches end is refused (JLS 8.6,
+    /// 8.7).
+    ///
+    /// @param ended the proof that the body ended
+    /// @param what the block, for the message
+    /// @param jls the section of the rule
+    /// @throws IllegalArgumentException if the body cannot complete normally
+    static void requireCompletesNormally(Terminated<?> ended, String what, String jls) {
+        if (!ended.completesNormally()) {
+            throw new IllegalArgumentException(what + " cannot complete normally: an initializer block must be"
+                    + " able to complete normally (JLS " + jls + "), so a throw, a loop that never ends or a"
+                    + " branch that does is refused where it ends the body — catch the exception inside the block,"
+                    + " or let the block fall off its end with end()");
+        }
     }
 
     /// The declared member gets the body `bodyFn` builds: built and lowered here.
@@ -682,6 +812,11 @@ public abstract sealed class MemberBodies<Self, S> extends MemberBodyArities<Sel
         ///
         /// @param declared the static field as it was declared
         record BlankStatic(Member.StaticField declared) implements Open {}
+
+        /// An initializer block that has no body yet.
+        ///
+        /// @param declared the block as it was declared
+        record AwaitingInitializer(Member.Initializer declared) implements Open {}
 
         /// A member that is there whole.
         ///

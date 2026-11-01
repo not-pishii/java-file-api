@@ -54,6 +54,28 @@ final class JavacVerdict {
                                 + "public final class Probe " + header + " {\n" + members + "\n}\n"));
     }
 
+    /// What javac says of a `public record Probe` of a header — its components — and members, in a package of
+    /// its own with the fixtures of the tests imported, under every lint.
+    static Compilation compiledRecord(String header, String members) {
+        return javac().withOptions("-Xlint:all")
+                .compile(JavaFileObjects.forSourceString(
+                        "me.supcheg.example.Probe",
+                        "package me.supcheg.example;\nimport java.util.*;\n"
+                                + "import me.supcheg.javafile.typed.fixtures.*;\n"
+                                + "public record Probe " + header + " {\n" + members + "\n}\n"));
+    }
+
+    /// What javac says of a `public interface Probe` of a header and members, in a package of its own with the
+    /// fixtures of the tests imported, under every lint.
+    static Compilation compiledInterface(String header, String members) {
+        return javac().withOptions("-Xlint:all")
+                .compile(JavaFileObjects.forSourceString(
+                        "me.supcheg.example.Probe",
+                        "package me.supcheg.example;\nimport java.util.*;\n"
+                                + "import me.supcheg.javafile.typed.fixtures.*;\n"
+                                + "public interface Probe " + header + " {\n" + members + "\n}\n"));
+    }
+
     /// The typed layer rejects `typed` with an exception of `rejection` and `message`, and javac rejects
     /// the class of that header and those members with `error`.
     static void classAsJavac(
@@ -93,6 +115,32 @@ final class JavacVerdict {
             String members) {
         assertThatExceptionOfType(rejection).isThrownBy(typed).withMessageContaining(message);
         CompilationSubject.assertThat(compiledClass(header, members)).succeeded();
+    }
+
+    /// The typed layer rejects `typed` with an exception of `rejection` and `message`, and javac rejects the
+    /// record of that header and those members with `error`.
+    static void recordAsJavac(
+            Class<? extends RuntimeException> rejection,
+            ThrowingCallable typed,
+            String message,
+            String header,
+            String members,
+            String error) {
+        assertThatExceptionOfType(rejection).isThrownBy(typed).withMessageContaining(message);
+        CompilationSubject.assertThat(compiledRecord(header, members)).hadErrorContaining(error);
+    }
+
+    /// The typed layer rejects `typed` with an exception of `rejection` and `message`, and javac rejects the
+    /// interface of that header and those members with `error`.
+    static void interfaceAsJavac(
+            Class<? extends RuntimeException> rejection,
+            ThrowingCallable typed,
+            String message,
+            String header,
+            String members,
+            String error) {
+        assertThatExceptionOfType(rejection).isThrownBy(typed).withMessageContaining(message);
+        CompilationSubject.assertThat(compiledInterface(header, members)).hadErrorContaining(error);
     }
 
     /// The typed layer rejects `typed` with an exception of `rejection` and `message`, and javac rejects

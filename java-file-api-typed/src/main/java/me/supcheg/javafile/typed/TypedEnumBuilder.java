@@ -68,6 +68,30 @@ public final class TypedEnumBuilder<Self> extends EnumConstructorArities<Self> {
         return withDoc(Docs.of(text, described()));
     }
 
+    /// Declares an instance initializer block, `{ ... }`, which the bodies of the enum define exactly once.
+    /// The block runs before each constructor of the enum, after the constructor of `Enum`, in source order
+    /// among the field initializers and the other blocks: `this` is in scope in it, so it reads and writes the
+    /// instance fields and calls the instance methods. It may throw a checked exception only when every
+    /// constructor of the enum declares that exception (JLS 11.2.3); the constructors of the typed layer
+    /// declare none.
+    ///
+    /// @return the handle of the declared block
+    /// @throws IllegalStateException if the declarations of the enum have ended
+    public final InstanceInitializerBlock declareInitializerBlock() {
+        return initializerBlock();
+    }
+
+    /// Declares a static initializer block, `static { ... }`, which the bodies of the enum define exactly
+    /// once. It runs once, when the enum is initialized, in source order among the static field initializers
+    /// and the other blocks; it has no `this` and no instance member, and throws no checked exception (JLS
+    /// 11.2.3).
+    ///
+    /// @return the handle of the declared block
+    /// @throws IllegalStateException if the declarations of the enum have ended
+    public final StaticInitializerBlock declareStaticInitializerBlock() {
+        return staticInitializerBlock();
+    }
+
     @Override
     void declaredMember(Member.Callable member) {
         if (member.kind() == Kind.ABSTRACT) {

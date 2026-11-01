@@ -19,6 +19,7 @@ import me.supcheg.javafile.typed.TypeDeclarationSupport.Member;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /// Defines the members of a typed enum (§6.5), branded with `Self`: the
 /// stage [TypedEnumBuilder#bodies()] gives. Methods and fields are defined
@@ -42,6 +43,26 @@ public final class TypedEnumBodies<Self> extends TypedTypeBodies<Self, EnumMembe
         this.constants = List.copyOf(constants);
         this.abstractMethods = List.copyOf(abstractMethods);
         this.constructors = List.copyOf(constructors);
+    }
+
+    /// The constructors of the enum, with what each declares: the typed layer declares no exception on one,
+    /// so an instance initializer block can throw no checked exception at all.
+    @Override
+    List<ExceptionScope.InstanceInitializer.Constructor> initializerConstructors() {
+        List<ExceptionScope.InstanceInitializer.Constructor> implicit = super.initializerConstructors();
+        if (constructors.isEmpty()) {
+            return implicit;
+        }
+        return constructors.stream()
+                .<ExceptionScope.InstanceInitializer.Constructor>map(constructor ->
+                        new ExceptionScope.InstanceInitializer.Constructor(
+                                "new " + owner().desc().displayName() + "("
+                                        + constructor.params().stream()
+                                                .map(param -> param.type().toString())
+                                                .collect(Collectors.joining(", "))
+                                        + ")",
+                                List.of()))
+                .toList();
     }
 
     @Override
