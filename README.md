@@ -97,6 +97,7 @@ The examples below assume `import static me.supcheg.javafile.code.Exprs.*;` and 
 - [Generic classes](#generic-classes)
 - [Typed method bodies: try/catch, lambdas, instanceof, enum switch](#typed-method-bodies-trycatch-lambdas-instanceof-enum-switch)
 - [Typed statements: text blocks, method references, assert, synchronized, resources, labels](#typed-statements-text-blocks-method-references-assert-synchronized-resources-labels)
+- [Typed operators: unary, bitwise, shifts, increments and class literals](#typed-operators-unary-bitwise-shifts-increments-and-class-literals)
 - [Varargs and arrays](#varargs-and-arrays)
 - [Annotations](#annotations)
 - [Refusals at generation time](#refusals-at-generation-time)
@@ -1060,7 +1061,10 @@ normally - and `tryWithResources` declares `AutoCloseable` resources in its body
 or as the one existing effectively-final one it allows. The body uses them, and they close on every way out; a close
 that throws while the body throws leaves the body's exception primary with the close's suppressed, as javac makes it.
 A resource that is not `AutoCloseable` is refused where it is declared, as is a second existing variable or a mutable
-one.
+one. A `try` with resources and no handler is a statement of its own - `tryWithResources` and
+`tryWithResourcesTerminated` take a body and no `Handlers` - and the `throws` clause of a resource's `close()` comes
+from the method table of its facts: a checked exception there must be caught by the `try` or an enclosing one, or
+declared by the member, exactly as javac asks it.
 
 ```java
 b.tryWithResourcesTerminated(
@@ -1071,10 +1075,10 @@ b.tryWithResourcesTerminated(
         });
 ```
 
-A `Label` from `b.label()` names the statement that attaches it - `b.labeled(label, body)` or the labeled `while_` or
-`for_`. `break_(label)` leaves the labeled block or loop, and `continue_(label)` the labeled loop; a label not in scope,
-one that names a block where a `continue` is used, or one reached across a lambda boundary or out of a `switch`
-expression is refused.
+A `Label` from `b.label()` names the statement that attaches it - `b.labeled(label, body)` or any loop: `while_`,
+`for_`, `doWhile`, both `forEach` forms and `loopForever` have an overload that takes one. `break_(label)` leaves the
+labeled block or loop, and `continue_(label)` the labeled loop; a label not in scope, one that names a block where a
+`continue` is used, or one reached across a lambda boundary or out of a `switch` expression is refused.
 
 ```java
 Label outer = b.label();
@@ -1084,6 +1088,33 @@ b.for_(outer, PrimitiveToken.INT, literal(0), i -> ltInt(i, literal(3)),
                 j -> assign(j, addInt(j, literal(1))),
                 (inner, j, _) -> inner.if_(eqInt(j, literal(1)), t -> t.break_(outer))));
 ```
+
+### Typed operators: unary, bitwise, shifts, increments and class literals
+
+The operators are per primitive type, as the arithmetic ones are: `negInt`, `negLong`, `negFloat`, `negDouble`, and
+the same for `unaryPlus` and `bitNot`; `negByte`, `negShort` and `negChar` are of type `int`, which Java's unary
+numeric promotion gives them. `bitAndInt`, `bitOrInt`, `bitXorInt` and their `Long` forms are the bitwise operators, and
+`shlInt`, `shrInt`, `ushrInt` and their `Long` forms shift a value by an `int` or a `long` distance, which Java masks
+with `0x1f` for an `int` and `0x3f` for a `long`. `Prim.Integral` is what the distance is bounded by.
+
+`preIncrement`, `preDecrement`, `postIncrement` and `postDecrement` take a place the layer can assign to - a `MutVar`,
+a mutable field and its receiver, a mutable static field, or an array element - and are of the place's type and an
+`Effect`, so `exec(preIncrement(i))` is `++i;`. A place of a boolean or of a box is refused: `++` never unboxes.
+
+```java
+b.exec(preIncrement(i));
+b.exec(assign(i, AssignOp.ADD_ASSIGN, literal(2)));
+b.exec(postIncrement(array, literal(0)));
+```
+
+A compound assignment is `assign(var, op, value)`, `assignField(receiver, field, op, value)`,
+`assignStaticField(field, op, value)` and `assignAt(type, array, index, op, value)`, for every `AssignOp` but `=`.
+Java would convert `value` to the place's type and cast the result back implicitly (JLS 15.26.2); the typed layer
+writes no implicit conversion, so `value` must be of exactly the place's type and the type must take the operator:
+`int += int` and `String += String` are accepted, `int += long` and `String -= String` are refused at the call.
+
+`classLiteral(type)` is `type.class` as an `Expr<Class<T>>`, and `instanceOf(operand, type)` is a plain `instanceof`
+without a pattern, a `boolean` expression that is checked as the pattern form is.
 
 ### Varargs and arrays
 
