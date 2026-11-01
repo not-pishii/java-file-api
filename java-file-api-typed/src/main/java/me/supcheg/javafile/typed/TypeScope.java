@@ -8,6 +8,7 @@ import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeToken;
 import me.supcheg.javafile.facts.TypeVarToken;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 /// The type parameters that are in scope where a type is mentioned: a type
@@ -53,6 +54,13 @@ sealed interface TypeScope {
                         + " in " + where + ": a static member of a generic class refers neither to a type"
                         + " parameter of the class nor to the class with its type parameters (JLS 8.1.2)");
             }
+            case Nested(List<DeclarationIdentity> declarations, String where) -> {
+                if (!declarations.contains(declaration)) {
+                    throw new IllegalStateException("the type parameter " + variable + mentioned + " is not in scope"
+                            + " in " + where + ": it is a type parameter of another class, in scope in the"
+                            + " declaration of that class alone (JLS 6.3)");
+                }
+            }
         }
     }
 
@@ -96,4 +104,15 @@ sealed interface TypeScope {
     /// @param declaration the declaration of the class, known by its identity
     /// @param where the place, for messages
     record Static(DeclarationIdentity declaration, String where) implements TypeScope {}
+
+    /// In the header or an instance member of a member type: the type parameters of the
+    /// enclosing types, from the outermost in, and those of the type itself are in scope.
+    ///
+    /// @param declarations the declarations whose type parameters are in scope, the innermost last
+    /// @param where the place, for messages
+    record Nested(List<DeclarationIdentity> declarations, String where) implements TypeScope {
+        public Nested {
+            declarations = List.copyOf(declarations);
+        }
+    }
 }

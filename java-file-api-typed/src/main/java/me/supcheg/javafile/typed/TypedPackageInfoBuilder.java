@@ -46,6 +46,17 @@ public final class TypedPackageInfoBuilder {
         return this;
     }
 
+    /// Refuses a member type of a `package-info.java`: the file declares the annotations of a package
+    /// alone and no type (JLS 7.4.1).
+    ///
+    /// @param name the simple name of the member type
+    /// @return never
+    /// @throws IllegalArgumentException always
+    public java.lang.constant.ClassDesc nestedType(String name) {
+        throw new IllegalArgumentException("cannot declare the member type " + name + " in the package-info.java"
+                + " of package " + packageName + ": a package-info.java declares annotations alone (JLS 7.4.1)");
+    }
+
     /// The declaration of the package is complete.
     ///
     /// @return the package-info file

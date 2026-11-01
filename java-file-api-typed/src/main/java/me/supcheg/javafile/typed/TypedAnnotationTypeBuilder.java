@@ -62,6 +62,17 @@ public final class TypedAnnotationTypeBuilder<Self> {
         return this;
     }
 
+    /// Refuses a member type of an annotation type: an annotation type declares elements alone (JLS
+    /// 9.6), and no member class, interface, record, enum or annotation type.
+    ///
+    /// @param name the simple name of the member type
+    /// @return never
+    /// @throws IllegalArgumentException always
+    public java.lang.constant.ClassDesc nestedType(String name) {
+        throw new IllegalArgumentException("cannot declare the member type " + name + " in " + described
+                + ": an annotation type declares elements alone, and no member type (JLS 9.6)");
+    }
+
     /// Adds an element with no default value.
     ///
     /// @param name the element name
@@ -198,13 +209,31 @@ public final class TypedAnnotationTypeBuilder<Self> {
     /// @return the file of the annotation type
     /// @throws IllegalStateException if the declaration is complete already
     JavaFile complete() {
+        requireIncomplete();
+        return JavaFile.annotationType(desc, this::populate);
+    }
+
+    /// The declaration of a member annotation type, which its enclosing declaration renders.
+    ///
+    /// @return the declaration
+    /// @throws IllegalStateException if the declaration is complete already
+    me.supcheg.javafile.model.TypeDecl completeNested() {
+        requireIncomplete();
+        me.supcheg.javafile.builder.AnnotationTypeBuilder ab =
+                new me.supcheg.javafile.builder.AnnotationTypeBuilder(desc);
+        populate(ab);
+        return ab.build();
+    }
+
+    private void requireIncomplete() {
         if (complete) {
             throw new IllegalStateException("the declaration of " + described + " is already complete");
         }
         complete = true;
-        return JavaFile.annotationType(desc, ab -> {
-            annotations.forEach(annotation -> ab.withAnnotation(annotation.toUse()));
-            elements.forEach(ab::accept);
-        });
+    }
+
+    private void populate(me.supcheg.javafile.builder.AnnotationTypeBuilder ab) {
+        annotations.forEach(annotation -> ab.withAnnotation(annotation.toUse()));
+        elements.forEach(ab::accept);
     }
 }

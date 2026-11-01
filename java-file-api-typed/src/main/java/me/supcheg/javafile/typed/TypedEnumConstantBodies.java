@@ -4,10 +4,14 @@ import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.code.CodeBody;
 import me.supcheg.javafile.code.ConstructorBody;
 import me.supcheg.javafile.code.VariableInitializer;
+import me.supcheg.javafile.facts.EnumToken;
+import me.supcheg.javafile.facts.FinalClassToken;
+import me.supcheg.javafile.facts.InterfaceToken;
 import me.supcheg.javafile.facts.Invocable;
 import me.supcheg.javafile.model.EnumConstantMember;
 import me.supcheg.javafile.model.MethodDecl;
 import me.supcheg.javafile.model.Param;
+import me.supcheg.javafile.model.TypeDecl;
 import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.typed.TypeDeclarationSupport.Member;
 
@@ -23,9 +27,89 @@ import java.util.stream.IntStream;
 ///
 /// @param <Self> the brand of the enum being declared
 public final class TypedEnumConstantBodies<Self> extends TypedTypeBodies<Self, EnumConstantMember> {
+    private List<TypeDecl> nested = List.of();
 
     TypedEnumConstantBodies(TypedEnumBuilder<Self> owner, List<Invocable> abstractMethods) {
         super(owner, declared(owner, abstractMethods));
+    }
+
+    // ------------------------------------------------------------------
+    // Member types
+    // ------------------------------------------------------------------
+
+    /// Declares a `public static final` member class of the constant's body.
+    ///
+    /// @param name the simple name of the member class
+    /// @param spec declares the member class, given the first stage of its header
+    /// @param <N> the brand of the member class
+    /// @return the token of the member class
+    public <N> FinalClassToken<N> declareNestedClass(String name, TypedJavaFile.TypedClassHeaderSpec spec) {
+        NestedDeclarations.NestedType<FinalClassToken<N>> type =
+                NestedDeclarations.class_(owner().target(), owner().desc(), name, List.of(), List.of(), false, spec);
+        nested = java.util.stream.Stream.concat(nested.stream(), java.util.stream.Stream.of(type.type()))
+                .toList();
+        return type.token();
+    }
+
+    /// Declares a `public` member interface of the constant's body, implicitly `static`.
+    ///
+    /// @param name the simple name of the member interface
+    /// @param spec declares the interface, given its builder
+    /// @param <I> the brand of the member interface
+    /// @return the token of the member interface
+    public <I> InterfaceToken<I> declareNestedInterface(String name, TypedJavaFile.TypedInterfaceSpec spec) {
+        NestedDeclarations.NestedType<InterfaceToken<I>> type =
+                NestedDeclarations.interface_(owner().target(), owner().desc(), name, spec);
+        nested = java.util.stream.Stream.concat(nested.stream(), java.util.stream.Stream.of(type.type()))
+                .toList();
+        return type.token();
+    }
+
+    /// Declares a `public` member record of the constant's body, implicitly `static`.
+    ///
+    /// @param name the simple name of the member record
+    /// @param spec declares the record, given its builder
+    /// @param <R> the brand of the member record
+    /// @return the token of the member record
+    public <R> FinalClassToken<R> declareNestedRecord(String name, TypedJavaFile.TypedRecordSpec spec) {
+        NestedDeclarations.NestedType<FinalClassToken<R>> type =
+                NestedDeclarations.record(owner().target(), owner().desc(), name, spec);
+        nested = java.util.stream.Stream.concat(nested.stream(), java.util.stream.Stream.of(type.type()))
+                .toList();
+        return type.token();
+    }
+
+    /// Declares a `public` member enum of the constant's body, implicitly `static`.
+    ///
+    /// @param name the simple name of the member enum
+    /// @param spec declares the enum, given its builder
+    /// @param <E> the brand of the member enum
+    /// @return the token of the member enum
+    public <E> EnumToken<E> declareNestedEnum(String name, TypedJavaFile.TypedEnumSpec spec) {
+        NestedDeclarations.NestedType<EnumToken<E>> type =
+                NestedDeclarations.enum_(owner().target(), owner().desc(), name, spec);
+        nested = java.util.stream.Stream.concat(nested.stream(), java.util.stream.Stream.of(type.type()))
+                .toList();
+        return type.token();
+    }
+
+    /// Refuses a member annotation type of a constant's body: an annotation type cannot be declared
+    /// there (JLS 9.6), unlike a member class, interface, record or enum.
+    ///
+    /// @param name the simple name of the member annotation type
+    /// @param spec declares the annotation type, which is never called
+    /// @return never
+    /// @throws IllegalArgumentException always
+    public java.lang.constant.ClassDesc declareNestedAnnotationType(
+            String name, TypedJavaFile.TypedAnnotationTypeSpec spec) {
+        throw new IllegalArgumentException("cannot declare the member annotation type " + name + " of the body of a"
+                + " constant of " + owner().described() + ": an annotation type cannot be declared in the body of"
+                + " an anonymous class (JLS 9.6)");
+    }
+
+    @Override
+    List<EnumConstantMember> extraMembers() {
+        return List.copyOf(nested);
     }
 
     private static <Self> Declared declared(TypedEnumBuilder<Self> owner, List<Invocable> abstractMethods) {

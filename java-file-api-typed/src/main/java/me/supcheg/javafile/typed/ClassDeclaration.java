@@ -4,6 +4,7 @@ import me.supcheg.javafile.InheritedName;
 import me.supcheg.javafile.Invariants;
 import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.annotation.AnnotationUse;
+import me.supcheg.javafile.builder.ClassBuilder;
 import me.supcheg.javafile.facts.AnnotationRef;
 import me.supcheg.javafile.facts.ClassToken;
 import me.supcheg.javafile.facts.Complete;
@@ -25,6 +26,7 @@ import me.supcheg.javafile.facts.TypeVarToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.model.ClassMember;
 import me.supcheg.javafile.model.Modifier;
+import me.supcheg.javafile.model.TypeDecl;
 import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.type.ClassTypeRef;
 import me.supcheg.javafile.type.TypeParam;
@@ -68,10 +70,14 @@ final class ClassDeclaration<Self> {
     private final Inheritance.Heir.OfClass heir;
     private final DeclarationIdentity identity;
     private final FinalClassToken<Self> self;
+    private final List<DeclarationIdentity> enclosing;
+    private final boolean outerInScope;
+    private final boolean nested;
     private List<Variable> variables;
     private List<AnnotationRef<?>> annotations = List.of();
-    private Set<Modifier> modifiers = Set.of(Modifier.PUBLIC, Modifier.FINAL);
+    private Set<Modifier> modifiers;
     private List<ClassDesc> permits = List.of();
+    private List<TypeDecl> nestedTypes = List.of();
     private Phase<Self> phase = new Phase.Named<>(new Said(List.of(), List.of()), List.of());
 
     /// @param target the classpath the class is compiled against
@@ -81,11 +87,38 @@ final class ClassDeclaration<Self> {
     ///     its bound is a raw type
     /// @throws IllegalStateException if a bound mentions a type parameter of another class
     ClassDeclaration(TargetClasspath target, ClassDesc desc, List<TypeParameter<?>> parameters) {
+        this(target, desc, parameters, List.of(), false, false, false);
+    }
+
+    /// The declaration of a member class: a class declared in the body of another, `static` or inner.
+    ///
+    /// @param target the classpath the class is compiled against
+    /// @param desc the class
+    /// @param parameters the type parameters of the class, in order
+    /// @param enclosing the declarations whose type parameters are in scope in an inner class
+    /// @param outerInScope whether the type parameters of the enclosing class are in scope
+    /// @param staticNested whether the class is a `static` member
+    ClassDeclaration(
+            TargetClasspath target,
+            ClassDesc desc,
+            List<TypeParameter<?>> parameters,
+            List<DeclarationIdentity> enclosing,
+            boolean outerInScope,
+            boolean staticNested,
+            boolean nested) {
         this.target = target;
         this.desc = desc;
-        this.described = "class " + (desc.packageName().isEmpty() ? "" : desc.packageName() + ".") + desc.displayName();
+        this.described = "class "
+                + (desc.packageName().isEmpty() ? "" : desc.packageName() + ".")
+                + me.supcheg.javafile.type.ClassDescNames.qualifiedByDots(desc);
         this.heir = new Inheritance.Heir.OfClass(described, desc);
         this.identity = UnsafeFacts.declarationIdentity(described);
+        this.enclosing = List.copyOf(enclosing);
+        this.outerInScope = outerInScope;
+        this.nested = nested;
+        this.modifiers = staticNested
+                ? Set.of(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
+                : Set.of(Modifier.PUBLIC, Modifier.FINAL);
         IntStream.range(0, parameters.size()).forEach(i -> {
             TypeParameter<?> parameter = parameters.get(i);
             if (parameters.subList(0, i).stream()
@@ -176,7 +209,11 @@ final class ClassDeclaration<Self> {
     /// @param where the place, for messages
     /// @return the scope
     TypeScope scope(String where) {
-        return new TypeScope.Instance(identity, where + " of " + described);
+        String place = where + " of " + described;
+        return outerInScope
+                ? new TypeScope.Nested(
+                        Stream.concat(enclosing.stream(), Stream.of(identity)).toList(), place)
+                : new TypeScope.Instance(identity, place);
     }
 
     /// The scope of a `static` member: no type parameter of the class is in scope (JLS 8.1.2).
@@ -359,6 +396,18 @@ final class ClassDeclaration<Self> {
 
     TargetClasspath target() {
         return target;
+    }
+
+    ClassDesc desc() {
+        return desc;
+    }
+
+    /// The declarations whose type parameters a member class declared here has in scope: those of this
+    /// class, the innermost last.
+    ///
+    /// @return the declarations
+    List<DeclarationIdentity> scopeDeclarations() {
+        return Stream.concat(enclosing.stream(), Stream.of(identity)).toList();
     }
 
     String described() {
@@ -856,30 +905,75 @@ final class ClassDeclaration<Self> {
     /// @return the stage of the bodies
     /// @throws IllegalStateException if the class is not declaring its members
     <B extends MemberBodies<Self, ?>> B bodies(
-            String what,
-            Supplier<MethodTableTemplate> methods,
-            Function<Function<List<ClassMember>, JavaFile>, B> make) {
+            String what, Supplier<MethodTableTemplate> methods, Function<Function<List<ClassMember>, String>, B> make) {
         Extended extended = requireDeclaring(what);
         MethodTableTemplate table = methods.get();
-        B bodies = make.apply(members -> file(extended, members));
+        B bodies = make.apply(members -> render(extended, members));
         phase = new Phase.Bodies<>(bodies, table, extended);
         return bodies;
     }
 
+    /// The source of the class with the members, as the check that its names can be written renders it: a
+    /// top-level class as its file does, a member class over its own declaration.
+    private String render(Extended extended, List<ClassMember> members) {
+        if (!nested) {
+            return file(extended, members).render();
+        }
+        return me.supcheg.javafile.render.StandardRenderer.instance()
+                .render(
+                        new JavaFile.Meta(me.supcheg.javafile.PackageName.of(desc), nestedDecl(extended, members)),
+                        me.supcheg.javafile.render.SourceRenderer.standardFormat());
+    }
+
+    /// Adds a member type of the class, which its file renders after its other members.
+    ///
+    /// @param type the member type
+    /// @throws IllegalStateException if the declarations of the class have ended
+    void declareNested(TypeDecl type) {
+        requireDeclaring("a member type of " + described);
+        nestedTypes = Stream.concat(nestedTypes.stream(), Stream.of(type)).toList();
+    }
+
     private JavaFile file(Extended extended, List<ClassMember> members) {
-        return JavaFile.class_(desc, cb -> {
-                    cb.withExactModifiers(modifiers);
-                    annotationUses().forEach(cb::withAnnotation);
-                    typeParams().forEach(cb::withTypeParam);
-                    switch (extended.superclass()) {
-                        case Superclass.OfObject _ -> {}
-                        case Superclass.Named(var superclass, var _) -> cb.withSuperclass(superclass.typeRef());
-                    }
-                    extended.interfaces().forEach(cb::withInterface);
-                    permits.forEach(cb::withPermits);
-                    members.forEach(cb);
-                })
-                .inheriting(extended.named());
+        return JavaFile.class_(desc, cb -> populate(cb, extended, members)).inheriting(extended.named());
+    }
+
+    /// The declaration of a member class, which its enclosing declaration renders.
+    ///
+    /// @param extended what its header said of its supertypes
+    /// @param members the members, in declaration order
+    /// @return the declaration
+    TypeDecl nestedDecl(Extended extended, List<ClassMember> members) {
+        ClassBuilder cb = new ClassBuilder(desc);
+        populate(cb, extended, members);
+        return cb.build();
+    }
+
+    private void populate(ClassBuilder cb, Extended extended, List<ClassMember> members) {
+        cb.withExactModifiers(modifiers);
+        annotationUses().forEach(cb::withAnnotation);
+        typeParams().forEach(cb::withTypeParam);
+        switch (extended.superclass()) {
+            case Superclass.OfObject _ -> {}
+            case Superclass.Named(var superclass, var _) -> cb.withSuperclass(superclass.typeRef());
+        }
+        extended.interfaces().forEach(cb::withInterface);
+        permits.forEach(cb::withPermits);
+        members.forEach(cb);
+        nestedTypes.forEach(cb::accept);
+    }
+
+    /// Completes the declaration of a member class, by the bodies its specification ended in.
+    ///
+    /// @param ended the bodies the specification returned
+    /// @return the declaration of the member class
+    /// @throws IllegalStateException if a declared member is not defined, or the bodies are not those of
+    ///     this declaration
+    TypeDecl completeNested(MemberBodies<Self, ?> ended) {
+        Phase.Bodies<Self> bodies = (Phase.Bodies<Self>) phase;
+        TypeDecl type = nestedDecl(bodies.extended(), ended.complete());
+        phase = new Phase.Complete<>(methodTable(), bodies.extended().superclass());
+        return type;
     }
 
     /// Completes the declaration, by the bodies its specification ended in.

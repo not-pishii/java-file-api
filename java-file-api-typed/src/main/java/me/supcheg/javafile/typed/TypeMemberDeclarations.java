@@ -1,5 +1,8 @@
 package me.supcheg.javafile.typed;
 
+import me.supcheg.javafile.facts.EnumToken;
+import me.supcheg.javafile.facts.FinalClassToken;
+import me.supcheg.javafile.facts.InterfaceToken;
 import me.supcheg.javafile.facts.Invocable;
 import me.supcheg.javafile.facts.MemberTraits;
 import me.supcheg.javafile.facts.MethodRef0;
@@ -41,6 +44,80 @@ abstract class TypeMemberDeclarations<Self> extends TypeDeclarationSupport<Self>
     TypeMemberDeclarations(
             me.supcheg.javafile.facts.TargetClasspath target, java.lang.constant.ClassDesc desc, String kind) {
         super(target, desc, kind);
+    }
+
+    // ------------------------------------------------------------------
+    // Member types
+    // ------------------------------------------------------------------
+
+    /// Declares a `public static final` member class of the type: a member class of an interface, a
+    /// record or an enum is implicitly `static`, and sees no type parameter of the type it is in.
+    ///
+    /// @param name the simple name of the member class
+    /// @param spec declares the member class, given the first stage of its header
+    /// @param <N> the brand of the member class
+    /// @return the token of the member class
+    public final <N> FinalClassToken<N> declareNestedClass(String name, TypedJavaFile.TypedClassHeaderSpec spec) {
+        requireDeclaring("a member class of " + described());
+        NestedDeclarations.NestedType<FinalClassToken<N>> nested = NestedDeclarations.class_(
+                target(), desc(), name, java.util.List.of(), java.util.List.of(), false, spec);
+        declaredNested(nested.type());
+        return nested.token();
+    }
+
+    /// Declares a `public` member interface of the type, implicitly `static`.
+    ///
+    /// @param name the simple name of the member interface
+    /// @param spec declares the interface, given its builder
+    /// @param <I> the brand of the member interface
+    /// @return the token of the member interface
+    public final <I> InterfaceToken<I> declareNestedInterface(String name, TypedJavaFile.TypedInterfaceSpec spec) {
+        requireDeclaring("a member interface of " + described());
+        NestedDeclarations.NestedType<InterfaceToken<I>> nested =
+                NestedDeclarations.interface_(target(), desc(), name, spec);
+        declaredNested(nested.type());
+        return nested.token();
+    }
+
+    /// Declares a `public` member record of the type, implicitly `static`.
+    ///
+    /// @param name the simple name of the member record
+    /// @param spec declares the record, given its builder
+    /// @param <R> the brand of the member record
+    /// @return the token of the member record
+    public final <R> FinalClassToken<R> declareNestedRecord(String name, TypedJavaFile.TypedRecordSpec spec) {
+        requireDeclaring("a member record of " + described());
+        NestedDeclarations.NestedType<FinalClassToken<R>> nested =
+                NestedDeclarations.record(target(), desc(), name, spec);
+        declaredNested(nested.type());
+        return nested.token();
+    }
+
+    /// Declares a `public` member enum of the type, implicitly `static`.
+    ///
+    /// @param name the simple name of the member enum
+    /// @param spec declares the enum, given its builder
+    /// @param <E> the brand of the member enum
+    /// @return the token of the member enum
+    public final <E> EnumToken<E> declareNestedEnum(String name, TypedJavaFile.TypedEnumSpec spec) {
+        requireDeclaring("a member enum of " + described());
+        NestedDeclarations.NestedType<EnumToken<E>> nested = NestedDeclarations.enum_(target(), desc(), name, spec);
+        declaredNested(nested.type());
+        return nested.token();
+    }
+
+    /// Declares a `public` member annotation type of the type, implicitly `static`.
+    ///
+    /// @param name the simple name of the member annotation type
+    /// @param spec declares the annotation type, given its builder
+    /// @return the binary name of the member annotation type
+    public final java.lang.constant.ClassDesc declareNestedAnnotationType(
+            String name, TypedJavaFile.TypedAnnotationTypeSpec spec) {
+        requireDeclaring("a member annotation type of " + described());
+        NestedDeclarations.NestedType<java.lang.constant.ClassDesc> nested =
+                NestedDeclarations.annotationType(target(), desc(), name, spec);
+        declaredNested(nested.type());
+        return nested.token();
     }
 
     /// The traits of an instance method declared by name: `FINAL` for a record, whose methods no

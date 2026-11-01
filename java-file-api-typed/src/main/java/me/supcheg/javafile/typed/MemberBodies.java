@@ -1,7 +1,6 @@
 package me.supcheg.javafile.typed;
 
 import me.supcheg.javafile.Invariants;
-import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.code.CodeBody;
 import me.supcheg.javafile.code.ConstructorBody;
@@ -82,7 +81,7 @@ public abstract sealed class MemberBodies<Self, S> extends MemberBodyArities<Sel
     private final String described;
     private final FinalClassToken<Self> self;
     private final Superclass superclass;
-    private final Function<List<ClassMember>, JavaFile> written;
+    private final Function<List<ClassMember>, String> written;
     private List<Slot> slots;
 
     /// What a class declared, as its bodies take it.
@@ -95,7 +94,7 @@ public abstract sealed class MemberBodies<Self, S> extends MemberBodyArities<Sel
             ClassDeclaration<Self> owner,
             Superclass superclass,
             List<Member> members,
-            Function<List<ClassMember>, JavaFile> written) {
+            Function<List<ClassMember>, String> written) {
         Declared {
             members = List.copyOf(members);
         }
@@ -378,7 +377,7 @@ public abstract sealed class MemberBodies<Self, S> extends MemberBodyArities<Sel
     /// @throws IllegalStateException if a type the class names cannot be written in its file
     private void requireWritable(List<Slot> with, String added) {
         try {
-            written.apply(members(with)).render();
+            written.apply(members(with));
         } catch (IllegalStateException unwritable) {
             throw new IllegalStateException(
                     added + " of " + described + " cannot be written: " + unwritable.getMessage()

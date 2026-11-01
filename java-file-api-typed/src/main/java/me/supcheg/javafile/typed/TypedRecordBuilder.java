@@ -1,7 +1,9 @@
 package me.supcheg.javafile.typed;
 
 import me.supcheg.javafile.JavaFile;
+import me.supcheg.javafile.builder.RecordBuilder;
 import me.supcheg.javafile.facts.AnnotationRef;
+import me.supcheg.javafile.facts.DeclarationIdentity;
 import me.supcheg.javafile.facts.FinalClassToken;
 import me.supcheg.javafile.facts.InterfaceToken;
 import me.supcheg.javafile.facts.Invocable;
@@ -12,6 +14,7 @@ import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.model.RecordComponent;
 import me.supcheg.javafile.model.RecordMember;
+import me.supcheg.javafile.model.TypeDecl;
 import me.supcheg.javafile.type.ClassTypeRef;
 import me.supcheg.javafile.typed.TypeDeclarationSupport.Member.Kind;
 
@@ -43,14 +46,22 @@ import java.util.List;
 public final class TypedRecordBuilder<Self> extends RecordConstructorArities<Self> {
     private static final ClassDesc CD_RECORD = ClassDesc.of("java.lang", "Record");
     private static final ClassDesc CD_OBJECT = ConstantDescs.CD_Object;
+    private static final java.util.function.Supplier<List<ClassDesc>> SUPERCLASSES =
+            () -> List.of(CD_RECORD, CD_OBJECT);
 
     private final List<Component> components = new ArrayList<>();
     private final List<me.supcheg.javafile.type.ClassOrInterfaceTypeRef> interfaces = new ArrayList<>();
 
-    TypedRecordBuilder(TargetClasspath target, ClassDesc desc) {
+    TypedRecordBuilder(
+            TargetClasspath target,
+            ClassDesc desc,
+            List<TypeParameter<?>> parameters,
+            List<DeclarationIdentity> enclosing) {
         super(target, desc, "record");
-        FinalClassToken<Self> token = UnsafeFacts.<Self>declaredClassToken(
-                new ClassTypeRef(desc), () -> List.of(CD_RECORD, CD_OBJECT), this::table);
+        declareParameters(parameters);
+        FinalClassToken<Self> token = parameters.isEmpty()
+                ? UnsafeFacts.<Self>declaredClassToken(new ClassTypeRef(desc), SUPERCLASSES, this::table)
+                : UnsafeFacts.<Self>declaredClassToken(desc, typeParams(), variables(), SUPERCLASSES, this::table);
         self(token);
     }
 
@@ -166,14 +177,25 @@ public final class TypedRecordBuilder<Self> extends RecordConstructorArities<Sel
 
     @Override
     JavaFile file(List<?> members) {
-        return JavaFile.record(desc(), rb -> {
-            components.forEach(component -> rb.withComponent(new RecordComponent(
-                    component.name(),
-                    component.type().typeRef(),
-                    component.annotations().stream().map(AnnotationRef::toUse).toList())));
-            interfaces.forEach(rb::withInterface);
-            members.forEach(member -> rb.accept((RecordMember) member));
-        });
+        return JavaFile.record(desc(), rb -> populate(rb, members));
+    }
+
+    @Override
+    TypeDecl nestedDecl(List<?> members) {
+        RecordBuilder rb = new RecordBuilder(desc());
+        populate(rb, members);
+        return rb.build();
+    }
+
+    private void populate(RecordBuilder rb, List<?> members) {
+        typeParams().forEach(rb::withTypeParam);
+        components.forEach(component -> rb.withComponent(new RecordComponent(
+                component.name(),
+                component.type().typeRef(),
+                component.annotations().stream().map(AnnotationRef::toUse).toList())));
+        interfaces.forEach(rb::withInterface);
+        members.forEach(member -> rb.accept((RecordMember) member));
+        declaredNested().forEach(rb::accept);
     }
 
     record Component(String name, TypeToken<?> type, List<AnnotationRef<?>> annotations) {

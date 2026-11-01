@@ -10,12 +10,19 @@ import me.supcheg.javafile.facts.Invocable;
 import me.supcheg.javafile.facts.StaticFieldRef;
 import me.supcheg.javafile.facts.TargetClasspath;
 import me.supcheg.javafile.facts.TypeToken;
+import me.supcheg.javafile.facts.TypeVarToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.model.Modifier;
+import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
+import me.supcheg.javafile.type.ClassTypeRef;
+import me.supcheg.javafile.type.TypeParam;
+import me.supcheg.javafile.type.TypeVarRef;
 
 import java.lang.constant.ClassDesc;
+import java.lang.constant.ConstantDescs;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /// The declaration of one type that is not a `final` class (§6.5): an
@@ -36,10 +43,12 @@ abstract class TypeDeclarationSupport<Self> {
     private final String kind;
     private final Inheritance.Heir.OfClass heir;
     private final DeclarationIdentity identity;
+    private List<Variable> variables = List.of();
     private Inheritance inherited;
     private DeclaredToken<Self> self;
     private TypeSignatureRegistry registry;
     private List<Member> members = List.of();
+    private List<me.supcheg.javafile.model.TypeDecl> nested = List.of();
     private boolean membersBegan;
     private boolean complete;
 
@@ -58,6 +67,83 @@ abstract class TypeDeclarationSupport<Self> {
         // enum inherit them.
         this.inherited = Inheritance.of(heir, Inheritance.supertype(heir, target, Object_.TOKEN));
     }
+
+    /// Gives the type its type parameters. A member type of an interface, a record or an enum is
+    /// implicitly `static` (JLS 9.5), so none of them has the type parameters of an enclosing type in
+    /// scope: a kind that may have none calls this with an empty list.
+    ///
+    /// @param parameters the type parameters, in order
+    /// @throws IllegalArgumentException if a type parameter has the name of another or of the type, or
+    ///     its bound is a raw type
+    final void declareParameters(List<TypeParameter<?>> parameters) {
+        IntStream.range(0, parameters.size()).forEach(i -> {
+            TypeParameter<?> parameter = parameters.get(i);
+            if (parameters.subList(0, i).stream()
+                    .anyMatch(before -> before.name().equals(parameter.name()))) {
+                throw new IllegalArgumentException(described + " has two type parameters " + parameter.name()
+                        + ": a type parameter has a name of its own (JLS 6.4)");
+            }
+            if (parameter.name().equals(desc.displayName())) {
+                throw new IllegalArgumentException(described + " cannot have the type parameter " + parameter.name()
+                        + ": in the type the name would mean the type parameter, and the type is named there by"
+                        + " its simple name");
+            }
+            requireNotRaw(parameter.bound(), parameter.name());
+            scope("the header").require(parameter.bound());
+            target.verify(parameter.bound());
+        });
+        this.variables = parameters.stream()
+                .map(parameter -> new Variable(
+                        UnsafeFacts.declaredTypeVarToken(
+                                new TypeVarRef(parameter.name()),
+                                parameter.bound().erasure(),
+                                identity),
+                        parameter.bound()))
+                .toList();
+    }
+
+    private void requireNotRaw(DeclaredToken<?> bound, String variable) {
+        if (bound.typeRef() instanceof ClassTypeRef
+                && !bound.shape().typeParameters().isEmpty()) {
+            throw new IllegalArgumentException("the type parameter " + variable + " of " + described
+                    + " cannot have the raw bound " + bound + ": the type is generic, name it with its type"
+                    + " arguments");
+        }
+    }
+
+    /// The token of a type parameter of the type.
+    ///
+    /// @param index its index
+    /// @return the token
+    final TypeVarToken<?> variable(int index) {
+        return variables.get(index).token();
+    }
+
+    /// The type variables of the type parameters, in order.
+    ///
+    /// @return the variables, in order
+    final List<TypeVarToken<?>> variables() {
+        return variables.stream().map(Variable::token).toList();
+    }
+
+    /// The type parameters of the type as they are rendered, see [ClassDeclaration#typeParams()].
+    ///
+    /// @return the type parameters, in order
+    final List<TypeParam> typeParams() {
+        return variables.stream()
+                .map(variable -> new TypeParam(variable.token().typeRef().name(), leftmost(variable.first())))
+                .toList();
+    }
+
+    private static List<ClassOrInterfaceTypeRef> leftmost(DeclaredToken<?> first) {
+        return first.erasure().equals(ConstantDescs.CD_Object) ? List.of() : List.of(first.typeRef());
+    }
+
+    /// A type parameter of the type.
+    ///
+    /// @param token its token
+    /// @param first its leftmost bound, `Object` for none
+    private record Variable(TypeVarToken<?> token, DeclaredToken<?> first) {}
 
     /// Makes the token of the type, once its kind knows how to make it.
     ///
@@ -87,7 +173,9 @@ abstract class TypeDeclarationSupport<Self> {
     }
 
     final List<Subtyping.Bounded> bounded() {
-        return List.of();
+        return variables.stream()
+                .map(variable -> new Subtyping.Bounded(variable.token(), List.of(variable.first())))
+                .toList();
     }
 
     final TypeScope scope(String where) {
@@ -116,6 +204,7 @@ abstract class TypeDeclarationSupport<Self> {
     /// @throws IllegalStateException if the members have begun
     final <X> Upcast<Self, X> addSupertype(DeclaredToken<X> supertype) {
         requireHeader("a supertype of " + described);
+        scope("a supertype of " + described).require(supertype);
         target.verify(supertype);
         inherited = inherited.with(Inheritance.supertype(heir, target, supertype));
         return new Upcast<>(self, supertype);
@@ -325,6 +414,22 @@ abstract class TypeDeclarationSupport<Self> {
         members = Stream.concat(members.stream(), Stream.of(member)).toList();
     }
 
+    /// Adds a member type of the type, which its file renders after its other members.
+    ///
+    /// @param type the member type
+    /// @throws IllegalStateException if the declarations have ended
+    final void declaredNested(me.supcheg.javafile.model.TypeDecl type) {
+        requireDeclaring("a member type of " + described);
+        nested = Stream.concat(nested.stream(), Stream.of(type)).toList();
+    }
+
+    /// The member types of the type, in declaration order.
+    ///
+    /// @return the member types
+    final List<me.supcheg.javafile.model.TypeDecl> declaredNested() {
+        return nested;
+    }
+
     /// The declarations of the members end and their bodies begin.
     ///
     /// @param make makes the bodies of this kind
@@ -361,13 +466,29 @@ abstract class TypeDeclarationSupport<Self> {
     /// @throws IllegalStateException if a declared member is not defined, or the bodies are not those of this
     ///     declaration
     final JavaFile complete(TypedTypeBodies<Self, ?> bodies) {
+        requireBodies();
+        JavaFile file = file(bodies.complete());
+        complete = true;
+        return file;
+    }
+
+    /// Completes the declaration of a member type with the bodies its specification ended in.
+    ///
+    /// @param bodies the bodies the specification returned
+    /// @return the declaration of the member type
+    /// @throws IllegalStateException if the declarations have not ended
+    final me.supcheg.javafile.model.TypeDecl completeNested(TypedTypeBodies<Self, ?> bodies) {
+        requireBodies();
+        me.supcheg.javafile.model.TypeDecl type = nestedDecl(bodies.complete());
+        complete = true;
+        return type;
+    }
+
+    private void requireBodies() {
         if (!membersBegan) {
             throw new IllegalStateException(
                     "the specification of " + described + " returned bodies before its" + " declarations ended");
         }
-        JavaFile file = file(bodies.complete());
-        complete = true;
-        return file;
     }
 
     /// The file of the type with its members, as its kind renders it.
@@ -375,6 +496,12 @@ abstract class TypeDeclarationSupport<Self> {
     /// @param members the members, in declaration order
     /// @return the file
     abstract JavaFile file(List<?> members);
+
+    /// The declaration of a member type with its members, as its kind renders it.
+    ///
+    /// @param members the members, in declaration order
+    /// @return the declaration
+    abstract me.supcheg.javafile.model.TypeDecl nestedDecl(List<?> members);
 
     /// A member of the type as it is declared, before its body or initializer is given.
     sealed interface Member {

@@ -142,6 +142,17 @@ public final class TypedModuleBuilder {
         }
     }
 
+    /// Refuses a member type of a `module-info.java`: the file declares the directives of a module
+    /// alone and no type (JLS 7.7).
+    ///
+    /// @param name the simple name of the member type
+    /// @return never
+    /// @throws IllegalArgumentException always
+    public ClassDesc nestedType(String name) {
+        throw new IllegalArgumentException("cannot declare the member type " + name + " in the module-info.java"
+                + " of module " + moduleName + ": a module-info.java declares directives alone (JLS 7.7)");
+    }
+
     /// The declaration of the module is complete.
     ///
     /// @return the module-info file

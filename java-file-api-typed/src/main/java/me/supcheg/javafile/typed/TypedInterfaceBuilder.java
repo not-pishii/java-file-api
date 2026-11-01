@@ -1,10 +1,13 @@
 package me.supcheg.javafile.typed;
 
 import me.supcheg.javafile.JavaFile;
+import me.supcheg.javafile.builder.InterfaceBuilder;
+import me.supcheg.javafile.facts.DeclarationIdentity;
 import me.supcheg.javafile.facts.InterfaceToken;
 import me.supcheg.javafile.facts.TargetClasspath;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.model.InterfaceMember;
+import me.supcheg.javafile.model.TypeDecl;
 import me.supcheg.javafile.type.ClassTypeRef;
 
 import java.lang.constant.ClassDesc;
@@ -39,9 +42,18 @@ public final class TypedInterfaceBuilder<Self> extends TypeMemberDeclarations<Se
     private final List<ClassDesc> permits = new ArrayList<>();
     private final List<me.supcheg.javafile.type.ClassOrInterfaceTypeRef> extendsInterfaces = new ArrayList<>();
 
-    TypedInterfaceBuilder(TargetClasspath target, ClassDesc desc) {
+    TypedInterfaceBuilder(
+            TargetClasspath target,
+            ClassDesc desc,
+            List<TypeParameter<?>> parameters,
+            List<DeclarationIdentity> enclosing) {
         super(target, desc, "interface");
-        self(UnsafeFacts.<Self>declaredInterfaceToken(new ClassTypeRef(desc), this::table));
+        declareParameters(parameters);
+        self(
+                parameters.isEmpty()
+                        ? UnsafeFacts.<Self>declaredInterfaceToken(new ClassTypeRef(desc), this::table)
+                        : UnsafeFacts.<Self>declaredInterfaceToken(
+                                desc, typeParams(), variables(), List.of(), this::table));
     }
 
     @Override
@@ -96,10 +108,21 @@ public final class TypedInterfaceBuilder<Self> extends TypeMemberDeclarations<Se
 
     @Override
     JavaFile file(List<?> members) {
-        return JavaFile.interface_(desc(), ib -> {
-            extendsInterfaces.forEach(ib::withExtends);
-            permits.forEach(ib::withPermits);
-            members.forEach(member -> ib.accept((InterfaceMember) member));
-        });
+        return JavaFile.interface_(desc(), ib -> populate(ib, members));
+    }
+
+    @Override
+    TypeDecl nestedDecl(List<?> members) {
+        InterfaceBuilder ib = new InterfaceBuilder(desc());
+        populate(ib, members);
+        return ib.build();
+    }
+
+    private void populate(InterfaceBuilder ib, List<?> members) {
+        typeParams().forEach(ib::withTypeParam);
+        extendsInterfaces.forEach(ib::withExtends);
+        permits.forEach(ib::withPermits);
+        members.forEach(member -> ib.accept((InterfaceMember) member));
+        declaredNested().forEach(ib::accept);
     }
 }

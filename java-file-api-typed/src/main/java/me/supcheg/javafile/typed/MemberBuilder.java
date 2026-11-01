@@ -3,8 +3,10 @@ package me.supcheg.javafile.typed;
 import me.supcheg.javafile.facts.AnnotationRef;
 import me.supcheg.javafile.facts.Arity;
 import me.supcheg.javafile.facts.ClassToken;
+import me.supcheg.javafile.facts.EnumToken;
 import me.supcheg.javafile.facts.FieldRef;
 import me.supcheg.javafile.facts.FinalClassToken;
+import me.supcheg.javafile.facts.InterfaceToken;
 import me.supcheg.javafile.facts.Invocable;
 import me.supcheg.javafile.facts.InvocableKind;
 import me.supcheg.javafile.facts.MemberFact;
@@ -23,6 +25,7 @@ import me.supcheg.javafile.type.ArrayTypeRef;
 import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.type.TypeRef;
 
+import java.lang.constant.ClassDesc;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -74,6 +77,189 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
     /// @return the self token
     public final FinalClassToken<Self> self() {
         return self;
+    }
+
+    // ------------------------------------------------------------------
+    // Member types
+    // ------------------------------------------------------------------
+
+    /// Declares a `public static final` member class of the class, which the file of the class renders.
+    ///
+    /// The class is a declaration of its own: `spec` receives its header, branded with a `Self` of its
+    /// own, and returns the bodies of its members. A member class that is `static` does not see the type
+    /// parameters of the class it is declared in; [#declareInnerClass] declares one that does.
+    ///
+    /// @param name the simple name of the member class
+    /// @param spec declares the member class, given the first stage of its header
+    /// @param <N> the brand of the member class
+    /// @return the token of the member class, which the body of the class can name
+    /// @throws IllegalArgumentException if `name` cannot name a type
+    /// @throws IllegalStateException if the declarations of the class have ended, or a member of the
+    ///     member class is not defined
+    public final <N> FinalClassToken<N> declareNestedClass(String name, TypedJavaFile.TypedClassHeaderSpec spec) {
+        return nestedClass(name, List.of(), List.of(), false, new NestedDeclarations.ClassBodies() {
+            @Override
+            public <N2> MemberBodies<N2, ?> build(ClassHeader<N2> h, ClassDeclaration<N2> declaration) {
+                return spec.build(h);
+            }
+        });
+    }
+
+    /// Declares an inner member class of the class: `public final class Inner`, which captures the
+    /// instance of the class it is declared in and sees its type parameters (JLS 8.1.3).
+    ///
+    /// @param name the simple name of the member class
+    /// @param spec declares the member class, given the first stage of its header
+    /// @param <N> the brand of the member class
+    /// @return the token of the member class
+    public final <N> FinalClassToken<N> declareInnerClass(String name, TypedJavaFile.TypedClassHeaderSpec spec) {
+        return nestedClass(name, List.of(), owner.scopeDeclarations(), true, new NestedDeclarations.ClassBodies() {
+            @Override
+            public <N2> MemberBodies<N2, ?> build(ClassHeader<N2> h, ClassDeclaration<N2> declaration) {
+                return spec.build(h);
+            }
+        });
+    }
+
+    /// Declares a generic `public static final` member class with one type parameter, see
+    /// [#declareNestedClass(String, TypedJavaFile.TypedClassHeaderSpec)].
+    ///
+    /// @param name the simple name of the member class
+    /// @param p1 the type parameter
+    /// @param spec declares the member class, given its header and the token of the type parameter
+    /// @param <N> the brand of the member class
+    /// @param <B1> the leftmost bound of the type parameter
+    /// @return the token of the member class
+    public final <N, B1> FinalClassToken<N> declareNestedClass(
+            String name, TypeParameter<B1> p1, TypedJavaFile.TypedGenericClassSpec1<B1> spec) {
+        return nestedClass(name, List.of(p1), List.of(), false, new NestedDeclarations.ClassBodies() {
+            @Override
+            public <N2> MemberBodies<N2, ?> build(ClassHeader<N2> h, ClassDeclaration<N2> declaration) {
+                return spec.build(h, NestedDeclarations.variable(declaration, 0));
+            }
+        });
+    }
+
+    /// Declares a generic `public static final` member class with two type parameters.
+    ///
+    /// @param name the simple name of the member class
+    /// @param p1 the first type parameter
+    /// @param p2 the second type parameter
+    /// @param spec declares the member class, given its header and the tokens of its type parameters
+    /// @param <N> the brand of the member class
+    /// @param <B1> the leftmost bound of the first type parameter
+    /// @param <B2> the leftmost bound of the second type parameter
+    /// @return the token of the member class
+    public final <N, B1, B2> FinalClassToken<N> declareNestedClass(
+            String name,
+            TypeParameter<B1> p1,
+            TypeParameter<B2> p2,
+            TypedJavaFile.TypedGenericClassSpec2<B1, B2> spec) {
+        return nestedClass(name, List.of(p1, p2), List.of(), false, new NestedDeclarations.ClassBodies() {
+            @Override
+            public <N2> MemberBodies<N2, ?> build(ClassHeader<N2> h, ClassDeclaration<N2> declaration) {
+                return spec.build(
+                        h, NestedDeclarations.variable(declaration, 0), NestedDeclarations.variable(declaration, 1));
+            }
+        });
+    }
+
+    /// Declares a generic `public static final` member class with three type parameters.
+    ///
+    /// @param name the simple name of the member class
+    /// @param p1 the first type parameter
+    /// @param p2 the second type parameter
+    /// @param p3 the third type parameter
+    /// @param spec declares the member class, given its header and the tokens of its type parameters
+    /// @param <N> the brand of the member class
+    /// @param <B1> the leftmost bound of the first type parameter
+    /// @param <B2> the leftmost bound of the second type parameter
+    /// @param <B3> the leftmost bound of the third type parameter
+    /// @return the token of the member class
+    public final <N, B1, B2, B3> FinalClassToken<N> declareNestedClass(
+            String name,
+            TypeParameter<B1> p1,
+            TypeParameter<B2> p2,
+            TypeParameter<B3> p3,
+            TypedJavaFile.TypedGenericClassSpec3<B1, B2, B3> spec) {
+        return nestedClass(name, List.of(p1, p2, p3), List.of(), false, new NestedDeclarations.ClassBodies() {
+            @Override
+            public <N2> MemberBodies<N2, ?> build(ClassHeader<N2> h, ClassDeclaration<N2> declaration) {
+                return spec.build(
+                        h,
+                        NestedDeclarations.variable(declaration, 0),
+                        NestedDeclarations.variable(declaration, 1),
+                        NestedDeclarations.variable(declaration, 2));
+            }
+        });
+    }
+
+    /// Declares a `public` member interface of the class, implicitly `static`.
+    ///
+    /// @param name the simple name of the member interface
+    /// @param spec declares the interface, given its builder
+    /// @param <I> the brand of the member interface
+    /// @return the token of the member interface
+    public final <I> InterfaceToken<I> declareNestedInterface(String name, TypedJavaFile.TypedInterfaceSpec spec) {
+        owner.requireDeclaring("a member interface of " + owner.described());
+        NestedDeclarations.NestedType<InterfaceToken<I>> nested =
+                NestedDeclarations.interface_(owner.target(), owner.desc(), name, spec);
+        owner.declareNested(nested.type());
+        return nested.token();
+    }
+
+    /// Declares a `public` member record of the class, implicitly `static`.
+    ///
+    /// @param name the simple name of the member record
+    /// @param spec declares the record, given its builder
+    /// @param <R> the brand of the member record
+    /// @return the token of the member record
+    public final <R> FinalClassToken<R> declareNestedRecord(String name, TypedJavaFile.TypedRecordSpec spec) {
+        owner.requireDeclaring("a member record of " + owner.described());
+        NestedDeclarations.NestedType<FinalClassToken<R>> nested =
+                NestedDeclarations.record(owner.target(), owner.desc(), name, spec);
+        owner.declareNested(nested.type());
+        return nested.token();
+    }
+
+    /// Declares a `public` member enum of the class, implicitly `static`.
+    ///
+    /// @param name the simple name of the member enum
+    /// @param spec declares the enum, given its builder
+    /// @param <E> the brand of the member enum
+    /// @return the token of the member enum
+    public final <E> EnumToken<E> declareNestedEnum(String name, TypedJavaFile.TypedEnumSpec spec) {
+        owner.requireDeclaring("a member enum of " + owner.described());
+        NestedDeclarations.NestedType<EnumToken<E>> nested =
+                NestedDeclarations.enum_(owner.target(), owner.desc(), name, spec);
+        owner.declareNested(nested.type());
+        return nested.token();
+    }
+
+    /// Declares a `public` member annotation type of the class, implicitly `static`.
+    ///
+    /// @param name the simple name of the member annotation type
+    /// @param spec declares the annotation type, given its builder
+    /// @return the binary name of the member annotation type
+    public final ClassDesc declareNestedAnnotationType(String name, TypedJavaFile.TypedAnnotationTypeSpec spec) {
+        owner.requireDeclaring("a member annotation type of " + owner.described());
+        NestedDeclarations.NestedType<ClassDesc> nested =
+                NestedDeclarations.annotationType(owner.target(), owner.desc(), name, spec);
+        owner.declareNested(nested.type());
+        return nested.token();
+    }
+
+    private <N> FinalClassToken<N> nestedClass(
+            String name,
+            List<TypeParameter<?>> parameters,
+            List<me.supcheg.javafile.facts.DeclarationIdentity> enclosing,
+            boolean inner,
+            NestedDeclarations.ClassBodies spec) {
+        owner.requireDeclaring("a member class of " + owner.described());
+        NestedDeclarations.NestedType<FinalClassToken<N>> nested =
+                NestedDeclarations.class_(owner.target(), owner.desc(), name, parameters, enclosing, inner, spec);
+        owner.declareNested(nested.type());
+        return nested.token();
     }
 
     @Override

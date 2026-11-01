@@ -1,12 +1,14 @@
 package me.supcheg.javafile.typed;
 
 import me.supcheg.javafile.JavaFile;
+import me.supcheg.javafile.builder.EnumBuilder;
 import me.supcheg.javafile.facts.InterfaceToken;
 import me.supcheg.javafile.facts.Invocable;
 import me.supcheg.javafile.facts.TargetClasspath;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.model.EnumConstant;
 import me.supcheg.javafile.model.EnumMember;
+import me.supcheg.javafile.model.TypeDecl;
 import me.supcheg.javafile.type.ClassTypeRef;
 import me.supcheg.javafile.typed.TypeDeclarationSupport.Member.Kind;
 
@@ -153,13 +155,23 @@ public final class TypedEnumBuilder<Self> extends EnumConstructorArities<Self> {
 
     @Override
     JavaFile file(List<?> members) {
-        return JavaFile.enum_(desc(), eb -> {
-            for (EnumConstant constant : bodies.enumConstants()) {
-                eb.withConstant(constant);
-            }
-            interfaces.forEach(eb::withInterface);
-            members.forEach(member -> eb.accept((EnumMember) member));
-        });
+        return JavaFile.enum_(desc(), eb -> populate(eb, members));
+    }
+
+    @Override
+    TypeDecl nestedDecl(List<?> members) {
+        EnumBuilder eb = new EnumBuilder(desc());
+        populate(eb, members);
+        return eb.build();
+    }
+
+    private void populate(EnumBuilder eb, List<?> members) {
+        for (EnumConstant constant : bodies.enumConstants()) {
+            eb.withConstant(constant);
+        }
+        interfaces.forEach(eb::withInterface);
+        members.forEach(member -> eb.accept((EnumMember) member));
+        declaredNested().forEach(eb::accept);
     }
 
     /// A constant as it was declared.
