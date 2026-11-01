@@ -1,5 +1,6 @@
 package me.supcheg.javafile.render;
 
+import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.annotation.LiteralValue;
 import me.supcheg.javafile.builder.AnnotationTypeBuilder;
 import me.supcheg.javafile.builder.ClassBuilder;
@@ -7,6 +8,7 @@ import me.supcheg.javafile.builder.EnumBuilder;
 import me.supcheg.javafile.builder.InterfaceBuilder;
 import me.supcheg.javafile.builder.RecordBuilder;
 import me.supcheg.javafile.code.IntLiteral;
+import me.supcheg.javafile.doc.DocComment;
 import me.supcheg.javafile.model.ClassDecl;
 import me.supcheg.javafile.model.Modifier;
 import me.supcheg.javafile.model.Param;
@@ -1303,6 +1305,110 @@ class TypeDeclRendererTest {
                         public class Outer {
                             public static @interface Marker {
                             }
+                        }
+                        """);
+    }
+
+    @Test
+    void rendersADocumentedRecordComponentAsAParamOfTheRecord() {
+        RecordBuilder builder = new RecordBuilder(ClassDesc.of("geom", "Point"));
+        builder.withComponent(
+                        "x",
+                        PrimitiveTypeRef.INT,
+                        DocComment.of(d -> d.paragraph("The x coordinate.").paragraph("It grows to the right.")))
+                .withComponent("y", PrimitiveTypeRef.INT, DocComment.of(d -> d.param("y", "only a tag")));
+
+        String rendered = TypeDeclRenderer.renderTypeDecl(
+                builder.build(), Context.of(standardFormat(), new ImportManager("geom")));
+
+        assertThat(rendered).isEqualTo("""
+                        /**
+                         * @param x The x coordinate.
+                         *     It grows to the right.
+                         */
+                        public record Point(int x, int y) {
+                        }
+                        """);
+    }
+
+    @Test
+    void rendersARecordComponentCommentBesideTheCommentOfTheRecord() {
+        RecordBuilder builder = new RecordBuilder(ClassDesc.of("geom", "Point"));
+        builder.withDoc(DocComment.of("A point."))
+                .withComponent("x", PrimitiveTypeRef.INT, DocComment.of("The x coordinate."));
+
+        String rendered = TypeDeclRenderer.renderTypeDecl(
+                builder.build(), Context.of(standardFormat(), new ImportManager("geom")));
+
+        assertThat(rendered).isEqualTo("""
+                        /**
+                         * A point.
+                         *
+                         * @param x The x coordinate.
+                         */
+                        public record Point(int x) {
+                        }
+                        """);
+    }
+
+    @Test
+    void rendersARecordComponentCommentWithAListAsAParamOfTheRecord() {
+        RecordBuilder builder = new RecordBuilder(ClassDesc.of("geom", "Point"));
+        builder.withComponent(
+                "x",
+                PrimitiveTypeRef.INT,
+                DocComment.of(d -> d.list(List.of(
+                        me.supcheg.javafile.doc.DocText.of("first"), me.supcheg.javafile.doc.DocText.of("second")))));
+
+        String rendered = TypeDeclRenderer.renderTypeDecl(
+                builder.build(), Context.of(standardFormat(), new ImportManager("geom")));
+
+        assertThat(rendered).isEqualTo("""
+                        /**
+                         * @param x first
+                         *     second
+                         */
+                        public record Point(int x) {
+                        }
+                        """);
+    }
+
+    @Test
+    void rendersAnnotatedAndDocumentedAnnotationElements() {
+        ClassDesc marked = ClassDesc.of("me.supcheg.example", "Marked");
+        AnnotationUse annotation = new AnnotationUse(marked, List.of());
+        AnnotationTypeBuilder builder = new AnnotationTypeBuilder(ClassDesc.of("me.supcheg.example", "Route"));
+        builder.withElement("plain", PrimitiveTypeRef.INT)
+                .withElement("marked", Types.STRING, annotation)
+                .withElement("defaulted", PrimitiveTypeRef.INT, new LiteralValue(new IntLiteral(0)), annotation)
+                .withElement("documented", PrimitiveTypeRef.INT, DocComment.of("The value."), annotation)
+                .withElement(
+                        "documentedDefault",
+                        PrimitiveTypeRef.INT,
+                        new LiteralValue(new IntLiteral(1)),
+                        DocComment.of("The size."),
+                        annotation);
+
+        String rendered = TypeDeclRenderer.renderTypeDecl(
+                builder.build(), Context.of(standardFormat(), new ImportManager("me.supcheg.example")));
+
+        assertThat(rendered).isEqualTo("""
+                        public @interface Route {
+                            int plain();
+                            @Marked
+                            String marked();
+                            @Marked
+                            int defaulted() default 0;
+                            /**
+                             * The value.
+                             */
+                            @Marked
+                            int documented();
+                            /**
+                             * The size.
+                             */
+                            @Marked
+                            int documentedDefault() default 1;
                         }
                         """);
     }

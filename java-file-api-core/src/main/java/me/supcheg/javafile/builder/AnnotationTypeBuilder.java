@@ -169,6 +169,58 @@ public final class AnnotationTypeBuilder implements Consumer<AnnotationElementDe
         return this;
     }
 
+    /// Adds an element that declares annotations and has no default value.
+    ///
+    /// @param name the element name
+    /// @param type the element's declared type
+    /// @param annotations the annotations, in order
+    /// @return this builder
+    public AnnotationTypeBuilder withElement(String name, TypeRef type, AnnotationUse... annotations) {
+        elements.add(new AnnotationElementDecl(name, type, List.of(annotations), Optional.empty(), Optional.empty()));
+        return this;
+    }
+
+    /// Adds an element that declares annotations and a default value.
+    ///
+    /// @param name the element name
+    /// @param type the element's declared type
+    /// @param defaultValue the element's default value
+    /// @param annotations the annotations, in order
+    /// @return this builder
+    public AnnotationTypeBuilder withElement(
+            String name, TypeRef type, AnnotationValue defaultValue, AnnotationUse... annotations) {
+        elements.add(new AnnotationElementDecl(
+                name, type, List.of(annotations), Optional.of(defaultValue), Optional.empty()));
+        return this;
+    }
+
+    /// Adds a documented element that declares annotations and has no default value.
+    ///
+    /// @param name the element name
+    /// @param type the element's declared type
+    /// @param doc the documentation comment of the element
+    /// @param annotations the annotations, in order
+    /// @return this builder
+    public AnnotationTypeBuilder withElement(String name, TypeRef type, DocComment doc, AnnotationUse... annotations) {
+        elements.add(new AnnotationElementDecl(name, type, List.of(annotations), Optional.empty(), Optional.of(doc)));
+        return this;
+    }
+
+    /// Adds a documented element that declares annotations and a default value.
+    ///
+    /// @param name the element name
+    /// @param type the element's declared type
+    /// @param defaultValue the element's default value
+    /// @param doc the documentation comment of the element
+    /// @param annotations the annotations, in order
+    /// @return this builder
+    public AnnotationTypeBuilder withElement(
+            String name, TypeRef type, AnnotationValue defaultValue, DocComment doc, AnnotationUse... annotations) {
+        elements.add(new AnnotationElementDecl(
+                name, type, List.of(annotations), Optional.of(defaultValue), Optional.of(doc)));
+        return this;
+    }
+
     @Override
     public void accept(AnnotationElementDecl element) {
         elements.add(element);

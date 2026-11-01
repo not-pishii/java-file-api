@@ -3,7 +3,11 @@ package me.supcheg.javafile.render;
 import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.code.CodeBody;
 import me.supcheg.javafile.code.Stmt;
+import me.supcheg.javafile.doc.DocBlock;
 import me.supcheg.javafile.doc.DocComment;
+import me.supcheg.javafile.doc.DocInline;
+import me.supcheg.javafile.doc.DocTag;
+import me.supcheg.javafile.doc.DocText;
 import me.supcheg.javafile.model.AbstractMethodDecl;
 import me.supcheg.javafile.model.AnnotationElementDecl;
 import me.supcheg.javafile.model.AnnotationTypeDecl;
@@ -38,6 +42,7 @@ import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.TypeRef;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -368,7 +373,7 @@ final class TypeDeclRenderer {
     }
 
     private static String renderRecord(RecordDecl decl, Context ctx) {
-        StringBuilder sb = new StringBuilder(DocRenderer.render(decl.doc(), ctx));
+        StringBuilder sb = new StringBuilder(DocRenderer.render(recordDoc(decl), ctx));
         sb.append(AnnotationRenderer.renderAnnotations(decl.annotations(), ctx));
         sb.append(ctx.pad());
         sb.append(TypeRefRenderer.renderModifiers(decl.modifiers()))
@@ -377,11 +382,7 @@ final class TypeDeclRenderer {
         sb.append(TypeRefRenderer.renderTypeParams(decl.typeParams(), ctx));
         sb.append('(')
                 .append(decl.components().stream()
-                        .map(c -> {
-                            ctx.variable(c.name());
-                            return AnnotationRenderer.renderInlineAnnotations(c.annotations(), ctx)
-                                    + TypeRefRenderer.renderType(c.type(), ctx) + " " + c.name();
-                        })
+                        .map(c -> renderRecordComponent(c, ctx))
                         .collect(Collectors.joining(", ")))
                 .append(')');
         if (!decl.interfaces().isEmpty()) {
@@ -395,6 +396,55 @@ final class TypeDeclRenderer {
                 decl.members(), ctx.withIncreasedPad(), ClassDescNames.leafSimpleName(decl.desc()), decl.components()));
         sb.append(ctx.pad()).append("}").append(ctx.newline());
         return sb.toString();
+    }
+
+    // A record component's comment is written where javadoc reads it: as an `@param` tag of the
+    // record, which has no declaration of its own in the header to attach a comment to.
+    private static Optional<DocComment> recordDoc(RecordDecl decl) {
+        List<RecordComponent> documented = decl.components().stream()
+                .filter(component -> component
+                        .doc()
+                        .map(comment -> !comment.description().isEmpty())
+                        .orElse(false))
+                .toList();
+        if (documented.isEmpty()) {
+            return decl.doc();
+        }
+        List<DocBlock> description = decl.doc().map(DocComment::description).orElse(List.of());
+        List<DocTag> tags = new ArrayList<>(decl.doc().map(DocComment::tags).orElse(List.of()));
+        for (RecordComponent component : documented) {
+            tags.add(new DocTag.Param(
+                    component.name(), description(component.doc().orElseThrow())));
+        }
+        return Optional.of(new DocComment(description, tags));
+    }
+
+    // The description of a comment as the text of a block tag: its paragraphs and the items of
+    // its lists, one after another, a line break between them.
+    private static DocText description(DocComment doc) {
+        List<DocInline> parts = new ArrayList<>();
+        boolean first = true;
+        for (DocBlock block : doc.description()) {
+            List<DocText> texts =
+                    switch (block) {
+                        case DocBlock.Paragraph(DocText text) -> List.of(text);
+                        case DocBlock.BulletList(var items) -> items.toList();
+                    };
+            for (DocText text : texts) {
+                if (!first) {
+                    parts.add(new DocInline.Text("\n"));
+                }
+                parts.addAll(text.parts().toList());
+                first = false;
+            }
+        }
+        return DocText.of(parts.getFirst(), parts.subList(1, parts.size()).toArray(DocInline[]::new));
+    }
+
+    private static String renderRecordComponent(RecordComponent component, Context ctx) {
+        ctx.variable(component.name());
+        return AnnotationRenderer.renderInlineAnnotations(component.annotations(), ctx)
+                + TypeRefRenderer.renderType(component.type(), ctx) + " " + component.name();
     }
 
     private static String renderRecordMembers(
@@ -562,6 +612,7 @@ final class TypeDeclRenderer {
         Context inner = ctx.withIncreasedPad();
         for (AnnotationElementDecl element : decl.elements()) {
             sb.append(DocRenderer.render(element.doc(), inner))
+                    .append(AnnotationRenderer.renderAnnotations(element.annotations(), inner))
                     .append(inner.pad())
                     .append(TypeRefRenderer.renderType(element.type(), inner))
                     .append(' ')

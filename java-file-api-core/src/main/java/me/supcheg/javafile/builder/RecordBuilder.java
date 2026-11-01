@@ -164,6 +164,17 @@ public final class RecordBuilder implements Consumer<RecordMember> {
         return this;
     }
 
+    /// Adds a documented record component, in declaration order.
+    ///
+    /// @param name the component name
+    /// @param type the declared component type
+    /// @param doc the documentation comment of the component
+    /// @return this builder
+    public RecordBuilder withComponent(String name, TypeRef type, DocComment doc) {
+        components.add(new RecordComponent(name, type, List.of(), Optional.of(doc)));
+        return this;
+    }
+
     /// Adds a pre-built record component, in declaration order.
     ///
     /// @param component the component to add
