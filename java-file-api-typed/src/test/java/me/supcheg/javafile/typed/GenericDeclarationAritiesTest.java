@@ -1,6 +1,7 @@
 package me.supcheg.javafile.typed;
 
 import me.supcheg.javafile.JavaFile;
+import me.supcheg.javafile.facts.FactsArity;
 import me.supcheg.javafile.facts.TargetClasspath;
 import me.supcheg.javafile.facts.TypeVarToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
@@ -21,8 +22,8 @@ import static me.supcheg.javafile.typed.TypedJavaFile.typeParam;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
-/// The stages of a generic declaration reach twelve type parameters (8g): a class, an interface and a
-/// record are declared with one to twelve, with a bound on the type parameters and a further bound on
+/// The stages of a generic declaration reach [FactsArity#MAX_ARITY] type parameters (8g): a class, an interface and a
+/// record are declared with one to [FactsArity#MAX_ARITY], with a bound on the type parameters and a further bound on
 /// the header, rendered, compiled under `-Xlint:all` and run where there is something to run. A type
 /// parameter repeated, a raw bound and a type parameter that names the type are refused at every arity.
 class GenericDeclarationAritiesTest {
@@ -42,12 +43,12 @@ class GenericDeclarationAritiesTest {
     }
 
     // ------------------------------------------------------------------
-    // One to twelve type parameters
+    // One to the widest arity of type parameters
     // ------------------------------------------------------------------
 
     @Test
-    void aClassAnInterfaceAndARecordDeclareOneToTwelveTypeParameters() {
-        for (int n = 1; n <= 12; n++) {
+    void aClassAnInterfaceAndARecordDeclareEveryArityOfTypeParameters() {
+        for (int n = 1; n <= FactsArity.MAX_ARITY; n++) {
             assertThat(classOf(n).render())
                     .contains("public final class Box" + variables(n) + " {")
                     .contains("public T" + n + " last() {");
@@ -59,8 +60,8 @@ class GenericDeclarationAritiesTest {
     }
 
     @Test
-    void aClassOfOneToTwelveTypeParametersCompilesAndRuns() throws Throwable {
-        for (int n : new int[] {1, 2, 3, 4, 8, 12}) {
+    void aClassOfEveryArityOfTypeParametersCompilesAndRuns() throws Throwable {
+        for (int n : new int[] {1, 2, 3, 4, 8, 12, 13, 14, 15, FactsArity.MAX_ARITY}) {
             CompiledClasses compiled = CompiledClasses.of(classOf(n));
             Object box = compiled.instantiate("me.supcheg.example.Box");
             assertThat(box.getClass().getMethod("last").invoke(box)).isNull();
@@ -68,16 +69,16 @@ class GenericDeclarationAritiesTest {
     }
 
     @Test
-    void anInterfaceOfOneToTwelveTypeParametersCompiles() {
-        for (int n : new int[] {1, 2, 3, 4, 8, 12}) {
+    void anInterfaceOfEveryArityOfTypeParametersCompiles() {
+        for (int n : new int[] {1, 2, 3, 4, 8, 12, 13, 14, 15, FactsArity.MAX_ARITY}) {
             CompiledClasses compiled = CompiledClasses.of(interfaceOf(n));
             assertThat(compiled.generated().isInterface()).isTrue();
         }
     }
 
     @Test
-    void aRecordOfOneToTwelveTypeParametersCompilesAndRuns() throws Throwable {
-        for (int n : new int[] {1, 2, 3, 4, 8, 12}) {
+    void aRecordOfEveryArityOfTypeParametersCompilesAndRuns() throws Throwable {
+        for (int n : new int[] {1, 2, 3, 4, 8, 12, 13, 14, 15, FactsArity.MAX_ARITY}) {
             CompiledClasses compiled = CompiledClasses.of(recordOf(n));
             Class<?>[] parameters = new Class<?>[n];
             Arrays.fill(parameters, Object.class);
@@ -590,6 +591,170 @@ class GenericDeclarationAritiesTest {
                                 return last(h, 12, t12);
                             }
                         });
+            case 13 ->
+                TypedJavaFile.declareClass(
+                        TARGET,
+                        DESC,
+                        typeParam("T1"),
+                        typeParam("T2"),
+                        typeParam("T3"),
+                        typeParam("T4"),
+                        typeParam("T5"),
+                        typeParam("T6"),
+                        typeParam("T7"),
+                        typeParam("T8"),
+                        typeParam("T9"),
+                        typeParam("T10"),
+                        typeParam("T11"),
+                        typeParam("T12"),
+                        typeParam("T13"),
+                        new TypedJavaFile.TypedGenericClassSpec13<>() {
+                            @Override
+                            public <Self, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>
+                                    MemberBodies<Self, ?> build(
+                                            ClassHeader<Self> h,
+                                            TypeVarToken<T1> t1,
+                                            TypeVarToken<T2> t2,
+                                            TypeVarToken<T3> t3,
+                                            TypeVarToken<T4> t4,
+                                            TypeVarToken<T5> t5,
+                                            TypeVarToken<T6> t6,
+                                            TypeVarToken<T7> t7,
+                                            TypeVarToken<T8> t8,
+                                            TypeVarToken<T9> t9,
+                                            TypeVarToken<T10> t10,
+                                            TypeVarToken<T11> t11,
+                                            TypeVarToken<T12> t12,
+                                            TypeVarToken<T13> t13) {
+                                return last(h, 13, t13);
+                            }
+                        });
+            case 14 ->
+                TypedJavaFile.declareClass(
+                        TARGET,
+                        DESC,
+                        typeParam("T1"),
+                        typeParam("T2"),
+                        typeParam("T3"),
+                        typeParam("T4"),
+                        typeParam("T5"),
+                        typeParam("T6"),
+                        typeParam("T7"),
+                        typeParam("T8"),
+                        typeParam("T9"),
+                        typeParam("T10"),
+                        typeParam("T11"),
+                        typeParam("T12"),
+                        typeParam("T13"),
+                        typeParam("T14"),
+                        new TypedJavaFile.TypedGenericClassSpec14<>() {
+                            @Override
+                            public <Self, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>
+                                    MemberBodies<Self, ?> build(
+                                            ClassHeader<Self> h,
+                                            TypeVarToken<T1> t1,
+                                            TypeVarToken<T2> t2,
+                                            TypeVarToken<T3> t3,
+                                            TypeVarToken<T4> t4,
+                                            TypeVarToken<T5> t5,
+                                            TypeVarToken<T6> t6,
+                                            TypeVarToken<T7> t7,
+                                            TypeVarToken<T8> t8,
+                                            TypeVarToken<T9> t9,
+                                            TypeVarToken<T10> t10,
+                                            TypeVarToken<T11> t11,
+                                            TypeVarToken<T12> t12,
+                                            TypeVarToken<T13> t13,
+                                            TypeVarToken<T14> t14) {
+                                return last(h, 14, t14);
+                            }
+                        });
+            case 15 ->
+                TypedJavaFile.declareClass(
+                        TARGET,
+                        DESC,
+                        typeParam("T1"),
+                        typeParam("T2"),
+                        typeParam("T3"),
+                        typeParam("T4"),
+                        typeParam("T5"),
+                        typeParam("T6"),
+                        typeParam("T7"),
+                        typeParam("T8"),
+                        typeParam("T9"),
+                        typeParam("T10"),
+                        typeParam("T11"),
+                        typeParam("T12"),
+                        typeParam("T13"),
+                        typeParam("T14"),
+                        typeParam("T15"),
+                        new TypedJavaFile.TypedGenericClassSpec15<>() {
+                            @Override
+                            public <Self, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>
+                                    MemberBodies<Self, ?> build(
+                                            ClassHeader<Self> h,
+                                            TypeVarToken<T1> t1,
+                                            TypeVarToken<T2> t2,
+                                            TypeVarToken<T3> t3,
+                                            TypeVarToken<T4> t4,
+                                            TypeVarToken<T5> t5,
+                                            TypeVarToken<T6> t6,
+                                            TypeVarToken<T7> t7,
+                                            TypeVarToken<T8> t8,
+                                            TypeVarToken<T9> t9,
+                                            TypeVarToken<T10> t10,
+                                            TypeVarToken<T11> t11,
+                                            TypeVarToken<T12> t12,
+                                            TypeVarToken<T13> t13,
+                                            TypeVarToken<T14> t14,
+                                            TypeVarToken<T15> t15) {
+                                return last(h, 15, t15);
+                            }
+                        });
+            case 16 ->
+                TypedJavaFile.declareClass(
+                        TARGET,
+                        DESC,
+                        typeParam("T1"),
+                        typeParam("T2"),
+                        typeParam("T3"),
+                        typeParam("T4"),
+                        typeParam("T5"),
+                        typeParam("T6"),
+                        typeParam("T7"),
+                        typeParam("T8"),
+                        typeParam("T9"),
+                        typeParam("T10"),
+                        typeParam("T11"),
+                        typeParam("T12"),
+                        typeParam("T13"),
+                        typeParam("T14"),
+                        typeParam("T15"),
+                        typeParam("T16"),
+                        new TypedJavaFile.TypedGenericClassSpec16<>() {
+                            @Override
+                            public <Self, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>
+                                    MemberBodies<Self, ?> build(
+                                            ClassHeader<Self> h,
+                                            TypeVarToken<T1> t1,
+                                            TypeVarToken<T2> t2,
+                                            TypeVarToken<T3> t3,
+                                            TypeVarToken<T4> t4,
+                                            TypeVarToken<T5> t5,
+                                            TypeVarToken<T6> t6,
+                                            TypeVarToken<T7> t7,
+                                            TypeVarToken<T8> t8,
+                                            TypeVarToken<T9> t9,
+                                            TypeVarToken<T10> t10,
+                                            TypeVarToken<T11> t11,
+                                            TypeVarToken<T12> t12,
+                                            TypeVarToken<T13> t13,
+                                            TypeVarToken<T14> t14,
+                                            TypeVarToken<T15> t15,
+                                            TypeVarToken<T16> t16) {
+                                return last(h, 16, t16);
+                            }
+                        });
             default -> throw new IllegalArgumentException("arity " + n);
         };
     }
@@ -889,6 +1054,170 @@ class GenericDeclarationAritiesTest {
                                 return last(ib, 12, t12);
                             }
                         });
+            case 13 ->
+                TypedJavaFile.interface_(
+                        TARGET,
+                        DESC,
+                        typeParam("T1"),
+                        typeParam("T2"),
+                        typeParam("T3"),
+                        typeParam("T4"),
+                        typeParam("T5"),
+                        typeParam("T6"),
+                        typeParam("T7"),
+                        typeParam("T8"),
+                        typeParam("T9"),
+                        typeParam("T10"),
+                        typeParam("T11"),
+                        typeParam("T12"),
+                        typeParam("T13"),
+                        new TypedJavaFile.TypedGenericInterfaceSpec13<>() {
+                            @Override
+                            public <Self, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>
+                                    TypedInterfaceBodies<Self> build(
+                                            TypedInterfaceBuilder<Self> ib,
+                                            TypeVarToken<T1> t1,
+                                            TypeVarToken<T2> t2,
+                                            TypeVarToken<T3> t3,
+                                            TypeVarToken<T4> t4,
+                                            TypeVarToken<T5> t5,
+                                            TypeVarToken<T6> t6,
+                                            TypeVarToken<T7> t7,
+                                            TypeVarToken<T8> t8,
+                                            TypeVarToken<T9> t9,
+                                            TypeVarToken<T10> t10,
+                                            TypeVarToken<T11> t11,
+                                            TypeVarToken<T12> t12,
+                                            TypeVarToken<T13> t13) {
+                                return last(ib, 13, t13);
+                            }
+                        });
+            case 14 ->
+                TypedJavaFile.interface_(
+                        TARGET,
+                        DESC,
+                        typeParam("T1"),
+                        typeParam("T2"),
+                        typeParam("T3"),
+                        typeParam("T4"),
+                        typeParam("T5"),
+                        typeParam("T6"),
+                        typeParam("T7"),
+                        typeParam("T8"),
+                        typeParam("T9"),
+                        typeParam("T10"),
+                        typeParam("T11"),
+                        typeParam("T12"),
+                        typeParam("T13"),
+                        typeParam("T14"),
+                        new TypedJavaFile.TypedGenericInterfaceSpec14<>() {
+                            @Override
+                            public <Self, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>
+                                    TypedInterfaceBodies<Self> build(
+                                            TypedInterfaceBuilder<Self> ib,
+                                            TypeVarToken<T1> t1,
+                                            TypeVarToken<T2> t2,
+                                            TypeVarToken<T3> t3,
+                                            TypeVarToken<T4> t4,
+                                            TypeVarToken<T5> t5,
+                                            TypeVarToken<T6> t6,
+                                            TypeVarToken<T7> t7,
+                                            TypeVarToken<T8> t8,
+                                            TypeVarToken<T9> t9,
+                                            TypeVarToken<T10> t10,
+                                            TypeVarToken<T11> t11,
+                                            TypeVarToken<T12> t12,
+                                            TypeVarToken<T13> t13,
+                                            TypeVarToken<T14> t14) {
+                                return last(ib, 14, t14);
+                            }
+                        });
+            case 15 ->
+                TypedJavaFile.interface_(
+                        TARGET,
+                        DESC,
+                        typeParam("T1"),
+                        typeParam("T2"),
+                        typeParam("T3"),
+                        typeParam("T4"),
+                        typeParam("T5"),
+                        typeParam("T6"),
+                        typeParam("T7"),
+                        typeParam("T8"),
+                        typeParam("T9"),
+                        typeParam("T10"),
+                        typeParam("T11"),
+                        typeParam("T12"),
+                        typeParam("T13"),
+                        typeParam("T14"),
+                        typeParam("T15"),
+                        new TypedJavaFile.TypedGenericInterfaceSpec15<>() {
+                            @Override
+                            public <Self, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>
+                                    TypedInterfaceBodies<Self> build(
+                                            TypedInterfaceBuilder<Self> ib,
+                                            TypeVarToken<T1> t1,
+                                            TypeVarToken<T2> t2,
+                                            TypeVarToken<T3> t3,
+                                            TypeVarToken<T4> t4,
+                                            TypeVarToken<T5> t5,
+                                            TypeVarToken<T6> t6,
+                                            TypeVarToken<T7> t7,
+                                            TypeVarToken<T8> t8,
+                                            TypeVarToken<T9> t9,
+                                            TypeVarToken<T10> t10,
+                                            TypeVarToken<T11> t11,
+                                            TypeVarToken<T12> t12,
+                                            TypeVarToken<T13> t13,
+                                            TypeVarToken<T14> t14,
+                                            TypeVarToken<T15> t15) {
+                                return last(ib, 15, t15);
+                            }
+                        });
+            case 16 ->
+                TypedJavaFile.interface_(
+                        TARGET,
+                        DESC,
+                        typeParam("T1"),
+                        typeParam("T2"),
+                        typeParam("T3"),
+                        typeParam("T4"),
+                        typeParam("T5"),
+                        typeParam("T6"),
+                        typeParam("T7"),
+                        typeParam("T8"),
+                        typeParam("T9"),
+                        typeParam("T10"),
+                        typeParam("T11"),
+                        typeParam("T12"),
+                        typeParam("T13"),
+                        typeParam("T14"),
+                        typeParam("T15"),
+                        typeParam("T16"),
+                        new TypedJavaFile.TypedGenericInterfaceSpec16<>() {
+                            @Override
+                            public <Self, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>
+                                    TypedInterfaceBodies<Self> build(
+                                            TypedInterfaceBuilder<Self> ib,
+                                            TypeVarToken<T1> t1,
+                                            TypeVarToken<T2> t2,
+                                            TypeVarToken<T3> t3,
+                                            TypeVarToken<T4> t4,
+                                            TypeVarToken<T5> t5,
+                                            TypeVarToken<T6> t6,
+                                            TypeVarToken<T7> t7,
+                                            TypeVarToken<T8> t8,
+                                            TypeVarToken<T9> t9,
+                                            TypeVarToken<T10> t10,
+                                            TypeVarToken<T11> t11,
+                                            TypeVarToken<T12> t12,
+                                            TypeVarToken<T13> t13,
+                                            TypeVarToken<T14> t14,
+                                            TypeVarToken<T15> t15,
+                                            TypeVarToken<T16> t16) {
+                                return last(ib, 16, t16);
+                            }
+                        });
             default -> throw new IllegalArgumentException("arity " + n);
         };
     }
@@ -1177,6 +1506,174 @@ class GenericDeclarationAritiesTest {
                                             TypeVarToken<T11> t11,
                                             TypeVarToken<T12> t12) {
                                 return components(rb, List.of(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12));
+                            }
+                        });
+            case 13 ->
+                TypedJavaFile.record(
+                        TARGET,
+                        DESC,
+                        typeParam("T1"),
+                        typeParam("T2"),
+                        typeParam("T3"),
+                        typeParam("T4"),
+                        typeParam("T5"),
+                        typeParam("T6"),
+                        typeParam("T7"),
+                        typeParam("T8"),
+                        typeParam("T9"),
+                        typeParam("T10"),
+                        typeParam("T11"),
+                        typeParam("T12"),
+                        typeParam("T13"),
+                        new TypedJavaFile.TypedGenericRecordSpec13<>() {
+                            @Override
+                            public <Self, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>
+                                    TypedRecordBodies<Self> build(
+                                            TypedRecordBuilder<Self> rb,
+                                            TypeVarToken<T1> t1,
+                                            TypeVarToken<T2> t2,
+                                            TypeVarToken<T3> t3,
+                                            TypeVarToken<T4> t4,
+                                            TypeVarToken<T5> t5,
+                                            TypeVarToken<T6> t6,
+                                            TypeVarToken<T7> t7,
+                                            TypeVarToken<T8> t8,
+                                            TypeVarToken<T9> t9,
+                                            TypeVarToken<T10> t10,
+                                            TypeVarToken<T11> t11,
+                                            TypeVarToken<T12> t12,
+                                            TypeVarToken<T13> t13) {
+                                return components(rb, List.of(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13));
+                            }
+                        });
+            case 14 ->
+                TypedJavaFile.record(
+                        TARGET,
+                        DESC,
+                        typeParam("T1"),
+                        typeParam("T2"),
+                        typeParam("T3"),
+                        typeParam("T4"),
+                        typeParam("T5"),
+                        typeParam("T6"),
+                        typeParam("T7"),
+                        typeParam("T8"),
+                        typeParam("T9"),
+                        typeParam("T10"),
+                        typeParam("T11"),
+                        typeParam("T12"),
+                        typeParam("T13"),
+                        typeParam("T14"),
+                        new TypedJavaFile.TypedGenericRecordSpec14<>() {
+                            @Override
+                            public <Self, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>
+                                    TypedRecordBodies<Self> build(
+                                            TypedRecordBuilder<Self> rb,
+                                            TypeVarToken<T1> t1,
+                                            TypeVarToken<T2> t2,
+                                            TypeVarToken<T3> t3,
+                                            TypeVarToken<T4> t4,
+                                            TypeVarToken<T5> t5,
+                                            TypeVarToken<T6> t6,
+                                            TypeVarToken<T7> t7,
+                                            TypeVarToken<T8> t8,
+                                            TypeVarToken<T9> t9,
+                                            TypeVarToken<T10> t10,
+                                            TypeVarToken<T11> t11,
+                                            TypeVarToken<T12> t12,
+                                            TypeVarToken<T13> t13,
+                                            TypeVarToken<T14> t14) {
+                                return components(
+                                        rb, List.of(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14));
+                            }
+                        });
+            case 15 ->
+                TypedJavaFile.record(
+                        TARGET,
+                        DESC,
+                        typeParam("T1"),
+                        typeParam("T2"),
+                        typeParam("T3"),
+                        typeParam("T4"),
+                        typeParam("T5"),
+                        typeParam("T6"),
+                        typeParam("T7"),
+                        typeParam("T8"),
+                        typeParam("T9"),
+                        typeParam("T10"),
+                        typeParam("T11"),
+                        typeParam("T12"),
+                        typeParam("T13"),
+                        typeParam("T14"),
+                        typeParam("T15"),
+                        new TypedJavaFile.TypedGenericRecordSpec15<>() {
+                            @Override
+                            public <Self, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>
+                                    TypedRecordBodies<Self> build(
+                                            TypedRecordBuilder<Self> rb,
+                                            TypeVarToken<T1> t1,
+                                            TypeVarToken<T2> t2,
+                                            TypeVarToken<T3> t3,
+                                            TypeVarToken<T4> t4,
+                                            TypeVarToken<T5> t5,
+                                            TypeVarToken<T6> t6,
+                                            TypeVarToken<T7> t7,
+                                            TypeVarToken<T8> t8,
+                                            TypeVarToken<T9> t9,
+                                            TypeVarToken<T10> t10,
+                                            TypeVarToken<T11> t11,
+                                            TypeVarToken<T12> t12,
+                                            TypeVarToken<T13> t13,
+                                            TypeVarToken<T14> t14,
+                                            TypeVarToken<T15> t15) {
+                                return components(
+                                        rb, List.of(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15));
+                            }
+                        });
+            case 16 ->
+                TypedJavaFile.record(
+                        TARGET,
+                        DESC,
+                        typeParam("T1"),
+                        typeParam("T2"),
+                        typeParam("T3"),
+                        typeParam("T4"),
+                        typeParam("T5"),
+                        typeParam("T6"),
+                        typeParam("T7"),
+                        typeParam("T8"),
+                        typeParam("T9"),
+                        typeParam("T10"),
+                        typeParam("T11"),
+                        typeParam("T12"),
+                        typeParam("T13"),
+                        typeParam("T14"),
+                        typeParam("T15"),
+                        typeParam("T16"),
+                        new TypedJavaFile.TypedGenericRecordSpec16<>() {
+                            @Override
+                            public <Self, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>
+                                    TypedRecordBodies<Self> build(
+                                            TypedRecordBuilder<Self> rb,
+                                            TypeVarToken<T1> t1,
+                                            TypeVarToken<T2> t2,
+                                            TypeVarToken<T3> t3,
+                                            TypeVarToken<T4> t4,
+                                            TypeVarToken<T5> t5,
+                                            TypeVarToken<T6> t6,
+                                            TypeVarToken<T7> t7,
+                                            TypeVarToken<T8> t8,
+                                            TypeVarToken<T9> t9,
+                                            TypeVarToken<T10> t10,
+                                            TypeVarToken<T11> t11,
+                                            TypeVarToken<T12> t12,
+                                            TypeVarToken<T13> t13,
+                                            TypeVarToken<T14> t14,
+                                            TypeVarToken<T15> t15,
+                                            TypeVarToken<T16> t16) {
+                                return components(
+                                        rb,
+                                        List.of(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16));
                             }
                         });
             default -> throw new IllegalArgumentException("arity " + n);

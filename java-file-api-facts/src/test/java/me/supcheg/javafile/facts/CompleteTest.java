@@ -78,7 +78,7 @@ class CompleteTest {
 
     @Test
     void theFamiliesAreAllTheImplementationsThereAre() {
-        List<String> families = IntStream.rangeClosed(0, 12)
+        List<String> families = IntStream.rangeClosed(0, FactsArity.MAX_ARITY)
                 .boxed()
                 .flatMap(arity -> Stream.of("Implementation" + arity, "VoidImplementation" + arity))
                 .toList();

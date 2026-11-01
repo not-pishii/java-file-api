@@ -6,6 +6,10 @@ import me.supcheg.javafile.facts.Inherited1;
 import me.supcheg.javafile.facts.Inherited10;
 import me.supcheg.javafile.facts.Inherited11;
 import me.supcheg.javafile.facts.Inherited12;
+import me.supcheg.javafile.facts.Inherited13;
+import me.supcheg.javafile.facts.Inherited14;
+import me.supcheg.javafile.facts.Inherited15;
+import me.supcheg.javafile.facts.Inherited16;
 import me.supcheg.javafile.facts.Inherited2;
 import me.supcheg.javafile.facts.Inherited3;
 import me.supcheg.javafile.facts.Inherited4;
@@ -19,6 +23,10 @@ import me.supcheg.javafile.facts.MethodRef1;
 import me.supcheg.javafile.facts.MethodRef10;
 import me.supcheg.javafile.facts.MethodRef11;
 import me.supcheg.javafile.facts.MethodRef12;
+import me.supcheg.javafile.facts.MethodRef13;
+import me.supcheg.javafile.facts.MethodRef14;
+import me.supcheg.javafile.facts.MethodRef15;
+import me.supcheg.javafile.facts.MethodRef16;
 import me.supcheg.javafile.facts.MethodRef2;
 import me.supcheg.javafile.facts.MethodRef3;
 import me.supcheg.javafile.facts.MethodRef4;
@@ -33,6 +41,10 @@ import me.supcheg.javafile.facts.VoidInherited1;
 import me.supcheg.javafile.facts.VoidInherited10;
 import me.supcheg.javafile.facts.VoidInherited11;
 import me.supcheg.javafile.facts.VoidInherited12;
+import me.supcheg.javafile.facts.VoidInherited13;
+import me.supcheg.javafile.facts.VoidInherited14;
+import me.supcheg.javafile.facts.VoidInherited15;
+import me.supcheg.javafile.facts.VoidInherited16;
 import me.supcheg.javafile.facts.VoidInherited2;
 import me.supcheg.javafile.facts.VoidInherited3;
 import me.supcheg.javafile.facts.VoidInherited4;
@@ -46,6 +58,10 @@ import me.supcheg.javafile.facts.VoidMethodRef1;
 import me.supcheg.javafile.facts.VoidMethodRef10;
 import me.supcheg.javafile.facts.VoidMethodRef11;
 import me.supcheg.javafile.facts.VoidMethodRef12;
+import me.supcheg.javafile.facts.VoidMethodRef13;
+import me.supcheg.javafile.facts.VoidMethodRef14;
+import me.supcheg.javafile.facts.VoidMethodRef15;
+import me.supcheg.javafile.facts.VoidMethodRef16;
 import me.supcheg.javafile.facts.VoidMethodRef2;
 import me.supcheg.javafile.facts.VoidMethodRef3;
 import me.supcheg.javafile.facts.VoidMethodRef4;
@@ -536,5 +552,221 @@ abstract sealed class SubclassHeaderArities<Self, S> extends Overriding<Self> pe
      */
     public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> VoidInherited12<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> inherited(VoidMethodRef12<? super S, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> method) {
         return UnsafeInvocables.voidInherited12(declaration().inherit(method));
+    }
+
+    /**
+     * Says the class has a method of 13 parameters by inheriting it from its superclass: what a step of the proof that the class implements an interface takes where the superclass has the method of the interface already.
+     *
+     * @param method the fact of the method of the superclass
+     * @param <R> the result type
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @return how the class has the method: by inheritance, with no method of its own
+     * @throws IllegalArgumentException if the superclass has no such method on the target classpath, or has it abstract, `static` or not `public`, or otherwise than the fact tells
+     * @throws IllegalStateException if the header of the class has ended
+     */
+    public <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> Inherited13<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> inherited(MethodRef13<? super S, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> method) {
+        return UnsafeInvocables.inherited13(declaration().inherit(method));
+    }
+
+    /**
+     * Says the class has a `void` method of 13 parameters by inheriting it from its superclass: what a step of the proof that the class implements an interface takes where the superclass has the method of the interface already.
+     *
+     * @param method the fact of the method of the superclass
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @return how the class has the method: by inheritance, with no method of its own
+     * @throws IllegalArgumentException if the superclass has no such method on the target classpath, or has it abstract, `static` or not `public`, or otherwise than the fact tells
+     * @throws IllegalStateException if the header of the class has ended
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> VoidInherited13<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> inherited(VoidMethodRef13<? super S, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> method) {
+        return UnsafeInvocables.voidInherited13(declaration().inherit(method));
+    }
+
+    /**
+     * Says the class has a method of 14 parameters by inheriting it from its superclass: what a step of the proof that the class implements an interface takes where the superclass has the method of the interface already.
+     *
+     * @param method the fact of the method of the superclass
+     * @param <R> the result type
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @return how the class has the method: by inheritance, with no method of its own
+     * @throws IllegalArgumentException if the superclass has no such method on the target classpath, or has it abstract, `static` or not `public`, or otherwise than the fact tells
+     * @throws IllegalStateException if the header of the class has ended
+     */
+    public <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> Inherited14<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> inherited(MethodRef14<? super S, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> method) {
+        return UnsafeInvocables.inherited14(declaration().inherit(method));
+    }
+
+    /**
+     * Says the class has a `void` method of 14 parameters by inheriting it from its superclass: what a step of the proof that the class implements an interface takes where the superclass has the method of the interface already.
+     *
+     * @param method the fact of the method of the superclass
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @return how the class has the method: by inheritance, with no method of its own
+     * @throws IllegalArgumentException if the superclass has no such method on the target classpath, or has it abstract, `static` or not `public`, or otherwise than the fact tells
+     * @throws IllegalStateException if the header of the class has ended
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> VoidInherited14<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> inherited(VoidMethodRef14<? super S, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> method) {
+        return UnsafeInvocables.voidInherited14(declaration().inherit(method));
+    }
+
+    /**
+     * Says the class has a method of 15 parameters by inheriting it from its superclass: what a step of the proof that the class implements an interface takes where the superclass has the method of the interface already.
+     *
+     * @param method the fact of the method of the superclass
+     * @param <R> the result type
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @param <A15> the type of the fifteenth parameter
+     * @return how the class has the method: by inheritance, with no method of its own
+     * @throws IllegalArgumentException if the superclass has no such method on the target classpath, or has it abstract, `static` or not `public`, or otherwise than the fact tells
+     * @throws IllegalStateException if the header of the class has ended
+     */
+    public <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> Inherited15<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> inherited(MethodRef15<? super S, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> method) {
+        return UnsafeInvocables.inherited15(declaration().inherit(method));
+    }
+
+    /**
+     * Says the class has a `void` method of 15 parameters by inheriting it from its superclass: what a step of the proof that the class implements an interface takes where the superclass has the method of the interface already.
+     *
+     * @param method the fact of the method of the superclass
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @param <A15> the type of the fifteenth parameter
+     * @return how the class has the method: by inheritance, with no method of its own
+     * @throws IllegalArgumentException if the superclass has no such method on the target classpath, or has it abstract, `static` or not `public`, or otherwise than the fact tells
+     * @throws IllegalStateException if the header of the class has ended
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> VoidInherited15<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> inherited(VoidMethodRef15<? super S, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> method) {
+        return UnsafeInvocables.voidInherited15(declaration().inherit(method));
+    }
+
+    /**
+     * Says the class has a method of 16 parameters by inheriting it from its superclass: what a step of the proof that the class implements an interface takes where the superclass has the method of the interface already.
+     *
+     * @param method the fact of the method of the superclass
+     * @param <R> the result type
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @param <A15> the type of the fifteenth parameter
+     * @param <A16> the type of the sixteenth parameter
+     * @return how the class has the method: by inheritance, with no method of its own
+     * @throws IllegalArgumentException if the superclass has no such method on the target classpath, or has it abstract, `static` or not `public`, or otherwise than the fact tells
+     * @throws IllegalStateException if the header of the class has ended
+     */
+    public <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> Inherited16<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> inherited(MethodRef16<? super S, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> method) {
+        return UnsafeInvocables.inherited16(declaration().inherit(method));
+    }
+
+    /**
+     * Says the class has a `void` method of 16 parameters by inheriting it from its superclass: what a step of the proof that the class implements an interface takes where the superclass has the method of the interface already.
+     *
+     * @param method the fact of the method of the superclass
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @param <A15> the type of the fifteenth parameter
+     * @param <A16> the type of the sixteenth parameter
+     * @return how the class has the method: by inheritance, with no method of its own
+     * @throws IllegalArgumentException if the superclass has no such method on the target classpath, or has it abstract, `static` or not `public`, or otherwise than the fact tells
+     * @throws IllegalStateException if the header of the class has ended
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> VoidInherited16<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> inherited(VoidMethodRef16<? super S, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> method) {
+        return UnsafeInvocables.voidInherited16(declaration().inherit(method));
     }
 }

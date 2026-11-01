@@ -9,6 +9,10 @@ import me.supcheg.javafile.facts.MethodRef1;
 import me.supcheg.javafile.facts.MethodRef10;
 import me.supcheg.javafile.facts.MethodRef11;
 import me.supcheg.javafile.facts.MethodRef12;
+import me.supcheg.javafile.facts.MethodRef13;
+import me.supcheg.javafile.facts.MethodRef14;
+import me.supcheg.javafile.facts.MethodRef15;
+import me.supcheg.javafile.facts.MethodRef16;
 import me.supcheg.javafile.facts.MethodRef2;
 import me.supcheg.javafile.facts.MethodRef3;
 import me.supcheg.javafile.facts.MethodRef4;
@@ -22,6 +26,10 @@ import me.supcheg.javafile.facts.Overriding1;
 import me.supcheg.javafile.facts.Overriding10;
 import me.supcheg.javafile.facts.Overriding11;
 import me.supcheg.javafile.facts.Overriding12;
+import me.supcheg.javafile.facts.Overriding13;
+import me.supcheg.javafile.facts.Overriding14;
+import me.supcheg.javafile.facts.Overriding15;
+import me.supcheg.javafile.facts.Overriding16;
 import me.supcheg.javafile.facts.Overriding2;
 import me.supcheg.javafile.facts.Overriding3;
 import me.supcheg.javafile.facts.Overriding4;
@@ -36,6 +44,10 @@ import me.supcheg.javafile.facts.SelfOverriding1;
 import me.supcheg.javafile.facts.SelfOverriding10;
 import me.supcheg.javafile.facts.SelfOverriding11;
 import me.supcheg.javafile.facts.SelfOverriding12;
+import me.supcheg.javafile.facts.SelfOverriding13;
+import me.supcheg.javafile.facts.SelfOverriding14;
+import me.supcheg.javafile.facts.SelfOverriding15;
+import me.supcheg.javafile.facts.SelfOverriding16;
 import me.supcheg.javafile.facts.SelfOverriding2;
 import me.supcheg.javafile.facts.SelfOverriding3;
 import me.supcheg.javafile.facts.SelfOverriding4;
@@ -50,6 +62,10 @@ import me.supcheg.javafile.facts.VoidMethodRef1;
 import me.supcheg.javafile.facts.VoidMethodRef10;
 import me.supcheg.javafile.facts.VoidMethodRef11;
 import me.supcheg.javafile.facts.VoidMethodRef12;
+import me.supcheg.javafile.facts.VoidMethodRef13;
+import me.supcheg.javafile.facts.VoidMethodRef14;
+import me.supcheg.javafile.facts.VoidMethodRef15;
+import me.supcheg.javafile.facts.VoidMethodRef16;
 import me.supcheg.javafile.facts.VoidMethodRef2;
 import me.supcheg.javafile.facts.VoidMethodRef3;
 import me.supcheg.javafile.facts.VoidMethodRef4;
@@ -63,6 +79,10 @@ import me.supcheg.javafile.facts.VoidOverriding1;
 import me.supcheg.javafile.facts.VoidOverriding10;
 import me.supcheg.javafile.facts.VoidOverriding11;
 import me.supcheg.javafile.facts.VoidOverriding12;
+import me.supcheg.javafile.facts.VoidOverriding13;
+import me.supcheg.javafile.facts.VoidOverriding14;
+import me.supcheg.javafile.facts.VoidOverriding15;
+import me.supcheg.javafile.facts.VoidOverriding16;
 import me.supcheg.javafile.facts.VoidOverriding2;
 import me.supcheg.javafile.facts.VoidOverriding3;
 import me.supcheg.javafile.facts.VoidOverriding4;
@@ -1155,5 +1175,473 @@ abstract sealed class OverridingArities<Self> permits Overriding {
      */
     public <O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> VoidOverriding12<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> overriding(VoidMethodRef12<O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> method) {
         return UnsafeInvocables.voidOverriding12(new ByOverride(method, declaration().intend(method, Overrides.own(declaration().self(), method, thrown()), thrown())));
+    }
+
+    /**
+     * Says the class overrides a method of 13 parameters.
+     *
+     * @param method the fact of the overridden method
+     * @param <O> the type that has the method
+     * @param <R> the result type of the overridden method
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @return how the class has the method: by one of its own, `method()` of the result
+     * @throws IllegalArgumentException if the method is `final` or generic, the class overrides a method of that signature already, or cannot override what it inherits under it
+     * @throws IllegalStateException if the header of the class has ended
+     */
+    public <O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> Overriding13<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> overriding(MethodRef13<O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> method) {
+        return UnsafeInvocables.overriding13(new ByOverride(method, declaration().intend(method, Overrides.own(declaration().self(), method, thrown()), thrown())));
+    }
+
+    /**
+     * Says the class overrides a method with a method of a narrower result (JLS 8.4.5) of 13 parameters.
+     *
+     * @param method the fact of the overridden method
+     * @param result the result type of the method of the class
+     * @param <O> the type that has the method
+     * @param <R> the result type of the overridden method
+     * @param <R2> the result type of the method of the class
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @return how the class has the method: by one of its own, `method()` of the result
+     * @throws IllegalArgumentException if the method is `final` or generic, the class overrides a method of that signature already, or cannot override what it inherits under it
+     * @throws IllegalStateException if the header of the class has ended
+     */
+    public <O, R, R2 extends R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> Overriding13<Self, R2, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> overriding(MethodRef13<O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> method, RefToken<R2> result) {
+        return UnsafeInvocables.overriding13(new ByOverride(method, declaration().intend(method, Overrides.own(declaration().self(), method, result, thrown()), thrown())));
+    }
+
+    /**
+     * Says the class overrides a method with a method whose result is the class itself (JLS 8.4.5) of 13 parameters.
+     *
+     * @param method the fact of the overridden method
+     * @param result the witness that the class is of the result type
+     * @param <O> the type that has the method
+     * @param <R> the result type of the overridden method
+     * @param <X> the supertype of the class the witness is of
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @return how the class has the method: by one of its own, `method()` of the result
+     * @throws IllegalArgumentException if the method is `final` or generic, the class overrides a method of that signature already, or cannot override what it inherits under it
+     * @throws IllegalStateException if the header of the class has ended
+     */
+    public <O, R, X extends R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> SelfOverriding13<Self, X, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> overriding(MethodRef13<O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> method, Upcast<Self, X> result) {
+        return UnsafeInvocables.selfOverriding13(new ByOverride(method, declaration().intend(method, Overrides.ownOfSelf(declaration().self(), method, thrown()), thrown())));
+    }
+
+    /**
+     * Says the class overrides a `void` method of 13 parameters.
+     *
+     * @param method the fact of the overridden method
+     * @param <O> the type that has the method
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @return how the class has the method: by one of its own, `method()` of the result
+     * @throws IllegalArgumentException if the method is `final` or generic, the class overrides a method of that signature already, or cannot override what it inherits under it
+     * @throws IllegalStateException if the header of the class has ended
+     */
+    public <O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> VoidOverriding13<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> overriding(VoidMethodRef13<O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> method) {
+        return UnsafeInvocables.voidOverriding13(new ByOverride(method, declaration().intend(method, Overrides.own(declaration().self(), method, thrown()), thrown())));
+    }
+
+    /**
+     * Says the class overrides a method of 14 parameters.
+     *
+     * @param method the fact of the overridden method
+     * @param <O> the type that has the method
+     * @param <R> the result type of the overridden method
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @return how the class has the method: by one of its own, `method()` of the result
+     * @throws IllegalArgumentException if the method is `final` or generic, the class overrides a method of that signature already, or cannot override what it inherits under it
+     * @throws IllegalStateException if the header of the class has ended
+     */
+    public <O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> Overriding14<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> overriding(MethodRef14<O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> method) {
+        return UnsafeInvocables.overriding14(new ByOverride(method, declaration().intend(method, Overrides.own(declaration().self(), method, thrown()), thrown())));
+    }
+
+    /**
+     * Says the class overrides a method with a method of a narrower result (JLS 8.4.5) of 14 parameters.
+     *
+     * @param method the fact of the overridden method
+     * @param result the result type of the method of the class
+     * @param <O> the type that has the method
+     * @param <R> the result type of the overridden method
+     * @param <R2> the result type of the method of the class
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @return how the class has the method: by one of its own, `method()` of the result
+     * @throws IllegalArgumentException if the method is `final` or generic, the class overrides a method of that signature already, or cannot override what it inherits under it
+     * @throws IllegalStateException if the header of the class has ended
+     */
+    public <O, R, R2 extends R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> Overriding14<Self, R2, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> overriding(MethodRef14<O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> method, RefToken<R2> result) {
+        return UnsafeInvocables.overriding14(new ByOverride(method, declaration().intend(method, Overrides.own(declaration().self(), method, result, thrown()), thrown())));
+    }
+
+    /**
+     * Says the class overrides a method with a method whose result is the class itself (JLS 8.4.5) of 14 parameters.
+     *
+     * @param method the fact of the overridden method
+     * @param result the witness that the class is of the result type
+     * @param <O> the type that has the method
+     * @param <R> the result type of the overridden method
+     * @param <X> the supertype of the class the witness is of
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @return how the class has the method: by one of its own, `method()` of the result
+     * @throws IllegalArgumentException if the method is `final` or generic, the class overrides a method of that signature already, or cannot override what it inherits under it
+     * @throws IllegalStateException if the header of the class has ended
+     */
+    public <O, R, X extends R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> SelfOverriding14<Self, X, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> overriding(MethodRef14<O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> method, Upcast<Self, X> result) {
+        return UnsafeInvocables.selfOverriding14(new ByOverride(method, declaration().intend(method, Overrides.ownOfSelf(declaration().self(), method, thrown()), thrown())));
+    }
+
+    /**
+     * Says the class overrides a `void` method of 14 parameters.
+     *
+     * @param method the fact of the overridden method
+     * @param <O> the type that has the method
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @return how the class has the method: by one of its own, `method()` of the result
+     * @throws IllegalArgumentException if the method is `final` or generic, the class overrides a method of that signature already, or cannot override what it inherits under it
+     * @throws IllegalStateException if the header of the class has ended
+     */
+    public <O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> VoidOverriding14<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> overriding(VoidMethodRef14<O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> method) {
+        return UnsafeInvocables.voidOverriding14(new ByOverride(method, declaration().intend(method, Overrides.own(declaration().self(), method, thrown()), thrown())));
+    }
+
+    /**
+     * Says the class overrides a method of 15 parameters.
+     *
+     * @param method the fact of the overridden method
+     * @param <O> the type that has the method
+     * @param <R> the result type of the overridden method
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @param <A15> the type of the fifteenth parameter
+     * @return how the class has the method: by one of its own, `method()` of the result
+     * @throws IllegalArgumentException if the method is `final` or generic, the class overrides a method of that signature already, or cannot override what it inherits under it
+     * @throws IllegalStateException if the header of the class has ended
+     */
+    public <O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> Overriding15<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> overriding(MethodRef15<O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> method) {
+        return UnsafeInvocables.overriding15(new ByOverride(method, declaration().intend(method, Overrides.own(declaration().self(), method, thrown()), thrown())));
+    }
+
+    /**
+     * Says the class overrides a method with a method of a narrower result (JLS 8.4.5) of 15 parameters.
+     *
+     * @param method the fact of the overridden method
+     * @param result the result type of the method of the class
+     * @param <O> the type that has the method
+     * @param <R> the result type of the overridden method
+     * @param <R2> the result type of the method of the class
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @param <A15> the type of the fifteenth parameter
+     * @return how the class has the method: by one of its own, `method()` of the result
+     * @throws IllegalArgumentException if the method is `final` or generic, the class overrides a method of that signature already, or cannot override what it inherits under it
+     * @throws IllegalStateException if the header of the class has ended
+     */
+    public <O, R, R2 extends R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> Overriding15<Self, R2, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> overriding(MethodRef15<O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> method, RefToken<R2> result) {
+        return UnsafeInvocables.overriding15(new ByOverride(method, declaration().intend(method, Overrides.own(declaration().self(), method, result, thrown()), thrown())));
+    }
+
+    /**
+     * Says the class overrides a method with a method whose result is the class itself (JLS 8.4.5) of 15 parameters.
+     *
+     * @param method the fact of the overridden method
+     * @param result the witness that the class is of the result type
+     * @param <O> the type that has the method
+     * @param <R> the result type of the overridden method
+     * @param <X> the supertype of the class the witness is of
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @param <A15> the type of the fifteenth parameter
+     * @return how the class has the method: by one of its own, `method()` of the result
+     * @throws IllegalArgumentException if the method is `final` or generic, the class overrides a method of that signature already, or cannot override what it inherits under it
+     * @throws IllegalStateException if the header of the class has ended
+     */
+    public <O, R, X extends R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> SelfOverriding15<Self, X, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> overriding(MethodRef15<O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> method, Upcast<Self, X> result) {
+        return UnsafeInvocables.selfOverriding15(new ByOverride(method, declaration().intend(method, Overrides.ownOfSelf(declaration().self(), method, thrown()), thrown())));
+    }
+
+    /**
+     * Says the class overrides a `void` method of 15 parameters.
+     *
+     * @param method the fact of the overridden method
+     * @param <O> the type that has the method
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @param <A15> the type of the fifteenth parameter
+     * @return how the class has the method: by one of its own, `method()` of the result
+     * @throws IllegalArgumentException if the method is `final` or generic, the class overrides a method of that signature already, or cannot override what it inherits under it
+     * @throws IllegalStateException if the header of the class has ended
+     */
+    public <O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> VoidOverriding15<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> overriding(VoidMethodRef15<O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> method) {
+        return UnsafeInvocables.voidOverriding15(new ByOverride(method, declaration().intend(method, Overrides.own(declaration().self(), method, thrown()), thrown())));
+    }
+
+    /**
+     * Says the class overrides a method of 16 parameters.
+     *
+     * @param method the fact of the overridden method
+     * @param <O> the type that has the method
+     * @param <R> the result type of the overridden method
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @param <A15> the type of the fifteenth parameter
+     * @param <A16> the type of the sixteenth parameter
+     * @return how the class has the method: by one of its own, `method()` of the result
+     * @throws IllegalArgumentException if the method is `final` or generic, the class overrides a method of that signature already, or cannot override what it inherits under it
+     * @throws IllegalStateException if the header of the class has ended
+     */
+    public <O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> Overriding16<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> overriding(MethodRef16<O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> method) {
+        return UnsafeInvocables.overriding16(new ByOverride(method, declaration().intend(method, Overrides.own(declaration().self(), method, thrown()), thrown())));
+    }
+
+    /**
+     * Says the class overrides a method with a method of a narrower result (JLS 8.4.5) of 16 parameters.
+     *
+     * @param method the fact of the overridden method
+     * @param result the result type of the method of the class
+     * @param <O> the type that has the method
+     * @param <R> the result type of the overridden method
+     * @param <R2> the result type of the method of the class
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @param <A15> the type of the fifteenth parameter
+     * @param <A16> the type of the sixteenth parameter
+     * @return how the class has the method: by one of its own, `method()` of the result
+     * @throws IllegalArgumentException if the method is `final` or generic, the class overrides a method of that signature already, or cannot override what it inherits under it
+     * @throws IllegalStateException if the header of the class has ended
+     */
+    public <O, R, R2 extends R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> Overriding16<Self, R2, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> overriding(MethodRef16<O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> method, RefToken<R2> result) {
+        return UnsafeInvocables.overriding16(new ByOverride(method, declaration().intend(method, Overrides.own(declaration().self(), method, result, thrown()), thrown())));
+    }
+
+    /**
+     * Says the class overrides a method with a method whose result is the class itself (JLS 8.4.5) of 16 parameters.
+     *
+     * @param method the fact of the overridden method
+     * @param result the witness that the class is of the result type
+     * @param <O> the type that has the method
+     * @param <R> the result type of the overridden method
+     * @param <X> the supertype of the class the witness is of
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @param <A15> the type of the fifteenth parameter
+     * @param <A16> the type of the sixteenth parameter
+     * @return how the class has the method: by one of its own, `method()` of the result
+     * @throws IllegalArgumentException if the method is `final` or generic, the class overrides a method of that signature already, or cannot override what it inherits under it
+     * @throws IllegalStateException if the header of the class has ended
+     */
+    public <O, R, X extends R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> SelfOverriding16<Self, X, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> overriding(MethodRef16<O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> method, Upcast<Self, X> result) {
+        return UnsafeInvocables.selfOverriding16(new ByOverride(method, declaration().intend(method, Overrides.ownOfSelf(declaration().self(), method, thrown()), thrown())));
+    }
+
+    /**
+     * Says the class overrides a `void` method of 16 parameters.
+     *
+     * @param method the fact of the overridden method
+     * @param <O> the type that has the method
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @param <A15> the type of the fifteenth parameter
+     * @param <A16> the type of the sixteenth parameter
+     * @return how the class has the method: by one of its own, `method()` of the result
+     * @throws IllegalArgumentException if the method is `final` or generic, the class overrides a method of that signature already, or cannot override what it inherits under it
+     * @throws IllegalStateException if the header of the class has ended
+     */
+    public <O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> VoidOverriding16<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> overriding(VoidMethodRef16<O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> method) {
+        return UnsafeInvocables.voidOverriding16(new ByOverride(method, declaration().intend(method, Overrides.own(declaration().self(), method, thrown()), thrown())));
     }
 }

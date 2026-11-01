@@ -1319,7 +1319,7 @@ The typed layer declares every top-level kind the core does: `TypedJavaFile.inte
 `annotationType` take the `TargetClasspath`, the name and a specification, and return an ordinary core file. The
 declaration is in the same two stages as a class: the builder declares each member and gives its fact, and `bodies()`
 ends the declarations and gives the stage that defines them. The default, static and private methods of these kinds
-reach arity 4; their abstract methods and their constructors reach arity 12, as the class builder's forms do.
+reach arity 4; their abstract methods and their constructors reach arity 16, as the class builder's forms do.
 
 An interface has abstract, default, static and private methods, constants, `extends` of several interfaces and, with
 `permits`, `sealed`. It has no constructor, and `extends_` takes an interface token alone:
@@ -1464,7 +1464,7 @@ A constant's body declares its fields with `declareField` and `declareStaticFiel
 forms, which `initialize` gives its initializer; the methods of the body assign it with `assignField` and
 `assignStaticField` through the fact the declaration returned. javac accepts both in the body of a constant, which is
 the body of an anonymous class (JLS 15.9.5), and warns of neither under `-Xlint:all`, so the typed layer declares them.
-The helper forms reach twelve parameters, generated into the superclass of the body as the other arity families are,
+The helper forms reach sixteen parameters, generated into the superclass of the body as the other arity families are,
 and so do the `define` overloads of a constant's body. A documented field or method takes `documented(...)` before its
 declaration, or a `DocComment` beside the field's annotations. A helper that names the signature of an abstract method
 the constant overrides is refused: that method is given by `override`.
@@ -1585,7 +1585,7 @@ A member type is declared through the declaration that encloses it, not as a fil
 `declareNestedClass` and `declareInnerClass`, and every kind - an interface, a record, an enum, an annotation type and
 an enum constant's body - has `declareNestedClass`, `declareNestedInterface`, `declareNestedRecord`,
 `declareNestedEnum` and `declareNestedAnnotationType`. A nested class, interface and record have the same generic
-stages 1 to 12, with the same bounds: the stages of four to twelve are generated into the superclass of each hierarchy
+stages 1 to 16, with the same bounds: the stages of four to sixteen are generated into the superclass of each hierarchy
 that declares a member type - the member builder, the declarations of an interface, record or enum, the annotation
 type's builder and the body of an enum constant - so the calls of one to three type parameters read as they did
 before; a nested enum and annotation type take no type parameters, which javac rejects.
@@ -1634,11 +1634,11 @@ var make = cb.declareMethod("make", inner.token());
 // return inner.new_(self, ctor) renders return this.new Inner();
 ```
 
-The generic declaration paths reach twelve type parameters: `declareClass`, `interface_` and `record` offer the same
-twelve stages, one for each number from one to twelve, with the same bounds and the same refusals. The stages are
+The generic declaration paths reach sixteen type parameters: `declareClass`, `interface_` and `record` offer the same
+sixteen stages, one for each number from one to sixteen, with the same bounds and the same refusals. The stages are
 generated into the superclass of [TypedJavaFile] as the member forms are arity families: `TypedJavaFile` extends it,
 so `declareClass(...)` is its static method and `new TypedJavaFile.TypedGenericClassSpec4<>()` is its nested type,
-while a class, an interface and a record of one to three type parameters read as they did before. The same twelve
+while a class, an interface and a record of one to three type parameters read as they did before. The same sixteen
 stages declare the member classes, interfaces and records of every hierarchy, with the same bounds and refusals.
 
 ### Refusals at generation time
@@ -1706,7 +1706,7 @@ var read = eb.modified(Modifier.NATIVE).declareMethod("read", PrimitiveToken.INT
 ```
 
 An abstract class declares abstract methods, in the same declare-then-define stages as the rest: `declareAbstractMethod`
-and `declareVoidAbstractMethod` take the name and the parameter types, from none to twelve, and give a fact with no
+and `declareVoidAbstractMethod` take the name and the parameter types, from none to sixteen, and give a fact with no
 body, which the bodies neither define nor wait for. An abstract method is legal in an abstract class alone - a class
 that is not abstract implements every abstract method it inherits (JLS 8.4.3.1) - and javac's rules of `static`,
 `private`, `final`, `native` and `synchronized` hold: the typed layer offers none of those on an abstract method.
@@ -1798,6 +1798,6 @@ What stays in the core API is what the typed layer does not model:
 layer does not replace it.
 
 The default, static and private methods of the typed declarations of §6.5 reach arity 4; their abstract methods and
-their constructors, and the class builder's forms, reach arity 12. A record or enum that implements an interface names
+their constructors, and the class builder's forms, reach arity 16. A record or enum that implements an interface names
 it with `implements_`, which gives a witness, and declares each abstract method with `declareOverride(witness, fact)`,
 as a class does.

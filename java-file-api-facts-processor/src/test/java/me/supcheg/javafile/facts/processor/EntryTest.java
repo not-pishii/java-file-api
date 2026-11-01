@@ -671,10 +671,11 @@ class EntryTest {
         assertThat(((Entry.Refused) ofLibrary(
                                         "p.Wide",
                                         "package p; public interface Wide { void m(int a, int b, int c, int d, int e, int f,"
-                                                + " int g, int h, int i, int j, int k, int l, int n); }")
+                                                + " int g, int h, int i, int j, int k, int l, int m, int n, int o, int p,"
+                                                + " int q); }")
                                 .entry())
                         .reason())
-                .endsWith(" has 13 parameters, more than 12");
+                .endsWith(" has 17 parameters, more than 16");
     }
 
     @Test
@@ -693,12 +694,12 @@ class EntryTest {
 
     @Test
     void anEntryIsOfferedOnlyWhereTheFactsItIsUsedWithAreThere() {
-        String thirteen = IntStream.range(0, 13).mapToObj(i -> "int p" + i).collect(Collectors.joining(", "));
+        String seventeen = IntStream.range(0, 17).mapToObj(i -> "int p" + i).collect(Collectors.joining(", "));
 
         // no constructor has a fact: none can be called by a generated one
-        assertThat(((Entry.Refused)
-                                ofLibrary("p.Wide", "package p; public class Wide { public Wide(" + thirteen + ") {} }")
-                                        .entry())
+        assertThat(((Entry.Refused) ofLibrary(
+                                        "p.Wide", "package p; public class Wide { public Wide(" + seventeen + ") {} }")
+                                .entry())
                         .reason())
                 .isEqualTo("none of its constructors has a fact, so no generated constructor calls one");
     }

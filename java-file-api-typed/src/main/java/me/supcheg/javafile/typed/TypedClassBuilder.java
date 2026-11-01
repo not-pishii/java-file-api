@@ -75,7 +75,7 @@ package me.supcheg.javafile.typed;
 ///
 /// This builder is of a class that extends `Object`; one with another
 /// superclass has a [TypedSubclassBuilder]. Methods and constructors are of
-/// any arity from 0 to 12 (generated, see `DeclarationArities`); `abstract`/open classes come
+/// any arity from 0 to 16 (generated, see `DeclarationArities`); `abstract`/open classes come
 /// later.
 ///
 /// @param <Self> the brand of the class being declared, unique to one

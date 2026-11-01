@@ -62,8 +62,9 @@ import static me.supcheg.javafile.code.Exprs.staticField;
 /// Usage: `TypedCodegen <output dir> <test output dir> write|check`. `check` fails when the
 /// sources on disk differ from what would be generated.
 public final class TypedCodegen {
-    /// The largest generated arity.
-    public static final int MAX_ARITY = 12;
+    /// The largest generated arity: the one the facts module generates its own families to, so
+    /// that every form of this layer has the fact it names. It is not a number of its own.
+    public static final int MAX_ARITY = me.supcheg.javafile.facts.FactsArity.MAX_ARITY;
 
     /// How far each family of forms reaches.
     ///
@@ -676,7 +677,10 @@ public final class TypedCodegen {
             "tenth",
             "eleventh",
             "twelfth",
-            "thirteenth");
+            "thirteenth",
+            "fourteenth",
+            "fifteenth",
+            "sixteenth");
 
     /// The words of the numbers a count of the forms reaches: `one`, `two`, ... .
     private static final List<String> COUNTS = List.of(
@@ -693,7 +697,10 @@ public final class TypedCodegen {
             "ten",
             "eleven",
             "twelve",
-            "thirteen");
+            "thirteen",
+            "fourteen",
+            "fifteen",
+            "sixteen");
 
     /// The word of `n`, as the documentation of a form says it.
     static String count(int n) {
@@ -711,7 +718,12 @@ public final class TypedCodegen {
 
     /// The ordinal of the `i`-th of `n` things, with its space: none where there is one.
     static String ordinal(int i, int n) {
-        return n == 1 ? "" : ORDINALS.get(i - 1) + " ";
+        return n == 1 ? "" : ordinal(i) + " ";
+    }
+
+    /// The word of the `i`-th thing: `first`, `second`, ...; a number where the list has no word.
+    static String ordinal(int i) {
+        return i <= ORDINALS.size() ? ORDINALS.get(i - 1) : Integer.toString(i);
     }
 
     private static String plural(int n, String what) {
@@ -1047,14 +1059,14 @@ public final class TypedCodegen {
                         + " shape of the generator's lambda that builds the body of a lambda of the generated code"
                         + " ([Expressions]).");
                 IntStream.rangeClosed(1, arguments)
-                        .forEach(i -> d.typeParam("T" + i, "the type of the " + ORDINALS.get(i - 1) + " argument"));
+                        .forEach(i -> d.typeParam("T" + i, "the type of the " + ordinal(i) + " argument"));
                 d.typeParam("R", "the type of the result");
             });
             ib.withAbstractMethod("apply", tv("R"), amb -> {
                 amb.withDoc(d -> {
                     d.paragraph("Applies the function.");
                     IntStream.rangeClosed(1, arguments)
-                            .forEach(i -> d.param("t" + i, "the " + ORDINALS.get(i - 1) + " argument"));
+                            .forEach(i -> d.param("t" + i, "the " + ordinal(i) + " argument"));
                     d.returns("the result");
                 });
                 IntStream.rangeClosed(1, arguments).forEach(i -> amb.withParam("t" + i, tv("T" + i)));

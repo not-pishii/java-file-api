@@ -10,6 +10,10 @@ import me.supcheg.javafile.facts.MethodRef1;
 import me.supcheg.javafile.facts.MethodRef10;
 import me.supcheg.javafile.facts.MethodRef11;
 import me.supcheg.javafile.facts.MethodRef12;
+import me.supcheg.javafile.facts.MethodRef13;
+import me.supcheg.javafile.facts.MethodRef14;
+import me.supcheg.javafile.facts.MethodRef15;
+import me.supcheg.javafile.facts.MethodRef16;
 import me.supcheg.javafile.facts.MethodRef2;
 import me.supcheg.javafile.facts.MethodRef3;
 import me.supcheg.javafile.facts.MethodRef4;
@@ -23,6 +27,10 @@ import me.supcheg.javafile.facts.StaticMethodRef1;
 import me.supcheg.javafile.facts.StaticMethodRef10;
 import me.supcheg.javafile.facts.StaticMethodRef11;
 import me.supcheg.javafile.facts.StaticMethodRef12;
+import me.supcheg.javafile.facts.StaticMethodRef13;
+import me.supcheg.javafile.facts.StaticMethodRef14;
+import me.supcheg.javafile.facts.StaticMethodRef15;
+import me.supcheg.javafile.facts.StaticMethodRef16;
 import me.supcheg.javafile.facts.StaticMethodRef2;
 import me.supcheg.javafile.facts.StaticMethodRef3;
 import me.supcheg.javafile.facts.StaticMethodRef4;
@@ -36,6 +44,10 @@ import me.supcheg.javafile.facts.VoidMethodRef1;
 import me.supcheg.javafile.facts.VoidMethodRef10;
 import me.supcheg.javafile.facts.VoidMethodRef11;
 import me.supcheg.javafile.facts.VoidMethodRef12;
+import me.supcheg.javafile.facts.VoidMethodRef13;
+import me.supcheg.javafile.facts.VoidMethodRef14;
+import me.supcheg.javafile.facts.VoidMethodRef15;
+import me.supcheg.javafile.facts.VoidMethodRef16;
 import me.supcheg.javafile.facts.VoidMethodRef2;
 import me.supcheg.javafile.facts.VoidMethodRef3;
 import me.supcheg.javafile.facts.VoidMethodRef4;
@@ -49,6 +61,10 @@ import me.supcheg.javafile.facts.VoidStaticMethodRef1;
 import me.supcheg.javafile.facts.VoidStaticMethodRef10;
 import me.supcheg.javafile.facts.VoidStaticMethodRef11;
 import me.supcheg.javafile.facts.VoidStaticMethodRef12;
+import me.supcheg.javafile.facts.VoidStaticMethodRef13;
+import me.supcheg.javafile.facts.VoidStaticMethodRef14;
+import me.supcheg.javafile.facts.VoidStaticMethodRef15;
+import me.supcheg.javafile.facts.VoidStaticMethodRef16;
 import me.supcheg.javafile.facts.VoidStaticMethodRef2;
 import me.supcheg.javafile.facts.VoidStaticMethodRef3;
 import me.supcheg.javafile.facts.VoidStaticMethodRef4;
@@ -63,6 +79,10 @@ import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody1;
 import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody10;
 import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody11;
 import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody12;
+import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody13;
+import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody14;
+import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody15;
+import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody16;
 import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody2;
 import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody3;
 import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody4;
@@ -2426,6 +2446,1210 @@ abstract sealed class MemberBodyArities<Self, S> permits MemberBodies {
     }
 
     /**
+     * Defines a declared method; the body gets `this` and the parameters.
+     *
+     * @param method the declared method
+     * @param body the body, given its block, `this` and the parameters
+     * @param <R> the result type
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @throws IllegalStateException if the method is defined already or was not declared by this class; if the body reaches a `protected` member where it cannot be reached (JLS 6.6.2), names a type parameter of the class out of its scope, or a type the file of the class cannot write
+     */
+    public final <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> void define(MethodRef13<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> method, InstanceBody13<Self, Body<R>, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> body) {
+        Awaiting slot = definable(method);
+        Body<R> root = Body.root("body of method " + method.name(), MemberBodies.declares(method));
+        This<Self> self = thisOf(root);
+        Var<A1> p1 = Var.param(method.param1(), root);
+        Var<A2> p2 = Var.param(method.param2(), root);
+        Var<A3> p3 = Var.param(method.param3(), root);
+        Var<A4> p4 = Var.param(method.param4(), root);
+        Var<A5> p5 = Var.param(method.param5(), root);
+        Var<A6> p6 = Var.param(method.param6(), root);
+        Var<A7> p7 = Var.param(method.param7(), root);
+        Var<A8> p8 = Var.param(method.param8(), root);
+        Var<A9> p9 = Var.param(method.param9(), root);
+        Var<A10> p10 = Var.param(method.param10(), root);
+        Var<A11> p11 = Var.param(method.param11(), root);
+        Var<A12> p12 = Var.param(method.param12(), root);
+        Var<A13> p13 = MemberBodies.lastParameter(slot, method.param13(), root);
+        defineIn(slot, root, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13), (b) -> body.build(b, self, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13));
+    }
+
+    /**
+     * Defines a declared `void` method; the body gets `this` and the parameters.
+     *
+     * @param method the declared method
+     * @param body the body, given its block, `this` and the parameters
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @throws IllegalStateException if the method is defined already or was not declared by this class; if the body reaches a `protected` member where it cannot be reached (JLS 6.6.2), names a type parameter of the class out of its scope, or a type the file of the class cannot write
+     */
+    public final <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> void define(VoidMethodRef13<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> method, InstanceBody13<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> body) {
+        Awaiting slot = definable(method);
+        VoidBody root = VoidBody.root("body of method " + method.name(), MemberBodies.declares(method));
+        This<Self> self = thisOf(root);
+        Var<A1> p1 = Var.param(method.param1(), root);
+        Var<A2> p2 = Var.param(method.param2(), root);
+        Var<A3> p3 = Var.param(method.param3(), root);
+        Var<A4> p4 = Var.param(method.param4(), root);
+        Var<A5> p5 = Var.param(method.param5(), root);
+        Var<A6> p6 = Var.param(method.param6(), root);
+        Var<A7> p7 = Var.param(method.param7(), root);
+        Var<A8> p8 = Var.param(method.param8(), root);
+        Var<A9> p9 = Var.param(method.param9(), root);
+        Var<A10> p10 = Var.param(method.param10(), root);
+        Var<A11> p11 = Var.param(method.param11(), root);
+        Var<A12> p12 = Var.param(method.param12(), root);
+        Var<A13> p13 = MemberBodies.lastParameter(slot, method.param13(), root);
+        defineIn(slot, root, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13), (b) -> body.build(b, self, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13));
+    }
+
+    /**
+     * `super.method(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, )`: the method as the superclass has it, whatever the class being declared overrides it with.
+     *
+     * @param self `this`
+     * @param method the fact of the method
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param a10 the tenth argument
+     * @param a11 the eleventh argument
+     * @param a12 the twelfth argument
+     * @param a13 the thirteenth argument
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @return the call
+     * @throws IllegalArgumentException if `self` is not `this` of this class, or the superclass has no such method with a body on the target classpath
+     * @param <R> the result type
+     */
+    public final <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> Invocation<R> superCall(This<Self> self, MethodRef13<? super S, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Expr<? extends A10> a10, Expr<? extends A11> a11, Expr<? extends A12> a12, Expr<? extends A13> a13) {
+        return new Invocation<>(superCallNode(self, method, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13), Passing.EACH), method.result());
+    }
+
+    /**
+     * `super.method(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, )` of a `void` method: the method as the superclass has it, whatever the class being declared overrides it with.
+     *
+     * @param self `this`
+     * @param method the fact of the method
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param a10 the tenth argument
+     * @param a11 the eleventh argument
+     * @param a12 the twelfth argument
+     * @param a13 the thirteenth argument
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @return the call
+     * @throws IllegalArgumentException if `self` is not `this` of this class, or the superclass has no such method with a body on the target classpath
+     */
+    public final <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> VoidInvocation superCall(This<Self> self, VoidMethodRef13<? super S, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Expr<? extends A10> a10, Expr<? extends A11> a11, Expr<? extends A12> a12, Expr<? extends A13> a13) {
+        return new VoidInvocation(superCallNode(self, method, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13), Passing.EACH));
+    }
+
+    /**
+     * `super.method(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, ...)`, the arguments of the last parameter, which is of variable arity, one by one: the method as the superclass has it, whatever the class being declared overrides it with.
+     *
+     * @param self `this`
+     * @param method the fact of the method
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param a10 the tenth argument
+     * @param a11 the eleventh argument
+     * @param a12 the twelfth argument
+     * @param rest the arguments of the last parameter
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @return the call
+     * @throws IllegalArgumentException if `self` is not `this` of this class, or the superclass has no such method with a body on the target classpath
+     * @param <R> the result type
+     */
+    public final <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> Invocation<R> superCall(This<Self> self, MethodRef13<? super S, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Expr<? extends A10> a10, Expr<? extends A11> a11, Expr<? extends A12> a12, Varargs<A13> rest) {
+        return new Invocation<>(superCallNode(self, method, Expressions.spread(method, rest, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12)), Expressions.spreading(rest)), method.result());
+    }
+
+    /**
+     * `super.method(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, ...)` of a `void` method, the arguments of the last parameter, which is of variable arity, one by one: the method as the superclass has it, whatever the class being declared overrides it with.
+     *
+     * @param self `this`
+     * @param method the fact of the method
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param a10 the tenth argument
+     * @param a11 the eleventh argument
+     * @param a12 the twelfth argument
+     * @param rest the arguments of the last parameter
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @return the call
+     * @throws IllegalArgumentException if `self` is not `this` of this class, or the superclass has no such method with a body on the target classpath
+     */
+    public final <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> VoidInvocation superCall(This<Self> self, VoidMethodRef13<? super S, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Expr<? extends A10> a10, Expr<? extends A11> a11, Expr<? extends A12> a12, Varargs<A13> rest) {
+        return new VoidInvocation(superCallNode(self, method, Expressions.spread(method, rest, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12)), Expressions.spreading(rest)));
+    }
+
+    /**
+     * The body of an instance method or constructor of 13 parameters.
+     *
+     * @param <Self> the class
+     * @param <B> the body block
+     * @param <R> the result type, [Void] for `void`
+     * @param <A1> the first parameter type
+     * @param <A2> the second parameter type
+     * @param <A3> the third parameter type
+     * @param <A4> the fourth parameter type
+     * @param <A5> the fifth parameter type
+     * @param <A6> the sixth parameter type
+     * @param <A7> the seventh parameter type
+     * @param <A8> the eighth parameter type
+     * @param <A9> the ninth parameter type
+     * @param <A10> the tenth parameter type
+     * @param <A11> the eleventh parameter type
+     * @param <A12> the twelfth parameter type
+     * @param <A13> the thirteenth parameter type
+     */
+    @FunctionalInterface
+    public interface InstanceBody13<Self, B, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> {
+        /**
+         * Builds the body.
+         *
+         * @param body the body block
+         * @param self `this`
+         * @param p1 the first parameter
+         * @param p2 the second parameter
+         * @param p3 the third parameter
+         * @param p4 the fourth parameter
+         * @param p5 the fifth parameter
+         * @param p6 the sixth parameter
+         * @param p7 the seventh parameter
+         * @param p8 the eighth parameter
+         * @param p9 the ninth parameter
+         * @param p10 the tenth parameter
+         * @param p11 the eleventh parameter
+         * @param p12 the twelfth parameter
+         * @param p13 the thirteenth parameter
+         * @return the proof that the body ended
+         */
+        Terminated<R> build(B body, This<Self> self, Var<A1> p1, Var<A2> p2, Var<A3> p3, Var<A4> p4, Var<A5> p5, Var<A6> p6, Var<A7> p7, Var<A8> p8, Var<A9> p9, Var<A10> p10, Var<A11> p11, Var<A12> p12, Var<A13> p13);
+    }
+
+    /**
+     * Defines a declared method; the body gets `this` and the parameters.
+     *
+     * @param method the declared method
+     * @param body the body, given its block, `this` and the parameters
+     * @param <R> the result type
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @throws IllegalStateException if the method is defined already or was not declared by this class; if the body reaches a `protected` member where it cannot be reached (JLS 6.6.2), names a type parameter of the class out of its scope, or a type the file of the class cannot write
+     */
+    public final <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> void define(MethodRef14<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> method, InstanceBody14<Self, Body<R>, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> body) {
+        Awaiting slot = definable(method);
+        Body<R> root = Body.root("body of method " + method.name(), MemberBodies.declares(method));
+        This<Self> self = thisOf(root);
+        Var<A1> p1 = Var.param(method.param1(), root);
+        Var<A2> p2 = Var.param(method.param2(), root);
+        Var<A3> p3 = Var.param(method.param3(), root);
+        Var<A4> p4 = Var.param(method.param4(), root);
+        Var<A5> p5 = Var.param(method.param5(), root);
+        Var<A6> p6 = Var.param(method.param6(), root);
+        Var<A7> p7 = Var.param(method.param7(), root);
+        Var<A8> p8 = Var.param(method.param8(), root);
+        Var<A9> p9 = Var.param(method.param9(), root);
+        Var<A10> p10 = Var.param(method.param10(), root);
+        Var<A11> p11 = Var.param(method.param11(), root);
+        Var<A12> p12 = Var.param(method.param12(), root);
+        Var<A13> p13 = Var.param(method.param13(), root);
+        Var<A14> p14 = MemberBodies.lastParameter(slot, method.param14(), root);
+        defineIn(slot, root, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14), (b) -> body.build(b, self, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14));
+    }
+
+    /**
+     * Defines a declared `void` method; the body gets `this` and the parameters.
+     *
+     * @param method the declared method
+     * @param body the body, given its block, `this` and the parameters
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @throws IllegalStateException if the method is defined already or was not declared by this class; if the body reaches a `protected` member where it cannot be reached (JLS 6.6.2), names a type parameter of the class out of its scope, or a type the file of the class cannot write
+     */
+    public final <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> void define(VoidMethodRef14<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> method, InstanceBody14<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> body) {
+        Awaiting slot = definable(method);
+        VoidBody root = VoidBody.root("body of method " + method.name(), MemberBodies.declares(method));
+        This<Self> self = thisOf(root);
+        Var<A1> p1 = Var.param(method.param1(), root);
+        Var<A2> p2 = Var.param(method.param2(), root);
+        Var<A3> p3 = Var.param(method.param3(), root);
+        Var<A4> p4 = Var.param(method.param4(), root);
+        Var<A5> p5 = Var.param(method.param5(), root);
+        Var<A6> p6 = Var.param(method.param6(), root);
+        Var<A7> p7 = Var.param(method.param7(), root);
+        Var<A8> p8 = Var.param(method.param8(), root);
+        Var<A9> p9 = Var.param(method.param9(), root);
+        Var<A10> p10 = Var.param(method.param10(), root);
+        Var<A11> p11 = Var.param(method.param11(), root);
+        Var<A12> p12 = Var.param(method.param12(), root);
+        Var<A13> p13 = Var.param(method.param13(), root);
+        Var<A14> p14 = MemberBodies.lastParameter(slot, method.param14(), root);
+        defineIn(slot, root, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14), (b) -> body.build(b, self, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14));
+    }
+
+    /**
+     * `super.method(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, )`: the method as the superclass has it, whatever the class being declared overrides it with.
+     *
+     * @param self `this`
+     * @param method the fact of the method
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param a10 the tenth argument
+     * @param a11 the eleventh argument
+     * @param a12 the twelfth argument
+     * @param a13 the thirteenth argument
+     * @param a14 the fourteenth argument
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @return the call
+     * @throws IllegalArgumentException if `self` is not `this` of this class, or the superclass has no such method with a body on the target classpath
+     * @param <R> the result type
+     */
+    public final <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> Invocation<R> superCall(This<Self> self, MethodRef14<? super S, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Expr<? extends A10> a10, Expr<? extends A11> a11, Expr<? extends A12> a12, Expr<? extends A13> a13, Expr<? extends A14> a14) {
+        return new Invocation<>(superCallNode(self, method, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14), Passing.EACH), method.result());
+    }
+
+    /**
+     * `super.method(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, )` of a `void` method: the method as the superclass has it, whatever the class being declared overrides it with.
+     *
+     * @param self `this`
+     * @param method the fact of the method
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param a10 the tenth argument
+     * @param a11 the eleventh argument
+     * @param a12 the twelfth argument
+     * @param a13 the thirteenth argument
+     * @param a14 the fourteenth argument
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @return the call
+     * @throws IllegalArgumentException if `self` is not `this` of this class, or the superclass has no such method with a body on the target classpath
+     */
+    public final <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> VoidInvocation superCall(This<Self> self, VoidMethodRef14<? super S, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Expr<? extends A10> a10, Expr<? extends A11> a11, Expr<? extends A12> a12, Expr<? extends A13> a13, Expr<? extends A14> a14) {
+        return new VoidInvocation(superCallNode(self, method, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14), Passing.EACH));
+    }
+
+    /**
+     * `super.method(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, ...)`, the arguments of the last parameter, which is of variable arity, one by one: the method as the superclass has it, whatever the class being declared overrides it with.
+     *
+     * @param self `this`
+     * @param method the fact of the method
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param a10 the tenth argument
+     * @param a11 the eleventh argument
+     * @param a12 the twelfth argument
+     * @param a13 the thirteenth argument
+     * @param rest the arguments of the last parameter
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @return the call
+     * @throws IllegalArgumentException if `self` is not `this` of this class, or the superclass has no such method with a body on the target classpath
+     * @param <R> the result type
+     */
+    public final <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> Invocation<R> superCall(This<Self> self, MethodRef14<? super S, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Expr<? extends A10> a10, Expr<? extends A11> a11, Expr<? extends A12> a12, Expr<? extends A13> a13, Varargs<A14> rest) {
+        return new Invocation<>(superCallNode(self, method, Expressions.spread(method, rest, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13)), Expressions.spreading(rest)), method.result());
+    }
+
+    /**
+     * `super.method(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, ...)` of a `void` method, the arguments of the last parameter, which is of variable arity, one by one: the method as the superclass has it, whatever the class being declared overrides it with.
+     *
+     * @param self `this`
+     * @param method the fact of the method
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param a10 the tenth argument
+     * @param a11 the eleventh argument
+     * @param a12 the twelfth argument
+     * @param a13 the thirteenth argument
+     * @param rest the arguments of the last parameter
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @return the call
+     * @throws IllegalArgumentException if `self` is not `this` of this class, or the superclass has no such method with a body on the target classpath
+     */
+    public final <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> VoidInvocation superCall(This<Self> self, VoidMethodRef14<? super S, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Expr<? extends A10> a10, Expr<? extends A11> a11, Expr<? extends A12> a12, Expr<? extends A13> a13, Varargs<A14> rest) {
+        return new VoidInvocation(superCallNode(self, method, Expressions.spread(method, rest, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13)), Expressions.spreading(rest)));
+    }
+
+    /**
+     * The body of an instance method or constructor of 14 parameters.
+     *
+     * @param <Self> the class
+     * @param <B> the body block
+     * @param <R> the result type, [Void] for `void`
+     * @param <A1> the first parameter type
+     * @param <A2> the second parameter type
+     * @param <A3> the third parameter type
+     * @param <A4> the fourth parameter type
+     * @param <A5> the fifth parameter type
+     * @param <A6> the sixth parameter type
+     * @param <A7> the seventh parameter type
+     * @param <A8> the eighth parameter type
+     * @param <A9> the ninth parameter type
+     * @param <A10> the tenth parameter type
+     * @param <A11> the eleventh parameter type
+     * @param <A12> the twelfth parameter type
+     * @param <A13> the thirteenth parameter type
+     * @param <A14> the fourteenth parameter type
+     */
+    @FunctionalInterface
+    public interface InstanceBody14<Self, B, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> {
+        /**
+         * Builds the body.
+         *
+         * @param body the body block
+         * @param self `this`
+         * @param p1 the first parameter
+         * @param p2 the second parameter
+         * @param p3 the third parameter
+         * @param p4 the fourth parameter
+         * @param p5 the fifth parameter
+         * @param p6 the sixth parameter
+         * @param p7 the seventh parameter
+         * @param p8 the eighth parameter
+         * @param p9 the ninth parameter
+         * @param p10 the tenth parameter
+         * @param p11 the eleventh parameter
+         * @param p12 the twelfth parameter
+         * @param p13 the thirteenth parameter
+         * @param p14 the fourteenth parameter
+         * @return the proof that the body ended
+         */
+        Terminated<R> build(B body, This<Self> self, Var<A1> p1, Var<A2> p2, Var<A3> p3, Var<A4> p4, Var<A5> p5, Var<A6> p6, Var<A7> p7, Var<A8> p8, Var<A9> p9, Var<A10> p10, Var<A11> p11, Var<A12> p12, Var<A13> p13, Var<A14> p14);
+    }
+
+    /**
+     * Defines a declared method; the body gets `this` and the parameters.
+     *
+     * @param method the declared method
+     * @param body the body, given its block, `this` and the parameters
+     * @param <R> the result type
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @param <A15> the type of the fifteenth parameter
+     * @throws IllegalStateException if the method is defined already or was not declared by this class; if the body reaches a `protected` member where it cannot be reached (JLS 6.6.2), names a type parameter of the class out of its scope, or a type the file of the class cannot write
+     */
+    public final <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> void define(MethodRef15<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> method, InstanceBody15<Self, Body<R>, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> body) {
+        Awaiting slot = definable(method);
+        Body<R> root = Body.root("body of method " + method.name(), MemberBodies.declares(method));
+        This<Self> self = thisOf(root);
+        Var<A1> p1 = Var.param(method.param1(), root);
+        Var<A2> p2 = Var.param(method.param2(), root);
+        Var<A3> p3 = Var.param(method.param3(), root);
+        Var<A4> p4 = Var.param(method.param4(), root);
+        Var<A5> p5 = Var.param(method.param5(), root);
+        Var<A6> p6 = Var.param(method.param6(), root);
+        Var<A7> p7 = Var.param(method.param7(), root);
+        Var<A8> p8 = Var.param(method.param8(), root);
+        Var<A9> p9 = Var.param(method.param9(), root);
+        Var<A10> p10 = Var.param(method.param10(), root);
+        Var<A11> p11 = Var.param(method.param11(), root);
+        Var<A12> p12 = Var.param(method.param12(), root);
+        Var<A13> p13 = Var.param(method.param13(), root);
+        Var<A14> p14 = Var.param(method.param14(), root);
+        Var<A15> p15 = MemberBodies.lastParameter(slot, method.param15(), root);
+        defineIn(slot, root, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15), (b) -> body.build(b, self, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15));
+    }
+
+    /**
+     * Defines a declared `void` method; the body gets `this` and the parameters.
+     *
+     * @param method the declared method
+     * @param body the body, given its block, `this` and the parameters
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @param <A15> the type of the fifteenth parameter
+     * @throws IllegalStateException if the method is defined already or was not declared by this class; if the body reaches a `protected` member where it cannot be reached (JLS 6.6.2), names a type parameter of the class out of its scope, or a type the file of the class cannot write
+     */
+    public final <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> void define(VoidMethodRef15<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> method, InstanceBody15<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> body) {
+        Awaiting slot = definable(method);
+        VoidBody root = VoidBody.root("body of method " + method.name(), MemberBodies.declares(method));
+        This<Self> self = thisOf(root);
+        Var<A1> p1 = Var.param(method.param1(), root);
+        Var<A2> p2 = Var.param(method.param2(), root);
+        Var<A3> p3 = Var.param(method.param3(), root);
+        Var<A4> p4 = Var.param(method.param4(), root);
+        Var<A5> p5 = Var.param(method.param5(), root);
+        Var<A6> p6 = Var.param(method.param6(), root);
+        Var<A7> p7 = Var.param(method.param7(), root);
+        Var<A8> p8 = Var.param(method.param8(), root);
+        Var<A9> p9 = Var.param(method.param9(), root);
+        Var<A10> p10 = Var.param(method.param10(), root);
+        Var<A11> p11 = Var.param(method.param11(), root);
+        Var<A12> p12 = Var.param(method.param12(), root);
+        Var<A13> p13 = Var.param(method.param13(), root);
+        Var<A14> p14 = Var.param(method.param14(), root);
+        Var<A15> p15 = MemberBodies.lastParameter(slot, method.param15(), root);
+        defineIn(slot, root, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15), (b) -> body.build(b, self, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15));
+    }
+
+    /**
+     * `super.method(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, )`: the method as the superclass has it, whatever the class being declared overrides it with.
+     *
+     * @param self `this`
+     * @param method the fact of the method
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param a10 the tenth argument
+     * @param a11 the eleventh argument
+     * @param a12 the twelfth argument
+     * @param a13 the thirteenth argument
+     * @param a14 the fourteenth argument
+     * @param a15 the fifteenth argument
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @param <A15> the type of the fifteenth parameter
+     * @return the call
+     * @throws IllegalArgumentException if `self` is not `this` of this class, or the superclass has no such method with a body on the target classpath
+     * @param <R> the result type
+     */
+    public final <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> Invocation<R> superCall(This<Self> self, MethodRef15<? super S, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Expr<? extends A10> a10, Expr<? extends A11> a11, Expr<? extends A12> a12, Expr<? extends A13> a13, Expr<? extends A14> a14, Expr<? extends A15> a15) {
+        return new Invocation<>(superCallNode(self, method, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15), Passing.EACH), method.result());
+    }
+
+    /**
+     * `super.method(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, )` of a `void` method: the method as the superclass has it, whatever the class being declared overrides it with.
+     *
+     * @param self `this`
+     * @param method the fact of the method
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param a10 the tenth argument
+     * @param a11 the eleventh argument
+     * @param a12 the twelfth argument
+     * @param a13 the thirteenth argument
+     * @param a14 the fourteenth argument
+     * @param a15 the fifteenth argument
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @param <A15> the type of the fifteenth parameter
+     * @return the call
+     * @throws IllegalArgumentException if `self` is not `this` of this class, or the superclass has no such method with a body on the target classpath
+     */
+    public final <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> VoidInvocation superCall(This<Self> self, VoidMethodRef15<? super S, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Expr<? extends A10> a10, Expr<? extends A11> a11, Expr<? extends A12> a12, Expr<? extends A13> a13, Expr<? extends A14> a14, Expr<? extends A15> a15) {
+        return new VoidInvocation(superCallNode(self, method, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15), Passing.EACH));
+    }
+
+    /**
+     * `super.method(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, ...)`, the arguments of the last parameter, which is of variable arity, one by one: the method as the superclass has it, whatever the class being declared overrides it with.
+     *
+     * @param self `this`
+     * @param method the fact of the method
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param a10 the tenth argument
+     * @param a11 the eleventh argument
+     * @param a12 the twelfth argument
+     * @param a13 the thirteenth argument
+     * @param a14 the fourteenth argument
+     * @param rest the arguments of the last parameter
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @param <A15> the type of the fifteenth parameter
+     * @return the call
+     * @throws IllegalArgumentException if `self` is not `this` of this class, or the superclass has no such method with a body on the target classpath
+     * @param <R> the result type
+     */
+    public final <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> Invocation<R> superCall(This<Self> self, MethodRef15<? super S, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Expr<? extends A10> a10, Expr<? extends A11> a11, Expr<? extends A12> a12, Expr<? extends A13> a13, Expr<? extends A14> a14, Varargs<A15> rest) {
+        return new Invocation<>(superCallNode(self, method, Expressions.spread(method, rest, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14)), Expressions.spreading(rest)), method.result());
+    }
+
+    /**
+     * `super.method(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, ...)` of a `void` method, the arguments of the last parameter, which is of variable arity, one by one: the method as the superclass has it, whatever the class being declared overrides it with.
+     *
+     * @param self `this`
+     * @param method the fact of the method
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param a10 the tenth argument
+     * @param a11 the eleventh argument
+     * @param a12 the twelfth argument
+     * @param a13 the thirteenth argument
+     * @param a14 the fourteenth argument
+     * @param rest the arguments of the last parameter
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @param <A15> the type of the fifteenth parameter
+     * @return the call
+     * @throws IllegalArgumentException if `self` is not `this` of this class, or the superclass has no such method with a body on the target classpath
+     */
+    public final <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> VoidInvocation superCall(This<Self> self, VoidMethodRef15<? super S, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Expr<? extends A10> a10, Expr<? extends A11> a11, Expr<? extends A12> a12, Expr<? extends A13> a13, Expr<? extends A14> a14, Varargs<A15> rest) {
+        return new VoidInvocation(superCallNode(self, method, Expressions.spread(method, rest, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14)), Expressions.spreading(rest)));
+    }
+
+    /**
+     * The body of an instance method or constructor of 15 parameters.
+     *
+     * @param <Self> the class
+     * @param <B> the body block
+     * @param <R> the result type, [Void] for `void`
+     * @param <A1> the first parameter type
+     * @param <A2> the second parameter type
+     * @param <A3> the third parameter type
+     * @param <A4> the fourth parameter type
+     * @param <A5> the fifth parameter type
+     * @param <A6> the sixth parameter type
+     * @param <A7> the seventh parameter type
+     * @param <A8> the eighth parameter type
+     * @param <A9> the ninth parameter type
+     * @param <A10> the tenth parameter type
+     * @param <A11> the eleventh parameter type
+     * @param <A12> the twelfth parameter type
+     * @param <A13> the thirteenth parameter type
+     * @param <A14> the fourteenth parameter type
+     * @param <A15> the fifteenth parameter type
+     */
+    @FunctionalInterface
+    public interface InstanceBody15<Self, B, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> {
+        /**
+         * Builds the body.
+         *
+         * @param body the body block
+         * @param self `this`
+         * @param p1 the first parameter
+         * @param p2 the second parameter
+         * @param p3 the third parameter
+         * @param p4 the fourth parameter
+         * @param p5 the fifth parameter
+         * @param p6 the sixth parameter
+         * @param p7 the seventh parameter
+         * @param p8 the eighth parameter
+         * @param p9 the ninth parameter
+         * @param p10 the tenth parameter
+         * @param p11 the eleventh parameter
+         * @param p12 the twelfth parameter
+         * @param p13 the thirteenth parameter
+         * @param p14 the fourteenth parameter
+         * @param p15 the fifteenth parameter
+         * @return the proof that the body ended
+         */
+        Terminated<R> build(B body, This<Self> self, Var<A1> p1, Var<A2> p2, Var<A3> p3, Var<A4> p4, Var<A5> p5, Var<A6> p6, Var<A7> p7, Var<A8> p8, Var<A9> p9, Var<A10> p10, Var<A11> p11, Var<A12> p12, Var<A13> p13, Var<A14> p14, Var<A15> p15);
+    }
+
+    /**
+     * Defines a declared method; the body gets `this` and the parameters.
+     *
+     * @param method the declared method
+     * @param body the body, given its block, `this` and the parameters
+     * @param <R> the result type
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @param <A15> the type of the fifteenth parameter
+     * @param <A16> the type of the sixteenth parameter
+     * @throws IllegalStateException if the method is defined already or was not declared by this class; if the body reaches a `protected` member where it cannot be reached (JLS 6.6.2), names a type parameter of the class out of its scope, or a type the file of the class cannot write
+     */
+    public final <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> void define(MethodRef16<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> method, InstanceBody16<Self, Body<R>, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> body) {
+        Awaiting slot = definable(method);
+        Body<R> root = Body.root("body of method " + method.name(), MemberBodies.declares(method));
+        This<Self> self = thisOf(root);
+        Var<A1> p1 = Var.param(method.param1(), root);
+        Var<A2> p2 = Var.param(method.param2(), root);
+        Var<A3> p3 = Var.param(method.param3(), root);
+        Var<A4> p4 = Var.param(method.param4(), root);
+        Var<A5> p5 = Var.param(method.param5(), root);
+        Var<A6> p6 = Var.param(method.param6(), root);
+        Var<A7> p7 = Var.param(method.param7(), root);
+        Var<A8> p8 = Var.param(method.param8(), root);
+        Var<A9> p9 = Var.param(method.param9(), root);
+        Var<A10> p10 = Var.param(method.param10(), root);
+        Var<A11> p11 = Var.param(method.param11(), root);
+        Var<A12> p12 = Var.param(method.param12(), root);
+        Var<A13> p13 = Var.param(method.param13(), root);
+        Var<A14> p14 = Var.param(method.param14(), root);
+        Var<A15> p15 = Var.param(method.param15(), root);
+        Var<A16> p16 = MemberBodies.lastParameter(slot, method.param16(), root);
+        defineIn(slot, root, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16), (b) -> body.build(b, self, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16));
+    }
+
+    /**
+     * Defines a declared `void` method; the body gets `this` and the parameters.
+     *
+     * @param method the declared method
+     * @param body the body, given its block, `this` and the parameters
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @param <A15> the type of the fifteenth parameter
+     * @param <A16> the type of the sixteenth parameter
+     * @throws IllegalStateException if the method is defined already or was not declared by this class; if the body reaches a `protected` member where it cannot be reached (JLS 6.6.2), names a type parameter of the class out of its scope, or a type the file of the class cannot write
+     */
+    public final <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> void define(VoidMethodRef16<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> method, InstanceBody16<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> body) {
+        Awaiting slot = definable(method);
+        VoidBody root = VoidBody.root("body of method " + method.name(), MemberBodies.declares(method));
+        This<Self> self = thisOf(root);
+        Var<A1> p1 = Var.param(method.param1(), root);
+        Var<A2> p2 = Var.param(method.param2(), root);
+        Var<A3> p3 = Var.param(method.param3(), root);
+        Var<A4> p4 = Var.param(method.param4(), root);
+        Var<A5> p5 = Var.param(method.param5(), root);
+        Var<A6> p6 = Var.param(method.param6(), root);
+        Var<A7> p7 = Var.param(method.param7(), root);
+        Var<A8> p8 = Var.param(method.param8(), root);
+        Var<A9> p9 = Var.param(method.param9(), root);
+        Var<A10> p10 = Var.param(method.param10(), root);
+        Var<A11> p11 = Var.param(method.param11(), root);
+        Var<A12> p12 = Var.param(method.param12(), root);
+        Var<A13> p13 = Var.param(method.param13(), root);
+        Var<A14> p14 = Var.param(method.param14(), root);
+        Var<A15> p15 = Var.param(method.param15(), root);
+        Var<A16> p16 = MemberBodies.lastParameter(slot, method.param16(), root);
+        defineIn(slot, root, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16), (b) -> body.build(b, self, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16));
+    }
+
+    /**
+     * `super.method(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, )`: the method as the superclass has it, whatever the class being declared overrides it with.
+     *
+     * @param self `this`
+     * @param method the fact of the method
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param a10 the tenth argument
+     * @param a11 the eleventh argument
+     * @param a12 the twelfth argument
+     * @param a13 the thirteenth argument
+     * @param a14 the fourteenth argument
+     * @param a15 the fifteenth argument
+     * @param a16 the sixteenth argument
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @param <A15> the type of the fifteenth parameter
+     * @param <A16> the type of the sixteenth parameter
+     * @return the call
+     * @throws IllegalArgumentException if `self` is not `this` of this class, or the superclass has no such method with a body on the target classpath
+     * @param <R> the result type
+     */
+    public final <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> Invocation<R> superCall(This<Self> self, MethodRef16<? super S, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Expr<? extends A10> a10, Expr<? extends A11> a11, Expr<? extends A12> a12, Expr<? extends A13> a13, Expr<? extends A14> a14, Expr<? extends A15> a15, Expr<? extends A16> a16) {
+        return new Invocation<>(superCallNode(self, method, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16), Passing.EACH), method.result());
+    }
+
+    /**
+     * `super.method(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, )` of a `void` method: the method as the superclass has it, whatever the class being declared overrides it with.
+     *
+     * @param self `this`
+     * @param method the fact of the method
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param a10 the tenth argument
+     * @param a11 the eleventh argument
+     * @param a12 the twelfth argument
+     * @param a13 the thirteenth argument
+     * @param a14 the fourteenth argument
+     * @param a15 the fifteenth argument
+     * @param a16 the sixteenth argument
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @param <A15> the type of the fifteenth parameter
+     * @param <A16> the type of the sixteenth parameter
+     * @return the call
+     * @throws IllegalArgumentException if `self` is not `this` of this class, or the superclass has no such method with a body on the target classpath
+     */
+    public final <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> VoidInvocation superCall(This<Self> self, VoidMethodRef16<? super S, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Expr<? extends A10> a10, Expr<? extends A11> a11, Expr<? extends A12> a12, Expr<? extends A13> a13, Expr<? extends A14> a14, Expr<? extends A15> a15, Expr<? extends A16> a16) {
+        return new VoidInvocation(superCallNode(self, method, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16), Passing.EACH));
+    }
+
+    /**
+     * `super.method(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, ...)`, the arguments of the last parameter, which is of variable arity, one by one: the method as the superclass has it, whatever the class being declared overrides it with.
+     *
+     * @param self `this`
+     * @param method the fact of the method
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param a10 the tenth argument
+     * @param a11 the eleventh argument
+     * @param a12 the twelfth argument
+     * @param a13 the thirteenth argument
+     * @param a14 the fourteenth argument
+     * @param a15 the fifteenth argument
+     * @param rest the arguments of the last parameter
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @param <A15> the type of the fifteenth parameter
+     * @param <A16> the type of the sixteenth parameter
+     * @return the call
+     * @throws IllegalArgumentException if `self` is not `this` of this class, or the superclass has no such method with a body on the target classpath
+     * @param <R> the result type
+     */
+    public final <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> Invocation<R> superCall(This<Self> self, MethodRef16<? super S, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Expr<? extends A10> a10, Expr<? extends A11> a11, Expr<? extends A12> a12, Expr<? extends A13> a13, Expr<? extends A14> a14, Expr<? extends A15> a15, Varargs<A16> rest) {
+        return new Invocation<>(superCallNode(self, method, Expressions.spread(method, rest, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15)), Expressions.spreading(rest)), method.result());
+    }
+
+    /**
+     * `super.method(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, ...)` of a `void` method, the arguments of the last parameter, which is of variable arity, one by one: the method as the superclass has it, whatever the class being declared overrides it with.
+     *
+     * @param self `this`
+     * @param method the fact of the method
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param a10 the tenth argument
+     * @param a11 the eleventh argument
+     * @param a12 the twelfth argument
+     * @param a13 the thirteenth argument
+     * @param a14 the fourteenth argument
+     * @param a15 the fifteenth argument
+     * @param rest the arguments of the last parameter
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @param <A15> the type of the fifteenth parameter
+     * @param <A16> the type of the sixteenth parameter
+     * @return the call
+     * @throws IllegalArgumentException if `self` is not `this` of this class, or the superclass has no such method with a body on the target classpath
+     */
+    public final <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> VoidInvocation superCall(This<Self> self, VoidMethodRef16<? super S, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> method, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Expr<? extends A10> a10, Expr<? extends A11> a11, Expr<? extends A12> a12, Expr<? extends A13> a13, Expr<? extends A14> a14, Expr<? extends A15> a15, Varargs<A16> rest) {
+        return new VoidInvocation(superCallNode(self, method, Expressions.spread(method, rest, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15)), Expressions.spreading(rest)));
+    }
+
+    /**
+     * The body of an instance method or constructor of 16 parameters.
+     *
+     * @param <Self> the class
+     * @param <B> the body block
+     * @param <R> the result type, [Void] for `void`
+     * @param <A1> the first parameter type
+     * @param <A2> the second parameter type
+     * @param <A3> the third parameter type
+     * @param <A4> the fourth parameter type
+     * @param <A5> the fifth parameter type
+     * @param <A6> the sixth parameter type
+     * @param <A7> the seventh parameter type
+     * @param <A8> the eighth parameter type
+     * @param <A9> the ninth parameter type
+     * @param <A10> the tenth parameter type
+     * @param <A11> the eleventh parameter type
+     * @param <A12> the twelfth parameter type
+     * @param <A13> the thirteenth parameter type
+     * @param <A14> the fourteenth parameter type
+     * @param <A15> the fifteenth parameter type
+     * @param <A16> the sixteenth parameter type
+     */
+    @FunctionalInterface
+    public interface InstanceBody16<Self, B, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> {
+        /**
+         * Builds the body.
+         *
+         * @param body the body block
+         * @param self `this`
+         * @param p1 the first parameter
+         * @param p2 the second parameter
+         * @param p3 the third parameter
+         * @param p4 the fourth parameter
+         * @param p5 the fifth parameter
+         * @param p6 the sixth parameter
+         * @param p7 the seventh parameter
+         * @param p8 the eighth parameter
+         * @param p9 the ninth parameter
+         * @param p10 the tenth parameter
+         * @param p11 the eleventh parameter
+         * @param p12 the twelfth parameter
+         * @param p13 the thirteenth parameter
+         * @param p14 the fourteenth parameter
+         * @param p15 the fifteenth parameter
+         * @param p16 the sixteenth parameter
+         * @return the proof that the body ended
+         */
+        Terminated<R> build(B body, This<Self> self, Var<A1> p1, Var<A2> p2, Var<A3> p3, Var<A4> p4, Var<A5> p5, Var<A6> p6, Var<A7> p7, Var<A8> p8, Var<A9> p9, Var<A10> p10, Var<A11> p11, Var<A12> p12, Var<A13> p13, Var<A14> p14, Var<A15> p15, Var<A16> p16);
+    }
+
+    /**
      * Defines a declared static method; the body gets no `this`.
      *
      * @param method the declared method
@@ -3086,5 +4310,345 @@ abstract sealed class MemberBodyArities<Self, S> permits MemberBodies {
         Var<A11> p11 = Var.param(method.param11(), root);
         Var<A12> p12 = MemberBodies.lastParameter(slot, method.param12(), root);
         defineIn(slot, root, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12), (b) -> body.apply(b, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12));
+    }
+
+    /**
+     * Defines a declared static method; the body gets the parameters, no `this`.
+     *
+     * @param method the declared method
+     * @param body the body, given its block and the parameters
+     * @param <R> the result type
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @throws IllegalStateException as the definition of an instance method
+     */
+    public final <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> void define(StaticMethodRef13<R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> method, Function14<Body<R>, Var<A1>, Var<A2>, Var<A3>, Var<A4>, Var<A5>, Var<A6>, Var<A7>, Var<A8>, Var<A9>, Var<A10>, Var<A11>, Var<A12>, Var<A13>, Terminated<R>> body) {
+        Awaiting slot = definable(method);
+        Body<R> root = Body.root("body of static method " + method.name(), MemberBodies.declares(method));
+        Var<A1> p1 = Var.param(method.param1(), root);
+        Var<A2> p2 = Var.param(method.param2(), root);
+        Var<A3> p3 = Var.param(method.param3(), root);
+        Var<A4> p4 = Var.param(method.param4(), root);
+        Var<A5> p5 = Var.param(method.param5(), root);
+        Var<A6> p6 = Var.param(method.param6(), root);
+        Var<A7> p7 = Var.param(method.param7(), root);
+        Var<A8> p8 = Var.param(method.param8(), root);
+        Var<A9> p9 = Var.param(method.param9(), root);
+        Var<A10> p10 = Var.param(method.param10(), root);
+        Var<A11> p11 = Var.param(method.param11(), root);
+        Var<A12> p12 = Var.param(method.param12(), root);
+        Var<A13> p13 = MemberBodies.lastParameter(slot, method.param13(), root);
+        defineIn(slot, root, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13), (b) -> body.apply(b, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13));
+    }
+
+    /**
+     * Defines a declared static `void` method; the body gets the parameters, no `this`.
+     *
+     * @param method the declared method
+     * @param body the body, given its block and the parameters
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @throws IllegalStateException as the definition of an instance method
+     */
+    public final <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> void define(VoidStaticMethodRef13<A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> method, Function14<VoidBody, Var<A1>, Var<A2>, Var<A3>, Var<A4>, Var<A5>, Var<A6>, Var<A7>, Var<A8>, Var<A9>, Var<A10>, Var<A11>, Var<A12>, Var<A13>, Terminated<Void>> body) {
+        Awaiting slot = definable(method);
+        VoidBody root = VoidBody.root("body of static method " + method.name(), MemberBodies.declares(method));
+        Var<A1> p1 = Var.param(method.param1(), root);
+        Var<A2> p2 = Var.param(method.param2(), root);
+        Var<A3> p3 = Var.param(method.param3(), root);
+        Var<A4> p4 = Var.param(method.param4(), root);
+        Var<A5> p5 = Var.param(method.param5(), root);
+        Var<A6> p6 = Var.param(method.param6(), root);
+        Var<A7> p7 = Var.param(method.param7(), root);
+        Var<A8> p8 = Var.param(method.param8(), root);
+        Var<A9> p9 = Var.param(method.param9(), root);
+        Var<A10> p10 = Var.param(method.param10(), root);
+        Var<A11> p11 = Var.param(method.param11(), root);
+        Var<A12> p12 = Var.param(method.param12(), root);
+        Var<A13> p13 = MemberBodies.lastParameter(slot, method.param13(), root);
+        defineIn(slot, root, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13), (b) -> body.apply(b, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13));
+    }
+
+    /**
+     * Defines a declared static method; the body gets the parameters, no `this`.
+     *
+     * @param method the declared method
+     * @param body the body, given its block and the parameters
+     * @param <R> the result type
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @throws IllegalStateException as the definition of an instance method
+     */
+    public final <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> void define(StaticMethodRef14<R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> method, Function15<Body<R>, Var<A1>, Var<A2>, Var<A3>, Var<A4>, Var<A5>, Var<A6>, Var<A7>, Var<A8>, Var<A9>, Var<A10>, Var<A11>, Var<A12>, Var<A13>, Var<A14>, Terminated<R>> body) {
+        Awaiting slot = definable(method);
+        Body<R> root = Body.root("body of static method " + method.name(), MemberBodies.declares(method));
+        Var<A1> p1 = Var.param(method.param1(), root);
+        Var<A2> p2 = Var.param(method.param2(), root);
+        Var<A3> p3 = Var.param(method.param3(), root);
+        Var<A4> p4 = Var.param(method.param4(), root);
+        Var<A5> p5 = Var.param(method.param5(), root);
+        Var<A6> p6 = Var.param(method.param6(), root);
+        Var<A7> p7 = Var.param(method.param7(), root);
+        Var<A8> p8 = Var.param(method.param8(), root);
+        Var<A9> p9 = Var.param(method.param9(), root);
+        Var<A10> p10 = Var.param(method.param10(), root);
+        Var<A11> p11 = Var.param(method.param11(), root);
+        Var<A12> p12 = Var.param(method.param12(), root);
+        Var<A13> p13 = Var.param(method.param13(), root);
+        Var<A14> p14 = MemberBodies.lastParameter(slot, method.param14(), root);
+        defineIn(slot, root, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14), (b) -> body.apply(b, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14));
+    }
+
+    /**
+     * Defines a declared static `void` method; the body gets the parameters, no `this`.
+     *
+     * @param method the declared method
+     * @param body the body, given its block and the parameters
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @throws IllegalStateException as the definition of an instance method
+     */
+    public final <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> void define(VoidStaticMethodRef14<A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> method, Function15<VoidBody, Var<A1>, Var<A2>, Var<A3>, Var<A4>, Var<A5>, Var<A6>, Var<A7>, Var<A8>, Var<A9>, Var<A10>, Var<A11>, Var<A12>, Var<A13>, Var<A14>, Terminated<Void>> body) {
+        Awaiting slot = definable(method);
+        VoidBody root = VoidBody.root("body of static method " + method.name(), MemberBodies.declares(method));
+        Var<A1> p1 = Var.param(method.param1(), root);
+        Var<A2> p2 = Var.param(method.param2(), root);
+        Var<A3> p3 = Var.param(method.param3(), root);
+        Var<A4> p4 = Var.param(method.param4(), root);
+        Var<A5> p5 = Var.param(method.param5(), root);
+        Var<A6> p6 = Var.param(method.param6(), root);
+        Var<A7> p7 = Var.param(method.param7(), root);
+        Var<A8> p8 = Var.param(method.param8(), root);
+        Var<A9> p9 = Var.param(method.param9(), root);
+        Var<A10> p10 = Var.param(method.param10(), root);
+        Var<A11> p11 = Var.param(method.param11(), root);
+        Var<A12> p12 = Var.param(method.param12(), root);
+        Var<A13> p13 = Var.param(method.param13(), root);
+        Var<A14> p14 = MemberBodies.lastParameter(slot, method.param14(), root);
+        defineIn(slot, root, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14), (b) -> body.apply(b, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14));
+    }
+
+    /**
+     * Defines a declared static method; the body gets the parameters, no `this`.
+     *
+     * @param method the declared method
+     * @param body the body, given its block and the parameters
+     * @param <R> the result type
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @param <A15> the type of the fifteenth parameter
+     * @throws IllegalStateException as the definition of an instance method
+     */
+    public final <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> void define(StaticMethodRef15<R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> method, Function16<Body<R>, Var<A1>, Var<A2>, Var<A3>, Var<A4>, Var<A5>, Var<A6>, Var<A7>, Var<A8>, Var<A9>, Var<A10>, Var<A11>, Var<A12>, Var<A13>, Var<A14>, Var<A15>, Terminated<R>> body) {
+        Awaiting slot = definable(method);
+        Body<R> root = Body.root("body of static method " + method.name(), MemberBodies.declares(method));
+        Var<A1> p1 = Var.param(method.param1(), root);
+        Var<A2> p2 = Var.param(method.param2(), root);
+        Var<A3> p3 = Var.param(method.param3(), root);
+        Var<A4> p4 = Var.param(method.param4(), root);
+        Var<A5> p5 = Var.param(method.param5(), root);
+        Var<A6> p6 = Var.param(method.param6(), root);
+        Var<A7> p7 = Var.param(method.param7(), root);
+        Var<A8> p8 = Var.param(method.param8(), root);
+        Var<A9> p9 = Var.param(method.param9(), root);
+        Var<A10> p10 = Var.param(method.param10(), root);
+        Var<A11> p11 = Var.param(method.param11(), root);
+        Var<A12> p12 = Var.param(method.param12(), root);
+        Var<A13> p13 = Var.param(method.param13(), root);
+        Var<A14> p14 = Var.param(method.param14(), root);
+        Var<A15> p15 = MemberBodies.lastParameter(slot, method.param15(), root);
+        defineIn(slot, root, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15), (b) -> body.apply(b, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15));
+    }
+
+    /**
+     * Defines a declared static `void` method; the body gets the parameters, no `this`.
+     *
+     * @param method the declared method
+     * @param body the body, given its block and the parameters
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @param <A15> the type of the fifteenth parameter
+     * @throws IllegalStateException as the definition of an instance method
+     */
+    public final <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> void define(VoidStaticMethodRef15<A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> method, Function16<VoidBody, Var<A1>, Var<A2>, Var<A3>, Var<A4>, Var<A5>, Var<A6>, Var<A7>, Var<A8>, Var<A9>, Var<A10>, Var<A11>, Var<A12>, Var<A13>, Var<A14>, Var<A15>, Terminated<Void>> body) {
+        Awaiting slot = definable(method);
+        VoidBody root = VoidBody.root("body of static method " + method.name(), MemberBodies.declares(method));
+        Var<A1> p1 = Var.param(method.param1(), root);
+        Var<A2> p2 = Var.param(method.param2(), root);
+        Var<A3> p3 = Var.param(method.param3(), root);
+        Var<A4> p4 = Var.param(method.param4(), root);
+        Var<A5> p5 = Var.param(method.param5(), root);
+        Var<A6> p6 = Var.param(method.param6(), root);
+        Var<A7> p7 = Var.param(method.param7(), root);
+        Var<A8> p8 = Var.param(method.param8(), root);
+        Var<A9> p9 = Var.param(method.param9(), root);
+        Var<A10> p10 = Var.param(method.param10(), root);
+        Var<A11> p11 = Var.param(method.param11(), root);
+        Var<A12> p12 = Var.param(method.param12(), root);
+        Var<A13> p13 = Var.param(method.param13(), root);
+        Var<A14> p14 = Var.param(method.param14(), root);
+        Var<A15> p15 = MemberBodies.lastParameter(slot, method.param15(), root);
+        defineIn(slot, root, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15), (b) -> body.apply(b, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15));
+    }
+
+    /**
+     * Defines a declared static method; the body gets the parameters, no `this`.
+     *
+     * @param method the declared method
+     * @param body the body, given its block and the parameters
+     * @param <R> the result type
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @param <A15> the type of the fifteenth parameter
+     * @param <A16> the type of the sixteenth parameter
+     * @throws IllegalStateException as the definition of an instance method
+     */
+    public final <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> void define(StaticMethodRef16<R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> method, Function17<Body<R>, Var<A1>, Var<A2>, Var<A3>, Var<A4>, Var<A5>, Var<A6>, Var<A7>, Var<A8>, Var<A9>, Var<A10>, Var<A11>, Var<A12>, Var<A13>, Var<A14>, Var<A15>, Var<A16>, Terminated<R>> body) {
+        Awaiting slot = definable(method);
+        Body<R> root = Body.root("body of static method " + method.name(), MemberBodies.declares(method));
+        Var<A1> p1 = Var.param(method.param1(), root);
+        Var<A2> p2 = Var.param(method.param2(), root);
+        Var<A3> p3 = Var.param(method.param3(), root);
+        Var<A4> p4 = Var.param(method.param4(), root);
+        Var<A5> p5 = Var.param(method.param5(), root);
+        Var<A6> p6 = Var.param(method.param6(), root);
+        Var<A7> p7 = Var.param(method.param7(), root);
+        Var<A8> p8 = Var.param(method.param8(), root);
+        Var<A9> p9 = Var.param(method.param9(), root);
+        Var<A10> p10 = Var.param(method.param10(), root);
+        Var<A11> p11 = Var.param(method.param11(), root);
+        Var<A12> p12 = Var.param(method.param12(), root);
+        Var<A13> p13 = Var.param(method.param13(), root);
+        Var<A14> p14 = Var.param(method.param14(), root);
+        Var<A15> p15 = Var.param(method.param15(), root);
+        Var<A16> p16 = MemberBodies.lastParameter(slot, method.param16(), root);
+        defineIn(slot, root, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16), (b) -> body.apply(b, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16));
+    }
+
+    /**
+     * Defines a declared static `void` method; the body gets the parameters, no `this`.
+     *
+     * @param method the declared method
+     * @param body the body, given its block and the parameters
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @param <A15> the type of the fifteenth parameter
+     * @param <A16> the type of the sixteenth parameter
+     * @throws IllegalStateException as the definition of an instance method
+     */
+    public final <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> void define(VoidStaticMethodRef16<A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> method, Function17<VoidBody, Var<A1>, Var<A2>, Var<A3>, Var<A4>, Var<A5>, Var<A6>, Var<A7>, Var<A8>, Var<A9>, Var<A10>, Var<A11>, Var<A12>, Var<A13>, Var<A14>, Var<A15>, Var<A16>, Terminated<Void>> body) {
+        Awaiting slot = definable(method);
+        VoidBody root = VoidBody.root("body of static method " + method.name(), MemberBodies.declares(method));
+        Var<A1> p1 = Var.param(method.param1(), root);
+        Var<A2> p2 = Var.param(method.param2(), root);
+        Var<A3> p3 = Var.param(method.param3(), root);
+        Var<A4> p4 = Var.param(method.param4(), root);
+        Var<A5> p5 = Var.param(method.param5(), root);
+        Var<A6> p6 = Var.param(method.param6(), root);
+        Var<A7> p7 = Var.param(method.param7(), root);
+        Var<A8> p8 = Var.param(method.param8(), root);
+        Var<A9> p9 = Var.param(method.param9(), root);
+        Var<A10> p10 = Var.param(method.param10(), root);
+        Var<A11> p11 = Var.param(method.param11(), root);
+        Var<A12> p12 = Var.param(method.param12(), root);
+        Var<A13> p13 = Var.param(method.param13(), root);
+        Var<A14> p14 = Var.param(method.param14(), root);
+        Var<A15> p15 = Var.param(method.param15(), root);
+        Var<A16> p16 = MemberBodies.lastParameter(slot, method.param16(), root);
+        defineIn(slot, root, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16), (b) -> body.apply(b, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16));
     }
 }

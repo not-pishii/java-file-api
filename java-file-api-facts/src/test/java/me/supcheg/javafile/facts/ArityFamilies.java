@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /// What the generated tests of the arity families (`ArityNFamiliesTest`, written by `FactsCodegen` beside the
 /// families themselves) are made of: a class `arity.Subject`, the result `arity.Result` of its methods and their
-/// parameters `arity.A1`..`arity.A12`, each a token of a type of its own, so that a fact which gave one parameter
+/// parameters `arity.A1`..`arity.A16`, each a token of a type of its own, so that a fact which gave one parameter
 /// for another would not compile.
 final class ArityFamilies {
     private ArityFamilies() {}
@@ -54,6 +54,14 @@ final class ArityFamilies {
 
     interface A12 {}
 
+    interface A13 {}
+
+    interface A14 {}
+
+    interface A15 {}
+
+    interface A16 {}
+
     /// A class that is neither abstract nor final: `new` makes it and a subclass extends it.
     static final OpenClassToken<Subject> OWNER = UnsafeFacts.openClassToken(
             Types.of(ClassDesc.of("arity", "Subject")), List.of(ConstantDescs.CD_Object), MethodTable.EMPTY);
@@ -71,6 +79,10 @@ final class ArityFamilies {
     static final FinalClassToken<A10> PARAM10 = type("A10");
     static final FinalClassToken<A11> PARAM11 = type("A11");
     static final FinalClassToken<A12> PARAM12 = type("A12");
+    static final FinalClassToken<A13> PARAM13 = type("A13");
+    static final FinalClassToken<A14> PARAM14 = type("A14");
+    static final FinalClassToken<A15> PARAM15 = type("A15");
+    static final FinalClassToken<A16> PARAM16 = type("A16");
 
     /// The traits of every member: not the default ones, so that a fact which lost its traits would show.
     static final MemberTraits TRAITS = MemberTraits.FINAL;

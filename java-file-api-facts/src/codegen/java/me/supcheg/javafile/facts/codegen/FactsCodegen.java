@@ -55,8 +55,10 @@ import static me.supcheg.javafile.code.Exprs.this_;
 /// Usage: `FactsCodegen <output dir> <test output dir> write|check`. `check` fails when the
 /// sources on disk differ from what would be generated.
 public final class FactsCodegen {
-    /// The largest generated arity.
-    public static final int MAX_ARITY = 12;
+    /// The largest generated arity, unless the build passes another as the fourth argument.
+    /// The generator writes it into [FactsArity] so that another module reads it instead of
+    /// repeating the number.
+    public static int MAX_ARITY = 16;
 
     private static final String FACTS = "me.supcheg.javafile.facts";
 
@@ -87,6 +89,9 @@ public final class FactsCodegen {
     ///
     /// @param args the output directory of the families, that of their tests, and the mode, `write` or `check`
     public static void main(String[] args) {
+        if (args.length > 3) {
+            MAX_ARITY = Integer.parseInt(args[3]);
+        }
         Stream.of(new Generated(Path.of(args[0]), generate()), new Generated(Path.of(args[1]), generateTests()))
                 .forEach(args[2].equals("write") ? Generated::write : Generated::check);
     }
@@ -129,7 +134,24 @@ public final class FactsCodegen {
         files.add(families());
         files.add(factories());
         files.add(lookup());
+        files.add(arityFamilies());
         return files;
+    }
+
+    /// The one number a module that generates its own forms reads: how far the arity families of
+    /// this module reach. It is written rather than left implicit so that another generator can
+    /// take it from the facts instead of repeating the number.
+    private static JavaFile arityFamilies() {
+        return JavaFile.class_(ClassDesc.of(FACTS, "FactsArity"), cb -> {
+            generated(cb);
+            cb.withModifiers(Modifier.FINAL);
+            cb.withConstructor(ctor -> ctor.withModifiers(Modifier.PRIVATE));
+            cb.withField(
+                    "MAX_ARITY",
+                    Types.INT,
+                    fb -> fb.withModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
+                            .withInitializer(Exprs.literal(MAX_ARITY)));
+        });
     }
 
     private static void write(Path out, Map<Path, String> files) {

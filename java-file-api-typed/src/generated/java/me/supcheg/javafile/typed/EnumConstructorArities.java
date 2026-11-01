@@ -11,6 +11,10 @@ import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody1;
 import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody10;
 import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody11;
 import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody12;
+import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody13;
+import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody14;
+import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody15;
+import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody16;
 import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody2;
 import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody3;
 import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody4;
@@ -875,5 +879,469 @@ abstract sealed class EnumConstructorArities<Self> extends StaticFieldDeclaratio
         Var<A12> v12 = Var.param(p12, root);
         MemberBodies.built(root, (b) -> body.build(b, self, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12));
         declaredConstructor(List.of(v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12), root, doc);
+    }
+
+    /**
+     * Declares a `private` constructor of the enum, of 13 parameters.
+     *
+     * @param body the body, given its block, `this` and the parameters
+     * @param p1 the first parameter type
+     * @param <A1> the type of the first parameter
+     * @param p2 the second parameter type
+     * @param <A2> the type of the second parameter
+     * @param p3 the third parameter type
+     * @param <A3> the type of the third parameter
+     * @param p4 the fourth parameter type
+     * @param <A4> the type of the fourth parameter
+     * @param p5 the fifth parameter type
+     * @param <A5> the type of the fifth parameter
+     * @param p6 the sixth parameter type
+     * @param <A6> the type of the sixth parameter
+     * @param p7 the seventh parameter type
+     * @param <A7> the type of the seventh parameter
+     * @param p8 the eighth parameter type
+     * @param <A8> the type of the eighth parameter
+     * @param p9 the ninth parameter type
+     * @param <A9> the type of the ninth parameter
+     * @param p10 the tenth parameter type
+     * @param <A10> the type of the tenth parameter
+     * @param p11 the eleventh parameter type
+     * @param <A11> the type of the eleventh parameter
+     * @param p12 the twelfth parameter type
+     * @param <A12> the type of the twelfth parameter
+     * @param p13 the thirteenth parameter type
+     * @param <A13> the type of the thirteenth parameter
+     * @throws IllegalStateException if the members of the enum have begun
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> void constructor(TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, InstanceBody13<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> body) {
+        requireHeader("a constructor of " + described());
+        VoidBody root = constructorRoot();
+        This<Self> self = new This(root, self());
+        Var<A1> v1 = Var.param(p1, root);
+        Var<A2> v2 = Var.param(p2, root);
+        Var<A3> v3 = Var.param(p3, root);
+        Var<A4> v4 = Var.param(p4, root);
+        Var<A5> v5 = Var.param(p5, root);
+        Var<A6> v6 = Var.param(p6, root);
+        Var<A7> v7 = Var.param(p7, root);
+        Var<A8> v8 = Var.param(p8, root);
+        Var<A9> v9 = Var.param(p9, root);
+        Var<A10> v10 = Var.param(p10, root);
+        Var<A11> v11 = Var.param(p11, root);
+        Var<A12> v12 = Var.param(p12, root);
+        Var<A13> v13 = Var.param(p13, root);
+        MemberBodies.built(root, (b) -> body.build(b, self, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13));
+        declaredConstructor(List.of(v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13), root);
+    }
+
+    /**
+     * Declares a `private` constructor of the enum, of 13 parameters.
+     *
+     * @param body the body, given its block, `this` and the parameters
+     * @param doc the documentation comment
+     * @param p1 the first parameter type
+     * @param <A1> the type of the first parameter
+     * @param p2 the second parameter type
+     * @param <A2> the type of the second parameter
+     * @param p3 the third parameter type
+     * @param <A3> the type of the third parameter
+     * @param p4 the fourth parameter type
+     * @param <A4> the type of the fourth parameter
+     * @param p5 the fifth parameter type
+     * @param <A5> the type of the fifth parameter
+     * @param p6 the sixth parameter type
+     * @param <A6> the type of the sixth parameter
+     * @param p7 the seventh parameter type
+     * @param <A7> the type of the seventh parameter
+     * @param p8 the eighth parameter type
+     * @param <A8> the type of the eighth parameter
+     * @param p9 the ninth parameter type
+     * @param <A9> the type of the ninth parameter
+     * @param p10 the tenth parameter type
+     * @param <A10> the type of the tenth parameter
+     * @param p11 the eleventh parameter type
+     * @param <A11> the type of the eleventh parameter
+     * @param p12 the twelfth parameter type
+     * @param <A12> the type of the twelfth parameter
+     * @param p13 the thirteenth parameter type
+     * @param <A13> the type of the thirteenth parameter
+     * @throws IllegalStateException if the members of the enum have begun
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> void constructor(DocComment doc, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, InstanceBody13<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> body) {
+        requireHeader("a constructor of " + described());
+        VoidBody root = constructorRoot();
+        This<Self> self = new This(root, self());
+        Var<A1> v1 = Var.param(p1, root);
+        Var<A2> v2 = Var.param(p2, root);
+        Var<A3> v3 = Var.param(p3, root);
+        Var<A4> v4 = Var.param(p4, root);
+        Var<A5> v5 = Var.param(p5, root);
+        Var<A6> v6 = Var.param(p6, root);
+        Var<A7> v7 = Var.param(p7, root);
+        Var<A8> v8 = Var.param(p8, root);
+        Var<A9> v9 = Var.param(p9, root);
+        Var<A10> v10 = Var.param(p10, root);
+        Var<A11> v11 = Var.param(p11, root);
+        Var<A12> v12 = Var.param(p12, root);
+        Var<A13> v13 = Var.param(p13, root);
+        MemberBodies.built(root, (b) -> body.build(b, self, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13));
+        declaredConstructor(List.of(v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13), root, doc);
+    }
+
+    /**
+     * Declares a `private` constructor of the enum, of 14 parameters.
+     *
+     * @param body the body, given its block, `this` and the parameters
+     * @param p1 the first parameter type
+     * @param <A1> the type of the first parameter
+     * @param p2 the second parameter type
+     * @param <A2> the type of the second parameter
+     * @param p3 the third parameter type
+     * @param <A3> the type of the third parameter
+     * @param p4 the fourth parameter type
+     * @param <A4> the type of the fourth parameter
+     * @param p5 the fifth parameter type
+     * @param <A5> the type of the fifth parameter
+     * @param p6 the sixth parameter type
+     * @param <A6> the type of the sixth parameter
+     * @param p7 the seventh parameter type
+     * @param <A7> the type of the seventh parameter
+     * @param p8 the eighth parameter type
+     * @param <A8> the type of the eighth parameter
+     * @param p9 the ninth parameter type
+     * @param <A9> the type of the ninth parameter
+     * @param p10 the tenth parameter type
+     * @param <A10> the type of the tenth parameter
+     * @param p11 the eleventh parameter type
+     * @param <A11> the type of the eleventh parameter
+     * @param p12 the twelfth parameter type
+     * @param <A12> the type of the twelfth parameter
+     * @param p13 the thirteenth parameter type
+     * @param <A13> the type of the thirteenth parameter
+     * @param p14 the fourteenth parameter type
+     * @param <A14> the type of the fourteenth parameter
+     * @throws IllegalStateException if the members of the enum have begun
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> void constructor(TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, TypeToken<A14> p14, InstanceBody14<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> body) {
+        requireHeader("a constructor of " + described());
+        VoidBody root = constructorRoot();
+        This<Self> self = new This(root, self());
+        Var<A1> v1 = Var.param(p1, root);
+        Var<A2> v2 = Var.param(p2, root);
+        Var<A3> v3 = Var.param(p3, root);
+        Var<A4> v4 = Var.param(p4, root);
+        Var<A5> v5 = Var.param(p5, root);
+        Var<A6> v6 = Var.param(p6, root);
+        Var<A7> v7 = Var.param(p7, root);
+        Var<A8> v8 = Var.param(p8, root);
+        Var<A9> v9 = Var.param(p9, root);
+        Var<A10> v10 = Var.param(p10, root);
+        Var<A11> v11 = Var.param(p11, root);
+        Var<A12> v12 = Var.param(p12, root);
+        Var<A13> v13 = Var.param(p13, root);
+        Var<A14> v14 = Var.param(p14, root);
+        MemberBodies.built(root, (b) -> body.build(b, self, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14));
+        declaredConstructor(List.of(v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14), root);
+    }
+
+    /**
+     * Declares a `private` constructor of the enum, of 14 parameters.
+     *
+     * @param body the body, given its block, `this` and the parameters
+     * @param doc the documentation comment
+     * @param p1 the first parameter type
+     * @param <A1> the type of the first parameter
+     * @param p2 the second parameter type
+     * @param <A2> the type of the second parameter
+     * @param p3 the third parameter type
+     * @param <A3> the type of the third parameter
+     * @param p4 the fourth parameter type
+     * @param <A4> the type of the fourth parameter
+     * @param p5 the fifth parameter type
+     * @param <A5> the type of the fifth parameter
+     * @param p6 the sixth parameter type
+     * @param <A6> the type of the sixth parameter
+     * @param p7 the seventh parameter type
+     * @param <A7> the type of the seventh parameter
+     * @param p8 the eighth parameter type
+     * @param <A8> the type of the eighth parameter
+     * @param p9 the ninth parameter type
+     * @param <A9> the type of the ninth parameter
+     * @param p10 the tenth parameter type
+     * @param <A10> the type of the tenth parameter
+     * @param p11 the eleventh parameter type
+     * @param <A11> the type of the eleventh parameter
+     * @param p12 the twelfth parameter type
+     * @param <A12> the type of the twelfth parameter
+     * @param p13 the thirteenth parameter type
+     * @param <A13> the type of the thirteenth parameter
+     * @param p14 the fourteenth parameter type
+     * @param <A14> the type of the fourteenth parameter
+     * @throws IllegalStateException if the members of the enum have begun
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> void constructor(DocComment doc, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, TypeToken<A14> p14, InstanceBody14<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> body) {
+        requireHeader("a constructor of " + described());
+        VoidBody root = constructorRoot();
+        This<Self> self = new This(root, self());
+        Var<A1> v1 = Var.param(p1, root);
+        Var<A2> v2 = Var.param(p2, root);
+        Var<A3> v3 = Var.param(p3, root);
+        Var<A4> v4 = Var.param(p4, root);
+        Var<A5> v5 = Var.param(p5, root);
+        Var<A6> v6 = Var.param(p6, root);
+        Var<A7> v7 = Var.param(p7, root);
+        Var<A8> v8 = Var.param(p8, root);
+        Var<A9> v9 = Var.param(p9, root);
+        Var<A10> v10 = Var.param(p10, root);
+        Var<A11> v11 = Var.param(p11, root);
+        Var<A12> v12 = Var.param(p12, root);
+        Var<A13> v13 = Var.param(p13, root);
+        Var<A14> v14 = Var.param(p14, root);
+        MemberBodies.built(root, (b) -> body.build(b, self, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14));
+        declaredConstructor(List.of(v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14), root, doc);
+    }
+
+    /**
+     * Declares a `private` constructor of the enum, of 15 parameters.
+     *
+     * @param body the body, given its block, `this` and the parameters
+     * @param p1 the first parameter type
+     * @param <A1> the type of the first parameter
+     * @param p2 the second parameter type
+     * @param <A2> the type of the second parameter
+     * @param p3 the third parameter type
+     * @param <A3> the type of the third parameter
+     * @param p4 the fourth parameter type
+     * @param <A4> the type of the fourth parameter
+     * @param p5 the fifth parameter type
+     * @param <A5> the type of the fifth parameter
+     * @param p6 the sixth parameter type
+     * @param <A6> the type of the sixth parameter
+     * @param p7 the seventh parameter type
+     * @param <A7> the type of the seventh parameter
+     * @param p8 the eighth parameter type
+     * @param <A8> the type of the eighth parameter
+     * @param p9 the ninth parameter type
+     * @param <A9> the type of the ninth parameter
+     * @param p10 the tenth parameter type
+     * @param <A10> the type of the tenth parameter
+     * @param p11 the eleventh parameter type
+     * @param <A11> the type of the eleventh parameter
+     * @param p12 the twelfth parameter type
+     * @param <A12> the type of the twelfth parameter
+     * @param p13 the thirteenth parameter type
+     * @param <A13> the type of the thirteenth parameter
+     * @param p14 the fourteenth parameter type
+     * @param <A14> the type of the fourteenth parameter
+     * @param p15 the fifteenth parameter type
+     * @param <A15> the type of the fifteenth parameter
+     * @throws IllegalStateException if the members of the enum have begun
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> void constructor(TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, TypeToken<A14> p14, TypeToken<A15> p15, InstanceBody15<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> body) {
+        requireHeader("a constructor of " + described());
+        VoidBody root = constructorRoot();
+        This<Self> self = new This(root, self());
+        Var<A1> v1 = Var.param(p1, root);
+        Var<A2> v2 = Var.param(p2, root);
+        Var<A3> v3 = Var.param(p3, root);
+        Var<A4> v4 = Var.param(p4, root);
+        Var<A5> v5 = Var.param(p5, root);
+        Var<A6> v6 = Var.param(p6, root);
+        Var<A7> v7 = Var.param(p7, root);
+        Var<A8> v8 = Var.param(p8, root);
+        Var<A9> v9 = Var.param(p9, root);
+        Var<A10> v10 = Var.param(p10, root);
+        Var<A11> v11 = Var.param(p11, root);
+        Var<A12> v12 = Var.param(p12, root);
+        Var<A13> v13 = Var.param(p13, root);
+        Var<A14> v14 = Var.param(p14, root);
+        Var<A15> v15 = Var.param(p15, root);
+        MemberBodies.built(root, (b) -> body.build(b, self, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15));
+        declaredConstructor(List.of(v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15), root);
+    }
+
+    /**
+     * Declares a `private` constructor of the enum, of 15 parameters.
+     *
+     * @param body the body, given its block, `this` and the parameters
+     * @param doc the documentation comment
+     * @param p1 the first parameter type
+     * @param <A1> the type of the first parameter
+     * @param p2 the second parameter type
+     * @param <A2> the type of the second parameter
+     * @param p3 the third parameter type
+     * @param <A3> the type of the third parameter
+     * @param p4 the fourth parameter type
+     * @param <A4> the type of the fourth parameter
+     * @param p5 the fifth parameter type
+     * @param <A5> the type of the fifth parameter
+     * @param p6 the sixth parameter type
+     * @param <A6> the type of the sixth parameter
+     * @param p7 the seventh parameter type
+     * @param <A7> the type of the seventh parameter
+     * @param p8 the eighth parameter type
+     * @param <A8> the type of the eighth parameter
+     * @param p9 the ninth parameter type
+     * @param <A9> the type of the ninth parameter
+     * @param p10 the tenth parameter type
+     * @param <A10> the type of the tenth parameter
+     * @param p11 the eleventh parameter type
+     * @param <A11> the type of the eleventh parameter
+     * @param p12 the twelfth parameter type
+     * @param <A12> the type of the twelfth parameter
+     * @param p13 the thirteenth parameter type
+     * @param <A13> the type of the thirteenth parameter
+     * @param p14 the fourteenth parameter type
+     * @param <A14> the type of the fourteenth parameter
+     * @param p15 the fifteenth parameter type
+     * @param <A15> the type of the fifteenth parameter
+     * @throws IllegalStateException if the members of the enum have begun
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> void constructor(DocComment doc, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, TypeToken<A14> p14, TypeToken<A15> p15, InstanceBody15<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> body) {
+        requireHeader("a constructor of " + described());
+        VoidBody root = constructorRoot();
+        This<Self> self = new This(root, self());
+        Var<A1> v1 = Var.param(p1, root);
+        Var<A2> v2 = Var.param(p2, root);
+        Var<A3> v3 = Var.param(p3, root);
+        Var<A4> v4 = Var.param(p4, root);
+        Var<A5> v5 = Var.param(p5, root);
+        Var<A6> v6 = Var.param(p6, root);
+        Var<A7> v7 = Var.param(p7, root);
+        Var<A8> v8 = Var.param(p8, root);
+        Var<A9> v9 = Var.param(p9, root);
+        Var<A10> v10 = Var.param(p10, root);
+        Var<A11> v11 = Var.param(p11, root);
+        Var<A12> v12 = Var.param(p12, root);
+        Var<A13> v13 = Var.param(p13, root);
+        Var<A14> v14 = Var.param(p14, root);
+        Var<A15> v15 = Var.param(p15, root);
+        MemberBodies.built(root, (b) -> body.build(b, self, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15));
+        declaredConstructor(List.of(v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15), root, doc);
+    }
+
+    /**
+     * Declares a `private` constructor of the enum, of 16 parameters.
+     *
+     * @param body the body, given its block, `this` and the parameters
+     * @param p1 the first parameter type
+     * @param <A1> the type of the first parameter
+     * @param p2 the second parameter type
+     * @param <A2> the type of the second parameter
+     * @param p3 the third parameter type
+     * @param <A3> the type of the third parameter
+     * @param p4 the fourth parameter type
+     * @param <A4> the type of the fourth parameter
+     * @param p5 the fifth parameter type
+     * @param <A5> the type of the fifth parameter
+     * @param p6 the sixth parameter type
+     * @param <A6> the type of the sixth parameter
+     * @param p7 the seventh parameter type
+     * @param <A7> the type of the seventh parameter
+     * @param p8 the eighth parameter type
+     * @param <A8> the type of the eighth parameter
+     * @param p9 the ninth parameter type
+     * @param <A9> the type of the ninth parameter
+     * @param p10 the tenth parameter type
+     * @param <A10> the type of the tenth parameter
+     * @param p11 the eleventh parameter type
+     * @param <A11> the type of the eleventh parameter
+     * @param p12 the twelfth parameter type
+     * @param <A12> the type of the twelfth parameter
+     * @param p13 the thirteenth parameter type
+     * @param <A13> the type of the thirteenth parameter
+     * @param p14 the fourteenth parameter type
+     * @param <A14> the type of the fourteenth parameter
+     * @param p15 the fifteenth parameter type
+     * @param <A15> the type of the fifteenth parameter
+     * @param p16 the sixteenth parameter type
+     * @param <A16> the type of the sixteenth parameter
+     * @throws IllegalStateException if the members of the enum have begun
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> void constructor(TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, TypeToken<A14> p14, TypeToken<A15> p15, TypeToken<A16> p16, InstanceBody16<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> body) {
+        requireHeader("a constructor of " + described());
+        VoidBody root = constructorRoot();
+        This<Self> self = new This(root, self());
+        Var<A1> v1 = Var.param(p1, root);
+        Var<A2> v2 = Var.param(p2, root);
+        Var<A3> v3 = Var.param(p3, root);
+        Var<A4> v4 = Var.param(p4, root);
+        Var<A5> v5 = Var.param(p5, root);
+        Var<A6> v6 = Var.param(p6, root);
+        Var<A7> v7 = Var.param(p7, root);
+        Var<A8> v8 = Var.param(p8, root);
+        Var<A9> v9 = Var.param(p9, root);
+        Var<A10> v10 = Var.param(p10, root);
+        Var<A11> v11 = Var.param(p11, root);
+        Var<A12> v12 = Var.param(p12, root);
+        Var<A13> v13 = Var.param(p13, root);
+        Var<A14> v14 = Var.param(p14, root);
+        Var<A15> v15 = Var.param(p15, root);
+        Var<A16> v16 = Var.param(p16, root);
+        MemberBodies.built(root, (b) -> body.build(b, self, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16));
+        declaredConstructor(List.of(v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16), root);
+    }
+
+    /**
+     * Declares a `private` constructor of the enum, of 16 parameters.
+     *
+     * @param body the body, given its block, `this` and the parameters
+     * @param doc the documentation comment
+     * @param p1 the first parameter type
+     * @param <A1> the type of the first parameter
+     * @param p2 the second parameter type
+     * @param <A2> the type of the second parameter
+     * @param p3 the third parameter type
+     * @param <A3> the type of the third parameter
+     * @param p4 the fourth parameter type
+     * @param <A4> the type of the fourth parameter
+     * @param p5 the fifth parameter type
+     * @param <A5> the type of the fifth parameter
+     * @param p6 the sixth parameter type
+     * @param <A6> the type of the sixth parameter
+     * @param p7 the seventh parameter type
+     * @param <A7> the type of the seventh parameter
+     * @param p8 the eighth parameter type
+     * @param <A8> the type of the eighth parameter
+     * @param p9 the ninth parameter type
+     * @param <A9> the type of the ninth parameter
+     * @param p10 the tenth parameter type
+     * @param <A10> the type of the tenth parameter
+     * @param p11 the eleventh parameter type
+     * @param <A11> the type of the eleventh parameter
+     * @param p12 the twelfth parameter type
+     * @param <A12> the type of the twelfth parameter
+     * @param p13 the thirteenth parameter type
+     * @param <A13> the type of the thirteenth parameter
+     * @param p14 the fourteenth parameter type
+     * @param <A14> the type of the fourteenth parameter
+     * @param p15 the fifteenth parameter type
+     * @param <A15> the type of the fifteenth parameter
+     * @param p16 the sixteenth parameter type
+     * @param <A16> the type of the sixteenth parameter
+     * @throws IllegalStateException if the members of the enum have begun
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> void constructor(DocComment doc, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, TypeToken<A14> p14, TypeToken<A15> p15, TypeToken<A16> p16, InstanceBody16<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> body) {
+        requireHeader("a constructor of " + described());
+        VoidBody root = constructorRoot();
+        This<Self> self = new This(root, self());
+        Var<A1> v1 = Var.param(p1, root);
+        Var<A2> v2 = Var.param(p2, root);
+        Var<A3> v3 = Var.param(p3, root);
+        Var<A4> v4 = Var.param(p4, root);
+        Var<A5> v5 = Var.param(p5, root);
+        Var<A6> v6 = Var.param(p6, root);
+        Var<A7> v7 = Var.param(p7, root);
+        Var<A8> v8 = Var.param(p8, root);
+        Var<A9> v9 = Var.param(p9, root);
+        Var<A10> v10 = Var.param(p10, root);
+        Var<A11> v11 = Var.param(p11, root);
+        Var<A12> v12 = Var.param(p12, root);
+        Var<A13> v13 = Var.param(p13, root);
+        Var<A14> v14 = Var.param(p14, root);
+        Var<A15> v15 = Var.param(p15, root);
+        Var<A16> v16 = Var.param(p16, root);
+        MemberBodies.built(root, (b) -> body.build(b, self, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16));
+        declaredConstructor(List.of(v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16), root, doc);
     }
 }

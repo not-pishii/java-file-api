@@ -11,6 +11,10 @@ import me.supcheg.javafile.facts.MethodRef1;
 import me.supcheg.javafile.facts.MethodRef10;
 import me.supcheg.javafile.facts.MethodRef11;
 import me.supcheg.javafile.facts.MethodRef12;
+import me.supcheg.javafile.facts.MethodRef13;
+import me.supcheg.javafile.facts.MethodRef14;
+import me.supcheg.javafile.facts.MethodRef15;
+import me.supcheg.javafile.facts.MethodRef16;
 import me.supcheg.javafile.facts.MethodRef2;
 import me.supcheg.javafile.facts.MethodRef3;
 import me.supcheg.javafile.facts.MethodRef4;
@@ -24,6 +28,10 @@ import me.supcheg.javafile.facts.StaticMethodRef1;
 import me.supcheg.javafile.facts.StaticMethodRef10;
 import me.supcheg.javafile.facts.StaticMethodRef11;
 import me.supcheg.javafile.facts.StaticMethodRef12;
+import me.supcheg.javafile.facts.StaticMethodRef13;
+import me.supcheg.javafile.facts.StaticMethodRef14;
+import me.supcheg.javafile.facts.StaticMethodRef15;
+import me.supcheg.javafile.facts.StaticMethodRef16;
 import me.supcheg.javafile.facts.StaticMethodRef2;
 import me.supcheg.javafile.facts.StaticMethodRef3;
 import me.supcheg.javafile.facts.StaticMethodRef4;
@@ -39,6 +47,10 @@ import me.supcheg.javafile.facts.VoidMethodRef1;
 import me.supcheg.javafile.facts.VoidMethodRef10;
 import me.supcheg.javafile.facts.VoidMethodRef11;
 import me.supcheg.javafile.facts.VoidMethodRef12;
+import me.supcheg.javafile.facts.VoidMethodRef13;
+import me.supcheg.javafile.facts.VoidMethodRef14;
+import me.supcheg.javafile.facts.VoidMethodRef15;
+import me.supcheg.javafile.facts.VoidMethodRef16;
 import me.supcheg.javafile.facts.VoidMethodRef2;
 import me.supcheg.javafile.facts.VoidMethodRef3;
 import me.supcheg.javafile.facts.VoidMethodRef4;
@@ -52,6 +64,10 @@ import me.supcheg.javafile.facts.VoidStaticMethodRef1;
 import me.supcheg.javafile.facts.VoidStaticMethodRef10;
 import me.supcheg.javafile.facts.VoidStaticMethodRef11;
 import me.supcheg.javafile.facts.VoidStaticMethodRef12;
+import me.supcheg.javafile.facts.VoidStaticMethodRef13;
+import me.supcheg.javafile.facts.VoidStaticMethodRef14;
+import me.supcheg.javafile.facts.VoidStaticMethodRef15;
+import me.supcheg.javafile.facts.VoidStaticMethodRef16;
 import me.supcheg.javafile.facts.VoidStaticMethodRef2;
 import me.supcheg.javafile.facts.VoidStaticMethodRef3;
 import me.supcheg.javafile.facts.VoidStaticMethodRef4;
@@ -64,6 +80,10 @@ import me.supcheg.javafile.model.EnumConstantMember;
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericClassSpec10;
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericClassSpec11;
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericClassSpec12;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericClassSpec13;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericClassSpec14;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericClassSpec15;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericClassSpec16;
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericClassSpec4;
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericClassSpec5;
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericClassSpec6;
@@ -73,6 +93,10 @@ import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericClassSpec
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericInterfaceSpec10;
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericInterfaceSpec11;
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericInterfaceSpec12;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericInterfaceSpec13;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericInterfaceSpec14;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericInterfaceSpec15;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericInterfaceSpec16;
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericInterfaceSpec4;
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericInterfaceSpec5;
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericInterfaceSpec6;
@@ -82,6 +106,10 @@ import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericInterface
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericRecordSpec10;
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericRecordSpec11;
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericRecordSpec12;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericRecordSpec13;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericRecordSpec14;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericRecordSpec15;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericRecordSpec16;
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericRecordSpec4;
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericRecordSpec5;
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericRecordSpec6;
@@ -91,6 +119,10 @@ import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericRecordSpe
 import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody10;
 import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody11;
 import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody12;
+import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody13;
+import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody14;
+import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody15;
+import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody16;
 import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody5;
 import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody6;
 import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody7;
@@ -1058,6 +1090,582 @@ abstract sealed class EnumConstantBodyArities<Self> extends TypedTypeBodies<Self
             @Override
             public <R2> TypedRecordBodies<R2> build(TypedRecordBuilder<R2> rb) {
                 return spec.build(rb, NestedDeclarations.variable(rb, 0), NestedDeclarations.variable(rb, 1), NestedDeclarations.variable(rb, 2), NestedDeclarations.variable(rb, 3), NestedDeclarations.variable(rb, 4), NestedDeclarations.variable(rb, 5), NestedDeclarations.variable(rb, 6), NestedDeclarations.variable(rb, 7), NestedDeclarations.variable(rb, 8), NestedDeclarations.variable(rb, 9), NestedDeclarations.variable(rb, 10), NestedDeclarations.variable(rb, 11));
+            }
+        });
+    }
+
+    /**
+     * Declares a generic member class with thirteen type parameters.
+     *
+     * @param name the simple name of the member class
+     * @param p1 the first type parameter
+     * @param p2 the second type parameter
+     * @param p3 the third type parameter
+     * @param p4 the fourth type parameter
+     * @param p5 the fifth type parameter
+     * @param p6 the sixth type parameter
+     * @param p7 the seventh type parameter
+     * @param p8 the eighth type parameter
+     * @param p9 the ninth type parameter
+     * @param p10 the tenth type parameter
+     * @param p11 the eleventh type parameter
+     * @param p12 the twelfth type parameter
+     * @param p13 the thirteenth type parameter
+     * @param spec declares the member class, given its header and the tokens of its type parameters
+     * @param <N> the brand of the member class
+     * @return the token of the member class
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the member class, or its bound is a raw type; or if `name` cannot name a type
+     * @throws IllegalStateException if the declarations of the type have ended, or a member of the member class is not defined
+     * @param <B1> the leftmost bound of the first type parameter
+     * @param <B2> the leftmost bound of the second type parameter
+     * @param <B3> the leftmost bound of the third type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter
+     * @param <B6> the leftmost bound of the sixth type parameter
+     * @param <B7> the leftmost bound of the seventh type parameter
+     * @param <B8> the leftmost bound of the eighth type parameter
+     * @param <B9> the leftmost bound of the ninth type parameter
+     * @param <B10> the leftmost bound of the tenth type parameter
+     * @param <B11> the leftmost bound of the eleventh type parameter
+     * @param <B12> the leftmost bound of the twelfth type parameter
+     * @param <B13> the leftmost bound of the thirteenth type parameter
+     */
+    public <N, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13> FinalClassToken<N> declareNestedClass(String name, TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, TypeParameter<B6> p6, TypeParameter<B7> p7, TypeParameter<B8> p8, TypeParameter<B9> p9, TypeParameter<B10> p10, TypeParameter<B11> p11, TypeParameter<B12> p12, TypeParameter<B13> p13, TypedGenericClassSpec13<B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13> spec) {
+        return nestedClassToken(name, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13), new ClassBodies() {
+            @Override
+            public <N2> MemberBodies<N2, ?> build(ClassHeader<N2> h, ClassDeclaration<N2> declaration) {
+                return spec.build(h, NestedDeclarations.variable(declaration, 0), NestedDeclarations.variable(declaration, 1), NestedDeclarations.variable(declaration, 2), NestedDeclarations.variable(declaration, 3), NestedDeclarations.variable(declaration, 4), NestedDeclarations.variable(declaration, 5), NestedDeclarations.variable(declaration, 6), NestedDeclarations.variable(declaration, 7), NestedDeclarations.variable(declaration, 8), NestedDeclarations.variable(declaration, 9), NestedDeclarations.variable(declaration, 10), NestedDeclarations.variable(declaration, 11), NestedDeclarations.variable(declaration, 12));
+            }
+        });
+    }
+
+    /**
+     * Declares a generic member interface with thirteen type parameters.
+     *
+     * @param name the simple name of the member interface
+     * @param p1 the first type parameter
+     * @param p2 the second type parameter
+     * @param p3 the third type parameter
+     * @param p4 the fourth type parameter
+     * @param p5 the fifth type parameter
+     * @param p6 the sixth type parameter
+     * @param p7 the seventh type parameter
+     * @param p8 the eighth type parameter
+     * @param p9 the ninth type parameter
+     * @param p10 the tenth type parameter
+     * @param p11 the eleventh type parameter
+     * @param p12 the twelfth type parameter
+     * @param p13 the thirteenth type parameter
+     * @param spec declares the member interface, given its builder and the tokens of its type parameters
+     * @param <I> the brand of the member interface
+     * @return the token of the member interface
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the member interface, or its bound is a raw type; or if `name` cannot name a type
+     * @throws IllegalStateException if the declarations of the type have ended, or a member of the member interface is not defined
+     * @param <B1> the leftmost bound of the first type parameter
+     * @param <B2> the leftmost bound of the second type parameter
+     * @param <B3> the leftmost bound of the third type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter
+     * @param <B6> the leftmost bound of the sixth type parameter
+     * @param <B7> the leftmost bound of the seventh type parameter
+     * @param <B8> the leftmost bound of the eighth type parameter
+     * @param <B9> the leftmost bound of the ninth type parameter
+     * @param <B10> the leftmost bound of the tenth type parameter
+     * @param <B11> the leftmost bound of the eleventh type parameter
+     * @param <B12> the leftmost bound of the twelfth type parameter
+     * @param <B13> the leftmost bound of the thirteenth type parameter
+     */
+    public <I, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13> InterfaceToken<I> declareNestedInterface(String name, TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, TypeParameter<B6> p6, TypeParameter<B7> p7, TypeParameter<B8> p8, TypeParameter<B9> p9, TypeParameter<B10> p10, TypeParameter<B11> p11, TypeParameter<B12> p12, TypeParameter<B13> p13, TypedGenericInterfaceSpec13<B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13> spec) {
+        return nestedInterfaceToken(name, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13), new InterfaceBodies() {
+            @Override
+            public <I2> TypedInterfaceBodies<I2> build(TypedInterfaceBuilder<I2> ib) {
+                return spec.build(ib, NestedDeclarations.variable(ib, 0), NestedDeclarations.variable(ib, 1), NestedDeclarations.variable(ib, 2), NestedDeclarations.variable(ib, 3), NestedDeclarations.variable(ib, 4), NestedDeclarations.variable(ib, 5), NestedDeclarations.variable(ib, 6), NestedDeclarations.variable(ib, 7), NestedDeclarations.variable(ib, 8), NestedDeclarations.variable(ib, 9), NestedDeclarations.variable(ib, 10), NestedDeclarations.variable(ib, 11), NestedDeclarations.variable(ib, 12));
+            }
+        });
+    }
+
+    /**
+     * Declares a generic member record with thirteen type parameters.
+     *
+     * @param name the simple name of the member record
+     * @param p1 the first type parameter
+     * @param p2 the second type parameter
+     * @param p3 the third type parameter
+     * @param p4 the fourth type parameter
+     * @param p5 the fifth type parameter
+     * @param p6 the sixth type parameter
+     * @param p7 the seventh type parameter
+     * @param p8 the eighth type parameter
+     * @param p9 the ninth type parameter
+     * @param p10 the tenth type parameter
+     * @param p11 the eleventh type parameter
+     * @param p12 the twelfth type parameter
+     * @param p13 the thirteenth type parameter
+     * @param spec declares the member record, given its builder and the tokens of its type parameters
+     * @param <R> the brand of the member record
+     * @return the token of the member record
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the member record, or its bound is a raw type; or if `name` cannot name a type
+     * @throws IllegalStateException if the declarations of the type have ended, or a member of the member record is not defined
+     * @param <B1> the leftmost bound of the first type parameter
+     * @param <B2> the leftmost bound of the second type parameter
+     * @param <B3> the leftmost bound of the third type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter
+     * @param <B6> the leftmost bound of the sixth type parameter
+     * @param <B7> the leftmost bound of the seventh type parameter
+     * @param <B8> the leftmost bound of the eighth type parameter
+     * @param <B9> the leftmost bound of the ninth type parameter
+     * @param <B10> the leftmost bound of the tenth type parameter
+     * @param <B11> the leftmost bound of the eleventh type parameter
+     * @param <B12> the leftmost bound of the twelfth type parameter
+     * @param <B13> the leftmost bound of the thirteenth type parameter
+     */
+    public <R, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13> FinalClassToken<R> declareNestedRecord(String name, TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, TypeParameter<B6> p6, TypeParameter<B7> p7, TypeParameter<B8> p8, TypeParameter<B9> p9, TypeParameter<B10> p10, TypeParameter<B11> p11, TypeParameter<B12> p12, TypeParameter<B13> p13, TypedGenericRecordSpec13<B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13> spec) {
+        return nestedRecordToken(name, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13), new RecordBodies() {
+            @Override
+            public <R2> TypedRecordBodies<R2> build(TypedRecordBuilder<R2> rb) {
+                return spec.build(rb, NestedDeclarations.variable(rb, 0), NestedDeclarations.variable(rb, 1), NestedDeclarations.variable(rb, 2), NestedDeclarations.variable(rb, 3), NestedDeclarations.variable(rb, 4), NestedDeclarations.variable(rb, 5), NestedDeclarations.variable(rb, 6), NestedDeclarations.variable(rb, 7), NestedDeclarations.variable(rb, 8), NestedDeclarations.variable(rb, 9), NestedDeclarations.variable(rb, 10), NestedDeclarations.variable(rb, 11), NestedDeclarations.variable(rb, 12));
+            }
+        });
+    }
+
+    /**
+     * Declares a generic member class with fourteen type parameters.
+     *
+     * @param name the simple name of the member class
+     * @param p1 the first type parameter
+     * @param p2 the second type parameter
+     * @param p3 the third type parameter
+     * @param p4 the fourth type parameter
+     * @param p5 the fifth type parameter
+     * @param p6 the sixth type parameter
+     * @param p7 the seventh type parameter
+     * @param p8 the eighth type parameter
+     * @param p9 the ninth type parameter
+     * @param p10 the tenth type parameter
+     * @param p11 the eleventh type parameter
+     * @param p12 the twelfth type parameter
+     * @param p13 the thirteenth type parameter
+     * @param p14 the fourteenth type parameter
+     * @param spec declares the member class, given its header and the tokens of its type parameters
+     * @param <N> the brand of the member class
+     * @return the token of the member class
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the member class, or its bound is a raw type; or if `name` cannot name a type
+     * @throws IllegalStateException if the declarations of the type have ended, or a member of the member class is not defined
+     * @param <B1> the leftmost bound of the first type parameter
+     * @param <B2> the leftmost bound of the second type parameter
+     * @param <B3> the leftmost bound of the third type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter
+     * @param <B6> the leftmost bound of the sixth type parameter
+     * @param <B7> the leftmost bound of the seventh type parameter
+     * @param <B8> the leftmost bound of the eighth type parameter
+     * @param <B9> the leftmost bound of the ninth type parameter
+     * @param <B10> the leftmost bound of the tenth type parameter
+     * @param <B11> the leftmost bound of the eleventh type parameter
+     * @param <B12> the leftmost bound of the twelfth type parameter
+     * @param <B13> the leftmost bound of the thirteenth type parameter
+     * @param <B14> the leftmost bound of the fourteenth type parameter
+     */
+    public <N, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14> FinalClassToken<N> declareNestedClass(String name, TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, TypeParameter<B6> p6, TypeParameter<B7> p7, TypeParameter<B8> p8, TypeParameter<B9> p9, TypeParameter<B10> p10, TypeParameter<B11> p11, TypeParameter<B12> p12, TypeParameter<B13> p13, TypeParameter<B14> p14, TypedGenericClassSpec14<B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14> spec) {
+        return nestedClassToken(name, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14), new ClassBodies() {
+            @Override
+            public <N2> MemberBodies<N2, ?> build(ClassHeader<N2> h, ClassDeclaration<N2> declaration) {
+                return spec.build(h, NestedDeclarations.variable(declaration, 0), NestedDeclarations.variable(declaration, 1), NestedDeclarations.variable(declaration, 2), NestedDeclarations.variable(declaration, 3), NestedDeclarations.variable(declaration, 4), NestedDeclarations.variable(declaration, 5), NestedDeclarations.variable(declaration, 6), NestedDeclarations.variable(declaration, 7), NestedDeclarations.variable(declaration, 8), NestedDeclarations.variable(declaration, 9), NestedDeclarations.variable(declaration, 10), NestedDeclarations.variable(declaration, 11), NestedDeclarations.variable(declaration, 12), NestedDeclarations.variable(declaration, 13));
+            }
+        });
+    }
+
+    /**
+     * Declares a generic member interface with fourteen type parameters.
+     *
+     * @param name the simple name of the member interface
+     * @param p1 the first type parameter
+     * @param p2 the second type parameter
+     * @param p3 the third type parameter
+     * @param p4 the fourth type parameter
+     * @param p5 the fifth type parameter
+     * @param p6 the sixth type parameter
+     * @param p7 the seventh type parameter
+     * @param p8 the eighth type parameter
+     * @param p9 the ninth type parameter
+     * @param p10 the tenth type parameter
+     * @param p11 the eleventh type parameter
+     * @param p12 the twelfth type parameter
+     * @param p13 the thirteenth type parameter
+     * @param p14 the fourteenth type parameter
+     * @param spec declares the member interface, given its builder and the tokens of its type parameters
+     * @param <I> the brand of the member interface
+     * @return the token of the member interface
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the member interface, or its bound is a raw type; or if `name` cannot name a type
+     * @throws IllegalStateException if the declarations of the type have ended, or a member of the member interface is not defined
+     * @param <B1> the leftmost bound of the first type parameter
+     * @param <B2> the leftmost bound of the second type parameter
+     * @param <B3> the leftmost bound of the third type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter
+     * @param <B6> the leftmost bound of the sixth type parameter
+     * @param <B7> the leftmost bound of the seventh type parameter
+     * @param <B8> the leftmost bound of the eighth type parameter
+     * @param <B9> the leftmost bound of the ninth type parameter
+     * @param <B10> the leftmost bound of the tenth type parameter
+     * @param <B11> the leftmost bound of the eleventh type parameter
+     * @param <B12> the leftmost bound of the twelfth type parameter
+     * @param <B13> the leftmost bound of the thirteenth type parameter
+     * @param <B14> the leftmost bound of the fourteenth type parameter
+     */
+    public <I, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14> InterfaceToken<I> declareNestedInterface(String name, TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, TypeParameter<B6> p6, TypeParameter<B7> p7, TypeParameter<B8> p8, TypeParameter<B9> p9, TypeParameter<B10> p10, TypeParameter<B11> p11, TypeParameter<B12> p12, TypeParameter<B13> p13, TypeParameter<B14> p14, TypedGenericInterfaceSpec14<B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14> spec) {
+        return nestedInterfaceToken(name, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14), new InterfaceBodies() {
+            @Override
+            public <I2> TypedInterfaceBodies<I2> build(TypedInterfaceBuilder<I2> ib) {
+                return spec.build(ib, NestedDeclarations.variable(ib, 0), NestedDeclarations.variable(ib, 1), NestedDeclarations.variable(ib, 2), NestedDeclarations.variable(ib, 3), NestedDeclarations.variable(ib, 4), NestedDeclarations.variable(ib, 5), NestedDeclarations.variable(ib, 6), NestedDeclarations.variable(ib, 7), NestedDeclarations.variable(ib, 8), NestedDeclarations.variable(ib, 9), NestedDeclarations.variable(ib, 10), NestedDeclarations.variable(ib, 11), NestedDeclarations.variable(ib, 12), NestedDeclarations.variable(ib, 13));
+            }
+        });
+    }
+
+    /**
+     * Declares a generic member record with fourteen type parameters.
+     *
+     * @param name the simple name of the member record
+     * @param p1 the first type parameter
+     * @param p2 the second type parameter
+     * @param p3 the third type parameter
+     * @param p4 the fourth type parameter
+     * @param p5 the fifth type parameter
+     * @param p6 the sixth type parameter
+     * @param p7 the seventh type parameter
+     * @param p8 the eighth type parameter
+     * @param p9 the ninth type parameter
+     * @param p10 the tenth type parameter
+     * @param p11 the eleventh type parameter
+     * @param p12 the twelfth type parameter
+     * @param p13 the thirteenth type parameter
+     * @param p14 the fourteenth type parameter
+     * @param spec declares the member record, given its builder and the tokens of its type parameters
+     * @param <R> the brand of the member record
+     * @return the token of the member record
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the member record, or its bound is a raw type; or if `name` cannot name a type
+     * @throws IllegalStateException if the declarations of the type have ended, or a member of the member record is not defined
+     * @param <B1> the leftmost bound of the first type parameter
+     * @param <B2> the leftmost bound of the second type parameter
+     * @param <B3> the leftmost bound of the third type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter
+     * @param <B6> the leftmost bound of the sixth type parameter
+     * @param <B7> the leftmost bound of the seventh type parameter
+     * @param <B8> the leftmost bound of the eighth type parameter
+     * @param <B9> the leftmost bound of the ninth type parameter
+     * @param <B10> the leftmost bound of the tenth type parameter
+     * @param <B11> the leftmost bound of the eleventh type parameter
+     * @param <B12> the leftmost bound of the twelfth type parameter
+     * @param <B13> the leftmost bound of the thirteenth type parameter
+     * @param <B14> the leftmost bound of the fourteenth type parameter
+     */
+    public <R, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14> FinalClassToken<R> declareNestedRecord(String name, TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, TypeParameter<B6> p6, TypeParameter<B7> p7, TypeParameter<B8> p8, TypeParameter<B9> p9, TypeParameter<B10> p10, TypeParameter<B11> p11, TypeParameter<B12> p12, TypeParameter<B13> p13, TypeParameter<B14> p14, TypedGenericRecordSpec14<B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14> spec) {
+        return nestedRecordToken(name, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14), new RecordBodies() {
+            @Override
+            public <R2> TypedRecordBodies<R2> build(TypedRecordBuilder<R2> rb) {
+                return spec.build(rb, NestedDeclarations.variable(rb, 0), NestedDeclarations.variable(rb, 1), NestedDeclarations.variable(rb, 2), NestedDeclarations.variable(rb, 3), NestedDeclarations.variable(rb, 4), NestedDeclarations.variable(rb, 5), NestedDeclarations.variable(rb, 6), NestedDeclarations.variable(rb, 7), NestedDeclarations.variable(rb, 8), NestedDeclarations.variable(rb, 9), NestedDeclarations.variable(rb, 10), NestedDeclarations.variable(rb, 11), NestedDeclarations.variable(rb, 12), NestedDeclarations.variable(rb, 13));
+            }
+        });
+    }
+
+    /**
+     * Declares a generic member class with fifteen type parameters.
+     *
+     * @param name the simple name of the member class
+     * @param p1 the first type parameter
+     * @param p2 the second type parameter
+     * @param p3 the third type parameter
+     * @param p4 the fourth type parameter
+     * @param p5 the fifth type parameter
+     * @param p6 the sixth type parameter
+     * @param p7 the seventh type parameter
+     * @param p8 the eighth type parameter
+     * @param p9 the ninth type parameter
+     * @param p10 the tenth type parameter
+     * @param p11 the eleventh type parameter
+     * @param p12 the twelfth type parameter
+     * @param p13 the thirteenth type parameter
+     * @param p14 the fourteenth type parameter
+     * @param p15 the fifteenth type parameter
+     * @param spec declares the member class, given its header and the tokens of its type parameters
+     * @param <N> the brand of the member class
+     * @return the token of the member class
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the member class, or its bound is a raw type; or if `name` cannot name a type
+     * @throws IllegalStateException if the declarations of the type have ended, or a member of the member class is not defined
+     * @param <B1> the leftmost bound of the first type parameter
+     * @param <B2> the leftmost bound of the second type parameter
+     * @param <B3> the leftmost bound of the third type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter
+     * @param <B6> the leftmost bound of the sixth type parameter
+     * @param <B7> the leftmost bound of the seventh type parameter
+     * @param <B8> the leftmost bound of the eighth type parameter
+     * @param <B9> the leftmost bound of the ninth type parameter
+     * @param <B10> the leftmost bound of the tenth type parameter
+     * @param <B11> the leftmost bound of the eleventh type parameter
+     * @param <B12> the leftmost bound of the twelfth type parameter
+     * @param <B13> the leftmost bound of the thirteenth type parameter
+     * @param <B14> the leftmost bound of the fourteenth type parameter
+     * @param <B15> the leftmost bound of the fifteenth type parameter
+     */
+    public <N, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15> FinalClassToken<N> declareNestedClass(String name, TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, TypeParameter<B6> p6, TypeParameter<B7> p7, TypeParameter<B8> p8, TypeParameter<B9> p9, TypeParameter<B10> p10, TypeParameter<B11> p11, TypeParameter<B12> p12, TypeParameter<B13> p13, TypeParameter<B14> p14, TypeParameter<B15> p15, TypedGenericClassSpec15<B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15> spec) {
+        return nestedClassToken(name, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15), new ClassBodies() {
+            @Override
+            public <N2> MemberBodies<N2, ?> build(ClassHeader<N2> h, ClassDeclaration<N2> declaration) {
+                return spec.build(h, NestedDeclarations.variable(declaration, 0), NestedDeclarations.variable(declaration, 1), NestedDeclarations.variable(declaration, 2), NestedDeclarations.variable(declaration, 3), NestedDeclarations.variable(declaration, 4), NestedDeclarations.variable(declaration, 5), NestedDeclarations.variable(declaration, 6), NestedDeclarations.variable(declaration, 7), NestedDeclarations.variable(declaration, 8), NestedDeclarations.variable(declaration, 9), NestedDeclarations.variable(declaration, 10), NestedDeclarations.variable(declaration, 11), NestedDeclarations.variable(declaration, 12), NestedDeclarations.variable(declaration, 13), NestedDeclarations.variable(declaration, 14));
+            }
+        });
+    }
+
+    /**
+     * Declares a generic member interface with fifteen type parameters.
+     *
+     * @param name the simple name of the member interface
+     * @param p1 the first type parameter
+     * @param p2 the second type parameter
+     * @param p3 the third type parameter
+     * @param p4 the fourth type parameter
+     * @param p5 the fifth type parameter
+     * @param p6 the sixth type parameter
+     * @param p7 the seventh type parameter
+     * @param p8 the eighth type parameter
+     * @param p9 the ninth type parameter
+     * @param p10 the tenth type parameter
+     * @param p11 the eleventh type parameter
+     * @param p12 the twelfth type parameter
+     * @param p13 the thirteenth type parameter
+     * @param p14 the fourteenth type parameter
+     * @param p15 the fifteenth type parameter
+     * @param spec declares the member interface, given its builder and the tokens of its type parameters
+     * @param <I> the brand of the member interface
+     * @return the token of the member interface
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the member interface, or its bound is a raw type; or if `name` cannot name a type
+     * @throws IllegalStateException if the declarations of the type have ended, or a member of the member interface is not defined
+     * @param <B1> the leftmost bound of the first type parameter
+     * @param <B2> the leftmost bound of the second type parameter
+     * @param <B3> the leftmost bound of the third type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter
+     * @param <B6> the leftmost bound of the sixth type parameter
+     * @param <B7> the leftmost bound of the seventh type parameter
+     * @param <B8> the leftmost bound of the eighth type parameter
+     * @param <B9> the leftmost bound of the ninth type parameter
+     * @param <B10> the leftmost bound of the tenth type parameter
+     * @param <B11> the leftmost bound of the eleventh type parameter
+     * @param <B12> the leftmost bound of the twelfth type parameter
+     * @param <B13> the leftmost bound of the thirteenth type parameter
+     * @param <B14> the leftmost bound of the fourteenth type parameter
+     * @param <B15> the leftmost bound of the fifteenth type parameter
+     */
+    public <I, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15> InterfaceToken<I> declareNestedInterface(String name, TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, TypeParameter<B6> p6, TypeParameter<B7> p7, TypeParameter<B8> p8, TypeParameter<B9> p9, TypeParameter<B10> p10, TypeParameter<B11> p11, TypeParameter<B12> p12, TypeParameter<B13> p13, TypeParameter<B14> p14, TypeParameter<B15> p15, TypedGenericInterfaceSpec15<B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15> spec) {
+        return nestedInterfaceToken(name, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15), new InterfaceBodies() {
+            @Override
+            public <I2> TypedInterfaceBodies<I2> build(TypedInterfaceBuilder<I2> ib) {
+                return spec.build(ib, NestedDeclarations.variable(ib, 0), NestedDeclarations.variable(ib, 1), NestedDeclarations.variable(ib, 2), NestedDeclarations.variable(ib, 3), NestedDeclarations.variable(ib, 4), NestedDeclarations.variable(ib, 5), NestedDeclarations.variable(ib, 6), NestedDeclarations.variable(ib, 7), NestedDeclarations.variable(ib, 8), NestedDeclarations.variable(ib, 9), NestedDeclarations.variable(ib, 10), NestedDeclarations.variable(ib, 11), NestedDeclarations.variable(ib, 12), NestedDeclarations.variable(ib, 13), NestedDeclarations.variable(ib, 14));
+            }
+        });
+    }
+
+    /**
+     * Declares a generic member record with fifteen type parameters.
+     *
+     * @param name the simple name of the member record
+     * @param p1 the first type parameter
+     * @param p2 the second type parameter
+     * @param p3 the third type parameter
+     * @param p4 the fourth type parameter
+     * @param p5 the fifth type parameter
+     * @param p6 the sixth type parameter
+     * @param p7 the seventh type parameter
+     * @param p8 the eighth type parameter
+     * @param p9 the ninth type parameter
+     * @param p10 the tenth type parameter
+     * @param p11 the eleventh type parameter
+     * @param p12 the twelfth type parameter
+     * @param p13 the thirteenth type parameter
+     * @param p14 the fourteenth type parameter
+     * @param p15 the fifteenth type parameter
+     * @param spec declares the member record, given its builder and the tokens of its type parameters
+     * @param <R> the brand of the member record
+     * @return the token of the member record
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the member record, or its bound is a raw type; or if `name` cannot name a type
+     * @throws IllegalStateException if the declarations of the type have ended, or a member of the member record is not defined
+     * @param <B1> the leftmost bound of the first type parameter
+     * @param <B2> the leftmost bound of the second type parameter
+     * @param <B3> the leftmost bound of the third type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter
+     * @param <B6> the leftmost bound of the sixth type parameter
+     * @param <B7> the leftmost bound of the seventh type parameter
+     * @param <B8> the leftmost bound of the eighth type parameter
+     * @param <B9> the leftmost bound of the ninth type parameter
+     * @param <B10> the leftmost bound of the tenth type parameter
+     * @param <B11> the leftmost bound of the eleventh type parameter
+     * @param <B12> the leftmost bound of the twelfth type parameter
+     * @param <B13> the leftmost bound of the thirteenth type parameter
+     * @param <B14> the leftmost bound of the fourteenth type parameter
+     * @param <B15> the leftmost bound of the fifteenth type parameter
+     */
+    public <R, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15> FinalClassToken<R> declareNestedRecord(String name, TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, TypeParameter<B6> p6, TypeParameter<B7> p7, TypeParameter<B8> p8, TypeParameter<B9> p9, TypeParameter<B10> p10, TypeParameter<B11> p11, TypeParameter<B12> p12, TypeParameter<B13> p13, TypeParameter<B14> p14, TypeParameter<B15> p15, TypedGenericRecordSpec15<B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15> spec) {
+        return nestedRecordToken(name, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15), new RecordBodies() {
+            @Override
+            public <R2> TypedRecordBodies<R2> build(TypedRecordBuilder<R2> rb) {
+                return spec.build(rb, NestedDeclarations.variable(rb, 0), NestedDeclarations.variable(rb, 1), NestedDeclarations.variable(rb, 2), NestedDeclarations.variable(rb, 3), NestedDeclarations.variable(rb, 4), NestedDeclarations.variable(rb, 5), NestedDeclarations.variable(rb, 6), NestedDeclarations.variable(rb, 7), NestedDeclarations.variable(rb, 8), NestedDeclarations.variable(rb, 9), NestedDeclarations.variable(rb, 10), NestedDeclarations.variable(rb, 11), NestedDeclarations.variable(rb, 12), NestedDeclarations.variable(rb, 13), NestedDeclarations.variable(rb, 14));
+            }
+        });
+    }
+
+    /**
+     * Declares a generic member class with sixteen type parameters.
+     *
+     * @param name the simple name of the member class
+     * @param p1 the first type parameter
+     * @param p2 the second type parameter
+     * @param p3 the third type parameter
+     * @param p4 the fourth type parameter
+     * @param p5 the fifth type parameter
+     * @param p6 the sixth type parameter
+     * @param p7 the seventh type parameter
+     * @param p8 the eighth type parameter
+     * @param p9 the ninth type parameter
+     * @param p10 the tenth type parameter
+     * @param p11 the eleventh type parameter
+     * @param p12 the twelfth type parameter
+     * @param p13 the thirteenth type parameter
+     * @param p14 the fourteenth type parameter
+     * @param p15 the fifteenth type parameter
+     * @param p16 the sixteenth type parameter
+     * @param spec declares the member class, given its header and the tokens of its type parameters
+     * @param <N> the brand of the member class
+     * @return the token of the member class
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the member class, or its bound is a raw type; or if `name` cannot name a type
+     * @throws IllegalStateException if the declarations of the type have ended, or a member of the member class is not defined
+     * @param <B1> the leftmost bound of the first type parameter
+     * @param <B2> the leftmost bound of the second type parameter
+     * @param <B3> the leftmost bound of the third type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter
+     * @param <B6> the leftmost bound of the sixth type parameter
+     * @param <B7> the leftmost bound of the seventh type parameter
+     * @param <B8> the leftmost bound of the eighth type parameter
+     * @param <B9> the leftmost bound of the ninth type parameter
+     * @param <B10> the leftmost bound of the tenth type parameter
+     * @param <B11> the leftmost bound of the eleventh type parameter
+     * @param <B12> the leftmost bound of the twelfth type parameter
+     * @param <B13> the leftmost bound of the thirteenth type parameter
+     * @param <B14> the leftmost bound of the fourteenth type parameter
+     * @param <B15> the leftmost bound of the fifteenth type parameter
+     * @param <B16> the leftmost bound of the sixteenth type parameter
+     */
+    public <N, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15, B16> FinalClassToken<N> declareNestedClass(String name, TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, TypeParameter<B6> p6, TypeParameter<B7> p7, TypeParameter<B8> p8, TypeParameter<B9> p9, TypeParameter<B10> p10, TypeParameter<B11> p11, TypeParameter<B12> p12, TypeParameter<B13> p13, TypeParameter<B14> p14, TypeParameter<B15> p15, TypeParameter<B16> p16, TypedGenericClassSpec16<B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15, B16> spec) {
+        return nestedClassToken(name, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16), new ClassBodies() {
+            @Override
+            public <N2> MemberBodies<N2, ?> build(ClassHeader<N2> h, ClassDeclaration<N2> declaration) {
+                return spec.build(h, NestedDeclarations.variable(declaration, 0), NestedDeclarations.variable(declaration, 1), NestedDeclarations.variable(declaration, 2), NestedDeclarations.variable(declaration, 3), NestedDeclarations.variable(declaration, 4), NestedDeclarations.variable(declaration, 5), NestedDeclarations.variable(declaration, 6), NestedDeclarations.variable(declaration, 7), NestedDeclarations.variable(declaration, 8), NestedDeclarations.variable(declaration, 9), NestedDeclarations.variable(declaration, 10), NestedDeclarations.variable(declaration, 11), NestedDeclarations.variable(declaration, 12), NestedDeclarations.variable(declaration, 13), NestedDeclarations.variable(declaration, 14), NestedDeclarations.variable(declaration, 15));
+            }
+        });
+    }
+
+    /**
+     * Declares a generic member interface with sixteen type parameters.
+     *
+     * @param name the simple name of the member interface
+     * @param p1 the first type parameter
+     * @param p2 the second type parameter
+     * @param p3 the third type parameter
+     * @param p4 the fourth type parameter
+     * @param p5 the fifth type parameter
+     * @param p6 the sixth type parameter
+     * @param p7 the seventh type parameter
+     * @param p8 the eighth type parameter
+     * @param p9 the ninth type parameter
+     * @param p10 the tenth type parameter
+     * @param p11 the eleventh type parameter
+     * @param p12 the twelfth type parameter
+     * @param p13 the thirteenth type parameter
+     * @param p14 the fourteenth type parameter
+     * @param p15 the fifteenth type parameter
+     * @param p16 the sixteenth type parameter
+     * @param spec declares the member interface, given its builder and the tokens of its type parameters
+     * @param <I> the brand of the member interface
+     * @return the token of the member interface
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the member interface, or its bound is a raw type; or if `name` cannot name a type
+     * @throws IllegalStateException if the declarations of the type have ended, or a member of the member interface is not defined
+     * @param <B1> the leftmost bound of the first type parameter
+     * @param <B2> the leftmost bound of the second type parameter
+     * @param <B3> the leftmost bound of the third type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter
+     * @param <B6> the leftmost bound of the sixth type parameter
+     * @param <B7> the leftmost bound of the seventh type parameter
+     * @param <B8> the leftmost bound of the eighth type parameter
+     * @param <B9> the leftmost bound of the ninth type parameter
+     * @param <B10> the leftmost bound of the tenth type parameter
+     * @param <B11> the leftmost bound of the eleventh type parameter
+     * @param <B12> the leftmost bound of the twelfth type parameter
+     * @param <B13> the leftmost bound of the thirteenth type parameter
+     * @param <B14> the leftmost bound of the fourteenth type parameter
+     * @param <B15> the leftmost bound of the fifteenth type parameter
+     * @param <B16> the leftmost bound of the sixteenth type parameter
+     */
+    public <I, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15, B16> InterfaceToken<I> declareNestedInterface(String name, TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, TypeParameter<B6> p6, TypeParameter<B7> p7, TypeParameter<B8> p8, TypeParameter<B9> p9, TypeParameter<B10> p10, TypeParameter<B11> p11, TypeParameter<B12> p12, TypeParameter<B13> p13, TypeParameter<B14> p14, TypeParameter<B15> p15, TypeParameter<B16> p16, TypedGenericInterfaceSpec16<B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15, B16> spec) {
+        return nestedInterfaceToken(name, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16), new InterfaceBodies() {
+            @Override
+            public <I2> TypedInterfaceBodies<I2> build(TypedInterfaceBuilder<I2> ib) {
+                return spec.build(ib, NestedDeclarations.variable(ib, 0), NestedDeclarations.variable(ib, 1), NestedDeclarations.variable(ib, 2), NestedDeclarations.variable(ib, 3), NestedDeclarations.variable(ib, 4), NestedDeclarations.variable(ib, 5), NestedDeclarations.variable(ib, 6), NestedDeclarations.variable(ib, 7), NestedDeclarations.variable(ib, 8), NestedDeclarations.variable(ib, 9), NestedDeclarations.variable(ib, 10), NestedDeclarations.variable(ib, 11), NestedDeclarations.variable(ib, 12), NestedDeclarations.variable(ib, 13), NestedDeclarations.variable(ib, 14), NestedDeclarations.variable(ib, 15));
+            }
+        });
+    }
+
+    /**
+     * Declares a generic member record with sixteen type parameters.
+     *
+     * @param name the simple name of the member record
+     * @param p1 the first type parameter
+     * @param p2 the second type parameter
+     * @param p3 the third type parameter
+     * @param p4 the fourth type parameter
+     * @param p5 the fifth type parameter
+     * @param p6 the sixth type parameter
+     * @param p7 the seventh type parameter
+     * @param p8 the eighth type parameter
+     * @param p9 the ninth type parameter
+     * @param p10 the tenth type parameter
+     * @param p11 the eleventh type parameter
+     * @param p12 the twelfth type parameter
+     * @param p13 the thirteenth type parameter
+     * @param p14 the fourteenth type parameter
+     * @param p15 the fifteenth type parameter
+     * @param p16 the sixteenth type parameter
+     * @param spec declares the member record, given its builder and the tokens of its type parameters
+     * @param <R> the brand of the member record
+     * @return the token of the member record
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the member record, or its bound is a raw type; or if `name` cannot name a type
+     * @throws IllegalStateException if the declarations of the type have ended, or a member of the member record is not defined
+     * @param <B1> the leftmost bound of the first type parameter
+     * @param <B2> the leftmost bound of the second type parameter
+     * @param <B3> the leftmost bound of the third type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter
+     * @param <B6> the leftmost bound of the sixth type parameter
+     * @param <B7> the leftmost bound of the seventh type parameter
+     * @param <B8> the leftmost bound of the eighth type parameter
+     * @param <B9> the leftmost bound of the ninth type parameter
+     * @param <B10> the leftmost bound of the tenth type parameter
+     * @param <B11> the leftmost bound of the eleventh type parameter
+     * @param <B12> the leftmost bound of the twelfth type parameter
+     * @param <B13> the leftmost bound of the thirteenth type parameter
+     * @param <B14> the leftmost bound of the fourteenth type parameter
+     * @param <B15> the leftmost bound of the fifteenth type parameter
+     * @param <B16> the leftmost bound of the sixteenth type parameter
+     */
+    public <R, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15, B16> FinalClassToken<R> declareNestedRecord(String name, TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, TypeParameter<B6> p6, TypeParameter<B7> p7, TypeParameter<B8> p8, TypeParameter<B9> p9, TypeParameter<B10> p10, TypeParameter<B11> p11, TypeParameter<B12> p12, TypeParameter<B13> p13, TypeParameter<B14> p14, TypeParameter<B15> p15, TypeParameter<B16> p16, TypedGenericRecordSpec16<B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15, B16> spec) {
+        return nestedRecordToken(name, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16), new RecordBodies() {
+            @Override
+            public <R2> TypedRecordBodies<R2> build(TypedRecordBuilder<R2> rb) {
+                return spec.build(rb, NestedDeclarations.variable(rb, 0), NestedDeclarations.variable(rb, 1), NestedDeclarations.variable(rb, 2), NestedDeclarations.variable(rb, 3), NestedDeclarations.variable(rb, 4), NestedDeclarations.variable(rb, 5), NestedDeclarations.variable(rb, 6), NestedDeclarations.variable(rb, 7), NestedDeclarations.variable(rb, 8), NestedDeclarations.variable(rb, 9), NestedDeclarations.variable(rb, 10), NestedDeclarations.variable(rb, 11), NestedDeclarations.variable(rb, 12), NestedDeclarations.variable(rb, 13), NestedDeclarations.variable(rb, 14), NestedDeclarations.variable(rb, 15));
             }
         });
     }
@@ -2363,6 +2971,678 @@ abstract sealed class EnumConstantBodyArities<Self> extends TypedTypeBodies<Self
     }
 
     /**
+     * Declares a `public` helper method of 13 parameters of the constant's body, which [#define] gives its body.
+     *
+     * @param name the method name
+     * @param p1 the first parameter type
+     * @param p2 the second parameter type
+     * @param p3 the third parameter type
+     * @param p4 the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param <A1> the parameter type of the first parameter
+     * @param <A2> the parameter type of the second parameter
+     * @param <A3> the parameter type of the third parameter
+     * @param <A4> the parameter type of the fourth parameter
+     * @param <A5> the parameter type of the fifth parameter
+     * @param <A6> the parameter type of the sixth parameter
+     * @param <A7> the parameter type of the seventh parameter
+     * @param <A8> the parameter type of the eighth parameter
+     * @param <A9> the parameter type of the ninth parameter
+     * @param <A10> the parameter type of the tenth parameter
+     * @param <A11> the parameter type of the eleventh parameter
+     * @param <A12> the parameter type of the twelfth parameter
+     * @param <A13> the parameter type of the thirteenth parameter
+     * @param result the result type
+     * @param <R> the result type
+     * @return the fact of the method
+     * @throws IllegalArgumentException if the method has the signature of a method the constant overrides
+     * @throws IllegalStateException if the declarations of the body have ended
+     */
+    public <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> MethodRef13<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> declareMethod(String name, TypeToken<R> result, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13) {
+        return declaredHelper(UnsafeInvocables.method(self(), name, result, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, MemberTraits.DEFAULT), Kind.METHOD);
+    }
+
+    /**
+     * Declares a `public` `void` helper method of 13 parameters of the constant's body, which [#define] gives its body.
+     *
+     * @param name the method name
+     * @param p1 the first parameter type
+     * @param p2 the second parameter type
+     * @param p3 the third parameter type
+     * @param p4 the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param <A1> the parameter type of the first parameter
+     * @param <A2> the parameter type of the second parameter
+     * @param <A3> the parameter type of the third parameter
+     * @param <A4> the parameter type of the fourth parameter
+     * @param <A5> the parameter type of the fifth parameter
+     * @param <A6> the parameter type of the sixth parameter
+     * @param <A7> the parameter type of the seventh parameter
+     * @param <A8> the parameter type of the eighth parameter
+     * @param <A9> the parameter type of the ninth parameter
+     * @param <A10> the parameter type of the tenth parameter
+     * @param <A11> the parameter type of the eleventh parameter
+     * @param <A12> the parameter type of the twelfth parameter
+     * @param <A13> the parameter type of the thirteenth parameter
+     * @return the fact of the method
+     * @throws IllegalArgumentException if the method has the signature of a method the constant overrides
+     * @throws IllegalStateException if the declarations of the body have ended
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> VoidMethodRef13<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> declareVoidMethod(String name, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13) {
+        return declaredHelper(UnsafeInvocables.voidMethod(self(), name, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, MemberTraits.DEFAULT), Kind.METHOD);
+    }
+
+    /**
+     * Declares a `public` `static` helper method of 13 parameters of the constant's body, which [#define] gives its body.
+     *
+     * @param name the method name
+     * @param p1 the first parameter type
+     * @param p2 the second parameter type
+     * @param p3 the third parameter type
+     * @param p4 the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param <A1> the parameter type of the first parameter
+     * @param <A2> the parameter type of the second parameter
+     * @param <A3> the parameter type of the third parameter
+     * @param <A4> the parameter type of the fourth parameter
+     * @param <A5> the parameter type of the fifth parameter
+     * @param <A6> the parameter type of the sixth parameter
+     * @param <A7> the parameter type of the seventh parameter
+     * @param <A8> the parameter type of the eighth parameter
+     * @param <A9> the parameter type of the ninth parameter
+     * @param <A10> the parameter type of the tenth parameter
+     * @param <A11> the parameter type of the eleventh parameter
+     * @param <A12> the parameter type of the twelfth parameter
+     * @param <A13> the parameter type of the thirteenth parameter
+     * @param result the result type
+     * @param <R> the result type
+     * @return the fact of the method
+     * @throws IllegalArgumentException if the method has the signature of a method the constant overrides
+     * @throws IllegalStateException if the declarations of the body have ended
+     */
+    public <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> StaticMethodRef13<R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> declareStaticMethod(String name, TypeToken<R> result, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13) {
+        return declaredHelper(UnsafeInvocables.staticMethod(self(), name, result, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, MemberTraits.FINAL), Kind.STATIC);
+    }
+
+    /**
+     * Declares a `public` `static` `void` helper method of 13 parameters of the constant's body, which [#define] gives its body.
+     *
+     * @param name the method name
+     * @param p1 the first parameter type
+     * @param p2 the second parameter type
+     * @param p3 the third parameter type
+     * @param p4 the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param <A1> the parameter type of the first parameter
+     * @param <A2> the parameter type of the second parameter
+     * @param <A3> the parameter type of the third parameter
+     * @param <A4> the parameter type of the fourth parameter
+     * @param <A5> the parameter type of the fifth parameter
+     * @param <A6> the parameter type of the sixth parameter
+     * @param <A7> the parameter type of the seventh parameter
+     * @param <A8> the parameter type of the eighth parameter
+     * @param <A9> the parameter type of the ninth parameter
+     * @param <A10> the parameter type of the tenth parameter
+     * @param <A11> the parameter type of the eleventh parameter
+     * @param <A12> the parameter type of the twelfth parameter
+     * @param <A13> the parameter type of the thirteenth parameter
+     * @return the fact of the method
+     * @throws IllegalArgumentException if the method has the signature of a method the constant overrides
+     * @throws IllegalStateException if the declarations of the body have ended
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> VoidStaticMethodRef13<A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> declareVoidStaticMethod(String name, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13) {
+        return declaredHelper(UnsafeInvocables.voidStaticMethod(self(), name, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, MemberTraits.FINAL), Kind.STATIC);
+    }
+
+    /**
+     * Declares a `public` helper method of 14 parameters of the constant's body, which [#define] gives its body.
+     *
+     * @param name the method name
+     * @param p1 the first parameter type
+     * @param p2 the second parameter type
+     * @param p3 the third parameter type
+     * @param p4 the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param p14 the fourteenth parameter type
+     * @param <A1> the parameter type of the first parameter
+     * @param <A2> the parameter type of the second parameter
+     * @param <A3> the parameter type of the third parameter
+     * @param <A4> the parameter type of the fourth parameter
+     * @param <A5> the parameter type of the fifth parameter
+     * @param <A6> the parameter type of the sixth parameter
+     * @param <A7> the parameter type of the seventh parameter
+     * @param <A8> the parameter type of the eighth parameter
+     * @param <A9> the parameter type of the ninth parameter
+     * @param <A10> the parameter type of the tenth parameter
+     * @param <A11> the parameter type of the eleventh parameter
+     * @param <A12> the parameter type of the twelfth parameter
+     * @param <A13> the parameter type of the thirteenth parameter
+     * @param <A14> the parameter type of the fourteenth parameter
+     * @param result the result type
+     * @param <R> the result type
+     * @return the fact of the method
+     * @throws IllegalArgumentException if the method has the signature of a method the constant overrides
+     * @throws IllegalStateException if the declarations of the body have ended
+     */
+    public <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> MethodRef14<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> declareMethod(String name, TypeToken<R> result, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, TypeToken<A14> p14) {
+        return declaredHelper(UnsafeInvocables.method(self(), name, result, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, MemberTraits.DEFAULT), Kind.METHOD);
+    }
+
+    /**
+     * Declares a `public` `void` helper method of 14 parameters of the constant's body, which [#define] gives its body.
+     *
+     * @param name the method name
+     * @param p1 the first parameter type
+     * @param p2 the second parameter type
+     * @param p3 the third parameter type
+     * @param p4 the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param p14 the fourteenth parameter type
+     * @param <A1> the parameter type of the first parameter
+     * @param <A2> the parameter type of the second parameter
+     * @param <A3> the parameter type of the third parameter
+     * @param <A4> the parameter type of the fourth parameter
+     * @param <A5> the parameter type of the fifth parameter
+     * @param <A6> the parameter type of the sixth parameter
+     * @param <A7> the parameter type of the seventh parameter
+     * @param <A8> the parameter type of the eighth parameter
+     * @param <A9> the parameter type of the ninth parameter
+     * @param <A10> the parameter type of the tenth parameter
+     * @param <A11> the parameter type of the eleventh parameter
+     * @param <A12> the parameter type of the twelfth parameter
+     * @param <A13> the parameter type of the thirteenth parameter
+     * @param <A14> the parameter type of the fourteenth parameter
+     * @return the fact of the method
+     * @throws IllegalArgumentException if the method has the signature of a method the constant overrides
+     * @throws IllegalStateException if the declarations of the body have ended
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> VoidMethodRef14<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> declareVoidMethod(String name, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, TypeToken<A14> p14) {
+        return declaredHelper(UnsafeInvocables.voidMethod(self(), name, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, MemberTraits.DEFAULT), Kind.METHOD);
+    }
+
+    /**
+     * Declares a `public` `static` helper method of 14 parameters of the constant's body, which [#define] gives its body.
+     *
+     * @param name the method name
+     * @param p1 the first parameter type
+     * @param p2 the second parameter type
+     * @param p3 the third parameter type
+     * @param p4 the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param p14 the fourteenth parameter type
+     * @param <A1> the parameter type of the first parameter
+     * @param <A2> the parameter type of the second parameter
+     * @param <A3> the parameter type of the third parameter
+     * @param <A4> the parameter type of the fourth parameter
+     * @param <A5> the parameter type of the fifth parameter
+     * @param <A6> the parameter type of the sixth parameter
+     * @param <A7> the parameter type of the seventh parameter
+     * @param <A8> the parameter type of the eighth parameter
+     * @param <A9> the parameter type of the ninth parameter
+     * @param <A10> the parameter type of the tenth parameter
+     * @param <A11> the parameter type of the eleventh parameter
+     * @param <A12> the parameter type of the twelfth parameter
+     * @param <A13> the parameter type of the thirteenth parameter
+     * @param <A14> the parameter type of the fourteenth parameter
+     * @param result the result type
+     * @param <R> the result type
+     * @return the fact of the method
+     * @throws IllegalArgumentException if the method has the signature of a method the constant overrides
+     * @throws IllegalStateException if the declarations of the body have ended
+     */
+    public <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> StaticMethodRef14<R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> declareStaticMethod(String name, TypeToken<R> result, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, TypeToken<A14> p14) {
+        return declaredHelper(UnsafeInvocables.staticMethod(self(), name, result, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, MemberTraits.FINAL), Kind.STATIC);
+    }
+
+    /**
+     * Declares a `public` `static` `void` helper method of 14 parameters of the constant's body, which [#define] gives its body.
+     *
+     * @param name the method name
+     * @param p1 the first parameter type
+     * @param p2 the second parameter type
+     * @param p3 the third parameter type
+     * @param p4 the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param p14 the fourteenth parameter type
+     * @param <A1> the parameter type of the first parameter
+     * @param <A2> the parameter type of the second parameter
+     * @param <A3> the parameter type of the third parameter
+     * @param <A4> the parameter type of the fourth parameter
+     * @param <A5> the parameter type of the fifth parameter
+     * @param <A6> the parameter type of the sixth parameter
+     * @param <A7> the parameter type of the seventh parameter
+     * @param <A8> the parameter type of the eighth parameter
+     * @param <A9> the parameter type of the ninth parameter
+     * @param <A10> the parameter type of the tenth parameter
+     * @param <A11> the parameter type of the eleventh parameter
+     * @param <A12> the parameter type of the twelfth parameter
+     * @param <A13> the parameter type of the thirteenth parameter
+     * @param <A14> the parameter type of the fourteenth parameter
+     * @return the fact of the method
+     * @throws IllegalArgumentException if the method has the signature of a method the constant overrides
+     * @throws IllegalStateException if the declarations of the body have ended
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> VoidStaticMethodRef14<A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> declareVoidStaticMethod(String name, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, TypeToken<A14> p14) {
+        return declaredHelper(UnsafeInvocables.voidStaticMethod(self(), name, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, MemberTraits.FINAL), Kind.STATIC);
+    }
+
+    /**
+     * Declares a `public` helper method of 15 parameters of the constant's body, which [#define] gives its body.
+     *
+     * @param name the method name
+     * @param p1 the first parameter type
+     * @param p2 the second parameter type
+     * @param p3 the third parameter type
+     * @param p4 the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param p14 the fourteenth parameter type
+     * @param p15 the fifteenth parameter type
+     * @param <A1> the parameter type of the first parameter
+     * @param <A2> the parameter type of the second parameter
+     * @param <A3> the parameter type of the third parameter
+     * @param <A4> the parameter type of the fourth parameter
+     * @param <A5> the parameter type of the fifth parameter
+     * @param <A6> the parameter type of the sixth parameter
+     * @param <A7> the parameter type of the seventh parameter
+     * @param <A8> the parameter type of the eighth parameter
+     * @param <A9> the parameter type of the ninth parameter
+     * @param <A10> the parameter type of the tenth parameter
+     * @param <A11> the parameter type of the eleventh parameter
+     * @param <A12> the parameter type of the twelfth parameter
+     * @param <A13> the parameter type of the thirteenth parameter
+     * @param <A14> the parameter type of the fourteenth parameter
+     * @param <A15> the parameter type of the fifteenth parameter
+     * @param result the result type
+     * @param <R> the result type
+     * @return the fact of the method
+     * @throws IllegalArgumentException if the method has the signature of a method the constant overrides
+     * @throws IllegalStateException if the declarations of the body have ended
+     */
+    public <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> MethodRef15<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> declareMethod(String name, TypeToken<R> result, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, TypeToken<A14> p14, TypeToken<A15> p15) {
+        return declaredHelper(UnsafeInvocables.method(self(), name, result, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, MemberTraits.DEFAULT), Kind.METHOD);
+    }
+
+    /**
+     * Declares a `public` `void` helper method of 15 parameters of the constant's body, which [#define] gives its body.
+     *
+     * @param name the method name
+     * @param p1 the first parameter type
+     * @param p2 the second parameter type
+     * @param p3 the third parameter type
+     * @param p4 the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param p14 the fourteenth parameter type
+     * @param p15 the fifteenth parameter type
+     * @param <A1> the parameter type of the first parameter
+     * @param <A2> the parameter type of the second parameter
+     * @param <A3> the parameter type of the third parameter
+     * @param <A4> the parameter type of the fourth parameter
+     * @param <A5> the parameter type of the fifth parameter
+     * @param <A6> the parameter type of the sixth parameter
+     * @param <A7> the parameter type of the seventh parameter
+     * @param <A8> the parameter type of the eighth parameter
+     * @param <A9> the parameter type of the ninth parameter
+     * @param <A10> the parameter type of the tenth parameter
+     * @param <A11> the parameter type of the eleventh parameter
+     * @param <A12> the parameter type of the twelfth parameter
+     * @param <A13> the parameter type of the thirteenth parameter
+     * @param <A14> the parameter type of the fourteenth parameter
+     * @param <A15> the parameter type of the fifteenth parameter
+     * @return the fact of the method
+     * @throws IllegalArgumentException if the method has the signature of a method the constant overrides
+     * @throws IllegalStateException if the declarations of the body have ended
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> VoidMethodRef15<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> declareVoidMethod(String name, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, TypeToken<A14> p14, TypeToken<A15> p15) {
+        return declaredHelper(UnsafeInvocables.voidMethod(self(), name, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, MemberTraits.DEFAULT), Kind.METHOD);
+    }
+
+    /**
+     * Declares a `public` `static` helper method of 15 parameters of the constant's body, which [#define] gives its body.
+     *
+     * @param name the method name
+     * @param p1 the first parameter type
+     * @param p2 the second parameter type
+     * @param p3 the third parameter type
+     * @param p4 the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param p14 the fourteenth parameter type
+     * @param p15 the fifteenth parameter type
+     * @param <A1> the parameter type of the first parameter
+     * @param <A2> the parameter type of the second parameter
+     * @param <A3> the parameter type of the third parameter
+     * @param <A4> the parameter type of the fourth parameter
+     * @param <A5> the parameter type of the fifth parameter
+     * @param <A6> the parameter type of the sixth parameter
+     * @param <A7> the parameter type of the seventh parameter
+     * @param <A8> the parameter type of the eighth parameter
+     * @param <A9> the parameter type of the ninth parameter
+     * @param <A10> the parameter type of the tenth parameter
+     * @param <A11> the parameter type of the eleventh parameter
+     * @param <A12> the parameter type of the twelfth parameter
+     * @param <A13> the parameter type of the thirteenth parameter
+     * @param <A14> the parameter type of the fourteenth parameter
+     * @param <A15> the parameter type of the fifteenth parameter
+     * @param result the result type
+     * @param <R> the result type
+     * @return the fact of the method
+     * @throws IllegalArgumentException if the method has the signature of a method the constant overrides
+     * @throws IllegalStateException if the declarations of the body have ended
+     */
+    public <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> StaticMethodRef15<R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> declareStaticMethod(String name, TypeToken<R> result, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, TypeToken<A14> p14, TypeToken<A15> p15) {
+        return declaredHelper(UnsafeInvocables.staticMethod(self(), name, result, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, MemberTraits.FINAL), Kind.STATIC);
+    }
+
+    /**
+     * Declares a `public` `static` `void` helper method of 15 parameters of the constant's body, which [#define] gives its body.
+     *
+     * @param name the method name
+     * @param p1 the first parameter type
+     * @param p2 the second parameter type
+     * @param p3 the third parameter type
+     * @param p4 the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param p14 the fourteenth parameter type
+     * @param p15 the fifteenth parameter type
+     * @param <A1> the parameter type of the first parameter
+     * @param <A2> the parameter type of the second parameter
+     * @param <A3> the parameter type of the third parameter
+     * @param <A4> the parameter type of the fourth parameter
+     * @param <A5> the parameter type of the fifth parameter
+     * @param <A6> the parameter type of the sixth parameter
+     * @param <A7> the parameter type of the seventh parameter
+     * @param <A8> the parameter type of the eighth parameter
+     * @param <A9> the parameter type of the ninth parameter
+     * @param <A10> the parameter type of the tenth parameter
+     * @param <A11> the parameter type of the eleventh parameter
+     * @param <A12> the parameter type of the twelfth parameter
+     * @param <A13> the parameter type of the thirteenth parameter
+     * @param <A14> the parameter type of the fourteenth parameter
+     * @param <A15> the parameter type of the fifteenth parameter
+     * @return the fact of the method
+     * @throws IllegalArgumentException if the method has the signature of a method the constant overrides
+     * @throws IllegalStateException if the declarations of the body have ended
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> VoidStaticMethodRef15<A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> declareVoidStaticMethod(String name, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, TypeToken<A14> p14, TypeToken<A15> p15) {
+        return declaredHelper(UnsafeInvocables.voidStaticMethod(self(), name, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, MemberTraits.FINAL), Kind.STATIC);
+    }
+
+    /**
+     * Declares a `public` helper method of 16 parameters of the constant's body, which [#define] gives its body.
+     *
+     * @param name the method name
+     * @param p1 the first parameter type
+     * @param p2 the second parameter type
+     * @param p3 the third parameter type
+     * @param p4 the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param p14 the fourteenth parameter type
+     * @param p15 the fifteenth parameter type
+     * @param p16 the sixteenth parameter type
+     * @param <A1> the parameter type of the first parameter
+     * @param <A2> the parameter type of the second parameter
+     * @param <A3> the parameter type of the third parameter
+     * @param <A4> the parameter type of the fourth parameter
+     * @param <A5> the parameter type of the fifth parameter
+     * @param <A6> the parameter type of the sixth parameter
+     * @param <A7> the parameter type of the seventh parameter
+     * @param <A8> the parameter type of the eighth parameter
+     * @param <A9> the parameter type of the ninth parameter
+     * @param <A10> the parameter type of the tenth parameter
+     * @param <A11> the parameter type of the eleventh parameter
+     * @param <A12> the parameter type of the twelfth parameter
+     * @param <A13> the parameter type of the thirteenth parameter
+     * @param <A14> the parameter type of the fourteenth parameter
+     * @param <A15> the parameter type of the fifteenth parameter
+     * @param <A16> the parameter type of the sixteenth parameter
+     * @param result the result type
+     * @param <R> the result type
+     * @return the fact of the method
+     * @throws IllegalArgumentException if the method has the signature of a method the constant overrides
+     * @throws IllegalStateException if the declarations of the body have ended
+     */
+    public <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> MethodRef16<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> declareMethod(String name, TypeToken<R> result, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, TypeToken<A14> p14, TypeToken<A15> p15, TypeToken<A16> p16) {
+        return declaredHelper(UnsafeInvocables.method(self(), name, result, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, MemberTraits.DEFAULT), Kind.METHOD);
+    }
+
+    /**
+     * Declares a `public` `void` helper method of 16 parameters of the constant's body, which [#define] gives its body.
+     *
+     * @param name the method name
+     * @param p1 the first parameter type
+     * @param p2 the second parameter type
+     * @param p3 the third parameter type
+     * @param p4 the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param p14 the fourteenth parameter type
+     * @param p15 the fifteenth parameter type
+     * @param p16 the sixteenth parameter type
+     * @param <A1> the parameter type of the first parameter
+     * @param <A2> the parameter type of the second parameter
+     * @param <A3> the parameter type of the third parameter
+     * @param <A4> the parameter type of the fourth parameter
+     * @param <A5> the parameter type of the fifth parameter
+     * @param <A6> the parameter type of the sixth parameter
+     * @param <A7> the parameter type of the seventh parameter
+     * @param <A8> the parameter type of the eighth parameter
+     * @param <A9> the parameter type of the ninth parameter
+     * @param <A10> the parameter type of the tenth parameter
+     * @param <A11> the parameter type of the eleventh parameter
+     * @param <A12> the parameter type of the twelfth parameter
+     * @param <A13> the parameter type of the thirteenth parameter
+     * @param <A14> the parameter type of the fourteenth parameter
+     * @param <A15> the parameter type of the fifteenth parameter
+     * @param <A16> the parameter type of the sixteenth parameter
+     * @return the fact of the method
+     * @throws IllegalArgumentException if the method has the signature of a method the constant overrides
+     * @throws IllegalStateException if the declarations of the body have ended
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> VoidMethodRef16<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> declareVoidMethod(String name, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, TypeToken<A14> p14, TypeToken<A15> p15, TypeToken<A16> p16) {
+        return declaredHelper(UnsafeInvocables.voidMethod(self(), name, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, MemberTraits.DEFAULT), Kind.METHOD);
+    }
+
+    /**
+     * Declares a `public` `static` helper method of 16 parameters of the constant's body, which [#define] gives its body.
+     *
+     * @param name the method name
+     * @param p1 the first parameter type
+     * @param p2 the second parameter type
+     * @param p3 the third parameter type
+     * @param p4 the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param p14 the fourteenth parameter type
+     * @param p15 the fifteenth parameter type
+     * @param p16 the sixteenth parameter type
+     * @param <A1> the parameter type of the first parameter
+     * @param <A2> the parameter type of the second parameter
+     * @param <A3> the parameter type of the third parameter
+     * @param <A4> the parameter type of the fourth parameter
+     * @param <A5> the parameter type of the fifth parameter
+     * @param <A6> the parameter type of the sixth parameter
+     * @param <A7> the parameter type of the seventh parameter
+     * @param <A8> the parameter type of the eighth parameter
+     * @param <A9> the parameter type of the ninth parameter
+     * @param <A10> the parameter type of the tenth parameter
+     * @param <A11> the parameter type of the eleventh parameter
+     * @param <A12> the parameter type of the twelfth parameter
+     * @param <A13> the parameter type of the thirteenth parameter
+     * @param <A14> the parameter type of the fourteenth parameter
+     * @param <A15> the parameter type of the fifteenth parameter
+     * @param <A16> the parameter type of the sixteenth parameter
+     * @param result the result type
+     * @param <R> the result type
+     * @return the fact of the method
+     * @throws IllegalArgumentException if the method has the signature of a method the constant overrides
+     * @throws IllegalStateException if the declarations of the body have ended
+     */
+    public <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> StaticMethodRef16<R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> declareStaticMethod(String name, TypeToken<R> result, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, TypeToken<A14> p14, TypeToken<A15> p15, TypeToken<A16> p16) {
+        return declaredHelper(UnsafeInvocables.staticMethod(self(), name, result, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, MemberTraits.FINAL), Kind.STATIC);
+    }
+
+    /**
+     * Declares a `public` `static` `void` helper method of 16 parameters of the constant's body, which [#define] gives its body.
+     *
+     * @param name the method name
+     * @param p1 the first parameter type
+     * @param p2 the second parameter type
+     * @param p3 the third parameter type
+     * @param p4 the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param p14 the fourteenth parameter type
+     * @param p15 the fifteenth parameter type
+     * @param p16 the sixteenth parameter type
+     * @param <A1> the parameter type of the first parameter
+     * @param <A2> the parameter type of the second parameter
+     * @param <A3> the parameter type of the third parameter
+     * @param <A4> the parameter type of the fourth parameter
+     * @param <A5> the parameter type of the fifth parameter
+     * @param <A6> the parameter type of the sixth parameter
+     * @param <A7> the parameter type of the seventh parameter
+     * @param <A8> the parameter type of the eighth parameter
+     * @param <A9> the parameter type of the ninth parameter
+     * @param <A10> the parameter type of the tenth parameter
+     * @param <A11> the parameter type of the eleventh parameter
+     * @param <A12> the parameter type of the twelfth parameter
+     * @param <A13> the parameter type of the thirteenth parameter
+     * @param <A14> the parameter type of the fourteenth parameter
+     * @param <A15> the parameter type of the fifteenth parameter
+     * @param <A16> the parameter type of the sixteenth parameter
+     * @return the fact of the method
+     * @throws IllegalArgumentException if the method has the signature of a method the constant overrides
+     * @throws IllegalStateException if the declarations of the body have ended
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> VoidStaticMethodRef16<A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> declareVoidStaticMethod(String name, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, TypeToken<A14> p14, TypeToken<A15> p15, TypeToken<A16> p16) {
+        return declaredHelper(UnsafeInvocables.voidStaticMethod(self(), name, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, MemberTraits.FINAL), Kind.STATIC);
+    }
+
+    /**
      * Defines the declared helper method of 5 parameters of the constant's body.
      *
      * @param method the declared method
@@ -3608,5 +4888,917 @@ abstract sealed class EnumConstantBodyArities<Self> extends TypedTypeBodies<Self
         Var<A11> p11 = lastParameter(method.param11(), root);
         Var<A12> p12 = lastParameter(method.param12(), root);
         defineIn(slot, root, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12), Start.IMPLICIT, (b) -> body.apply(b, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12));
+    }
+
+    /**
+     * Defines the declared helper method of 13 parameters of the constant's body.
+     *
+     * @param method the declared method
+     * @param body the body, given its block, `this` and the parameters
+     * @param p1 the first parameter type
+     * @param p2 the second parameter type
+     * @param p3 the third parameter type
+     * @param p4 the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param <A1> the type parameter of the first parameter
+     * @param <A2> the type parameter of the second parameter
+     * @param <A3> the type parameter of the third parameter
+     * @param <A4> the type parameter of the fourth parameter
+     * @param <A5> the type parameter of the fifth parameter
+     * @param <A6> the type parameter of the sixth parameter
+     * @param <A7> the type parameter of the seventh parameter
+     * @param <A8> the type parameter of the eighth parameter
+     * @param <A9> the type parameter of the ninth parameter
+     * @param <A10> the type parameter of the tenth parameter
+     * @param <A11> the type parameter of the eleventh parameter
+     * @param <A12> the type parameter of the twelfth parameter
+     * @param <A13> the type parameter of the thirteenth parameter
+     * @throws IllegalStateException as a definition of a method of a class does ([MemberBodies])
+     */
+    public final <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> void define(MethodRef13<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> method, InstanceBody13<Self, Body<R>, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> body) {
+        Awaiting slot = definable(method);
+        Body<R> root = Body.root("body of method " + method.name(), MemberBodies.declares(method));
+        This<Self> self = thisOf(root);
+        Var<A1> p1 = lastParameter(method.param1(), root);
+        Var<A2> p2 = lastParameter(method.param2(), root);
+        Var<A3> p3 = lastParameter(method.param3(), root);
+        Var<A4> p4 = lastParameter(method.param4(), root);
+        Var<A5> p5 = lastParameter(method.param5(), root);
+        Var<A6> p6 = lastParameter(method.param6(), root);
+        Var<A7> p7 = lastParameter(method.param7(), root);
+        Var<A8> p8 = lastParameter(method.param8(), root);
+        Var<A9> p9 = lastParameter(method.param9(), root);
+        Var<A10> p10 = lastParameter(method.param10(), root);
+        Var<A11> p11 = lastParameter(method.param11(), root);
+        Var<A12> p12 = lastParameter(method.param12(), root);
+        Var<A13> p13 = lastParameter(method.param13(), root);
+        defineIn(slot, root, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13), Start.IMPLICIT, (b) -> body.build(b, self, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13));
+    }
+
+    /**
+     * Defines the declared `void` helper method of 13 parameters of the constant's body.
+     *
+     * @param method the declared method
+     * @param body the body, given its block, `this` and the parameters
+     * @param p1 the first parameter type
+     * @param p2 the second parameter type
+     * @param p3 the third parameter type
+     * @param p4 the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param <A1> the type parameter of the first parameter
+     * @param <A2> the type parameter of the second parameter
+     * @param <A3> the type parameter of the third parameter
+     * @param <A4> the type parameter of the fourth parameter
+     * @param <A5> the type parameter of the fifth parameter
+     * @param <A6> the type parameter of the sixth parameter
+     * @param <A7> the type parameter of the seventh parameter
+     * @param <A8> the type parameter of the eighth parameter
+     * @param <A9> the type parameter of the ninth parameter
+     * @param <A10> the type parameter of the tenth parameter
+     * @param <A11> the type parameter of the eleventh parameter
+     * @param <A12> the type parameter of the twelfth parameter
+     * @param <A13> the type parameter of the thirteenth parameter
+     * @throws IllegalStateException as a definition of a method of a class does ([MemberBodies])
+     */
+    public final <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> void define(VoidMethodRef13<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> method, InstanceBody13<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> body) {
+        Awaiting slot = definable(method);
+        VoidBody root = VoidBody.root("body of method " + method.name(), MemberBodies.declares(method));
+        This<Self> self = thisOf(root);
+        Var<A1> p1 = lastParameter(method.param1(), root);
+        Var<A2> p2 = lastParameter(method.param2(), root);
+        Var<A3> p3 = lastParameter(method.param3(), root);
+        Var<A4> p4 = lastParameter(method.param4(), root);
+        Var<A5> p5 = lastParameter(method.param5(), root);
+        Var<A6> p6 = lastParameter(method.param6(), root);
+        Var<A7> p7 = lastParameter(method.param7(), root);
+        Var<A8> p8 = lastParameter(method.param8(), root);
+        Var<A9> p9 = lastParameter(method.param9(), root);
+        Var<A10> p10 = lastParameter(method.param10(), root);
+        Var<A11> p11 = lastParameter(method.param11(), root);
+        Var<A12> p12 = lastParameter(method.param12(), root);
+        Var<A13> p13 = lastParameter(method.param13(), root);
+        defineIn(slot, root, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13), Start.IMPLICIT, (b) -> body.build(b, self, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13));
+    }
+
+    /**
+     * Defines the declared static helper method of 13 parameters of the constant's body.
+     *
+     * @param method the declared method
+     * @param body the body, given its block and the parameters
+     * @param p1 the first parameter type
+     * @param p2 the second parameter type
+     * @param p3 the third parameter type
+     * @param p4 the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param <A1> the type parameter of the first parameter
+     * @param <A2> the type parameter of the second parameter
+     * @param <A3> the type parameter of the third parameter
+     * @param <A4> the type parameter of the fourth parameter
+     * @param <A5> the type parameter of the fifth parameter
+     * @param <A6> the type parameter of the sixth parameter
+     * @param <A7> the type parameter of the seventh parameter
+     * @param <A8> the type parameter of the eighth parameter
+     * @param <A9> the type parameter of the ninth parameter
+     * @param <A10> the type parameter of the tenth parameter
+     * @param <A11> the type parameter of the eleventh parameter
+     * @param <A12> the type parameter of the twelfth parameter
+     * @param <A13> the type parameter of the thirteenth parameter
+     * @throws IllegalStateException as a definition of a method of a class does ([MemberBodies])
+     */
+    public final <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> void define(StaticMethodRef13<R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> method, Function14<Body<R>, Var<A1>, Var<A2>, Var<A3>, Var<A4>, Var<A5>, Var<A6>, Var<A7>, Var<A8>, Var<A9>, Var<A10>, Var<A11>, Var<A12>, Var<A13>, Terminated<R>> body) {
+        Awaiting slot = definable(method);
+        Body<R> root = Body.root("body of method " + method.name(), MemberBodies.declares(method));
+        Var<A1> p1 = lastParameter(method.param1(), root);
+        Var<A2> p2 = lastParameter(method.param2(), root);
+        Var<A3> p3 = lastParameter(method.param3(), root);
+        Var<A4> p4 = lastParameter(method.param4(), root);
+        Var<A5> p5 = lastParameter(method.param5(), root);
+        Var<A6> p6 = lastParameter(method.param6(), root);
+        Var<A7> p7 = lastParameter(method.param7(), root);
+        Var<A8> p8 = lastParameter(method.param8(), root);
+        Var<A9> p9 = lastParameter(method.param9(), root);
+        Var<A10> p10 = lastParameter(method.param10(), root);
+        Var<A11> p11 = lastParameter(method.param11(), root);
+        Var<A12> p12 = lastParameter(method.param12(), root);
+        Var<A13> p13 = lastParameter(method.param13(), root);
+        defineIn(slot, root, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13), Start.IMPLICIT, (b) -> body.apply(b, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13));
+    }
+
+    /**
+     * Defines the declared static `void` helper method of 13 parameters of the constant's body.
+     *
+     * @param method the declared method
+     * @param body the body, given its block and the parameters
+     * @param p1 the first parameter type
+     * @param p2 the second parameter type
+     * @param p3 the third parameter type
+     * @param p4 the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param <A1> the type parameter of the first parameter
+     * @param <A2> the type parameter of the second parameter
+     * @param <A3> the type parameter of the third parameter
+     * @param <A4> the type parameter of the fourth parameter
+     * @param <A5> the type parameter of the fifth parameter
+     * @param <A6> the type parameter of the sixth parameter
+     * @param <A7> the type parameter of the seventh parameter
+     * @param <A8> the type parameter of the eighth parameter
+     * @param <A9> the type parameter of the ninth parameter
+     * @param <A10> the type parameter of the tenth parameter
+     * @param <A11> the type parameter of the eleventh parameter
+     * @param <A12> the type parameter of the twelfth parameter
+     * @param <A13> the type parameter of the thirteenth parameter
+     * @throws IllegalStateException as a definition of a method of a class does ([MemberBodies])
+     */
+    public final <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> void define(VoidStaticMethodRef13<A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> method, Function14<VoidBody, Var<A1>, Var<A2>, Var<A3>, Var<A4>, Var<A5>, Var<A6>, Var<A7>, Var<A8>, Var<A9>, Var<A10>, Var<A11>, Var<A12>, Var<A13>, Terminated<Void>> body) {
+        Awaiting slot = definable(method);
+        VoidBody root = VoidBody.root("body of method " + method.name(), MemberBodies.declares(method));
+        Var<A1> p1 = lastParameter(method.param1(), root);
+        Var<A2> p2 = lastParameter(method.param2(), root);
+        Var<A3> p3 = lastParameter(method.param3(), root);
+        Var<A4> p4 = lastParameter(method.param4(), root);
+        Var<A5> p5 = lastParameter(method.param5(), root);
+        Var<A6> p6 = lastParameter(method.param6(), root);
+        Var<A7> p7 = lastParameter(method.param7(), root);
+        Var<A8> p8 = lastParameter(method.param8(), root);
+        Var<A9> p9 = lastParameter(method.param9(), root);
+        Var<A10> p10 = lastParameter(method.param10(), root);
+        Var<A11> p11 = lastParameter(method.param11(), root);
+        Var<A12> p12 = lastParameter(method.param12(), root);
+        Var<A13> p13 = lastParameter(method.param13(), root);
+        defineIn(slot, root, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13), Start.IMPLICIT, (b) -> body.apply(b, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13));
+    }
+
+    /**
+     * Defines the declared helper method of 14 parameters of the constant's body.
+     *
+     * @param method the declared method
+     * @param body the body, given its block, `this` and the parameters
+     * @param p1 the first parameter type
+     * @param p2 the second parameter type
+     * @param p3 the third parameter type
+     * @param p4 the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param p14 the fourteenth parameter type
+     * @param <A1> the type parameter of the first parameter
+     * @param <A2> the type parameter of the second parameter
+     * @param <A3> the type parameter of the third parameter
+     * @param <A4> the type parameter of the fourth parameter
+     * @param <A5> the type parameter of the fifth parameter
+     * @param <A6> the type parameter of the sixth parameter
+     * @param <A7> the type parameter of the seventh parameter
+     * @param <A8> the type parameter of the eighth parameter
+     * @param <A9> the type parameter of the ninth parameter
+     * @param <A10> the type parameter of the tenth parameter
+     * @param <A11> the type parameter of the eleventh parameter
+     * @param <A12> the type parameter of the twelfth parameter
+     * @param <A13> the type parameter of the thirteenth parameter
+     * @param <A14> the type parameter of the fourteenth parameter
+     * @throws IllegalStateException as a definition of a method of a class does ([MemberBodies])
+     */
+    public final <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> void define(MethodRef14<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> method, InstanceBody14<Self, Body<R>, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> body) {
+        Awaiting slot = definable(method);
+        Body<R> root = Body.root("body of method " + method.name(), MemberBodies.declares(method));
+        This<Self> self = thisOf(root);
+        Var<A1> p1 = lastParameter(method.param1(), root);
+        Var<A2> p2 = lastParameter(method.param2(), root);
+        Var<A3> p3 = lastParameter(method.param3(), root);
+        Var<A4> p4 = lastParameter(method.param4(), root);
+        Var<A5> p5 = lastParameter(method.param5(), root);
+        Var<A6> p6 = lastParameter(method.param6(), root);
+        Var<A7> p7 = lastParameter(method.param7(), root);
+        Var<A8> p8 = lastParameter(method.param8(), root);
+        Var<A9> p9 = lastParameter(method.param9(), root);
+        Var<A10> p10 = lastParameter(method.param10(), root);
+        Var<A11> p11 = lastParameter(method.param11(), root);
+        Var<A12> p12 = lastParameter(method.param12(), root);
+        Var<A13> p13 = lastParameter(method.param13(), root);
+        Var<A14> p14 = lastParameter(method.param14(), root);
+        defineIn(slot, root, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14), Start.IMPLICIT, (b) -> body.build(b, self, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14));
+    }
+
+    /**
+     * Defines the declared `void` helper method of 14 parameters of the constant's body.
+     *
+     * @param method the declared method
+     * @param body the body, given its block, `this` and the parameters
+     * @param p1 the first parameter type
+     * @param p2 the second parameter type
+     * @param p3 the third parameter type
+     * @param p4 the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param p14 the fourteenth parameter type
+     * @param <A1> the type parameter of the first parameter
+     * @param <A2> the type parameter of the second parameter
+     * @param <A3> the type parameter of the third parameter
+     * @param <A4> the type parameter of the fourth parameter
+     * @param <A5> the type parameter of the fifth parameter
+     * @param <A6> the type parameter of the sixth parameter
+     * @param <A7> the type parameter of the seventh parameter
+     * @param <A8> the type parameter of the eighth parameter
+     * @param <A9> the type parameter of the ninth parameter
+     * @param <A10> the type parameter of the tenth parameter
+     * @param <A11> the type parameter of the eleventh parameter
+     * @param <A12> the type parameter of the twelfth parameter
+     * @param <A13> the type parameter of the thirteenth parameter
+     * @param <A14> the type parameter of the fourteenth parameter
+     * @throws IllegalStateException as a definition of a method of a class does ([MemberBodies])
+     */
+    public final <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> void define(VoidMethodRef14<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> method, InstanceBody14<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> body) {
+        Awaiting slot = definable(method);
+        VoidBody root = VoidBody.root("body of method " + method.name(), MemberBodies.declares(method));
+        This<Self> self = thisOf(root);
+        Var<A1> p1 = lastParameter(method.param1(), root);
+        Var<A2> p2 = lastParameter(method.param2(), root);
+        Var<A3> p3 = lastParameter(method.param3(), root);
+        Var<A4> p4 = lastParameter(method.param4(), root);
+        Var<A5> p5 = lastParameter(method.param5(), root);
+        Var<A6> p6 = lastParameter(method.param6(), root);
+        Var<A7> p7 = lastParameter(method.param7(), root);
+        Var<A8> p8 = lastParameter(method.param8(), root);
+        Var<A9> p9 = lastParameter(method.param9(), root);
+        Var<A10> p10 = lastParameter(method.param10(), root);
+        Var<A11> p11 = lastParameter(method.param11(), root);
+        Var<A12> p12 = lastParameter(method.param12(), root);
+        Var<A13> p13 = lastParameter(method.param13(), root);
+        Var<A14> p14 = lastParameter(method.param14(), root);
+        defineIn(slot, root, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14), Start.IMPLICIT, (b) -> body.build(b, self, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14));
+    }
+
+    /**
+     * Defines the declared static helper method of 14 parameters of the constant's body.
+     *
+     * @param method the declared method
+     * @param body the body, given its block and the parameters
+     * @param p1 the first parameter type
+     * @param p2 the second parameter type
+     * @param p3 the third parameter type
+     * @param p4 the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param p14 the fourteenth parameter type
+     * @param <A1> the type parameter of the first parameter
+     * @param <A2> the type parameter of the second parameter
+     * @param <A3> the type parameter of the third parameter
+     * @param <A4> the type parameter of the fourth parameter
+     * @param <A5> the type parameter of the fifth parameter
+     * @param <A6> the type parameter of the sixth parameter
+     * @param <A7> the type parameter of the seventh parameter
+     * @param <A8> the type parameter of the eighth parameter
+     * @param <A9> the type parameter of the ninth parameter
+     * @param <A10> the type parameter of the tenth parameter
+     * @param <A11> the type parameter of the eleventh parameter
+     * @param <A12> the type parameter of the twelfth parameter
+     * @param <A13> the type parameter of the thirteenth parameter
+     * @param <A14> the type parameter of the fourteenth parameter
+     * @throws IllegalStateException as a definition of a method of a class does ([MemberBodies])
+     */
+    public final <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> void define(StaticMethodRef14<R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> method, Function15<Body<R>, Var<A1>, Var<A2>, Var<A3>, Var<A4>, Var<A5>, Var<A6>, Var<A7>, Var<A8>, Var<A9>, Var<A10>, Var<A11>, Var<A12>, Var<A13>, Var<A14>, Terminated<R>> body) {
+        Awaiting slot = definable(method);
+        Body<R> root = Body.root("body of method " + method.name(), MemberBodies.declares(method));
+        Var<A1> p1 = lastParameter(method.param1(), root);
+        Var<A2> p2 = lastParameter(method.param2(), root);
+        Var<A3> p3 = lastParameter(method.param3(), root);
+        Var<A4> p4 = lastParameter(method.param4(), root);
+        Var<A5> p5 = lastParameter(method.param5(), root);
+        Var<A6> p6 = lastParameter(method.param6(), root);
+        Var<A7> p7 = lastParameter(method.param7(), root);
+        Var<A8> p8 = lastParameter(method.param8(), root);
+        Var<A9> p9 = lastParameter(method.param9(), root);
+        Var<A10> p10 = lastParameter(method.param10(), root);
+        Var<A11> p11 = lastParameter(method.param11(), root);
+        Var<A12> p12 = lastParameter(method.param12(), root);
+        Var<A13> p13 = lastParameter(method.param13(), root);
+        Var<A14> p14 = lastParameter(method.param14(), root);
+        defineIn(slot, root, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14), Start.IMPLICIT, (b) -> body.apply(b, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14));
+    }
+
+    /**
+     * Defines the declared static `void` helper method of 14 parameters of the constant's body.
+     *
+     * @param method the declared method
+     * @param body the body, given its block and the parameters
+     * @param p1 the first parameter type
+     * @param p2 the second parameter type
+     * @param p3 the third parameter type
+     * @param p4 the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param p14 the fourteenth parameter type
+     * @param <A1> the type parameter of the first parameter
+     * @param <A2> the type parameter of the second parameter
+     * @param <A3> the type parameter of the third parameter
+     * @param <A4> the type parameter of the fourth parameter
+     * @param <A5> the type parameter of the fifth parameter
+     * @param <A6> the type parameter of the sixth parameter
+     * @param <A7> the type parameter of the seventh parameter
+     * @param <A8> the type parameter of the eighth parameter
+     * @param <A9> the type parameter of the ninth parameter
+     * @param <A10> the type parameter of the tenth parameter
+     * @param <A11> the type parameter of the eleventh parameter
+     * @param <A12> the type parameter of the twelfth parameter
+     * @param <A13> the type parameter of the thirteenth parameter
+     * @param <A14> the type parameter of the fourteenth parameter
+     * @throws IllegalStateException as a definition of a method of a class does ([MemberBodies])
+     */
+    public final <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> void define(VoidStaticMethodRef14<A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> method, Function15<VoidBody, Var<A1>, Var<A2>, Var<A3>, Var<A4>, Var<A5>, Var<A6>, Var<A7>, Var<A8>, Var<A9>, Var<A10>, Var<A11>, Var<A12>, Var<A13>, Var<A14>, Terminated<Void>> body) {
+        Awaiting slot = definable(method);
+        VoidBody root = VoidBody.root("body of method " + method.name(), MemberBodies.declares(method));
+        Var<A1> p1 = lastParameter(method.param1(), root);
+        Var<A2> p2 = lastParameter(method.param2(), root);
+        Var<A3> p3 = lastParameter(method.param3(), root);
+        Var<A4> p4 = lastParameter(method.param4(), root);
+        Var<A5> p5 = lastParameter(method.param5(), root);
+        Var<A6> p6 = lastParameter(method.param6(), root);
+        Var<A7> p7 = lastParameter(method.param7(), root);
+        Var<A8> p8 = lastParameter(method.param8(), root);
+        Var<A9> p9 = lastParameter(method.param9(), root);
+        Var<A10> p10 = lastParameter(method.param10(), root);
+        Var<A11> p11 = lastParameter(method.param11(), root);
+        Var<A12> p12 = lastParameter(method.param12(), root);
+        Var<A13> p13 = lastParameter(method.param13(), root);
+        Var<A14> p14 = lastParameter(method.param14(), root);
+        defineIn(slot, root, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14), Start.IMPLICIT, (b) -> body.apply(b, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14));
+    }
+
+    /**
+     * Defines the declared helper method of 15 parameters of the constant's body.
+     *
+     * @param method the declared method
+     * @param body the body, given its block, `this` and the parameters
+     * @param p1 the first parameter type
+     * @param p2 the second parameter type
+     * @param p3 the third parameter type
+     * @param p4 the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param p14 the fourteenth parameter type
+     * @param p15 the fifteenth parameter type
+     * @param <A1> the type parameter of the first parameter
+     * @param <A2> the type parameter of the second parameter
+     * @param <A3> the type parameter of the third parameter
+     * @param <A4> the type parameter of the fourth parameter
+     * @param <A5> the type parameter of the fifth parameter
+     * @param <A6> the type parameter of the sixth parameter
+     * @param <A7> the type parameter of the seventh parameter
+     * @param <A8> the type parameter of the eighth parameter
+     * @param <A9> the type parameter of the ninth parameter
+     * @param <A10> the type parameter of the tenth parameter
+     * @param <A11> the type parameter of the eleventh parameter
+     * @param <A12> the type parameter of the twelfth parameter
+     * @param <A13> the type parameter of the thirteenth parameter
+     * @param <A14> the type parameter of the fourteenth parameter
+     * @param <A15> the type parameter of the fifteenth parameter
+     * @throws IllegalStateException as a definition of a method of a class does ([MemberBodies])
+     */
+    public final <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> void define(MethodRef15<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> method, InstanceBody15<Self, Body<R>, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> body) {
+        Awaiting slot = definable(method);
+        Body<R> root = Body.root("body of method " + method.name(), MemberBodies.declares(method));
+        This<Self> self = thisOf(root);
+        Var<A1> p1 = lastParameter(method.param1(), root);
+        Var<A2> p2 = lastParameter(method.param2(), root);
+        Var<A3> p3 = lastParameter(method.param3(), root);
+        Var<A4> p4 = lastParameter(method.param4(), root);
+        Var<A5> p5 = lastParameter(method.param5(), root);
+        Var<A6> p6 = lastParameter(method.param6(), root);
+        Var<A7> p7 = lastParameter(method.param7(), root);
+        Var<A8> p8 = lastParameter(method.param8(), root);
+        Var<A9> p9 = lastParameter(method.param9(), root);
+        Var<A10> p10 = lastParameter(method.param10(), root);
+        Var<A11> p11 = lastParameter(method.param11(), root);
+        Var<A12> p12 = lastParameter(method.param12(), root);
+        Var<A13> p13 = lastParameter(method.param13(), root);
+        Var<A14> p14 = lastParameter(method.param14(), root);
+        Var<A15> p15 = lastParameter(method.param15(), root);
+        defineIn(slot, root, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15), Start.IMPLICIT, (b) -> body.build(b, self, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15));
+    }
+
+    /**
+     * Defines the declared `void` helper method of 15 parameters of the constant's body.
+     *
+     * @param method the declared method
+     * @param body the body, given its block, `this` and the parameters
+     * @param p1 the first parameter type
+     * @param p2 the second parameter type
+     * @param p3 the third parameter type
+     * @param p4 the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param p14 the fourteenth parameter type
+     * @param p15 the fifteenth parameter type
+     * @param <A1> the type parameter of the first parameter
+     * @param <A2> the type parameter of the second parameter
+     * @param <A3> the type parameter of the third parameter
+     * @param <A4> the type parameter of the fourth parameter
+     * @param <A5> the type parameter of the fifth parameter
+     * @param <A6> the type parameter of the sixth parameter
+     * @param <A7> the type parameter of the seventh parameter
+     * @param <A8> the type parameter of the eighth parameter
+     * @param <A9> the type parameter of the ninth parameter
+     * @param <A10> the type parameter of the tenth parameter
+     * @param <A11> the type parameter of the eleventh parameter
+     * @param <A12> the type parameter of the twelfth parameter
+     * @param <A13> the type parameter of the thirteenth parameter
+     * @param <A14> the type parameter of the fourteenth parameter
+     * @param <A15> the type parameter of the fifteenth parameter
+     * @throws IllegalStateException as a definition of a method of a class does ([MemberBodies])
+     */
+    public final <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> void define(VoidMethodRef15<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> method, InstanceBody15<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> body) {
+        Awaiting slot = definable(method);
+        VoidBody root = VoidBody.root("body of method " + method.name(), MemberBodies.declares(method));
+        This<Self> self = thisOf(root);
+        Var<A1> p1 = lastParameter(method.param1(), root);
+        Var<A2> p2 = lastParameter(method.param2(), root);
+        Var<A3> p3 = lastParameter(method.param3(), root);
+        Var<A4> p4 = lastParameter(method.param4(), root);
+        Var<A5> p5 = lastParameter(method.param5(), root);
+        Var<A6> p6 = lastParameter(method.param6(), root);
+        Var<A7> p7 = lastParameter(method.param7(), root);
+        Var<A8> p8 = lastParameter(method.param8(), root);
+        Var<A9> p9 = lastParameter(method.param9(), root);
+        Var<A10> p10 = lastParameter(method.param10(), root);
+        Var<A11> p11 = lastParameter(method.param11(), root);
+        Var<A12> p12 = lastParameter(method.param12(), root);
+        Var<A13> p13 = lastParameter(method.param13(), root);
+        Var<A14> p14 = lastParameter(method.param14(), root);
+        Var<A15> p15 = lastParameter(method.param15(), root);
+        defineIn(slot, root, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15), Start.IMPLICIT, (b) -> body.build(b, self, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15));
+    }
+
+    /**
+     * Defines the declared static helper method of 15 parameters of the constant's body.
+     *
+     * @param method the declared method
+     * @param body the body, given its block and the parameters
+     * @param p1 the first parameter type
+     * @param p2 the second parameter type
+     * @param p3 the third parameter type
+     * @param p4 the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param p14 the fourteenth parameter type
+     * @param p15 the fifteenth parameter type
+     * @param <A1> the type parameter of the first parameter
+     * @param <A2> the type parameter of the second parameter
+     * @param <A3> the type parameter of the third parameter
+     * @param <A4> the type parameter of the fourth parameter
+     * @param <A5> the type parameter of the fifth parameter
+     * @param <A6> the type parameter of the sixth parameter
+     * @param <A7> the type parameter of the seventh parameter
+     * @param <A8> the type parameter of the eighth parameter
+     * @param <A9> the type parameter of the ninth parameter
+     * @param <A10> the type parameter of the tenth parameter
+     * @param <A11> the type parameter of the eleventh parameter
+     * @param <A12> the type parameter of the twelfth parameter
+     * @param <A13> the type parameter of the thirteenth parameter
+     * @param <A14> the type parameter of the fourteenth parameter
+     * @param <A15> the type parameter of the fifteenth parameter
+     * @throws IllegalStateException as a definition of a method of a class does ([MemberBodies])
+     */
+    public final <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> void define(StaticMethodRef15<R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> method, Function16<Body<R>, Var<A1>, Var<A2>, Var<A3>, Var<A4>, Var<A5>, Var<A6>, Var<A7>, Var<A8>, Var<A9>, Var<A10>, Var<A11>, Var<A12>, Var<A13>, Var<A14>, Var<A15>, Terminated<R>> body) {
+        Awaiting slot = definable(method);
+        Body<R> root = Body.root("body of method " + method.name(), MemberBodies.declares(method));
+        Var<A1> p1 = lastParameter(method.param1(), root);
+        Var<A2> p2 = lastParameter(method.param2(), root);
+        Var<A3> p3 = lastParameter(method.param3(), root);
+        Var<A4> p4 = lastParameter(method.param4(), root);
+        Var<A5> p5 = lastParameter(method.param5(), root);
+        Var<A6> p6 = lastParameter(method.param6(), root);
+        Var<A7> p7 = lastParameter(method.param7(), root);
+        Var<A8> p8 = lastParameter(method.param8(), root);
+        Var<A9> p9 = lastParameter(method.param9(), root);
+        Var<A10> p10 = lastParameter(method.param10(), root);
+        Var<A11> p11 = lastParameter(method.param11(), root);
+        Var<A12> p12 = lastParameter(method.param12(), root);
+        Var<A13> p13 = lastParameter(method.param13(), root);
+        Var<A14> p14 = lastParameter(method.param14(), root);
+        Var<A15> p15 = lastParameter(method.param15(), root);
+        defineIn(slot, root, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15), Start.IMPLICIT, (b) -> body.apply(b, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15));
+    }
+
+    /**
+     * Defines the declared static `void` helper method of 15 parameters of the constant's body.
+     *
+     * @param method the declared method
+     * @param body the body, given its block and the parameters
+     * @param p1 the first parameter type
+     * @param p2 the second parameter type
+     * @param p3 the third parameter type
+     * @param p4 the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param p14 the fourteenth parameter type
+     * @param p15 the fifteenth parameter type
+     * @param <A1> the type parameter of the first parameter
+     * @param <A2> the type parameter of the second parameter
+     * @param <A3> the type parameter of the third parameter
+     * @param <A4> the type parameter of the fourth parameter
+     * @param <A5> the type parameter of the fifth parameter
+     * @param <A6> the type parameter of the sixth parameter
+     * @param <A7> the type parameter of the seventh parameter
+     * @param <A8> the type parameter of the eighth parameter
+     * @param <A9> the type parameter of the ninth parameter
+     * @param <A10> the type parameter of the tenth parameter
+     * @param <A11> the type parameter of the eleventh parameter
+     * @param <A12> the type parameter of the twelfth parameter
+     * @param <A13> the type parameter of the thirteenth parameter
+     * @param <A14> the type parameter of the fourteenth parameter
+     * @param <A15> the type parameter of the fifteenth parameter
+     * @throws IllegalStateException as a definition of a method of a class does ([MemberBodies])
+     */
+    public final <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> void define(VoidStaticMethodRef15<A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> method, Function16<VoidBody, Var<A1>, Var<A2>, Var<A3>, Var<A4>, Var<A5>, Var<A6>, Var<A7>, Var<A8>, Var<A9>, Var<A10>, Var<A11>, Var<A12>, Var<A13>, Var<A14>, Var<A15>, Terminated<Void>> body) {
+        Awaiting slot = definable(method);
+        VoidBody root = VoidBody.root("body of method " + method.name(), MemberBodies.declares(method));
+        Var<A1> p1 = lastParameter(method.param1(), root);
+        Var<A2> p2 = lastParameter(method.param2(), root);
+        Var<A3> p3 = lastParameter(method.param3(), root);
+        Var<A4> p4 = lastParameter(method.param4(), root);
+        Var<A5> p5 = lastParameter(method.param5(), root);
+        Var<A6> p6 = lastParameter(method.param6(), root);
+        Var<A7> p7 = lastParameter(method.param7(), root);
+        Var<A8> p8 = lastParameter(method.param8(), root);
+        Var<A9> p9 = lastParameter(method.param9(), root);
+        Var<A10> p10 = lastParameter(method.param10(), root);
+        Var<A11> p11 = lastParameter(method.param11(), root);
+        Var<A12> p12 = lastParameter(method.param12(), root);
+        Var<A13> p13 = lastParameter(method.param13(), root);
+        Var<A14> p14 = lastParameter(method.param14(), root);
+        Var<A15> p15 = lastParameter(method.param15(), root);
+        defineIn(slot, root, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15), Start.IMPLICIT, (b) -> body.apply(b, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15));
+    }
+
+    /**
+     * Defines the declared helper method of 16 parameters of the constant's body.
+     *
+     * @param method the declared method
+     * @param body the body, given its block, `this` and the parameters
+     * @param p1 the first parameter type
+     * @param p2 the second parameter type
+     * @param p3 the third parameter type
+     * @param p4 the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param p14 the fourteenth parameter type
+     * @param p15 the fifteenth parameter type
+     * @param p16 the sixteenth parameter type
+     * @param <A1> the type parameter of the first parameter
+     * @param <A2> the type parameter of the second parameter
+     * @param <A3> the type parameter of the third parameter
+     * @param <A4> the type parameter of the fourth parameter
+     * @param <A5> the type parameter of the fifth parameter
+     * @param <A6> the type parameter of the sixth parameter
+     * @param <A7> the type parameter of the seventh parameter
+     * @param <A8> the type parameter of the eighth parameter
+     * @param <A9> the type parameter of the ninth parameter
+     * @param <A10> the type parameter of the tenth parameter
+     * @param <A11> the type parameter of the eleventh parameter
+     * @param <A12> the type parameter of the twelfth parameter
+     * @param <A13> the type parameter of the thirteenth parameter
+     * @param <A14> the type parameter of the fourteenth parameter
+     * @param <A15> the type parameter of the fifteenth parameter
+     * @param <A16> the type parameter of the sixteenth parameter
+     * @throws IllegalStateException as a definition of a method of a class does ([MemberBodies])
+     */
+    public final <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> void define(MethodRef16<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> method, InstanceBody16<Self, Body<R>, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> body) {
+        Awaiting slot = definable(method);
+        Body<R> root = Body.root("body of method " + method.name(), MemberBodies.declares(method));
+        This<Self> self = thisOf(root);
+        Var<A1> p1 = lastParameter(method.param1(), root);
+        Var<A2> p2 = lastParameter(method.param2(), root);
+        Var<A3> p3 = lastParameter(method.param3(), root);
+        Var<A4> p4 = lastParameter(method.param4(), root);
+        Var<A5> p5 = lastParameter(method.param5(), root);
+        Var<A6> p6 = lastParameter(method.param6(), root);
+        Var<A7> p7 = lastParameter(method.param7(), root);
+        Var<A8> p8 = lastParameter(method.param8(), root);
+        Var<A9> p9 = lastParameter(method.param9(), root);
+        Var<A10> p10 = lastParameter(method.param10(), root);
+        Var<A11> p11 = lastParameter(method.param11(), root);
+        Var<A12> p12 = lastParameter(method.param12(), root);
+        Var<A13> p13 = lastParameter(method.param13(), root);
+        Var<A14> p14 = lastParameter(method.param14(), root);
+        Var<A15> p15 = lastParameter(method.param15(), root);
+        Var<A16> p16 = lastParameter(method.param16(), root);
+        defineIn(slot, root, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16), Start.IMPLICIT, (b) -> body.build(b, self, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16));
+    }
+
+    /**
+     * Defines the declared `void` helper method of 16 parameters of the constant's body.
+     *
+     * @param method the declared method
+     * @param body the body, given its block, `this` and the parameters
+     * @param p1 the first parameter type
+     * @param p2 the second parameter type
+     * @param p3 the third parameter type
+     * @param p4 the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param p14 the fourteenth parameter type
+     * @param p15 the fifteenth parameter type
+     * @param p16 the sixteenth parameter type
+     * @param <A1> the type parameter of the first parameter
+     * @param <A2> the type parameter of the second parameter
+     * @param <A3> the type parameter of the third parameter
+     * @param <A4> the type parameter of the fourth parameter
+     * @param <A5> the type parameter of the fifth parameter
+     * @param <A6> the type parameter of the sixth parameter
+     * @param <A7> the type parameter of the seventh parameter
+     * @param <A8> the type parameter of the eighth parameter
+     * @param <A9> the type parameter of the ninth parameter
+     * @param <A10> the type parameter of the tenth parameter
+     * @param <A11> the type parameter of the eleventh parameter
+     * @param <A12> the type parameter of the twelfth parameter
+     * @param <A13> the type parameter of the thirteenth parameter
+     * @param <A14> the type parameter of the fourteenth parameter
+     * @param <A15> the type parameter of the fifteenth parameter
+     * @param <A16> the type parameter of the sixteenth parameter
+     * @throws IllegalStateException as a definition of a method of a class does ([MemberBodies])
+     */
+    public final <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> void define(VoidMethodRef16<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> method, InstanceBody16<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> body) {
+        Awaiting slot = definable(method);
+        VoidBody root = VoidBody.root("body of method " + method.name(), MemberBodies.declares(method));
+        This<Self> self = thisOf(root);
+        Var<A1> p1 = lastParameter(method.param1(), root);
+        Var<A2> p2 = lastParameter(method.param2(), root);
+        Var<A3> p3 = lastParameter(method.param3(), root);
+        Var<A4> p4 = lastParameter(method.param4(), root);
+        Var<A5> p5 = lastParameter(method.param5(), root);
+        Var<A6> p6 = lastParameter(method.param6(), root);
+        Var<A7> p7 = lastParameter(method.param7(), root);
+        Var<A8> p8 = lastParameter(method.param8(), root);
+        Var<A9> p9 = lastParameter(method.param9(), root);
+        Var<A10> p10 = lastParameter(method.param10(), root);
+        Var<A11> p11 = lastParameter(method.param11(), root);
+        Var<A12> p12 = lastParameter(method.param12(), root);
+        Var<A13> p13 = lastParameter(method.param13(), root);
+        Var<A14> p14 = lastParameter(method.param14(), root);
+        Var<A15> p15 = lastParameter(method.param15(), root);
+        Var<A16> p16 = lastParameter(method.param16(), root);
+        defineIn(slot, root, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16), Start.IMPLICIT, (b) -> body.build(b, self, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16));
+    }
+
+    /**
+     * Defines the declared static helper method of 16 parameters of the constant's body.
+     *
+     * @param method the declared method
+     * @param body the body, given its block and the parameters
+     * @param p1 the first parameter type
+     * @param p2 the second parameter type
+     * @param p3 the third parameter type
+     * @param p4 the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param p14 the fourteenth parameter type
+     * @param p15 the fifteenth parameter type
+     * @param p16 the sixteenth parameter type
+     * @param <A1> the type parameter of the first parameter
+     * @param <A2> the type parameter of the second parameter
+     * @param <A3> the type parameter of the third parameter
+     * @param <A4> the type parameter of the fourth parameter
+     * @param <A5> the type parameter of the fifth parameter
+     * @param <A6> the type parameter of the sixth parameter
+     * @param <A7> the type parameter of the seventh parameter
+     * @param <A8> the type parameter of the eighth parameter
+     * @param <A9> the type parameter of the ninth parameter
+     * @param <A10> the type parameter of the tenth parameter
+     * @param <A11> the type parameter of the eleventh parameter
+     * @param <A12> the type parameter of the twelfth parameter
+     * @param <A13> the type parameter of the thirteenth parameter
+     * @param <A14> the type parameter of the fourteenth parameter
+     * @param <A15> the type parameter of the fifteenth parameter
+     * @param <A16> the type parameter of the sixteenth parameter
+     * @throws IllegalStateException as a definition of a method of a class does ([MemberBodies])
+     */
+    public final <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> void define(StaticMethodRef16<R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> method, Function17<Body<R>, Var<A1>, Var<A2>, Var<A3>, Var<A4>, Var<A5>, Var<A6>, Var<A7>, Var<A8>, Var<A9>, Var<A10>, Var<A11>, Var<A12>, Var<A13>, Var<A14>, Var<A15>, Var<A16>, Terminated<R>> body) {
+        Awaiting slot = definable(method);
+        Body<R> root = Body.root("body of method " + method.name(), MemberBodies.declares(method));
+        Var<A1> p1 = lastParameter(method.param1(), root);
+        Var<A2> p2 = lastParameter(method.param2(), root);
+        Var<A3> p3 = lastParameter(method.param3(), root);
+        Var<A4> p4 = lastParameter(method.param4(), root);
+        Var<A5> p5 = lastParameter(method.param5(), root);
+        Var<A6> p6 = lastParameter(method.param6(), root);
+        Var<A7> p7 = lastParameter(method.param7(), root);
+        Var<A8> p8 = lastParameter(method.param8(), root);
+        Var<A9> p9 = lastParameter(method.param9(), root);
+        Var<A10> p10 = lastParameter(method.param10(), root);
+        Var<A11> p11 = lastParameter(method.param11(), root);
+        Var<A12> p12 = lastParameter(method.param12(), root);
+        Var<A13> p13 = lastParameter(method.param13(), root);
+        Var<A14> p14 = lastParameter(method.param14(), root);
+        Var<A15> p15 = lastParameter(method.param15(), root);
+        Var<A16> p16 = lastParameter(method.param16(), root);
+        defineIn(slot, root, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16), Start.IMPLICIT, (b) -> body.apply(b, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16));
+    }
+
+    /**
+     * Defines the declared static `void` helper method of 16 parameters of the constant's body.
+     *
+     * @param method the declared method
+     * @param body the body, given its block and the parameters
+     * @param p1 the first parameter type
+     * @param p2 the second parameter type
+     * @param p3 the third parameter type
+     * @param p4 the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param p14 the fourteenth parameter type
+     * @param p15 the fifteenth parameter type
+     * @param p16 the sixteenth parameter type
+     * @param <A1> the type parameter of the first parameter
+     * @param <A2> the type parameter of the second parameter
+     * @param <A3> the type parameter of the third parameter
+     * @param <A4> the type parameter of the fourth parameter
+     * @param <A5> the type parameter of the fifth parameter
+     * @param <A6> the type parameter of the sixth parameter
+     * @param <A7> the type parameter of the seventh parameter
+     * @param <A8> the type parameter of the eighth parameter
+     * @param <A9> the type parameter of the ninth parameter
+     * @param <A10> the type parameter of the tenth parameter
+     * @param <A11> the type parameter of the eleventh parameter
+     * @param <A12> the type parameter of the twelfth parameter
+     * @param <A13> the type parameter of the thirteenth parameter
+     * @param <A14> the type parameter of the fourteenth parameter
+     * @param <A15> the type parameter of the fifteenth parameter
+     * @param <A16> the type parameter of the sixteenth parameter
+     * @throws IllegalStateException as a definition of a method of a class does ([MemberBodies])
+     */
+    public final <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> void define(VoidStaticMethodRef16<A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> method, Function17<VoidBody, Var<A1>, Var<A2>, Var<A3>, Var<A4>, Var<A5>, Var<A6>, Var<A7>, Var<A8>, Var<A9>, Var<A10>, Var<A11>, Var<A12>, Var<A13>, Var<A14>, Var<A15>, Var<A16>, Terminated<Void>> body) {
+        Awaiting slot = definable(method);
+        VoidBody root = VoidBody.root("body of method " + method.name(), MemberBodies.declares(method));
+        Var<A1> p1 = lastParameter(method.param1(), root);
+        Var<A2> p2 = lastParameter(method.param2(), root);
+        Var<A3> p3 = lastParameter(method.param3(), root);
+        Var<A4> p4 = lastParameter(method.param4(), root);
+        Var<A5> p5 = lastParameter(method.param5(), root);
+        Var<A6> p6 = lastParameter(method.param6(), root);
+        Var<A7> p7 = lastParameter(method.param7(), root);
+        Var<A8> p8 = lastParameter(method.param8(), root);
+        Var<A9> p9 = lastParameter(method.param9(), root);
+        Var<A10> p10 = lastParameter(method.param10(), root);
+        Var<A11> p11 = lastParameter(method.param11(), root);
+        Var<A12> p12 = lastParameter(method.param12(), root);
+        Var<A13> p13 = lastParameter(method.param13(), root);
+        Var<A14> p14 = lastParameter(method.param14(), root);
+        Var<A15> p15 = lastParameter(method.param15(), root);
+        Var<A16> p16 = lastParameter(method.param16(), root);
+        defineIn(slot, root, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16), Start.IMPLICIT, (b) -> body.apply(b, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16));
     }
 }

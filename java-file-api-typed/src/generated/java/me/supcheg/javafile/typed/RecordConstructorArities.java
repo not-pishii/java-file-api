@@ -7,6 +7,10 @@ import me.supcheg.javafile.facts.CtorRef1;
 import me.supcheg.javafile.facts.CtorRef10;
 import me.supcheg.javafile.facts.CtorRef11;
 import me.supcheg.javafile.facts.CtorRef12;
+import me.supcheg.javafile.facts.CtorRef13;
+import me.supcheg.javafile.facts.CtorRef14;
+import me.supcheg.javafile.facts.CtorRef15;
+import me.supcheg.javafile.facts.CtorRef16;
 import me.supcheg.javafile.facts.CtorRef2;
 import me.supcheg.javafile.facts.CtorRef3;
 import me.supcheg.javafile.facts.CtorRef4;
@@ -931,5 +935,485 @@ abstract sealed class RecordConstructorArities<Self> extends StaticFieldDeclarat
      */
     public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> CtorRef12<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> declareConstructor(TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12) {
         return declareAdditional(UnsafeInvocables.ctor(finalSelf(), p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, MemberTraits.FINAL));
+    }
+
+    /**
+     * Declares the compact constructor of the record, to be defined by the bodies of the record.
+     *
+     * @param p1 the first parameter type
+     * @param <A1> the type of the first parameter
+     * @param p2 the second parameter type
+     * @param <A2> the type of the second parameter
+     * @param p3 the third parameter type
+     * @param <A3> the type of the third parameter
+     * @param p4 the fourth parameter type
+     * @param <A4> the type of the fourth parameter
+     * @param p5 the fifth parameter type
+     * @param <A5> the type of the fifth parameter
+     * @param p6 the sixth parameter type
+     * @param <A6> the type of the sixth parameter
+     * @param p7 the seventh parameter type
+     * @param <A7> the type of the seventh parameter
+     * @param p8 the eighth parameter type
+     * @param <A8> the type of the eighth parameter
+     * @param p9 the ninth parameter type
+     * @param <A9> the type of the ninth parameter
+     * @param p10 the tenth parameter type
+     * @param <A10> the type of the tenth parameter
+     * @param p11 the eleventh parameter type
+     * @param <A11> the type of the eleventh parameter
+     * @param p12 the twelfth parameter type
+     * @param <A12> the type of the twelfth parameter
+     * @param p13 the thirteenth parameter type
+     * @param <A13> the type of the thirteenth parameter
+     * @return the fact of the constructor
+     * @throws IllegalArgumentException if a canonical or compact constructor is declared already, or javac would reject the constructor
+     * @throws IllegalStateException if the declarations of the record have ended
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> CtorRef13<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> declareCompactConstructor(TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13) {
+        return declareCompact(UnsafeInvocables.ctor(finalSelf(), p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, MemberTraits.FINAL));
+    }
+
+    /**
+     * Declares the canonical constructor of the record, to be defined by the bodies of the record.
+     *
+     * @param p1 the first parameter type
+     * @param <A1> the type of the first parameter
+     * @param p2 the second parameter type
+     * @param <A2> the type of the second parameter
+     * @param p3 the third parameter type
+     * @param <A3> the type of the third parameter
+     * @param p4 the fourth parameter type
+     * @param <A4> the type of the fourth parameter
+     * @param p5 the fifth parameter type
+     * @param <A5> the type of the fifth parameter
+     * @param p6 the sixth parameter type
+     * @param <A6> the type of the sixth parameter
+     * @param p7 the seventh parameter type
+     * @param <A7> the type of the seventh parameter
+     * @param p8 the eighth parameter type
+     * @param <A8> the type of the eighth parameter
+     * @param p9 the ninth parameter type
+     * @param <A9> the type of the ninth parameter
+     * @param p10 the tenth parameter type
+     * @param <A10> the type of the tenth parameter
+     * @param p11 the eleventh parameter type
+     * @param <A11> the type of the eleventh parameter
+     * @param p12 the twelfth parameter type
+     * @param <A12> the type of the twelfth parameter
+     * @param p13 the thirteenth parameter type
+     * @param <A13> the type of the thirteenth parameter
+     * @return the fact of the constructor
+     * @throws IllegalArgumentException if a canonical or compact constructor is declared already, or javac would reject the constructor
+     * @throws IllegalStateException if the declarations of the record have ended
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> CtorRef13<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> declareCanonicalConstructor(TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13) {
+        return declareCanonical(UnsafeInvocables.ctor(finalSelf(), p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, MemberTraits.FINAL));
+    }
+
+    /**
+     * Declares an additional constructor of the record, to be defined by the bodies of the record.
+     *
+     * @param p1 the first parameter type
+     * @param <A1> the type of the first parameter
+     * @param p2 the second parameter type
+     * @param <A2> the type of the second parameter
+     * @param p3 the third parameter type
+     * @param <A3> the type of the third parameter
+     * @param p4 the fourth parameter type
+     * @param <A4> the type of the fourth parameter
+     * @param p5 the fifth parameter type
+     * @param <A5> the type of the fifth parameter
+     * @param p6 the sixth parameter type
+     * @param <A6> the type of the sixth parameter
+     * @param p7 the seventh parameter type
+     * @param <A7> the type of the seventh parameter
+     * @param p8 the eighth parameter type
+     * @param <A8> the type of the eighth parameter
+     * @param p9 the ninth parameter type
+     * @param <A9> the type of the ninth parameter
+     * @param p10 the tenth parameter type
+     * @param <A10> the type of the tenth parameter
+     * @param p11 the eleventh parameter type
+     * @param <A11> the type of the eleventh parameter
+     * @param p12 the twelfth parameter type
+     * @param <A12> the type of the twelfth parameter
+     * @param p13 the thirteenth parameter type
+     * @param <A13> the type of the thirteenth parameter
+     * @return the fact of the constructor
+     * @throws IllegalArgumentException if a canonical or compact constructor is declared already, or javac would reject the constructor
+     * @throws IllegalStateException if the declarations of the record have ended
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> CtorRef13<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> declareConstructor(TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13) {
+        return declareAdditional(UnsafeInvocables.ctor(finalSelf(), p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, MemberTraits.FINAL));
+    }
+
+    /**
+     * Declares the compact constructor of the record, to be defined by the bodies of the record.
+     *
+     * @param p1 the first parameter type
+     * @param <A1> the type of the first parameter
+     * @param p2 the second parameter type
+     * @param <A2> the type of the second parameter
+     * @param p3 the third parameter type
+     * @param <A3> the type of the third parameter
+     * @param p4 the fourth parameter type
+     * @param <A4> the type of the fourth parameter
+     * @param p5 the fifth parameter type
+     * @param <A5> the type of the fifth parameter
+     * @param p6 the sixth parameter type
+     * @param <A6> the type of the sixth parameter
+     * @param p7 the seventh parameter type
+     * @param <A7> the type of the seventh parameter
+     * @param p8 the eighth parameter type
+     * @param <A8> the type of the eighth parameter
+     * @param p9 the ninth parameter type
+     * @param <A9> the type of the ninth parameter
+     * @param p10 the tenth parameter type
+     * @param <A10> the type of the tenth parameter
+     * @param p11 the eleventh parameter type
+     * @param <A11> the type of the eleventh parameter
+     * @param p12 the twelfth parameter type
+     * @param <A12> the type of the twelfth parameter
+     * @param p13 the thirteenth parameter type
+     * @param <A13> the type of the thirteenth parameter
+     * @param p14 the fourteenth parameter type
+     * @param <A14> the type of the fourteenth parameter
+     * @return the fact of the constructor
+     * @throws IllegalArgumentException if a canonical or compact constructor is declared already, or javac would reject the constructor
+     * @throws IllegalStateException if the declarations of the record have ended
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> CtorRef14<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> declareCompactConstructor(TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, TypeToken<A14> p14) {
+        return declareCompact(UnsafeInvocables.ctor(finalSelf(), p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, MemberTraits.FINAL));
+    }
+
+    /**
+     * Declares the canonical constructor of the record, to be defined by the bodies of the record.
+     *
+     * @param p1 the first parameter type
+     * @param <A1> the type of the first parameter
+     * @param p2 the second parameter type
+     * @param <A2> the type of the second parameter
+     * @param p3 the third parameter type
+     * @param <A3> the type of the third parameter
+     * @param p4 the fourth parameter type
+     * @param <A4> the type of the fourth parameter
+     * @param p5 the fifth parameter type
+     * @param <A5> the type of the fifth parameter
+     * @param p6 the sixth parameter type
+     * @param <A6> the type of the sixth parameter
+     * @param p7 the seventh parameter type
+     * @param <A7> the type of the seventh parameter
+     * @param p8 the eighth parameter type
+     * @param <A8> the type of the eighth parameter
+     * @param p9 the ninth parameter type
+     * @param <A9> the type of the ninth parameter
+     * @param p10 the tenth parameter type
+     * @param <A10> the type of the tenth parameter
+     * @param p11 the eleventh parameter type
+     * @param <A11> the type of the eleventh parameter
+     * @param p12 the twelfth parameter type
+     * @param <A12> the type of the twelfth parameter
+     * @param p13 the thirteenth parameter type
+     * @param <A13> the type of the thirteenth parameter
+     * @param p14 the fourteenth parameter type
+     * @param <A14> the type of the fourteenth parameter
+     * @return the fact of the constructor
+     * @throws IllegalArgumentException if a canonical or compact constructor is declared already, or javac would reject the constructor
+     * @throws IllegalStateException if the declarations of the record have ended
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> CtorRef14<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> declareCanonicalConstructor(TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, TypeToken<A14> p14) {
+        return declareCanonical(UnsafeInvocables.ctor(finalSelf(), p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, MemberTraits.FINAL));
+    }
+
+    /**
+     * Declares an additional constructor of the record, to be defined by the bodies of the record.
+     *
+     * @param p1 the first parameter type
+     * @param <A1> the type of the first parameter
+     * @param p2 the second parameter type
+     * @param <A2> the type of the second parameter
+     * @param p3 the third parameter type
+     * @param <A3> the type of the third parameter
+     * @param p4 the fourth parameter type
+     * @param <A4> the type of the fourth parameter
+     * @param p5 the fifth parameter type
+     * @param <A5> the type of the fifth parameter
+     * @param p6 the sixth parameter type
+     * @param <A6> the type of the sixth parameter
+     * @param p7 the seventh parameter type
+     * @param <A7> the type of the seventh parameter
+     * @param p8 the eighth parameter type
+     * @param <A8> the type of the eighth parameter
+     * @param p9 the ninth parameter type
+     * @param <A9> the type of the ninth parameter
+     * @param p10 the tenth parameter type
+     * @param <A10> the type of the tenth parameter
+     * @param p11 the eleventh parameter type
+     * @param <A11> the type of the eleventh parameter
+     * @param p12 the twelfth parameter type
+     * @param <A12> the type of the twelfth parameter
+     * @param p13 the thirteenth parameter type
+     * @param <A13> the type of the thirteenth parameter
+     * @param p14 the fourteenth parameter type
+     * @param <A14> the type of the fourteenth parameter
+     * @return the fact of the constructor
+     * @throws IllegalArgumentException if a canonical or compact constructor is declared already, or javac would reject the constructor
+     * @throws IllegalStateException if the declarations of the record have ended
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> CtorRef14<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> declareConstructor(TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, TypeToken<A14> p14) {
+        return declareAdditional(UnsafeInvocables.ctor(finalSelf(), p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, MemberTraits.FINAL));
+    }
+
+    /**
+     * Declares the compact constructor of the record, to be defined by the bodies of the record.
+     *
+     * @param p1 the first parameter type
+     * @param <A1> the type of the first parameter
+     * @param p2 the second parameter type
+     * @param <A2> the type of the second parameter
+     * @param p3 the third parameter type
+     * @param <A3> the type of the third parameter
+     * @param p4 the fourth parameter type
+     * @param <A4> the type of the fourth parameter
+     * @param p5 the fifth parameter type
+     * @param <A5> the type of the fifth parameter
+     * @param p6 the sixth parameter type
+     * @param <A6> the type of the sixth parameter
+     * @param p7 the seventh parameter type
+     * @param <A7> the type of the seventh parameter
+     * @param p8 the eighth parameter type
+     * @param <A8> the type of the eighth parameter
+     * @param p9 the ninth parameter type
+     * @param <A9> the type of the ninth parameter
+     * @param p10 the tenth parameter type
+     * @param <A10> the type of the tenth parameter
+     * @param p11 the eleventh parameter type
+     * @param <A11> the type of the eleventh parameter
+     * @param p12 the twelfth parameter type
+     * @param <A12> the type of the twelfth parameter
+     * @param p13 the thirteenth parameter type
+     * @param <A13> the type of the thirteenth parameter
+     * @param p14 the fourteenth parameter type
+     * @param <A14> the type of the fourteenth parameter
+     * @param p15 the fifteenth parameter type
+     * @param <A15> the type of the fifteenth parameter
+     * @return the fact of the constructor
+     * @throws IllegalArgumentException if a canonical or compact constructor is declared already, or javac would reject the constructor
+     * @throws IllegalStateException if the declarations of the record have ended
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> CtorRef15<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> declareCompactConstructor(TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, TypeToken<A14> p14, TypeToken<A15> p15) {
+        return declareCompact(UnsafeInvocables.ctor(finalSelf(), p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, MemberTraits.FINAL));
+    }
+
+    /**
+     * Declares the canonical constructor of the record, to be defined by the bodies of the record.
+     *
+     * @param p1 the first parameter type
+     * @param <A1> the type of the first parameter
+     * @param p2 the second parameter type
+     * @param <A2> the type of the second parameter
+     * @param p3 the third parameter type
+     * @param <A3> the type of the third parameter
+     * @param p4 the fourth parameter type
+     * @param <A4> the type of the fourth parameter
+     * @param p5 the fifth parameter type
+     * @param <A5> the type of the fifth parameter
+     * @param p6 the sixth parameter type
+     * @param <A6> the type of the sixth parameter
+     * @param p7 the seventh parameter type
+     * @param <A7> the type of the seventh parameter
+     * @param p8 the eighth parameter type
+     * @param <A8> the type of the eighth parameter
+     * @param p9 the ninth parameter type
+     * @param <A9> the type of the ninth parameter
+     * @param p10 the tenth parameter type
+     * @param <A10> the type of the tenth parameter
+     * @param p11 the eleventh parameter type
+     * @param <A11> the type of the eleventh parameter
+     * @param p12 the twelfth parameter type
+     * @param <A12> the type of the twelfth parameter
+     * @param p13 the thirteenth parameter type
+     * @param <A13> the type of the thirteenth parameter
+     * @param p14 the fourteenth parameter type
+     * @param <A14> the type of the fourteenth parameter
+     * @param p15 the fifteenth parameter type
+     * @param <A15> the type of the fifteenth parameter
+     * @return the fact of the constructor
+     * @throws IllegalArgumentException if a canonical or compact constructor is declared already, or javac would reject the constructor
+     * @throws IllegalStateException if the declarations of the record have ended
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> CtorRef15<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> declareCanonicalConstructor(TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, TypeToken<A14> p14, TypeToken<A15> p15) {
+        return declareCanonical(UnsafeInvocables.ctor(finalSelf(), p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, MemberTraits.FINAL));
+    }
+
+    /**
+     * Declares an additional constructor of the record, to be defined by the bodies of the record.
+     *
+     * @param p1 the first parameter type
+     * @param <A1> the type of the first parameter
+     * @param p2 the second parameter type
+     * @param <A2> the type of the second parameter
+     * @param p3 the third parameter type
+     * @param <A3> the type of the third parameter
+     * @param p4 the fourth parameter type
+     * @param <A4> the type of the fourth parameter
+     * @param p5 the fifth parameter type
+     * @param <A5> the type of the fifth parameter
+     * @param p6 the sixth parameter type
+     * @param <A6> the type of the sixth parameter
+     * @param p7 the seventh parameter type
+     * @param <A7> the type of the seventh parameter
+     * @param p8 the eighth parameter type
+     * @param <A8> the type of the eighth parameter
+     * @param p9 the ninth parameter type
+     * @param <A9> the type of the ninth parameter
+     * @param p10 the tenth parameter type
+     * @param <A10> the type of the tenth parameter
+     * @param p11 the eleventh parameter type
+     * @param <A11> the type of the eleventh parameter
+     * @param p12 the twelfth parameter type
+     * @param <A12> the type of the twelfth parameter
+     * @param p13 the thirteenth parameter type
+     * @param <A13> the type of the thirteenth parameter
+     * @param p14 the fourteenth parameter type
+     * @param <A14> the type of the fourteenth parameter
+     * @param p15 the fifteenth parameter type
+     * @param <A15> the type of the fifteenth parameter
+     * @return the fact of the constructor
+     * @throws IllegalArgumentException if a canonical or compact constructor is declared already, or javac would reject the constructor
+     * @throws IllegalStateException if the declarations of the record have ended
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> CtorRef15<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> declareConstructor(TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, TypeToken<A14> p14, TypeToken<A15> p15) {
+        return declareAdditional(UnsafeInvocables.ctor(finalSelf(), p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, MemberTraits.FINAL));
+    }
+
+    /**
+     * Declares the compact constructor of the record, to be defined by the bodies of the record.
+     *
+     * @param p1 the first parameter type
+     * @param <A1> the type of the first parameter
+     * @param p2 the second parameter type
+     * @param <A2> the type of the second parameter
+     * @param p3 the third parameter type
+     * @param <A3> the type of the third parameter
+     * @param p4 the fourth parameter type
+     * @param <A4> the type of the fourth parameter
+     * @param p5 the fifth parameter type
+     * @param <A5> the type of the fifth parameter
+     * @param p6 the sixth parameter type
+     * @param <A6> the type of the sixth parameter
+     * @param p7 the seventh parameter type
+     * @param <A7> the type of the seventh parameter
+     * @param p8 the eighth parameter type
+     * @param <A8> the type of the eighth parameter
+     * @param p9 the ninth parameter type
+     * @param <A9> the type of the ninth parameter
+     * @param p10 the tenth parameter type
+     * @param <A10> the type of the tenth parameter
+     * @param p11 the eleventh parameter type
+     * @param <A11> the type of the eleventh parameter
+     * @param p12 the twelfth parameter type
+     * @param <A12> the type of the twelfth parameter
+     * @param p13 the thirteenth parameter type
+     * @param <A13> the type of the thirteenth parameter
+     * @param p14 the fourteenth parameter type
+     * @param <A14> the type of the fourteenth parameter
+     * @param p15 the fifteenth parameter type
+     * @param <A15> the type of the fifteenth parameter
+     * @param p16 the sixteenth parameter type
+     * @param <A16> the type of the sixteenth parameter
+     * @return the fact of the constructor
+     * @throws IllegalArgumentException if a canonical or compact constructor is declared already, or javac would reject the constructor
+     * @throws IllegalStateException if the declarations of the record have ended
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> CtorRef16<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> declareCompactConstructor(TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, TypeToken<A14> p14, TypeToken<A15> p15, TypeToken<A16> p16) {
+        return declareCompact(UnsafeInvocables.ctor(finalSelf(), p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, MemberTraits.FINAL));
+    }
+
+    /**
+     * Declares the canonical constructor of the record, to be defined by the bodies of the record.
+     *
+     * @param p1 the first parameter type
+     * @param <A1> the type of the first parameter
+     * @param p2 the second parameter type
+     * @param <A2> the type of the second parameter
+     * @param p3 the third parameter type
+     * @param <A3> the type of the third parameter
+     * @param p4 the fourth parameter type
+     * @param <A4> the type of the fourth parameter
+     * @param p5 the fifth parameter type
+     * @param <A5> the type of the fifth parameter
+     * @param p6 the sixth parameter type
+     * @param <A6> the type of the sixth parameter
+     * @param p7 the seventh parameter type
+     * @param <A7> the type of the seventh parameter
+     * @param p8 the eighth parameter type
+     * @param <A8> the type of the eighth parameter
+     * @param p9 the ninth parameter type
+     * @param <A9> the type of the ninth parameter
+     * @param p10 the tenth parameter type
+     * @param <A10> the type of the tenth parameter
+     * @param p11 the eleventh parameter type
+     * @param <A11> the type of the eleventh parameter
+     * @param p12 the twelfth parameter type
+     * @param <A12> the type of the twelfth parameter
+     * @param p13 the thirteenth parameter type
+     * @param <A13> the type of the thirteenth parameter
+     * @param p14 the fourteenth parameter type
+     * @param <A14> the type of the fourteenth parameter
+     * @param p15 the fifteenth parameter type
+     * @param <A15> the type of the fifteenth parameter
+     * @param p16 the sixteenth parameter type
+     * @param <A16> the type of the sixteenth parameter
+     * @return the fact of the constructor
+     * @throws IllegalArgumentException if a canonical or compact constructor is declared already, or javac would reject the constructor
+     * @throws IllegalStateException if the declarations of the record have ended
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> CtorRef16<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> declareCanonicalConstructor(TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, TypeToken<A14> p14, TypeToken<A15> p15, TypeToken<A16> p16) {
+        return declareCanonical(UnsafeInvocables.ctor(finalSelf(), p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, MemberTraits.FINAL));
+    }
+
+    /**
+     * Declares an additional constructor of the record, to be defined by the bodies of the record.
+     *
+     * @param p1 the first parameter type
+     * @param <A1> the type of the first parameter
+     * @param p2 the second parameter type
+     * @param <A2> the type of the second parameter
+     * @param p3 the third parameter type
+     * @param <A3> the type of the third parameter
+     * @param p4 the fourth parameter type
+     * @param <A4> the type of the fourth parameter
+     * @param p5 the fifth parameter type
+     * @param <A5> the type of the fifth parameter
+     * @param p6 the sixth parameter type
+     * @param <A6> the type of the sixth parameter
+     * @param p7 the seventh parameter type
+     * @param <A7> the type of the seventh parameter
+     * @param p8 the eighth parameter type
+     * @param <A8> the type of the eighth parameter
+     * @param p9 the ninth parameter type
+     * @param <A9> the type of the ninth parameter
+     * @param p10 the tenth parameter type
+     * @param <A10> the type of the tenth parameter
+     * @param p11 the eleventh parameter type
+     * @param <A11> the type of the eleventh parameter
+     * @param p12 the twelfth parameter type
+     * @param <A12> the type of the twelfth parameter
+     * @param p13 the thirteenth parameter type
+     * @param <A13> the type of the thirteenth parameter
+     * @param p14 the fourteenth parameter type
+     * @param <A14> the type of the fourteenth parameter
+     * @param p15 the fifteenth parameter type
+     * @param <A15> the type of the fifteenth parameter
+     * @param p16 the sixteenth parameter type
+     * @param <A16> the type of the sixteenth parameter
+     * @return the fact of the constructor
+     * @throws IllegalArgumentException if a canonical or compact constructor is declared already, or javac would reject the constructor
+     * @throws IllegalStateException if the declarations of the record have ended
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> CtorRef16<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> declareConstructor(TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, TypeToken<A14> p14, TypeToken<A15> p15, TypeToken<A16> p16) {
+        return declareAdditional(UnsafeInvocables.ctor(finalSelf(), p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, MemberTraits.FINAL));
     }
 }

@@ -12,7 +12,7 @@ public sealed interface MemberModel permits MethodModel, CtorModel, FieldModel {
 
     /// The largest number of parameters of a method or constructor that has
     /// a fact: the arity families of `facts` end at 12.
-    int MAX_ARITY = 12;
+    int MAX_ARITY = me.supcheg.javafile.facts.FactsArity.MAX_ARITY;
 
     /// The access of the member: `public`, or `protected` in a class that
     /// can be extended.

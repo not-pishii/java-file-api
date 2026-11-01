@@ -1,6 +1,7 @@
 package me.supcheg.javafile.typed;
 
 import me.supcheg.javafile.JavaFile;
+import me.supcheg.javafile.facts.FactsArity;
 import me.supcheg.javafile.facts.TargetClasspath;
 import me.supcheg.javafile.facts.TypeToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
@@ -15,9 +16,9 @@ import java.util.Arrays;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /// The helper methods of the body of an enum constant (8g): `declareMethod`, `declareVoidMethod`,
-/// `declareStaticMethod` and `declareVoidStaticMethod` reach twelve parameters, generated into the
-/// superclass of the body ([EnumConstantBodyArities]) as the other member forms are. The body of four,
-/// eight and twelve is rendered, compiled under `-Xlint:all` and run.
+/// `declareStaticMethod` and `declareVoidStaticMethod` reach [FactsArity#MAX_ARITY] parameters, generated into the
+/// superclass of the body ([EnumConstantBodyArities]) as the other member forms are. The bodies of four, eight, twelve
+/// and thirteen to sixteen parameters are rendered, compiled under `-Xlint:all` and run.
 class EnumConstantHelperAritiesTest {
     private static final ClassDesc DESC = ClassDesc.of("me.supcheg.example", "Plan");
     private static final TargetClasspath TARGET = UnsafeFacts.unverifiedClasspath();
@@ -27,7 +28,7 @@ class EnumConstantHelperAritiesTest {
         TypedEnumBuilder<String> plan = new TypedEnumBuilder<>(TARGET, DESC);
         plan.constant("ONLY", cb -> {
             try {
-                for (int n = 0; n <= 12; n++) {
+                for (int n = 0; n <= FactsArity.MAX_ARITY; n++) {
                     declare(cb, "declareMethod", "m" + n, n, String_.TOKEN);
                     declare(cb, "declareVoidMethod", "v" + n, n, null);
                     declare(cb, "declareStaticMethod", "s" + n, n, String_.TOKEN);
@@ -496,6 +497,356 @@ class EnumConstantHelperAritiesTest {
         assertThat(invoke(constant, "static12", 12)).isEqualTo("x");
         invokeVoid(constant, "run12", 12);
         invokeVoid(constant, "staticVoid12", 12);
+    }
+
+    @Test
+    void aConstantBodyRunsHelpersOfThirteenToSixteenParameters() throws Throwable {
+        JavaFile file = TypedJavaFile.enum_(TARGET, DESC, new TypedJavaFile.TypedEnumSpec() {
+            @Override
+            public <Self> TypedEnumBodies<Self> build(TypedEnumBuilder<Self> eb) {
+                eb.constant("ONLY", cb -> {
+                    var sum13 = cb.declareMethod(
+                            "sum13",
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN);
+                    var run13 = cb.declareVoidMethod(
+                            "run13",
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN);
+                    var static13 = cb.declareStaticMethod(
+                            "static13",
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN);
+                    var staticVoid13 = cb.declareVoidStaticMethod(
+                            "staticVoid13",
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN);
+                    var sum14 = cb.declareMethod(
+                            "sum14",
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN);
+                    var run14 = cb.declareVoidMethod(
+                            "run14",
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN);
+                    var static14 = cb.declareStaticMethod(
+                            "static14",
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN);
+                    var staticVoid14 = cb.declareVoidStaticMethod(
+                            "staticVoid14",
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN);
+                    var sum15 = cb.declareMethod(
+                            "sum15",
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN);
+                    var run15 = cb.declareVoidMethod(
+                            "run15",
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN);
+                    var static15 = cb.declareStaticMethod(
+                            "static15",
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN);
+                    var staticVoid15 = cb.declareVoidStaticMethod(
+                            "staticVoid15",
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN);
+                    var sum16 = cb.declareMethod(
+                            "sum16",
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN);
+                    var run16 = cb.declareVoidMethod(
+                            "run16",
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN);
+                    var static16 = cb.declareStaticMethod(
+                            "static16",
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN);
+                    var staticVoid16 = cb.declareVoidStaticMethod(
+                            "staticVoid16",
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN,
+                            String_.TOKEN);
+
+                    cb.define(
+                            sum13, (b, self, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13) -> b.return_(p1));
+                    cb.define(run13, (b, self, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13) -> b.end());
+                    cb.define(static13, (b, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13) -> b.return_(p1));
+                    cb.define(staticVoid13, (b, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13) -> b.end());
+                    cb.define(
+                            sum14,
+                            (b, self, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14) -> b.return_(p1));
+                    cb.define(run14, (b, self, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14) -> b.end());
+                    cb.define(
+                            static14,
+                            (b, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14) -> b.return_(p1));
+                    cb.define(
+                            staticVoid14, (b, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14) -> b.end());
+                    cb.define(
+                            sum15,
+                            (b, self, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15) ->
+                                    b.return_(p1));
+                    cb.define(
+                            run15,
+                            (b, self, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15) -> b.end());
+                    cb.define(
+                            static15,
+                            (b, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15) -> b.return_(p1));
+                    cb.define(
+                            staticVoid15,
+                            (b, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15) -> b.end());
+                    cb.define(
+                            sum16,
+                            (b, self, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16) ->
+                                    b.return_(p1));
+                    cb.define(
+                            run16,
+                            (b, self, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16) ->
+                                    b.end());
+                    cb.define(
+                            static16,
+                            (b, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16) ->
+                                    b.return_(p1));
+                    cb.define(
+                            staticVoid16,
+                            (b, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16) -> b.end());
+                });
+                return eb.bodies();
+            }
+        });
+        CompiledClasses compiled = CompiledClasses.of(file);
+        Object constant =
+                compiled.generated().getMethod("valueOf", String.class).invoke(null, "ONLY");
+
+        assertThat(invoke(constant, "sum13", 13)).isEqualTo("x");
+        assertThat(invoke(constant, "static13", 13)).isEqualTo("x");
+        invokeVoid(constant, "run13", 13);
+        invokeVoid(constant, "staticVoid13", 13);
+
+        assertThat(invoke(constant, "sum14", 14)).isEqualTo("x");
+        assertThat(invoke(constant, "static14", 14)).isEqualTo("x");
+        invokeVoid(constant, "run14", 14);
+        invokeVoid(constant, "staticVoid14", 14);
+
+        assertThat(invoke(constant, "sum15", 15)).isEqualTo("x");
+        assertThat(invoke(constant, "static15", 15)).isEqualTo("x");
+        invokeVoid(constant, "run15", 15);
+        invokeVoid(constant, "staticVoid15", 15);
+
+        assertThat(invoke(constant, "sum16", 16)).isEqualTo("x");
+        assertThat(invoke(constant, "static16", 16)).isEqualTo("x");
+        invokeVoid(constant, "run16", 16);
+        invokeVoid(constant, "staticVoid16", 16);
     }
 
     private static Method helper(Object target, String name, int n) throws NoSuchMethodException {

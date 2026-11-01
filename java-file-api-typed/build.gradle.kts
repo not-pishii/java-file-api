@@ -23,6 +23,7 @@ dependencies {
     api(project(":java-file-api-core"))
     api(project(":java-file-api-facts"))
     "codegenImplementation"(project(":java-file-api-core"))
+    "codegenImplementation"(project(":java-file-api-facts"))
 }
 
 testing {

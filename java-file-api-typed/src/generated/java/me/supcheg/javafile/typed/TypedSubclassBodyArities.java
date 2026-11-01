@@ -7,6 +7,10 @@ import me.supcheg.javafile.facts.CtorRef1;
 import me.supcheg.javafile.facts.CtorRef10;
 import me.supcheg.javafile.facts.CtorRef11;
 import me.supcheg.javafile.facts.CtorRef12;
+import me.supcheg.javafile.facts.CtorRef13;
+import me.supcheg.javafile.facts.CtorRef14;
+import me.supcheg.javafile.facts.CtorRef15;
+import me.supcheg.javafile.facts.CtorRef16;
 import me.supcheg.javafile.facts.CtorRef2;
 import me.supcheg.javafile.facts.CtorRef3;
 import me.supcheg.javafile.facts.CtorRef4;
@@ -22,6 +26,10 @@ import me.supcheg.javafile.typed.TypedSubclassBodyArities.CtorBody1;
 import me.supcheg.javafile.typed.TypedSubclassBodyArities.CtorBody10;
 import me.supcheg.javafile.typed.TypedSubclassBodyArities.CtorBody11;
 import me.supcheg.javafile.typed.TypedSubclassBodyArities.CtorBody12;
+import me.supcheg.javafile.typed.TypedSubclassBodyArities.CtorBody13;
+import me.supcheg.javafile.typed.TypedSubclassBodyArities.CtorBody14;
+import me.supcheg.javafile.typed.TypedSubclassBodyArities.CtorBody15;
+import me.supcheg.javafile.typed.TypedSubclassBodyArities.CtorBody16;
 import me.supcheg.javafile.typed.TypedSubclassBodyArities.CtorBody2;
 import me.supcheg.javafile.typed.TypedSubclassBodyArities.CtorBody3;
 import me.supcheg.javafile.typed.TypedSubclassBodyArities.CtorBody4;
@@ -763,5 +771,365 @@ abstract sealed class TypedSubclassBodyArities<Self, S> extends MemberBodies<Sel
          * @return the proof that the body ended, as `super_` gave it
          */
         Terminated<Void> build(SuperSite<Self, S> ctor, Var<A1> p1, Var<A2> p2, Var<A3> p3, Var<A4> p4, Var<A5> p5, Var<A6> p6, Var<A7> p7, Var<A8> p8, Var<A9> p9, Var<A10> p10, Var<A11> p11, Var<A12> p12);
+    }
+
+    /**
+     * Defines a declared constructor of 13 parameters: its body begins with `super(...)`.
+     *
+     * @param ctor the declared constructor
+     * @param body the body, given the place of its `super(...)` and the parameters
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @throws IllegalStateException if the body does not begin with `super(...)`, and as a definition of a method does ([MemberBodies])
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> void define(CtorRef13<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> ctor, CtorBody13<Self, S, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> body) {
+        Awaiting slot = definable(ctor);
+        VoidBody root = VoidBody.root("body of constructor", MemberBodies.declares(ctor));
+        SuperSite<Self, S> site = superSite(root);
+        Var<A1> p1 = Var.param(ctor.param1(), root);
+        Var<A2> p2 = Var.param(ctor.param2(), root);
+        Var<A3> p3 = Var.param(ctor.param3(), root);
+        Var<A4> p4 = Var.param(ctor.param4(), root);
+        Var<A5> p5 = Var.param(ctor.param5(), root);
+        Var<A6> p6 = Var.param(ctor.param6(), root);
+        Var<A7> p7 = Var.param(ctor.param7(), root);
+        Var<A8> p8 = Var.param(ctor.param8(), root);
+        Var<A9> p9 = Var.param(ctor.param9(), root);
+        Var<A10> p10 = Var.param(ctor.param10(), root);
+        Var<A11> p11 = Var.param(ctor.param11(), root);
+        Var<A12> p12 = Var.param(ctor.param12(), root);
+        Var<A13> p13 = MemberBodies.lastParameter(slot, ctor.param13(), root);
+        MemberBodies.built(root, (b) -> body.build(site, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13));
+        definedWithSuper(slot, root, site, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13));
+    }
+
+    /**
+     * The body of a constructor of 13 parameters of a class that extends `S`.
+     *
+     * @param <Self> the class
+     * @param <S> its superclass
+     * @param <A1> the first parameter type
+     * @param <A2> the second parameter type
+     * @param <A3> the third parameter type
+     * @param <A4> the fourth parameter type
+     * @param <A5> the fifth parameter type
+     * @param <A6> the sixth parameter type
+     * @param <A7> the seventh parameter type
+     * @param <A8> the eighth parameter type
+     * @param <A9> the ninth parameter type
+     * @param <A10> the tenth parameter type
+     * @param <A11> the eleventh parameter type
+     * @param <A12> the twelfth parameter type
+     * @param <A13> the thirteenth parameter type
+     */
+    @FunctionalInterface
+    public interface CtorBody13<Self, S, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> {
+        /**
+         * Builds the body: `ctor.super_(...)`, whose last argument builds what follows it.
+         *
+         * @param ctor the place of `super(...)`
+         * @param p1 the first parameter
+         * @param p2 the second parameter
+         * @param p3 the third parameter
+         * @param p4 the fourth parameter
+         * @param p5 the fifth parameter
+         * @param p6 the sixth parameter
+         * @param p7 the seventh parameter
+         * @param p8 the eighth parameter
+         * @param p9 the ninth parameter
+         * @param p10 the tenth parameter
+         * @param p11 the eleventh parameter
+         * @param p12 the twelfth parameter
+         * @param p13 the thirteenth parameter
+         * @return the proof that the body ended, as `super_` gave it
+         */
+        Terminated<Void> build(SuperSite<Self, S> ctor, Var<A1> p1, Var<A2> p2, Var<A3> p3, Var<A4> p4, Var<A5> p5, Var<A6> p6, Var<A7> p7, Var<A8> p8, Var<A9> p9, Var<A10> p10, Var<A11> p11, Var<A12> p12, Var<A13> p13);
+    }
+
+    /**
+     * Defines a declared constructor of 14 parameters: its body begins with `super(...)`.
+     *
+     * @param ctor the declared constructor
+     * @param body the body, given the place of its `super(...)` and the parameters
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @throws IllegalStateException if the body does not begin with `super(...)`, and as a definition of a method does ([MemberBodies])
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> void define(CtorRef14<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> ctor, CtorBody14<Self, S, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> body) {
+        Awaiting slot = definable(ctor);
+        VoidBody root = VoidBody.root("body of constructor", MemberBodies.declares(ctor));
+        SuperSite<Self, S> site = superSite(root);
+        Var<A1> p1 = Var.param(ctor.param1(), root);
+        Var<A2> p2 = Var.param(ctor.param2(), root);
+        Var<A3> p3 = Var.param(ctor.param3(), root);
+        Var<A4> p4 = Var.param(ctor.param4(), root);
+        Var<A5> p5 = Var.param(ctor.param5(), root);
+        Var<A6> p6 = Var.param(ctor.param6(), root);
+        Var<A7> p7 = Var.param(ctor.param7(), root);
+        Var<A8> p8 = Var.param(ctor.param8(), root);
+        Var<A9> p9 = Var.param(ctor.param9(), root);
+        Var<A10> p10 = Var.param(ctor.param10(), root);
+        Var<A11> p11 = Var.param(ctor.param11(), root);
+        Var<A12> p12 = Var.param(ctor.param12(), root);
+        Var<A13> p13 = Var.param(ctor.param13(), root);
+        Var<A14> p14 = MemberBodies.lastParameter(slot, ctor.param14(), root);
+        MemberBodies.built(root, (b) -> body.build(site, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14));
+        definedWithSuper(slot, root, site, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14));
+    }
+
+    /**
+     * The body of a constructor of 14 parameters of a class that extends `S`.
+     *
+     * @param <Self> the class
+     * @param <S> its superclass
+     * @param <A1> the first parameter type
+     * @param <A2> the second parameter type
+     * @param <A3> the third parameter type
+     * @param <A4> the fourth parameter type
+     * @param <A5> the fifth parameter type
+     * @param <A6> the sixth parameter type
+     * @param <A7> the seventh parameter type
+     * @param <A8> the eighth parameter type
+     * @param <A9> the ninth parameter type
+     * @param <A10> the tenth parameter type
+     * @param <A11> the eleventh parameter type
+     * @param <A12> the twelfth parameter type
+     * @param <A13> the thirteenth parameter type
+     * @param <A14> the fourteenth parameter type
+     */
+    @FunctionalInterface
+    public interface CtorBody14<Self, S, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> {
+        /**
+         * Builds the body: `ctor.super_(...)`, whose last argument builds what follows it.
+         *
+         * @param ctor the place of `super(...)`
+         * @param p1 the first parameter
+         * @param p2 the second parameter
+         * @param p3 the third parameter
+         * @param p4 the fourth parameter
+         * @param p5 the fifth parameter
+         * @param p6 the sixth parameter
+         * @param p7 the seventh parameter
+         * @param p8 the eighth parameter
+         * @param p9 the ninth parameter
+         * @param p10 the tenth parameter
+         * @param p11 the eleventh parameter
+         * @param p12 the twelfth parameter
+         * @param p13 the thirteenth parameter
+         * @param p14 the fourteenth parameter
+         * @return the proof that the body ended, as `super_` gave it
+         */
+        Terminated<Void> build(SuperSite<Self, S> ctor, Var<A1> p1, Var<A2> p2, Var<A3> p3, Var<A4> p4, Var<A5> p5, Var<A6> p6, Var<A7> p7, Var<A8> p8, Var<A9> p9, Var<A10> p10, Var<A11> p11, Var<A12> p12, Var<A13> p13, Var<A14> p14);
+    }
+
+    /**
+     * Defines a declared constructor of 15 parameters: its body begins with `super(...)`.
+     *
+     * @param ctor the declared constructor
+     * @param body the body, given the place of its `super(...)` and the parameters
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @param <A15> the type of the fifteenth parameter
+     * @throws IllegalStateException if the body does not begin with `super(...)`, and as a definition of a method does ([MemberBodies])
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> void define(CtorRef15<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> ctor, CtorBody15<Self, S, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> body) {
+        Awaiting slot = definable(ctor);
+        VoidBody root = VoidBody.root("body of constructor", MemberBodies.declares(ctor));
+        SuperSite<Self, S> site = superSite(root);
+        Var<A1> p1 = Var.param(ctor.param1(), root);
+        Var<A2> p2 = Var.param(ctor.param2(), root);
+        Var<A3> p3 = Var.param(ctor.param3(), root);
+        Var<A4> p4 = Var.param(ctor.param4(), root);
+        Var<A5> p5 = Var.param(ctor.param5(), root);
+        Var<A6> p6 = Var.param(ctor.param6(), root);
+        Var<A7> p7 = Var.param(ctor.param7(), root);
+        Var<A8> p8 = Var.param(ctor.param8(), root);
+        Var<A9> p9 = Var.param(ctor.param9(), root);
+        Var<A10> p10 = Var.param(ctor.param10(), root);
+        Var<A11> p11 = Var.param(ctor.param11(), root);
+        Var<A12> p12 = Var.param(ctor.param12(), root);
+        Var<A13> p13 = Var.param(ctor.param13(), root);
+        Var<A14> p14 = Var.param(ctor.param14(), root);
+        Var<A15> p15 = MemberBodies.lastParameter(slot, ctor.param15(), root);
+        MemberBodies.built(root, (b) -> body.build(site, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15));
+        definedWithSuper(slot, root, site, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15));
+    }
+
+    /**
+     * The body of a constructor of 15 parameters of a class that extends `S`.
+     *
+     * @param <Self> the class
+     * @param <S> its superclass
+     * @param <A1> the first parameter type
+     * @param <A2> the second parameter type
+     * @param <A3> the third parameter type
+     * @param <A4> the fourth parameter type
+     * @param <A5> the fifth parameter type
+     * @param <A6> the sixth parameter type
+     * @param <A7> the seventh parameter type
+     * @param <A8> the eighth parameter type
+     * @param <A9> the ninth parameter type
+     * @param <A10> the tenth parameter type
+     * @param <A11> the eleventh parameter type
+     * @param <A12> the twelfth parameter type
+     * @param <A13> the thirteenth parameter type
+     * @param <A14> the fourteenth parameter type
+     * @param <A15> the fifteenth parameter type
+     */
+    @FunctionalInterface
+    public interface CtorBody15<Self, S, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> {
+        /**
+         * Builds the body: `ctor.super_(...)`, whose last argument builds what follows it.
+         *
+         * @param ctor the place of `super(...)`
+         * @param p1 the first parameter
+         * @param p2 the second parameter
+         * @param p3 the third parameter
+         * @param p4 the fourth parameter
+         * @param p5 the fifth parameter
+         * @param p6 the sixth parameter
+         * @param p7 the seventh parameter
+         * @param p8 the eighth parameter
+         * @param p9 the ninth parameter
+         * @param p10 the tenth parameter
+         * @param p11 the eleventh parameter
+         * @param p12 the twelfth parameter
+         * @param p13 the thirteenth parameter
+         * @param p14 the fourteenth parameter
+         * @param p15 the fifteenth parameter
+         * @return the proof that the body ended, as `super_` gave it
+         */
+        Terminated<Void> build(SuperSite<Self, S> ctor, Var<A1> p1, Var<A2> p2, Var<A3> p3, Var<A4> p4, Var<A5> p5, Var<A6> p6, Var<A7> p7, Var<A8> p8, Var<A9> p9, Var<A10> p10, Var<A11> p11, Var<A12> p12, Var<A13> p13, Var<A14> p14, Var<A15> p15);
+    }
+
+    /**
+     * Defines a declared constructor of 16 parameters: its body begins with `super(...)`.
+     *
+     * @param ctor the declared constructor
+     * @param body the body, given the place of its `super(...)` and the parameters
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @param <A15> the type of the fifteenth parameter
+     * @param <A16> the type of the sixteenth parameter
+     * @throws IllegalStateException if the body does not begin with `super(...)`, and as a definition of a method does ([MemberBodies])
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> void define(CtorRef16<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> ctor, CtorBody16<Self, S, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> body) {
+        Awaiting slot = definable(ctor);
+        VoidBody root = VoidBody.root("body of constructor", MemberBodies.declares(ctor));
+        SuperSite<Self, S> site = superSite(root);
+        Var<A1> p1 = Var.param(ctor.param1(), root);
+        Var<A2> p2 = Var.param(ctor.param2(), root);
+        Var<A3> p3 = Var.param(ctor.param3(), root);
+        Var<A4> p4 = Var.param(ctor.param4(), root);
+        Var<A5> p5 = Var.param(ctor.param5(), root);
+        Var<A6> p6 = Var.param(ctor.param6(), root);
+        Var<A7> p7 = Var.param(ctor.param7(), root);
+        Var<A8> p8 = Var.param(ctor.param8(), root);
+        Var<A9> p9 = Var.param(ctor.param9(), root);
+        Var<A10> p10 = Var.param(ctor.param10(), root);
+        Var<A11> p11 = Var.param(ctor.param11(), root);
+        Var<A12> p12 = Var.param(ctor.param12(), root);
+        Var<A13> p13 = Var.param(ctor.param13(), root);
+        Var<A14> p14 = Var.param(ctor.param14(), root);
+        Var<A15> p15 = Var.param(ctor.param15(), root);
+        Var<A16> p16 = MemberBodies.lastParameter(slot, ctor.param16(), root);
+        MemberBodies.built(root, (b) -> body.build(site, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16));
+        definedWithSuper(slot, root, site, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16));
+    }
+
+    /**
+     * The body of a constructor of 16 parameters of a class that extends `S`.
+     *
+     * @param <Self> the class
+     * @param <S> its superclass
+     * @param <A1> the first parameter type
+     * @param <A2> the second parameter type
+     * @param <A3> the third parameter type
+     * @param <A4> the fourth parameter type
+     * @param <A5> the fifth parameter type
+     * @param <A6> the sixth parameter type
+     * @param <A7> the seventh parameter type
+     * @param <A8> the eighth parameter type
+     * @param <A9> the ninth parameter type
+     * @param <A10> the tenth parameter type
+     * @param <A11> the eleventh parameter type
+     * @param <A12> the twelfth parameter type
+     * @param <A13> the thirteenth parameter type
+     * @param <A14> the fourteenth parameter type
+     * @param <A15> the fifteenth parameter type
+     * @param <A16> the sixteenth parameter type
+     */
+    @FunctionalInterface
+    public interface CtorBody16<Self, S, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> {
+        /**
+         * Builds the body: `ctor.super_(...)`, whose last argument builds what follows it.
+         *
+         * @param ctor the place of `super(...)`
+         * @param p1 the first parameter
+         * @param p2 the second parameter
+         * @param p3 the third parameter
+         * @param p4 the fourth parameter
+         * @param p5 the fifth parameter
+         * @param p6 the sixth parameter
+         * @param p7 the seventh parameter
+         * @param p8 the eighth parameter
+         * @param p9 the ninth parameter
+         * @param p10 the tenth parameter
+         * @param p11 the eleventh parameter
+         * @param p12 the twelfth parameter
+         * @param p13 the thirteenth parameter
+         * @param p14 the fourteenth parameter
+         * @param p15 the fifteenth parameter
+         * @param p16 the sixteenth parameter
+         * @return the proof that the body ended, as `super_` gave it
+         */
+        Terminated<Void> build(SuperSite<Self, S> ctor, Var<A1> p1, Var<A2> p2, Var<A3> p3, Var<A4> p4, Var<A5> p5, Var<A6> p6, Var<A7> p7, Var<A8> p8, Var<A9> p9, Var<A10> p10, Var<A11> p11, Var<A12> p12, Var<A13> p13, Var<A14> p14, Var<A15> p15, Var<A16> p16);
     }
 }

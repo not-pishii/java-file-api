@@ -1262,7 +1262,7 @@ abstract non-sealed class TypeMemberDeclarations<Self> extends TypeMemberDeclara
                 Kind.ABSTRACT);
     }
 
-    /// Declares an abstract method with twelve parameters, see
+    /// Declares an abstract method with sixteen parameters, see
     /// [#declareAbstractMethod(String, TypeToken)].
     ///
     /// @param name the method name
@@ -1315,7 +1315,7 @@ abstract non-sealed class TypeMemberDeclarations<Self> extends TypeMemberDeclara
                 Kind.ABSTRACT);
     }
 
-    /// Declares a `public abstract void` method with twelve parameters, see
+    /// Declares a `public abstract void` method with sixteen parameters, see
     /// [#declareAbstractMethod(String, TypeToken)].
     ///
     /// @param name the method name

@@ -25,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /// The models reject what the translator never makes.
 class ModelTest {
-    private static final List<TypeRef> THIRTEEN = Collections.nCopies(13, Types.INT);
+    private static final List<TypeRef> SEVENTEEN = Collections.nCopies(17, Types.INT);
 
     private static TypeModel type(
             ClassDesc desc, MemberFilter filter, List<MemberModel> members, List<SkippedMember> skipped) {
@@ -171,20 +171,20 @@ class ModelTest {
     }
 
     @Test
-    void methodsHaveAtMostTwelveParametersAndStaticOnesAreFinal() {
+    void methodsHaveAtMostSixteenParametersAndStaticOnesAreFinal() {
         assertThatThrownBy(() -> new MethodModel(
                         "m",
                         false,
                         List.of(),
                         Optional.empty(),
-                        THIRTEEN,
+                        SEVENTEEN,
                         List.of(),
                         Arity.FIXED,
                         List.of(),
                         Overridability.OVERRIDABLE,
                         Access.PUBLIC))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("method m has 13 parameters, more than 12");
+                .hasMessage("method m has 17 parameters, more than 16");
         assertThatThrownBy(() -> new MethodModel(
                         "m",
                         true,
@@ -258,10 +258,10 @@ class ModelTest {
     }
 
     @Test
-    void constructorsHaveAtMostTwelveParameters() {
-        assertThatThrownBy(() -> new CtorModel(List.of(), THIRTEEN, List.of(), Arity.FIXED, List.of(), Access.PUBLIC))
+    void constructorsHaveAtMostSixteenParameters() {
+        assertThatThrownBy(() -> new CtorModel(List.of(), SEVENTEEN, List.of(), Arity.FIXED, List.of(), Access.PUBLIC))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("a constructor has 13 parameters, more than 12");
+                .hasMessage("a constructor has 17 parameters, more than 16");
         assertThatThrownBy(() ->
                         new CtorModel(List.of(), List.of(Types.INT), List.of(), Arity.FIXED, List.of(), Access.PUBLIC))
                 .isInstanceOf(IllegalArgumentException.class)

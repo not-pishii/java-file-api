@@ -6,7 +6,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /// The member types the generated tests of the arities of member types declare: a nested class of
-/// four to twelve type parameters with a method `first` of the last of them, made by reflection from
+/// four to sixteen type parameters with a method `first` of the last of them, made by reflection from
 /// the classes compiled together.
 final class NestedForms {
     private NestedForms() {}

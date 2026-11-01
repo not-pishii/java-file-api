@@ -9,6 +9,10 @@ import me.supcheg.javafile.testing.CompiledClasses;
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericClassSpec10;
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericClassSpec11;
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericClassSpec12;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericClassSpec13;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericClassSpec14;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericClassSpec15;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericClassSpec16;
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericClassSpec4;
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericClassSpec5;
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericClassSpec6;
@@ -18,6 +22,10 @@ import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericClassSpec
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericInterfaceSpec10;
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericInterfaceSpec11;
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericInterfaceSpec12;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericInterfaceSpec13;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericInterfaceSpec14;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericInterfaceSpec15;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericInterfaceSpec16;
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericInterfaceSpec4;
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericInterfaceSpec5;
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericInterfaceSpec6;
@@ -27,6 +35,10 @@ import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericInterface
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericRecordSpec10;
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericRecordSpec11;
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericRecordSpec12;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericRecordSpec13;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericRecordSpec14;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericRecordSpec15;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericRecordSpec16;
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericRecordSpec4;
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericRecordSpec5;
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericRecordSpec6;
@@ -781,5 +793,333 @@ class NestedGenericAritiesTest {
         Assertions.assertThat(NestedForms.first(compiled.get(1), "me.supcheg.example.Nested12Interface$Box", "x")).isEqualTo("x");
         Assertions.assertThat(NestedForms.first(compiled.get(2), "me.supcheg.example.Nested12Annotation$Box", "x")).isEqualTo("x");
         Assertions.assertThat(NestedForms.first(compiled.get(3), "me.supcheg.example.Nested12Enum$1$Box", "x")).isEqualTo("x");
+    }
+
+    @Test
+    public void nestedTypesOfThirteenTypeParametersInEveryHierarchyRenderCompileAndRun() throws Throwable {
+        var classSpec = new TypedGenericClassSpec13<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object>() {
+            @Override
+            public <N, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> MemberBodies<N, ?> build(ClassHeader<N> h, TypeVarToken<T1> t1, TypeVarToken<T2> t2, TypeVarToken<T3> t3, TypeVarToken<T4> t4, TypeVarToken<T5> t5, TypeVarToken<T6> t6, TypeVarToken<T7> t7, TypeVarToken<T8> t8, TypeVarToken<T9> t9, TypeVarToken<T10> t10, TypeVarToken<T11> t11, TypeVarToken<T12> t12, TypeVarToken<T13> t13) {
+                var members = h.extendsObject().members();
+                var first = members.declareMethod("first", t13, t13);
+                var bodies = members.bodies();
+                bodies.define(first, (b, self, value) -> b.return_(value));
+                return bodies;
+            }
+        };
+        var interfaceSpec = new TypedGenericInterfaceSpec13<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object>() {
+            @Override
+            public <I, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> TypedInterfaceBodies<I> build(TypedInterfaceBuilder<I> ib, TypeVarToken<T1> t1, TypeVarToken<T2> t2, TypeVarToken<T3> t3, TypeVarToken<T4> t4, TypeVarToken<T5> t5, TypeVarToken<T6> t6, TypeVarToken<T7> t7, TypeVarToken<T8> t8, TypeVarToken<T9> t9, TypeVarToken<T10> t10, TypeVarToken<T11> t11, TypeVarToken<T12> t12, TypeVarToken<T13> t13) {
+                ib.declareAbstractMethod("first", t13);
+                return ib.bodies();
+            }
+        };
+        var recordSpec = new TypedGenericRecordSpec13<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object>() {
+            @Override
+            public <R, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> TypedRecordBodies<R> build(TypedRecordBuilder<R> rb, TypeVarToken<T1> t1, TypeVarToken<T2> t2, TypeVarToken<T3> t3, TypeVarToken<T4> t4, TypeVarToken<T5> t5, TypeVarToken<T6> t6, TypeVarToken<T7> t7, TypeVarToken<T8> t8, TypeVarToken<T9> t9, TypeVarToken<T10> t10, TypeVarToken<T11> t11, TypeVarToken<T12> t12, TypeVarToken<T13> t13) {
+                rb.component("first", t13);
+                return rb.bodies();
+            }
+        };
+        var aClass = TypedJavaFile.declareClass(UnsafeFacts.unverifiedClasspath(), ClassDesc.of("me.supcheg.example", "Nested13Class"), new TypedClassHeaderSpec() {
+            @Override
+            public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
+                var members = h.extendsObject().members();
+                members.declareNestedClass("Box", TypedJavaFile.typeParam("T1"), TypedJavaFile.typeParam("T2"), TypedJavaFile.typeParam("T3"), TypedJavaFile.typeParam("T4"), TypedJavaFile.typeParam("T5"), TypedJavaFile.typeParam("T6"), TypedJavaFile.typeParam("T7"), TypedJavaFile.typeParam("T8"), TypedJavaFile.typeParam("T9"), TypedJavaFile.typeParam("T10"), TypedJavaFile.typeParam("T11"), TypedJavaFile.typeParam("T12"), TypedJavaFile.typeParam("T13"), classSpec);
+                members.declareNestedInterface("One", TypedJavaFile.typeParam("T1"), TypedJavaFile.typeParam("T2"), TypedJavaFile.typeParam("T3"), TypedJavaFile.typeParam("T4"), TypedJavaFile.typeParam("T5"), TypedJavaFile.typeParam("T6"), TypedJavaFile.typeParam("T7"), TypedJavaFile.typeParam("T8"), TypedJavaFile.typeParam("T9"), TypedJavaFile.typeParam("T10"), TypedJavaFile.typeParam("T11"), TypedJavaFile.typeParam("T12"), TypedJavaFile.typeParam("T13"), interfaceSpec);
+                members.declareNestedRecord("Pair", TypedJavaFile.typeParam("T1"), TypedJavaFile.typeParam("T2"), TypedJavaFile.typeParam("T3"), TypedJavaFile.typeParam("T4"), TypedJavaFile.typeParam("T5"), TypedJavaFile.typeParam("T6"), TypedJavaFile.typeParam("T7"), TypedJavaFile.typeParam("T8"), TypedJavaFile.typeParam("T9"), TypedJavaFile.typeParam("T10"), TypedJavaFile.typeParam("T11"), TypedJavaFile.typeParam("T12"), TypedJavaFile.typeParam("T13"), recordSpec);
+                return members.bodies();
+            }
+        });
+        var anInterface = TypedJavaFile.interface_(UnsafeFacts.unverifiedClasspath(), ClassDesc.of("me.supcheg.example", "Nested13Interface"), new TypedInterfaceSpec() {
+            @Override
+            public <Self> TypedInterfaceBodies<Self> build(TypedInterfaceBuilder<Self> ib) {
+                ib.declareNestedClass("Box", TypedJavaFile.typeParam("T1"), TypedJavaFile.typeParam("T2"), TypedJavaFile.typeParam("T3"), TypedJavaFile.typeParam("T4"), TypedJavaFile.typeParam("T5"), TypedJavaFile.typeParam("T6"), TypedJavaFile.typeParam("T7"), TypedJavaFile.typeParam("T8"), TypedJavaFile.typeParam("T9"), TypedJavaFile.typeParam("T10"), TypedJavaFile.typeParam("T11"), TypedJavaFile.typeParam("T12"), TypedJavaFile.typeParam("T13"), classSpec);
+                ib.declareNestedInterface("One", TypedJavaFile.typeParam("T1"), TypedJavaFile.typeParam("T2"), TypedJavaFile.typeParam("T3"), TypedJavaFile.typeParam("T4"), TypedJavaFile.typeParam("T5"), TypedJavaFile.typeParam("T6"), TypedJavaFile.typeParam("T7"), TypedJavaFile.typeParam("T8"), TypedJavaFile.typeParam("T9"), TypedJavaFile.typeParam("T10"), TypedJavaFile.typeParam("T11"), TypedJavaFile.typeParam("T12"), TypedJavaFile.typeParam("T13"), interfaceSpec);
+                ib.declareNestedRecord("Pair", TypedJavaFile.typeParam("T1"), TypedJavaFile.typeParam("T2"), TypedJavaFile.typeParam("T3"), TypedJavaFile.typeParam("T4"), TypedJavaFile.typeParam("T5"), TypedJavaFile.typeParam("T6"), TypedJavaFile.typeParam("T7"), TypedJavaFile.typeParam("T8"), TypedJavaFile.typeParam("T9"), TypedJavaFile.typeParam("T10"), TypedJavaFile.typeParam("T11"), TypedJavaFile.typeParam("T12"), TypedJavaFile.typeParam("T13"), recordSpec);
+                return ib.bodies();
+            }
+        });
+        var anAnnotationType = TypedJavaFile.annotationType(UnsafeFacts.unverifiedClasspath(), ClassDesc.of("me.supcheg.example", "Nested13Annotation"), new TypedAnnotationTypeSpec() {
+            @Override
+            public <Self> TypedAnnotationTypeBuilder<Self> build(TypedAnnotationTypeBuilder<Self> ab) {
+                ab.declareNestedClass("Box", TypedJavaFile.typeParam("T1"), TypedJavaFile.typeParam("T2"), TypedJavaFile.typeParam("T3"), TypedJavaFile.typeParam("T4"), TypedJavaFile.typeParam("T5"), TypedJavaFile.typeParam("T6"), TypedJavaFile.typeParam("T7"), TypedJavaFile.typeParam("T8"), TypedJavaFile.typeParam("T9"), TypedJavaFile.typeParam("T10"), TypedJavaFile.typeParam("T11"), TypedJavaFile.typeParam("T12"), TypedJavaFile.typeParam("T13"), classSpec);
+                ab.declareNestedInterface("One", TypedJavaFile.typeParam("T1"), TypedJavaFile.typeParam("T2"), TypedJavaFile.typeParam("T3"), TypedJavaFile.typeParam("T4"), TypedJavaFile.typeParam("T5"), TypedJavaFile.typeParam("T6"), TypedJavaFile.typeParam("T7"), TypedJavaFile.typeParam("T8"), TypedJavaFile.typeParam("T9"), TypedJavaFile.typeParam("T10"), TypedJavaFile.typeParam("T11"), TypedJavaFile.typeParam("T12"), TypedJavaFile.typeParam("T13"), interfaceSpec);
+                ab.declareNestedRecord("Pair", TypedJavaFile.typeParam("T1"), TypedJavaFile.typeParam("T2"), TypedJavaFile.typeParam("T3"), TypedJavaFile.typeParam("T4"), TypedJavaFile.typeParam("T5"), TypedJavaFile.typeParam("T6"), TypedJavaFile.typeParam("T7"), TypedJavaFile.typeParam("T8"), TypedJavaFile.typeParam("T9"), TypedJavaFile.typeParam("T10"), TypedJavaFile.typeParam("T11"), TypedJavaFile.typeParam("T12"), TypedJavaFile.typeParam("T13"), recordSpec);
+                return ab;
+            }
+        });
+        var anEnum = TypedJavaFile.enum_(UnsafeFacts.unverifiedClasspath(), ClassDesc.of("me.supcheg.example", "Nested13Enum"), new TypedEnumSpec() {
+            @Override
+            public <Self> TypedEnumBodies<Self> build(TypedEnumBuilder<Self> eb) {
+                eb.constant("A", (body) -> body.declareNestedClass("Box", TypedJavaFile.typeParam("T1"), TypedJavaFile.typeParam("T2"), TypedJavaFile.typeParam("T3"), TypedJavaFile.typeParam("T4"), TypedJavaFile.typeParam("T5"), TypedJavaFile.typeParam("T6"), TypedJavaFile.typeParam("T7"), TypedJavaFile.typeParam("T8"), TypedJavaFile.typeParam("T9"), TypedJavaFile.typeParam("T10"), TypedJavaFile.typeParam("T11"), TypedJavaFile.typeParam("T12"), TypedJavaFile.typeParam("T13"), classSpec));
+                eb.constant("B", (body) -> body.declareNestedInterface("One", TypedJavaFile.typeParam("T1"), TypedJavaFile.typeParam("T2"), TypedJavaFile.typeParam("T3"), TypedJavaFile.typeParam("T4"), TypedJavaFile.typeParam("T5"), TypedJavaFile.typeParam("T6"), TypedJavaFile.typeParam("T7"), TypedJavaFile.typeParam("T8"), TypedJavaFile.typeParam("T9"), TypedJavaFile.typeParam("T10"), TypedJavaFile.typeParam("T11"), TypedJavaFile.typeParam("T12"), TypedJavaFile.typeParam("T13"), interfaceSpec));
+                eb.constant("C", (body) -> body.declareNestedRecord("Pair", TypedJavaFile.typeParam("T1"), TypedJavaFile.typeParam("T2"), TypedJavaFile.typeParam("T3"), TypedJavaFile.typeParam("T4"), TypedJavaFile.typeParam("T5"), TypedJavaFile.typeParam("T6"), TypedJavaFile.typeParam("T7"), TypedJavaFile.typeParam("T8"), TypedJavaFile.typeParam("T9"), TypedJavaFile.typeParam("T10"), TypedJavaFile.typeParam("T11"), TypedJavaFile.typeParam("T12"), TypedJavaFile.typeParam("T13"), recordSpec));
+                return eb.bodies();
+            }
+        });
+        Assertions.assertThat(aClass.render()).contains("public static final class Box<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> {").contains("public T13 first(T13 v0) {");
+        Assertions.assertThat(aClass.render()).contains("public interface One<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> {").contains("T13 first();");
+        Assertions.assertThat(aClass.render()).contains("public record Pair<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(T13 first) {");
+        Assertions.assertThat(anInterface.render()).contains("public static final class Box<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> {").contains("public T13 first(T13 v0) {");
+        Assertions.assertThat(anInterface.render()).contains("public interface One<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> {").contains("T13 first();");
+        Assertions.assertThat(anInterface.render()).contains("public record Pair<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(T13 first) {");
+        Assertions.assertThat(anAnnotationType.render()).contains("public static final class Box<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> {").contains("public T13 first(T13 v0) {");
+        Assertions.assertThat(anAnnotationType.render()).contains("public interface One<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> {").contains("T13 first();");
+        Assertions.assertThat(anAnnotationType.render()).contains("public record Pair<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(T13 first) {");
+        Assertions.assertThat(anEnum.render()).contains("public static final class Box<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> {").contains("public T13 first(T13 v0) {");
+        Assertions.assertThat(anEnum.render()).contains("public interface One<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> {").contains("T13 first();");
+        Assertions.assertThat(anEnum.render()).contains("public record Pair<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(T13 first) {");
+        var compiled = CompiledClasses.ofAll(List.of(aClass, anInterface, anAnnotationType, anEnum));
+        Assertions.assertThat(NestedForms.first(compiled.get(0), "me.supcheg.example.Nested13Class$Box", "x")).isEqualTo("x");
+        Assertions.assertThat(NestedForms.first(compiled.get(1), "me.supcheg.example.Nested13Interface$Box", "x")).isEqualTo("x");
+        Assertions.assertThat(NestedForms.first(compiled.get(2), "me.supcheg.example.Nested13Annotation$Box", "x")).isEqualTo("x");
+        Assertions.assertThat(NestedForms.first(compiled.get(3), "me.supcheg.example.Nested13Enum$1$Box", "x")).isEqualTo("x");
+    }
+
+    @Test
+    public void nestedTypesOfFourteenTypeParametersInEveryHierarchyRenderCompileAndRun() throws Throwable {
+        var classSpec = new TypedGenericClassSpec14<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object>() {
+            @Override
+            public <N, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> MemberBodies<N, ?> build(ClassHeader<N> h, TypeVarToken<T1> t1, TypeVarToken<T2> t2, TypeVarToken<T3> t3, TypeVarToken<T4> t4, TypeVarToken<T5> t5, TypeVarToken<T6> t6, TypeVarToken<T7> t7, TypeVarToken<T8> t8, TypeVarToken<T9> t9, TypeVarToken<T10> t10, TypeVarToken<T11> t11, TypeVarToken<T12> t12, TypeVarToken<T13> t13, TypeVarToken<T14> t14) {
+                var members = h.extendsObject().members();
+                var first = members.declareMethod("first", t14, t14);
+                var bodies = members.bodies();
+                bodies.define(first, (b, self, value) -> b.return_(value));
+                return bodies;
+            }
+        };
+        var interfaceSpec = new TypedGenericInterfaceSpec14<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object>() {
+            @Override
+            public <I, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> TypedInterfaceBodies<I> build(TypedInterfaceBuilder<I> ib, TypeVarToken<T1> t1, TypeVarToken<T2> t2, TypeVarToken<T3> t3, TypeVarToken<T4> t4, TypeVarToken<T5> t5, TypeVarToken<T6> t6, TypeVarToken<T7> t7, TypeVarToken<T8> t8, TypeVarToken<T9> t9, TypeVarToken<T10> t10, TypeVarToken<T11> t11, TypeVarToken<T12> t12, TypeVarToken<T13> t13, TypeVarToken<T14> t14) {
+                ib.declareAbstractMethod("first", t14);
+                return ib.bodies();
+            }
+        };
+        var recordSpec = new TypedGenericRecordSpec14<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object>() {
+            @Override
+            public <R, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> TypedRecordBodies<R> build(TypedRecordBuilder<R> rb, TypeVarToken<T1> t1, TypeVarToken<T2> t2, TypeVarToken<T3> t3, TypeVarToken<T4> t4, TypeVarToken<T5> t5, TypeVarToken<T6> t6, TypeVarToken<T7> t7, TypeVarToken<T8> t8, TypeVarToken<T9> t9, TypeVarToken<T10> t10, TypeVarToken<T11> t11, TypeVarToken<T12> t12, TypeVarToken<T13> t13, TypeVarToken<T14> t14) {
+                rb.component("first", t14);
+                return rb.bodies();
+            }
+        };
+        var aClass = TypedJavaFile.declareClass(UnsafeFacts.unverifiedClasspath(), ClassDesc.of("me.supcheg.example", "Nested14Class"), new TypedClassHeaderSpec() {
+            @Override
+            public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
+                var members = h.extendsObject().members();
+                members.declareNestedClass("Box", TypedJavaFile.typeParam("T1"), TypedJavaFile.typeParam("T2"), TypedJavaFile.typeParam("T3"), TypedJavaFile.typeParam("T4"), TypedJavaFile.typeParam("T5"), TypedJavaFile.typeParam("T6"), TypedJavaFile.typeParam("T7"), TypedJavaFile.typeParam("T8"), TypedJavaFile.typeParam("T9"), TypedJavaFile.typeParam("T10"), TypedJavaFile.typeParam("T11"), TypedJavaFile.typeParam("T12"), TypedJavaFile.typeParam("T13"), TypedJavaFile.typeParam("T14"), classSpec);
+                members.declareNestedInterface("One", TypedJavaFile.typeParam("T1"), TypedJavaFile.typeParam("T2"), TypedJavaFile.typeParam("T3"), TypedJavaFile.typeParam("T4"), TypedJavaFile.typeParam("T5"), TypedJavaFile.typeParam("T6"), TypedJavaFile.typeParam("T7"), TypedJavaFile.typeParam("T8"), TypedJavaFile.typeParam("T9"), TypedJavaFile.typeParam("T10"), TypedJavaFile.typeParam("T11"), TypedJavaFile.typeParam("T12"), TypedJavaFile.typeParam("T13"), TypedJavaFile.typeParam("T14"), interfaceSpec);
+                members.declareNestedRecord("Pair", TypedJavaFile.typeParam("T1"), TypedJavaFile.typeParam("T2"), TypedJavaFile.typeParam("T3"), TypedJavaFile.typeParam("T4"), TypedJavaFile.typeParam("T5"), TypedJavaFile.typeParam("T6"), TypedJavaFile.typeParam("T7"), TypedJavaFile.typeParam("T8"), TypedJavaFile.typeParam("T9"), TypedJavaFile.typeParam("T10"), TypedJavaFile.typeParam("T11"), TypedJavaFile.typeParam("T12"), TypedJavaFile.typeParam("T13"), TypedJavaFile.typeParam("T14"), recordSpec);
+                return members.bodies();
+            }
+        });
+        var anInterface = TypedJavaFile.interface_(UnsafeFacts.unverifiedClasspath(), ClassDesc.of("me.supcheg.example", "Nested14Interface"), new TypedInterfaceSpec() {
+            @Override
+            public <Self> TypedInterfaceBodies<Self> build(TypedInterfaceBuilder<Self> ib) {
+                ib.declareNestedClass("Box", TypedJavaFile.typeParam("T1"), TypedJavaFile.typeParam("T2"), TypedJavaFile.typeParam("T3"), TypedJavaFile.typeParam("T4"), TypedJavaFile.typeParam("T5"), TypedJavaFile.typeParam("T6"), TypedJavaFile.typeParam("T7"), TypedJavaFile.typeParam("T8"), TypedJavaFile.typeParam("T9"), TypedJavaFile.typeParam("T10"), TypedJavaFile.typeParam("T11"), TypedJavaFile.typeParam("T12"), TypedJavaFile.typeParam("T13"), TypedJavaFile.typeParam("T14"), classSpec);
+                ib.declareNestedInterface("One", TypedJavaFile.typeParam("T1"), TypedJavaFile.typeParam("T2"), TypedJavaFile.typeParam("T3"), TypedJavaFile.typeParam("T4"), TypedJavaFile.typeParam("T5"), TypedJavaFile.typeParam("T6"), TypedJavaFile.typeParam("T7"), TypedJavaFile.typeParam("T8"), TypedJavaFile.typeParam("T9"), TypedJavaFile.typeParam("T10"), TypedJavaFile.typeParam("T11"), TypedJavaFile.typeParam("T12"), TypedJavaFile.typeParam("T13"), TypedJavaFile.typeParam("T14"), interfaceSpec);
+                ib.declareNestedRecord("Pair", TypedJavaFile.typeParam("T1"), TypedJavaFile.typeParam("T2"), TypedJavaFile.typeParam("T3"), TypedJavaFile.typeParam("T4"), TypedJavaFile.typeParam("T5"), TypedJavaFile.typeParam("T6"), TypedJavaFile.typeParam("T7"), TypedJavaFile.typeParam("T8"), TypedJavaFile.typeParam("T9"), TypedJavaFile.typeParam("T10"), TypedJavaFile.typeParam("T11"), TypedJavaFile.typeParam("T12"), TypedJavaFile.typeParam("T13"), TypedJavaFile.typeParam("T14"), recordSpec);
+                return ib.bodies();
+            }
+        });
+        var anAnnotationType = TypedJavaFile.annotationType(UnsafeFacts.unverifiedClasspath(), ClassDesc.of("me.supcheg.example", "Nested14Annotation"), new TypedAnnotationTypeSpec() {
+            @Override
+            public <Self> TypedAnnotationTypeBuilder<Self> build(TypedAnnotationTypeBuilder<Self> ab) {
+                ab.declareNestedClass("Box", TypedJavaFile.typeParam("T1"), TypedJavaFile.typeParam("T2"), TypedJavaFile.typeParam("T3"), TypedJavaFile.typeParam("T4"), TypedJavaFile.typeParam("T5"), TypedJavaFile.typeParam("T6"), TypedJavaFile.typeParam("T7"), TypedJavaFile.typeParam("T8"), TypedJavaFile.typeParam("T9"), TypedJavaFile.typeParam("T10"), TypedJavaFile.typeParam("T11"), TypedJavaFile.typeParam("T12"), TypedJavaFile.typeParam("T13"), TypedJavaFile.typeParam("T14"), classSpec);
+                ab.declareNestedInterface("One", TypedJavaFile.typeParam("T1"), TypedJavaFile.typeParam("T2"), TypedJavaFile.typeParam("T3"), TypedJavaFile.typeParam("T4"), TypedJavaFile.typeParam("T5"), TypedJavaFile.typeParam("T6"), TypedJavaFile.typeParam("T7"), TypedJavaFile.typeParam("T8"), TypedJavaFile.typeParam("T9"), TypedJavaFile.typeParam("T10"), TypedJavaFile.typeParam("T11"), TypedJavaFile.typeParam("T12"), TypedJavaFile.typeParam("T13"), TypedJavaFile.typeParam("T14"), interfaceSpec);
+                ab.declareNestedRecord("Pair", TypedJavaFile.typeParam("T1"), TypedJavaFile.typeParam("T2"), TypedJavaFile.typeParam("T3"), TypedJavaFile.typeParam("T4"), TypedJavaFile.typeParam("T5"), TypedJavaFile.typeParam("T6"), TypedJavaFile.typeParam("T7"), TypedJavaFile.typeParam("T8"), TypedJavaFile.typeParam("T9"), TypedJavaFile.typeParam("T10"), TypedJavaFile.typeParam("T11"), TypedJavaFile.typeParam("T12"), TypedJavaFile.typeParam("T13"), TypedJavaFile.typeParam("T14"), recordSpec);
+                return ab;
+            }
+        });
+        var anEnum = TypedJavaFile.enum_(UnsafeFacts.unverifiedClasspath(), ClassDesc.of("me.supcheg.example", "Nested14Enum"), new TypedEnumSpec() {
+            @Override
+            public <Self> TypedEnumBodies<Self> build(TypedEnumBuilder<Self> eb) {
+                eb.constant("A", (body) -> body.declareNestedClass("Box", TypedJavaFile.typeParam("T1"), TypedJavaFile.typeParam("T2"), TypedJavaFile.typeParam("T3"), TypedJavaFile.typeParam("T4"), TypedJavaFile.typeParam("T5"), TypedJavaFile.typeParam("T6"), TypedJavaFile.typeParam("T7"), TypedJavaFile.typeParam("T8"), TypedJavaFile.typeParam("T9"), TypedJavaFile.typeParam("T10"), TypedJavaFile.typeParam("T11"), TypedJavaFile.typeParam("T12"), TypedJavaFile.typeParam("T13"), TypedJavaFile.typeParam("T14"), classSpec));
+                eb.constant("B", (body) -> body.declareNestedInterface("One", TypedJavaFile.typeParam("T1"), TypedJavaFile.typeParam("T2"), TypedJavaFile.typeParam("T3"), TypedJavaFile.typeParam("T4"), TypedJavaFile.typeParam("T5"), TypedJavaFile.typeParam("T6"), TypedJavaFile.typeParam("T7"), TypedJavaFile.typeParam("T8"), TypedJavaFile.typeParam("T9"), TypedJavaFile.typeParam("T10"), TypedJavaFile.typeParam("T11"), TypedJavaFile.typeParam("T12"), TypedJavaFile.typeParam("T13"), TypedJavaFile.typeParam("T14"), interfaceSpec));
+                eb.constant("C", (body) -> body.declareNestedRecord("Pair", TypedJavaFile.typeParam("T1"), TypedJavaFile.typeParam("T2"), TypedJavaFile.typeParam("T3"), TypedJavaFile.typeParam("T4"), TypedJavaFile.typeParam("T5"), TypedJavaFile.typeParam("T6"), TypedJavaFile.typeParam("T7"), TypedJavaFile.typeParam("T8"), TypedJavaFile.typeParam("T9"), TypedJavaFile.typeParam("T10"), TypedJavaFile.typeParam("T11"), TypedJavaFile.typeParam("T12"), TypedJavaFile.typeParam("T13"), TypedJavaFile.typeParam("T14"), recordSpec));
+                return eb.bodies();
+            }
+        });
+        Assertions.assertThat(aClass.render()).contains("public static final class Box<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> {").contains("public T14 first(T14 v0) {");
+        Assertions.assertThat(aClass.render()).contains("public interface One<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> {").contains("T14 first();");
+        Assertions.assertThat(aClass.render()).contains("public record Pair<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(T14 first) {");
+        Assertions.assertThat(anInterface.render()).contains("public static final class Box<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> {").contains("public T14 first(T14 v0) {");
+        Assertions.assertThat(anInterface.render()).contains("public interface One<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> {").contains("T14 first();");
+        Assertions.assertThat(anInterface.render()).contains("public record Pair<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(T14 first) {");
+        Assertions.assertThat(anAnnotationType.render()).contains("public static final class Box<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> {").contains("public T14 first(T14 v0) {");
+        Assertions.assertThat(anAnnotationType.render()).contains("public interface One<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> {").contains("T14 first();");
+        Assertions.assertThat(anAnnotationType.render()).contains("public record Pair<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(T14 first) {");
+        Assertions.assertThat(anEnum.render()).contains("public static final class Box<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> {").contains("public T14 first(T14 v0) {");
+        Assertions.assertThat(anEnum.render()).contains("public interface One<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> {").contains("T14 first();");
+        Assertions.assertThat(anEnum.render()).contains("public record Pair<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(T14 first) {");
+        var compiled = CompiledClasses.ofAll(List.of(aClass, anInterface, anAnnotationType, anEnum));
+        Assertions.assertThat(NestedForms.first(compiled.get(0), "me.supcheg.example.Nested14Class$Box", "x")).isEqualTo("x");
+        Assertions.assertThat(NestedForms.first(compiled.get(1), "me.supcheg.example.Nested14Interface$Box", "x")).isEqualTo("x");
+        Assertions.assertThat(NestedForms.first(compiled.get(2), "me.supcheg.example.Nested14Annotation$Box", "x")).isEqualTo("x");
+        Assertions.assertThat(NestedForms.first(compiled.get(3), "me.supcheg.example.Nested14Enum$1$Box", "x")).isEqualTo("x");
+    }
+
+    @Test
+    public void nestedTypesOfFifteenTypeParametersInEveryHierarchyRenderCompileAndRun() throws Throwable {
+        var classSpec = new TypedGenericClassSpec15<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object>() {
+            @Override
+            public <N, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> MemberBodies<N, ?> build(ClassHeader<N> h, TypeVarToken<T1> t1, TypeVarToken<T2> t2, TypeVarToken<T3> t3, TypeVarToken<T4> t4, TypeVarToken<T5> t5, TypeVarToken<T6> t6, TypeVarToken<T7> t7, TypeVarToken<T8> t8, TypeVarToken<T9> t9, TypeVarToken<T10> t10, TypeVarToken<T11> t11, TypeVarToken<T12> t12, TypeVarToken<T13> t13, TypeVarToken<T14> t14, TypeVarToken<T15> t15) {
+                var members = h.extendsObject().members();
+                var first = members.declareMethod("first", t15, t15);
+                var bodies = members.bodies();
+                bodies.define(first, (b, self, value) -> b.return_(value));
+                return bodies;
+            }
+        };
+        var interfaceSpec = new TypedGenericInterfaceSpec15<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object>() {
+            @Override
+            public <I, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> TypedInterfaceBodies<I> build(TypedInterfaceBuilder<I> ib, TypeVarToken<T1> t1, TypeVarToken<T2> t2, TypeVarToken<T3> t3, TypeVarToken<T4> t4, TypeVarToken<T5> t5, TypeVarToken<T6> t6, TypeVarToken<T7> t7, TypeVarToken<T8> t8, TypeVarToken<T9> t9, TypeVarToken<T10> t10, TypeVarToken<T11> t11, TypeVarToken<T12> t12, TypeVarToken<T13> t13, TypeVarToken<T14> t14, TypeVarToken<T15> t15) {
+                ib.declareAbstractMethod("first", t15);
+                return ib.bodies();
+            }
+        };
+        var recordSpec = new TypedGenericRecordSpec15<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object>() {
+            @Override
+            public <R, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> TypedRecordBodies<R> build(TypedRecordBuilder<R> rb, TypeVarToken<T1> t1, TypeVarToken<T2> t2, TypeVarToken<T3> t3, TypeVarToken<T4> t4, TypeVarToken<T5> t5, TypeVarToken<T6> t6, TypeVarToken<T7> t7, TypeVarToken<T8> t8, TypeVarToken<T9> t9, TypeVarToken<T10> t10, TypeVarToken<T11> t11, TypeVarToken<T12> t12, TypeVarToken<T13> t13, TypeVarToken<T14> t14, TypeVarToken<T15> t15) {
+                rb.component("first", t15);
+                return rb.bodies();
+            }
+        };
+        var aClass = TypedJavaFile.declareClass(UnsafeFacts.unverifiedClasspath(), ClassDesc.of("me.supcheg.example", "Nested15Class"), new TypedClassHeaderSpec() {
+            @Override
+            public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
+                var members = h.extendsObject().members();
+                members.declareNestedClass("Box", TypedJavaFile.typeParam("T1"), TypedJavaFile.typeParam("T2"), TypedJavaFile.typeParam("T3"), TypedJavaFile.typeParam("T4"), TypedJavaFile.typeParam("T5"), TypedJavaFile.typeParam("T6"), TypedJavaFile.typeParam("T7"), TypedJavaFile.typeParam("T8"), TypedJavaFile.typeParam("T9"), TypedJavaFile.typeParam("T10"), TypedJavaFile.typeParam("T11"), TypedJavaFile.typeParam("T12"), TypedJavaFile.typeParam("T13"), TypedJavaFile.typeParam("T14"), TypedJavaFile.typeParam("T15"), classSpec);
+                members.declareNestedInterface("One", TypedJavaFile.typeParam("T1"), TypedJavaFile.typeParam("T2"), TypedJavaFile.typeParam("T3"), TypedJavaFile.typeParam("T4"), TypedJavaFile.typeParam("T5"), TypedJavaFile.typeParam("T6"), TypedJavaFile.typeParam("T7"), TypedJavaFile.typeParam("T8"), TypedJavaFile.typeParam("T9"), TypedJavaFile.typeParam("T10"), TypedJavaFile.typeParam("T11"), TypedJavaFile.typeParam("T12"), TypedJavaFile.typeParam("T13"), TypedJavaFile.typeParam("T14"), TypedJavaFile.typeParam("T15"), interfaceSpec);
+                members.declareNestedRecord("Pair", TypedJavaFile.typeParam("T1"), TypedJavaFile.typeParam("T2"), TypedJavaFile.typeParam("T3"), TypedJavaFile.typeParam("T4"), TypedJavaFile.typeParam("T5"), TypedJavaFile.typeParam("T6"), TypedJavaFile.typeParam("T7"), TypedJavaFile.typeParam("T8"), TypedJavaFile.typeParam("T9"), TypedJavaFile.typeParam("T10"), TypedJavaFile.typeParam("T11"), TypedJavaFile.typeParam("T12"), TypedJavaFile.typeParam("T13"), TypedJavaFile.typeParam("T14"), TypedJavaFile.typeParam("T15"), recordSpec);
+                return members.bodies();
+            }
+        });
+        var anInterface = TypedJavaFile.interface_(UnsafeFacts.unverifiedClasspath(), ClassDesc.of("me.supcheg.example", "Nested15Interface"), new TypedInterfaceSpec() {
+            @Override
+            public <Self> TypedInterfaceBodies<Self> build(TypedInterfaceBuilder<Self> ib) {
+                ib.declareNestedClass("Box", TypedJavaFile.typeParam("T1"), TypedJavaFile.typeParam("T2"), TypedJavaFile.typeParam("T3"), TypedJavaFile.typeParam("T4"), TypedJavaFile.typeParam("T5"), TypedJavaFile.typeParam("T6"), TypedJavaFile.typeParam("T7"), TypedJavaFile.typeParam("T8"), TypedJavaFile.typeParam("T9"), TypedJavaFile.typeParam("T10"), TypedJavaFile.typeParam("T11"), TypedJavaFile.typeParam("T12"), TypedJavaFile.typeParam("T13"), TypedJavaFile.typeParam("T14"), TypedJavaFile.typeParam("T15"), classSpec);
+                ib.declareNestedInterface("One", TypedJavaFile.typeParam("T1"), TypedJavaFile.typeParam("T2"), TypedJavaFile.typeParam("T3"), TypedJavaFile.typeParam("T4"), TypedJavaFile.typeParam("T5"), TypedJavaFile.typeParam("T6"), TypedJavaFile.typeParam("T7"), TypedJavaFile.typeParam("T8"), TypedJavaFile.typeParam("T9"), TypedJavaFile.typeParam("T10"), TypedJavaFile.typeParam("T11"), TypedJavaFile.typeParam("T12"), TypedJavaFile.typeParam("T13"), TypedJavaFile.typeParam("T14"), TypedJavaFile.typeParam("T15"), interfaceSpec);
+                ib.declareNestedRecord("Pair", TypedJavaFile.typeParam("T1"), TypedJavaFile.typeParam("T2"), TypedJavaFile.typeParam("T3"), TypedJavaFile.typeParam("T4"), TypedJavaFile.typeParam("T5"), TypedJavaFile.typeParam("T6"), TypedJavaFile.typeParam("T7"), TypedJavaFile.typeParam("T8"), TypedJavaFile.typeParam("T9"), TypedJavaFile.typeParam("T10"), TypedJavaFile.typeParam("T11"), TypedJavaFile.typeParam("T12"), TypedJavaFile.typeParam("T13"), TypedJavaFile.typeParam("T14"), TypedJavaFile.typeParam("T15"), recordSpec);
+                return ib.bodies();
+            }
+        });
+        var anAnnotationType = TypedJavaFile.annotationType(UnsafeFacts.unverifiedClasspath(), ClassDesc.of("me.supcheg.example", "Nested15Annotation"), new TypedAnnotationTypeSpec() {
+            @Override
+            public <Self> TypedAnnotationTypeBuilder<Self> build(TypedAnnotationTypeBuilder<Self> ab) {
+                ab.declareNestedClass("Box", TypedJavaFile.typeParam("T1"), TypedJavaFile.typeParam("T2"), TypedJavaFile.typeParam("T3"), TypedJavaFile.typeParam("T4"), TypedJavaFile.typeParam("T5"), TypedJavaFile.typeParam("T6"), TypedJavaFile.typeParam("T7"), TypedJavaFile.typeParam("T8"), TypedJavaFile.typeParam("T9"), TypedJavaFile.typeParam("T10"), TypedJavaFile.typeParam("T11"), TypedJavaFile.typeParam("T12"), TypedJavaFile.typeParam("T13"), TypedJavaFile.typeParam("T14"), TypedJavaFile.typeParam("T15"), classSpec);
+                ab.declareNestedInterface("One", TypedJavaFile.typeParam("T1"), TypedJavaFile.typeParam("T2"), TypedJavaFile.typeParam("T3"), TypedJavaFile.typeParam("T4"), TypedJavaFile.typeParam("T5"), TypedJavaFile.typeParam("T6"), TypedJavaFile.typeParam("T7"), TypedJavaFile.typeParam("T8"), TypedJavaFile.typeParam("T9"), TypedJavaFile.typeParam("T10"), TypedJavaFile.typeParam("T11"), TypedJavaFile.typeParam("T12"), TypedJavaFile.typeParam("T13"), TypedJavaFile.typeParam("T14"), TypedJavaFile.typeParam("T15"), interfaceSpec);
+                ab.declareNestedRecord("Pair", TypedJavaFile.typeParam("T1"), TypedJavaFile.typeParam("T2"), TypedJavaFile.typeParam("T3"), TypedJavaFile.typeParam("T4"), TypedJavaFile.typeParam("T5"), TypedJavaFile.typeParam("T6"), TypedJavaFile.typeParam("T7"), TypedJavaFile.typeParam("T8"), TypedJavaFile.typeParam("T9"), TypedJavaFile.typeParam("T10"), TypedJavaFile.typeParam("T11"), TypedJavaFile.typeParam("T12"), TypedJavaFile.typeParam("T13"), TypedJavaFile.typeParam("T14"), TypedJavaFile.typeParam("T15"), recordSpec);
+                return ab;
+            }
+        });
+        var anEnum = TypedJavaFile.enum_(UnsafeFacts.unverifiedClasspath(), ClassDesc.of("me.supcheg.example", "Nested15Enum"), new TypedEnumSpec() {
+            @Override
+            public <Self> TypedEnumBodies<Self> build(TypedEnumBuilder<Self> eb) {
+                eb.constant("A", (body) -> body.declareNestedClass("Box", TypedJavaFile.typeParam("T1"), TypedJavaFile.typeParam("T2"), TypedJavaFile.typeParam("T3"), TypedJavaFile.typeParam("T4"), TypedJavaFile.typeParam("T5"), TypedJavaFile.typeParam("T6"), TypedJavaFile.typeParam("T7"), TypedJavaFile.typeParam("T8"), TypedJavaFile.typeParam("T9"), TypedJavaFile.typeParam("T10"), TypedJavaFile.typeParam("T11"), TypedJavaFile.typeParam("T12"), TypedJavaFile.typeParam("T13"), TypedJavaFile.typeParam("T14"), TypedJavaFile.typeParam("T15"), classSpec));
+                eb.constant("B", (body) -> body.declareNestedInterface("One", TypedJavaFile.typeParam("T1"), TypedJavaFile.typeParam("T2"), TypedJavaFile.typeParam("T3"), TypedJavaFile.typeParam("T4"), TypedJavaFile.typeParam("T5"), TypedJavaFile.typeParam("T6"), TypedJavaFile.typeParam("T7"), TypedJavaFile.typeParam("T8"), TypedJavaFile.typeParam("T9"), TypedJavaFile.typeParam("T10"), TypedJavaFile.typeParam("T11"), TypedJavaFile.typeParam("T12"), TypedJavaFile.typeParam("T13"), TypedJavaFile.typeParam("T14"), TypedJavaFile.typeParam("T15"), interfaceSpec));
+                eb.constant("C", (body) -> body.declareNestedRecord("Pair", TypedJavaFile.typeParam("T1"), TypedJavaFile.typeParam("T2"), TypedJavaFile.typeParam("T3"), TypedJavaFile.typeParam("T4"), TypedJavaFile.typeParam("T5"), TypedJavaFile.typeParam("T6"), TypedJavaFile.typeParam("T7"), TypedJavaFile.typeParam("T8"), TypedJavaFile.typeParam("T9"), TypedJavaFile.typeParam("T10"), TypedJavaFile.typeParam("T11"), TypedJavaFile.typeParam("T12"), TypedJavaFile.typeParam("T13"), TypedJavaFile.typeParam("T14"), TypedJavaFile.typeParam("T15"), recordSpec));
+                return eb.bodies();
+            }
+        });
+        Assertions.assertThat(aClass.render()).contains("public static final class Box<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> {").contains("public T15 first(T15 v0) {");
+        Assertions.assertThat(aClass.render()).contains("public interface One<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> {").contains("T15 first();");
+        Assertions.assertThat(aClass.render()).contains("public record Pair<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(T15 first) {");
+        Assertions.assertThat(anInterface.render()).contains("public static final class Box<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> {").contains("public T15 first(T15 v0) {");
+        Assertions.assertThat(anInterface.render()).contains("public interface One<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> {").contains("T15 first();");
+        Assertions.assertThat(anInterface.render()).contains("public record Pair<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(T15 first) {");
+        Assertions.assertThat(anAnnotationType.render()).contains("public static final class Box<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> {").contains("public T15 first(T15 v0) {");
+        Assertions.assertThat(anAnnotationType.render()).contains("public interface One<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> {").contains("T15 first();");
+        Assertions.assertThat(anAnnotationType.render()).contains("public record Pair<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(T15 first) {");
+        Assertions.assertThat(anEnum.render()).contains("public static final class Box<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> {").contains("public T15 first(T15 v0) {");
+        Assertions.assertThat(anEnum.render()).contains("public interface One<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> {").contains("T15 first();");
+        Assertions.assertThat(anEnum.render()).contains("public record Pair<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(T15 first) {");
+        var compiled = CompiledClasses.ofAll(List.of(aClass, anInterface, anAnnotationType, anEnum));
+        Assertions.assertThat(NestedForms.first(compiled.get(0), "me.supcheg.example.Nested15Class$Box", "x")).isEqualTo("x");
+        Assertions.assertThat(NestedForms.first(compiled.get(1), "me.supcheg.example.Nested15Interface$Box", "x")).isEqualTo("x");
+        Assertions.assertThat(NestedForms.first(compiled.get(2), "me.supcheg.example.Nested15Annotation$Box", "x")).isEqualTo("x");
+        Assertions.assertThat(NestedForms.first(compiled.get(3), "me.supcheg.example.Nested15Enum$1$Box", "x")).isEqualTo("x");
+    }
+
+    @Test
+    public void nestedTypesOfSixteenTypeParametersInEveryHierarchyRenderCompileAndRun() throws Throwable {
+        var classSpec = new TypedGenericClassSpec16<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object>() {
+            @Override
+            public <N, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> MemberBodies<N, ?> build(ClassHeader<N> h, TypeVarToken<T1> t1, TypeVarToken<T2> t2, TypeVarToken<T3> t3, TypeVarToken<T4> t4, TypeVarToken<T5> t5, TypeVarToken<T6> t6, TypeVarToken<T7> t7, TypeVarToken<T8> t8, TypeVarToken<T9> t9, TypeVarToken<T10> t10, TypeVarToken<T11> t11, TypeVarToken<T12> t12, TypeVarToken<T13> t13, TypeVarToken<T14> t14, TypeVarToken<T15> t15, TypeVarToken<T16> t16) {
+                var members = h.extendsObject().members();
+                var first = members.declareMethod("first", t16, t16);
+                var bodies = members.bodies();
+                bodies.define(first, (b, self, value) -> b.return_(value));
+                return bodies;
+            }
+        };
+        var interfaceSpec = new TypedGenericInterfaceSpec16<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object>() {
+            @Override
+            public <I, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> TypedInterfaceBodies<I> build(TypedInterfaceBuilder<I> ib, TypeVarToken<T1> t1, TypeVarToken<T2> t2, TypeVarToken<T3> t3, TypeVarToken<T4> t4, TypeVarToken<T5> t5, TypeVarToken<T6> t6, TypeVarToken<T7> t7, TypeVarToken<T8> t8, TypeVarToken<T9> t9, TypeVarToken<T10> t10, TypeVarToken<T11> t11, TypeVarToken<T12> t12, TypeVarToken<T13> t13, TypeVarToken<T14> t14, TypeVarToken<T15> t15, TypeVarToken<T16> t16) {
+                ib.declareAbstractMethod("first", t16);
+                return ib.bodies();
+            }
+        };
+        var recordSpec = new TypedGenericRecordSpec16<Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object>() {
+            @Override
+            public <R, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> TypedRecordBodies<R> build(TypedRecordBuilder<R> rb, TypeVarToken<T1> t1, TypeVarToken<T2> t2, TypeVarToken<T3> t3, TypeVarToken<T4> t4, TypeVarToken<T5> t5, TypeVarToken<T6> t6, TypeVarToken<T7> t7, TypeVarToken<T8> t8, TypeVarToken<T9> t9, TypeVarToken<T10> t10, TypeVarToken<T11> t11, TypeVarToken<T12> t12, TypeVarToken<T13> t13, TypeVarToken<T14> t14, TypeVarToken<T15> t15, TypeVarToken<T16> t16) {
+                rb.component("first", t16);
+                return rb.bodies();
+            }
+        };
+        var aClass = TypedJavaFile.declareClass(UnsafeFacts.unverifiedClasspath(), ClassDesc.of("me.supcheg.example", "Nested16Class"), new TypedClassHeaderSpec() {
+            @Override
+            public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
+                var members = h.extendsObject().members();
+                members.declareNestedClass("Box", TypedJavaFile.typeParam("T1"), TypedJavaFile.typeParam("T2"), TypedJavaFile.typeParam("T3"), TypedJavaFile.typeParam("T4"), TypedJavaFile.typeParam("T5"), TypedJavaFile.typeParam("T6"), TypedJavaFile.typeParam("T7"), TypedJavaFile.typeParam("T8"), TypedJavaFile.typeParam("T9"), TypedJavaFile.typeParam("T10"), TypedJavaFile.typeParam("T11"), TypedJavaFile.typeParam("T12"), TypedJavaFile.typeParam("T13"), TypedJavaFile.typeParam("T14"), TypedJavaFile.typeParam("T15"), TypedJavaFile.typeParam("T16"), classSpec);
+                members.declareNestedInterface("One", TypedJavaFile.typeParam("T1"), TypedJavaFile.typeParam("T2"), TypedJavaFile.typeParam("T3"), TypedJavaFile.typeParam("T4"), TypedJavaFile.typeParam("T5"), TypedJavaFile.typeParam("T6"), TypedJavaFile.typeParam("T7"), TypedJavaFile.typeParam("T8"), TypedJavaFile.typeParam("T9"), TypedJavaFile.typeParam("T10"), TypedJavaFile.typeParam("T11"), TypedJavaFile.typeParam("T12"), TypedJavaFile.typeParam("T13"), TypedJavaFile.typeParam("T14"), TypedJavaFile.typeParam("T15"), TypedJavaFile.typeParam("T16"), interfaceSpec);
+                members.declareNestedRecord("Pair", TypedJavaFile.typeParam("T1"), TypedJavaFile.typeParam("T2"), TypedJavaFile.typeParam("T3"), TypedJavaFile.typeParam("T4"), TypedJavaFile.typeParam("T5"), TypedJavaFile.typeParam("T6"), TypedJavaFile.typeParam("T7"), TypedJavaFile.typeParam("T8"), TypedJavaFile.typeParam("T9"), TypedJavaFile.typeParam("T10"), TypedJavaFile.typeParam("T11"), TypedJavaFile.typeParam("T12"), TypedJavaFile.typeParam("T13"), TypedJavaFile.typeParam("T14"), TypedJavaFile.typeParam("T15"), TypedJavaFile.typeParam("T16"), recordSpec);
+                return members.bodies();
+            }
+        });
+        var anInterface = TypedJavaFile.interface_(UnsafeFacts.unverifiedClasspath(), ClassDesc.of("me.supcheg.example", "Nested16Interface"), new TypedInterfaceSpec() {
+            @Override
+            public <Self> TypedInterfaceBodies<Self> build(TypedInterfaceBuilder<Self> ib) {
+                ib.declareNestedClass("Box", TypedJavaFile.typeParam("T1"), TypedJavaFile.typeParam("T2"), TypedJavaFile.typeParam("T3"), TypedJavaFile.typeParam("T4"), TypedJavaFile.typeParam("T5"), TypedJavaFile.typeParam("T6"), TypedJavaFile.typeParam("T7"), TypedJavaFile.typeParam("T8"), TypedJavaFile.typeParam("T9"), TypedJavaFile.typeParam("T10"), TypedJavaFile.typeParam("T11"), TypedJavaFile.typeParam("T12"), TypedJavaFile.typeParam("T13"), TypedJavaFile.typeParam("T14"), TypedJavaFile.typeParam("T15"), TypedJavaFile.typeParam("T16"), classSpec);
+                ib.declareNestedInterface("One", TypedJavaFile.typeParam("T1"), TypedJavaFile.typeParam("T2"), TypedJavaFile.typeParam("T3"), TypedJavaFile.typeParam("T4"), TypedJavaFile.typeParam("T5"), TypedJavaFile.typeParam("T6"), TypedJavaFile.typeParam("T7"), TypedJavaFile.typeParam("T8"), TypedJavaFile.typeParam("T9"), TypedJavaFile.typeParam("T10"), TypedJavaFile.typeParam("T11"), TypedJavaFile.typeParam("T12"), TypedJavaFile.typeParam("T13"), TypedJavaFile.typeParam("T14"), TypedJavaFile.typeParam("T15"), TypedJavaFile.typeParam("T16"), interfaceSpec);
+                ib.declareNestedRecord("Pair", TypedJavaFile.typeParam("T1"), TypedJavaFile.typeParam("T2"), TypedJavaFile.typeParam("T3"), TypedJavaFile.typeParam("T4"), TypedJavaFile.typeParam("T5"), TypedJavaFile.typeParam("T6"), TypedJavaFile.typeParam("T7"), TypedJavaFile.typeParam("T8"), TypedJavaFile.typeParam("T9"), TypedJavaFile.typeParam("T10"), TypedJavaFile.typeParam("T11"), TypedJavaFile.typeParam("T12"), TypedJavaFile.typeParam("T13"), TypedJavaFile.typeParam("T14"), TypedJavaFile.typeParam("T15"), TypedJavaFile.typeParam("T16"), recordSpec);
+                return ib.bodies();
+            }
+        });
+        var anAnnotationType = TypedJavaFile.annotationType(UnsafeFacts.unverifiedClasspath(), ClassDesc.of("me.supcheg.example", "Nested16Annotation"), new TypedAnnotationTypeSpec() {
+            @Override
+            public <Self> TypedAnnotationTypeBuilder<Self> build(TypedAnnotationTypeBuilder<Self> ab) {
+                ab.declareNestedClass("Box", TypedJavaFile.typeParam("T1"), TypedJavaFile.typeParam("T2"), TypedJavaFile.typeParam("T3"), TypedJavaFile.typeParam("T4"), TypedJavaFile.typeParam("T5"), TypedJavaFile.typeParam("T6"), TypedJavaFile.typeParam("T7"), TypedJavaFile.typeParam("T8"), TypedJavaFile.typeParam("T9"), TypedJavaFile.typeParam("T10"), TypedJavaFile.typeParam("T11"), TypedJavaFile.typeParam("T12"), TypedJavaFile.typeParam("T13"), TypedJavaFile.typeParam("T14"), TypedJavaFile.typeParam("T15"), TypedJavaFile.typeParam("T16"), classSpec);
+                ab.declareNestedInterface("One", TypedJavaFile.typeParam("T1"), TypedJavaFile.typeParam("T2"), TypedJavaFile.typeParam("T3"), TypedJavaFile.typeParam("T4"), TypedJavaFile.typeParam("T5"), TypedJavaFile.typeParam("T6"), TypedJavaFile.typeParam("T7"), TypedJavaFile.typeParam("T8"), TypedJavaFile.typeParam("T9"), TypedJavaFile.typeParam("T10"), TypedJavaFile.typeParam("T11"), TypedJavaFile.typeParam("T12"), TypedJavaFile.typeParam("T13"), TypedJavaFile.typeParam("T14"), TypedJavaFile.typeParam("T15"), TypedJavaFile.typeParam("T16"), interfaceSpec);
+                ab.declareNestedRecord("Pair", TypedJavaFile.typeParam("T1"), TypedJavaFile.typeParam("T2"), TypedJavaFile.typeParam("T3"), TypedJavaFile.typeParam("T4"), TypedJavaFile.typeParam("T5"), TypedJavaFile.typeParam("T6"), TypedJavaFile.typeParam("T7"), TypedJavaFile.typeParam("T8"), TypedJavaFile.typeParam("T9"), TypedJavaFile.typeParam("T10"), TypedJavaFile.typeParam("T11"), TypedJavaFile.typeParam("T12"), TypedJavaFile.typeParam("T13"), TypedJavaFile.typeParam("T14"), TypedJavaFile.typeParam("T15"), TypedJavaFile.typeParam("T16"), recordSpec);
+                return ab;
+            }
+        });
+        var anEnum = TypedJavaFile.enum_(UnsafeFacts.unverifiedClasspath(), ClassDesc.of("me.supcheg.example", "Nested16Enum"), new TypedEnumSpec() {
+            @Override
+            public <Self> TypedEnumBodies<Self> build(TypedEnumBuilder<Self> eb) {
+                eb.constant("A", (body) -> body.declareNestedClass("Box", TypedJavaFile.typeParam("T1"), TypedJavaFile.typeParam("T2"), TypedJavaFile.typeParam("T3"), TypedJavaFile.typeParam("T4"), TypedJavaFile.typeParam("T5"), TypedJavaFile.typeParam("T6"), TypedJavaFile.typeParam("T7"), TypedJavaFile.typeParam("T8"), TypedJavaFile.typeParam("T9"), TypedJavaFile.typeParam("T10"), TypedJavaFile.typeParam("T11"), TypedJavaFile.typeParam("T12"), TypedJavaFile.typeParam("T13"), TypedJavaFile.typeParam("T14"), TypedJavaFile.typeParam("T15"), TypedJavaFile.typeParam("T16"), classSpec));
+                eb.constant("B", (body) -> body.declareNestedInterface("One", TypedJavaFile.typeParam("T1"), TypedJavaFile.typeParam("T2"), TypedJavaFile.typeParam("T3"), TypedJavaFile.typeParam("T4"), TypedJavaFile.typeParam("T5"), TypedJavaFile.typeParam("T6"), TypedJavaFile.typeParam("T7"), TypedJavaFile.typeParam("T8"), TypedJavaFile.typeParam("T9"), TypedJavaFile.typeParam("T10"), TypedJavaFile.typeParam("T11"), TypedJavaFile.typeParam("T12"), TypedJavaFile.typeParam("T13"), TypedJavaFile.typeParam("T14"), TypedJavaFile.typeParam("T15"), TypedJavaFile.typeParam("T16"), interfaceSpec));
+                eb.constant("C", (body) -> body.declareNestedRecord("Pair", TypedJavaFile.typeParam("T1"), TypedJavaFile.typeParam("T2"), TypedJavaFile.typeParam("T3"), TypedJavaFile.typeParam("T4"), TypedJavaFile.typeParam("T5"), TypedJavaFile.typeParam("T6"), TypedJavaFile.typeParam("T7"), TypedJavaFile.typeParam("T8"), TypedJavaFile.typeParam("T9"), TypedJavaFile.typeParam("T10"), TypedJavaFile.typeParam("T11"), TypedJavaFile.typeParam("T12"), TypedJavaFile.typeParam("T13"), TypedJavaFile.typeParam("T14"), TypedJavaFile.typeParam("T15"), TypedJavaFile.typeParam("T16"), recordSpec));
+                return eb.bodies();
+            }
+        });
+        Assertions.assertThat(aClass.render()).contains("public static final class Box<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> {").contains("public T16 first(T16 v0) {");
+        Assertions.assertThat(aClass.render()).contains("public interface One<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> {").contains("T16 first();");
+        Assertions.assertThat(aClass.render()).contains("public record Pair<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(T16 first) {");
+        Assertions.assertThat(anInterface.render()).contains("public static final class Box<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> {").contains("public T16 first(T16 v0) {");
+        Assertions.assertThat(anInterface.render()).contains("public interface One<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> {").contains("T16 first();");
+        Assertions.assertThat(anInterface.render()).contains("public record Pair<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(T16 first) {");
+        Assertions.assertThat(anAnnotationType.render()).contains("public static final class Box<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> {").contains("public T16 first(T16 v0) {");
+        Assertions.assertThat(anAnnotationType.render()).contains("public interface One<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> {").contains("T16 first();");
+        Assertions.assertThat(anAnnotationType.render()).contains("public record Pair<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(T16 first) {");
+        Assertions.assertThat(anEnum.render()).contains("public static final class Box<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> {").contains("public T16 first(T16 v0) {");
+        Assertions.assertThat(anEnum.render()).contains("public interface One<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> {").contains("T16 first();");
+        Assertions.assertThat(anEnum.render()).contains("public record Pair<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(T16 first) {");
+        var compiled = CompiledClasses.ofAll(List.of(aClass, anInterface, anAnnotationType, anEnum));
+        Assertions.assertThat(NestedForms.first(compiled.get(0), "me.supcheg.example.Nested16Class$Box", "x")).isEqualTo("x");
+        Assertions.assertThat(NestedForms.first(compiled.get(1), "me.supcheg.example.Nested16Interface$Box", "x")).isEqualTo("x");
+        Assertions.assertThat(NestedForms.first(compiled.get(2), "me.supcheg.example.Nested16Annotation$Box", "x")).isEqualTo("x");
+        Assertions.assertThat(NestedForms.first(compiled.get(3), "me.supcheg.example.Nested16Enum$1$Box", "x")).isEqualTo("x");
     }
 }

@@ -82,7 +82,31 @@ import me.supcheg.javafile.facts.meta.Facts;
     Widening12.class,
     Fn12.class,
     Do12.class,
-    Make12.class
+    Make12.class,
+    Wide13.class,
+    Abstract13.class,
+    Widening13.class,
+    Fn13.class,
+    Do13.class,
+    Make13.class,
+    Wide14.class,
+    Abstract14.class,
+    Widening14.class,
+    Fn14.class,
+    Do14.class,
+    Make14.class,
+    Wide15.class,
+    Abstract15.class,
+    Widening15.class,
+    Fn15.class,
+    Do15.class,
+    Make15.class,
+    Wide16.class,
+    Abstract16.class,
+    Widening16.class,
+    Fn16.class,
+    Do16.class,
+    Make16.class
 })
 final class ArityFixtures {
 }

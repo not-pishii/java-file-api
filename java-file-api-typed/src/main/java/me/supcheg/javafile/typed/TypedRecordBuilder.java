@@ -237,7 +237,7 @@ public final class TypedRecordBuilder<Self> extends RecordConstructorArities<Sel
     }
 
     // The declarations of the record's constructors, `declareCompactConstructor`, `declareCanonicalConstructor`
-    // and `declareConstructor`, of every arity 0 to 12, are generated into the superclass of this class
+    // and `declareConstructor`, of every arity 0 to 16, are generated into the superclass of this class
     // (RecordConstructorArities, see TypedCodegen). They call the hooks below.
 
     @Override

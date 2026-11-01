@@ -628,7 +628,7 @@ public final class TypedEnumConstantBodies<Self> extends EnumConstantBodyArities
     }
 
     /// Declares a member class of the constant's body with the type parameters of a generated stage:
-    /// what [EnumConstantBodyArities] declares of four to twelve.
+    /// what [EnumConstantBodyArities] declares of four to sixteen.
     @Override
     final <N> FinalClassToken<N> nestedClassToken(
             String name, List<TypeParameter<?>> parameters, NestedDeclarations.ClassBodies spec) {

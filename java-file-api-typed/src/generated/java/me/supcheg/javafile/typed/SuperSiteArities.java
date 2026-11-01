@@ -7,6 +7,10 @@ import me.supcheg.javafile.facts.CtorRef1;
 import me.supcheg.javafile.facts.CtorRef10;
 import me.supcheg.javafile.facts.CtorRef11;
 import me.supcheg.javafile.facts.CtorRef12;
+import me.supcheg.javafile.facts.CtorRef13;
+import me.supcheg.javafile.facts.CtorRef14;
+import me.supcheg.javafile.facts.CtorRef15;
+import me.supcheg.javafile.facts.CtorRef16;
 import me.supcheg.javafile.facts.CtorRef2;
 import me.supcheg.javafile.facts.CtorRef3;
 import me.supcheg.javafile.facts.CtorRef4;
@@ -21,6 +25,10 @@ import me.supcheg.javafile.facts.SuperCtorRef1;
 import me.supcheg.javafile.facts.SuperCtorRef10;
 import me.supcheg.javafile.facts.SuperCtorRef11;
 import me.supcheg.javafile.facts.SuperCtorRef12;
+import me.supcheg.javafile.facts.SuperCtorRef13;
+import me.supcheg.javafile.facts.SuperCtorRef14;
+import me.supcheg.javafile.facts.SuperCtorRef15;
+import me.supcheg.javafile.facts.SuperCtorRef16;
 import me.supcheg.javafile.facts.SuperCtorRef2;
 import me.supcheg.javafile.facts.SuperCtorRef3;
 import me.supcheg.javafile.facts.SuperCtorRef4;
@@ -650,6 +658,334 @@ abstract sealed class SuperSiteArities<Self, S> permits SuperSite {
     }
 
     /**
+     * `super(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, );` by a constructor a subclass alone calls, then the rest of the body.
+     *
+     * @param ctor the constructor of the superclass
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param a10 the tenth argument
+     * @param a11 the eleventh argument
+     * @param a12 the twelfth argument
+     * @param a13 the thirteenth argument
+     * @param rest what follows the call, given its block and `this`
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @return the proof that the body ended
+     * @throws IllegalStateException if `super_` was called already, the constructor of the superclass throws a checked exception the constructor does not declare, or an argument uses a variable out of scope or throws one
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> Terminated<Void> super_(SuperCtorRef13<S, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> ctor, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Expr<? extends A10> a10, Expr<? extends A11> a11, Expr<? extends A12> a12, Expr<? extends A13> a13, InstanceBody0<Self, VoidBody, Void> rest) {
+        return call(ctor, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13), Passing.EACH, rest);
+    }
+
+    /**
+     * `super(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, ...);` by a constructor a subclass alone calls, the arguments of its last parameter, which is of variable arity, one by one, then the rest of the body.
+     *
+     * @param ctor the constructor of the superclass
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param a10 the tenth argument
+     * @param a11 the eleventh argument
+     * @param a12 the twelfth argument
+     * @param rest the arguments of the last parameter
+     * @param body what follows the call, given its block and `this`
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @return the proof that the body ended
+     * @throws IllegalStateException if `super_` was called already, the constructor of the superclass throws a checked exception the constructor does not declare, or an argument uses a variable out of scope or throws one
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> Terminated<Void> super_(SuperCtorRef13<S, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> ctor, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Expr<? extends A10> a10, Expr<? extends A11> a11, Expr<? extends A12> a12, Varargs<A13> rest, InstanceBody0<Self, VoidBody, Void> body) {
+        return call(ctor, Expressions.spread(ctor, rest, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12)), Expressions.spreading(rest), body);
+    }
+
+    /**
+     * `super(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, );` by a constructor a subclass alone calls, then the rest of the body.
+     *
+     * @param ctor the constructor of the superclass
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param a10 the tenth argument
+     * @param a11 the eleventh argument
+     * @param a12 the twelfth argument
+     * @param a13 the thirteenth argument
+     * @param a14 the fourteenth argument
+     * @param rest what follows the call, given its block and `this`
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @return the proof that the body ended
+     * @throws IllegalStateException if `super_` was called already, the constructor of the superclass throws a checked exception the constructor does not declare, or an argument uses a variable out of scope or throws one
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> Terminated<Void> super_(SuperCtorRef14<S, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> ctor, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Expr<? extends A10> a10, Expr<? extends A11> a11, Expr<? extends A12> a12, Expr<? extends A13> a13, Expr<? extends A14> a14, InstanceBody0<Self, VoidBody, Void> rest) {
+        return call(ctor, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14), Passing.EACH, rest);
+    }
+
+    /**
+     * `super(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, ...);` by a constructor a subclass alone calls, the arguments of its last parameter, which is of variable arity, one by one, then the rest of the body.
+     *
+     * @param ctor the constructor of the superclass
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param a10 the tenth argument
+     * @param a11 the eleventh argument
+     * @param a12 the twelfth argument
+     * @param a13 the thirteenth argument
+     * @param rest the arguments of the last parameter
+     * @param body what follows the call, given its block and `this`
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @return the proof that the body ended
+     * @throws IllegalStateException if `super_` was called already, the constructor of the superclass throws a checked exception the constructor does not declare, or an argument uses a variable out of scope or throws one
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> Terminated<Void> super_(SuperCtorRef14<S, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> ctor, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Expr<? extends A10> a10, Expr<? extends A11> a11, Expr<? extends A12> a12, Expr<? extends A13> a13, Varargs<A14> rest, InstanceBody0<Self, VoidBody, Void> body) {
+        return call(ctor, Expressions.spread(ctor, rest, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13)), Expressions.spreading(rest), body);
+    }
+
+    /**
+     * `super(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, );` by a constructor a subclass alone calls, then the rest of the body.
+     *
+     * @param ctor the constructor of the superclass
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param a10 the tenth argument
+     * @param a11 the eleventh argument
+     * @param a12 the twelfth argument
+     * @param a13 the thirteenth argument
+     * @param a14 the fourteenth argument
+     * @param a15 the fifteenth argument
+     * @param rest what follows the call, given its block and `this`
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @param <A15> the type of the fifteenth parameter
+     * @return the proof that the body ended
+     * @throws IllegalStateException if `super_` was called already, the constructor of the superclass throws a checked exception the constructor does not declare, or an argument uses a variable out of scope or throws one
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> Terminated<Void> super_(SuperCtorRef15<S, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> ctor, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Expr<? extends A10> a10, Expr<? extends A11> a11, Expr<? extends A12> a12, Expr<? extends A13> a13, Expr<? extends A14> a14, Expr<? extends A15> a15, InstanceBody0<Self, VoidBody, Void> rest) {
+        return call(ctor, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15), Passing.EACH, rest);
+    }
+
+    /**
+     * `super(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, ...);` by a constructor a subclass alone calls, the arguments of its last parameter, which is of variable arity, one by one, then the rest of the body.
+     *
+     * @param ctor the constructor of the superclass
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param a10 the tenth argument
+     * @param a11 the eleventh argument
+     * @param a12 the twelfth argument
+     * @param a13 the thirteenth argument
+     * @param a14 the fourteenth argument
+     * @param rest the arguments of the last parameter
+     * @param body what follows the call, given its block and `this`
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @param <A15> the type of the fifteenth parameter
+     * @return the proof that the body ended
+     * @throws IllegalStateException if `super_` was called already, the constructor of the superclass throws a checked exception the constructor does not declare, or an argument uses a variable out of scope or throws one
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> Terminated<Void> super_(SuperCtorRef15<S, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> ctor, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Expr<? extends A10> a10, Expr<? extends A11> a11, Expr<? extends A12> a12, Expr<? extends A13> a13, Expr<? extends A14> a14, Varargs<A15> rest, InstanceBody0<Self, VoidBody, Void> body) {
+        return call(ctor, Expressions.spread(ctor, rest, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14)), Expressions.spreading(rest), body);
+    }
+
+    /**
+     * `super(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, );` by a constructor a subclass alone calls, then the rest of the body.
+     *
+     * @param ctor the constructor of the superclass
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param a10 the tenth argument
+     * @param a11 the eleventh argument
+     * @param a12 the twelfth argument
+     * @param a13 the thirteenth argument
+     * @param a14 the fourteenth argument
+     * @param a15 the fifteenth argument
+     * @param a16 the sixteenth argument
+     * @param rest what follows the call, given its block and `this`
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @param <A15> the type of the fifteenth parameter
+     * @param <A16> the type of the sixteenth parameter
+     * @return the proof that the body ended
+     * @throws IllegalStateException if `super_` was called already, the constructor of the superclass throws a checked exception the constructor does not declare, or an argument uses a variable out of scope or throws one
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> Terminated<Void> super_(SuperCtorRef16<S, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> ctor, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Expr<? extends A10> a10, Expr<? extends A11> a11, Expr<? extends A12> a12, Expr<? extends A13> a13, Expr<? extends A14> a14, Expr<? extends A15> a15, Expr<? extends A16> a16, InstanceBody0<Self, VoidBody, Void> rest) {
+        return call(ctor, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16), Passing.EACH, rest);
+    }
+
+    /**
+     * `super(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, ...);` by a constructor a subclass alone calls, the arguments of its last parameter, which is of variable arity, one by one, then the rest of the body.
+     *
+     * @param ctor the constructor of the superclass
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param a10 the tenth argument
+     * @param a11 the eleventh argument
+     * @param a12 the twelfth argument
+     * @param a13 the thirteenth argument
+     * @param a14 the fourteenth argument
+     * @param a15 the fifteenth argument
+     * @param rest the arguments of the last parameter
+     * @param body what follows the call, given its block and `this`
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @param <A15> the type of the fifteenth parameter
+     * @param <A16> the type of the sixteenth parameter
+     * @return the proof that the body ended
+     * @throws IllegalStateException if `super_` was called already, the constructor of the superclass throws a checked exception the constructor does not declare, or an argument uses a variable out of scope or throws one
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> Terminated<Void> super_(SuperCtorRef16<S, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> ctor, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Expr<? extends A10> a10, Expr<? extends A11> a11, Expr<? extends A12> a12, Expr<? extends A13> a13, Expr<? extends A14> a14, Expr<? extends A15> a15, Varargs<A16> rest, InstanceBody0<Self, VoidBody, Void> body) {
+        return call(ctor, Expressions.spread(ctor, rest, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15)), Expressions.spreading(rest), body);
+    }
+
+    /**
      * `super();` by a `public` constructor of a superclass that is not abstract, then the rest of the body.
      *
      * @param ctor the constructor of the superclass
@@ -1259,5 +1595,333 @@ abstract sealed class SuperSiteArities<Self, S> permits SuperSite {
      */
     public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> Terminated<Void> super_(CtorRef12<S, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> ctor, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Expr<? extends A10> a10, Expr<? extends A11> a11, Varargs<A12> rest, InstanceBody0<Self, VoidBody, Void> body) {
         return call(ctor, Expressions.spread(ctor, rest, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11)), Expressions.spreading(rest), body);
+    }
+
+    /**
+     * `super(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, );` by a `public` constructor of a superclass that is not abstract, then the rest of the body.
+     *
+     * @param ctor the constructor of the superclass
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param a10 the tenth argument
+     * @param a11 the eleventh argument
+     * @param a12 the twelfth argument
+     * @param a13 the thirteenth argument
+     * @param rest what follows the call, given its block and `this`
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @return the proof that the body ended
+     * @throws IllegalStateException if `super_` was called already, the constructor of the superclass throws a checked exception the constructor does not declare, or an argument uses a variable out of scope or throws one
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> Terminated<Void> super_(CtorRef13<S, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> ctor, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Expr<? extends A10> a10, Expr<? extends A11> a11, Expr<? extends A12> a12, Expr<? extends A13> a13, InstanceBody0<Self, VoidBody, Void> rest) {
+        return call(ctor, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13), Passing.EACH, rest);
+    }
+
+    /**
+     * `super(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, ...);` by a `public` constructor of a superclass that is not abstract, the arguments of its last parameter, which is of variable arity, one by one, then the rest of the body.
+     *
+     * @param ctor the constructor of the superclass
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param a10 the tenth argument
+     * @param a11 the eleventh argument
+     * @param a12 the twelfth argument
+     * @param rest the arguments of the last parameter
+     * @param body what follows the call, given its block and `this`
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @return the proof that the body ended
+     * @throws IllegalStateException if `super_` was called already, the constructor of the superclass throws a checked exception the constructor does not declare, or an argument uses a variable out of scope or throws one
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> Terminated<Void> super_(CtorRef13<S, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> ctor, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Expr<? extends A10> a10, Expr<? extends A11> a11, Expr<? extends A12> a12, Varargs<A13> rest, InstanceBody0<Self, VoidBody, Void> body) {
+        return call(ctor, Expressions.spread(ctor, rest, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12)), Expressions.spreading(rest), body);
+    }
+
+    /**
+     * `super(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, );` by a `public` constructor of a superclass that is not abstract, then the rest of the body.
+     *
+     * @param ctor the constructor of the superclass
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param a10 the tenth argument
+     * @param a11 the eleventh argument
+     * @param a12 the twelfth argument
+     * @param a13 the thirteenth argument
+     * @param a14 the fourteenth argument
+     * @param rest what follows the call, given its block and `this`
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @return the proof that the body ended
+     * @throws IllegalStateException if `super_` was called already, the constructor of the superclass throws a checked exception the constructor does not declare, or an argument uses a variable out of scope or throws one
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> Terminated<Void> super_(CtorRef14<S, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> ctor, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Expr<? extends A10> a10, Expr<? extends A11> a11, Expr<? extends A12> a12, Expr<? extends A13> a13, Expr<? extends A14> a14, InstanceBody0<Self, VoidBody, Void> rest) {
+        return call(ctor, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14), Passing.EACH, rest);
+    }
+
+    /**
+     * `super(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, ...);` by a `public` constructor of a superclass that is not abstract, the arguments of its last parameter, which is of variable arity, one by one, then the rest of the body.
+     *
+     * @param ctor the constructor of the superclass
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param a10 the tenth argument
+     * @param a11 the eleventh argument
+     * @param a12 the twelfth argument
+     * @param a13 the thirteenth argument
+     * @param rest the arguments of the last parameter
+     * @param body what follows the call, given its block and `this`
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @return the proof that the body ended
+     * @throws IllegalStateException if `super_` was called already, the constructor of the superclass throws a checked exception the constructor does not declare, or an argument uses a variable out of scope or throws one
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> Terminated<Void> super_(CtorRef14<S, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> ctor, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Expr<? extends A10> a10, Expr<? extends A11> a11, Expr<? extends A12> a12, Expr<? extends A13> a13, Varargs<A14> rest, InstanceBody0<Self, VoidBody, Void> body) {
+        return call(ctor, Expressions.spread(ctor, rest, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13)), Expressions.spreading(rest), body);
+    }
+
+    /**
+     * `super(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, );` by a `public` constructor of a superclass that is not abstract, then the rest of the body.
+     *
+     * @param ctor the constructor of the superclass
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param a10 the tenth argument
+     * @param a11 the eleventh argument
+     * @param a12 the twelfth argument
+     * @param a13 the thirteenth argument
+     * @param a14 the fourteenth argument
+     * @param a15 the fifteenth argument
+     * @param rest what follows the call, given its block and `this`
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @param <A15> the type of the fifteenth parameter
+     * @return the proof that the body ended
+     * @throws IllegalStateException if `super_` was called already, the constructor of the superclass throws a checked exception the constructor does not declare, or an argument uses a variable out of scope or throws one
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> Terminated<Void> super_(CtorRef15<S, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> ctor, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Expr<? extends A10> a10, Expr<? extends A11> a11, Expr<? extends A12> a12, Expr<? extends A13> a13, Expr<? extends A14> a14, Expr<? extends A15> a15, InstanceBody0<Self, VoidBody, Void> rest) {
+        return call(ctor, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15), Passing.EACH, rest);
+    }
+
+    /**
+     * `super(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, ...);` by a `public` constructor of a superclass that is not abstract, the arguments of its last parameter, which is of variable arity, one by one, then the rest of the body.
+     *
+     * @param ctor the constructor of the superclass
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param a10 the tenth argument
+     * @param a11 the eleventh argument
+     * @param a12 the twelfth argument
+     * @param a13 the thirteenth argument
+     * @param a14 the fourteenth argument
+     * @param rest the arguments of the last parameter
+     * @param body what follows the call, given its block and `this`
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @param <A15> the type of the fifteenth parameter
+     * @return the proof that the body ended
+     * @throws IllegalStateException if `super_` was called already, the constructor of the superclass throws a checked exception the constructor does not declare, or an argument uses a variable out of scope or throws one
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> Terminated<Void> super_(CtorRef15<S, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> ctor, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Expr<? extends A10> a10, Expr<? extends A11> a11, Expr<? extends A12> a12, Expr<? extends A13> a13, Expr<? extends A14> a14, Varargs<A15> rest, InstanceBody0<Self, VoidBody, Void> body) {
+        return call(ctor, Expressions.spread(ctor, rest, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14)), Expressions.spreading(rest), body);
+    }
+
+    /**
+     * `super(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, );` by a `public` constructor of a superclass that is not abstract, then the rest of the body.
+     *
+     * @param ctor the constructor of the superclass
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param a10 the tenth argument
+     * @param a11 the eleventh argument
+     * @param a12 the twelfth argument
+     * @param a13 the thirteenth argument
+     * @param a14 the fourteenth argument
+     * @param a15 the fifteenth argument
+     * @param a16 the sixteenth argument
+     * @param rest what follows the call, given its block and `this`
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @param <A15> the type of the fifteenth parameter
+     * @param <A16> the type of the sixteenth parameter
+     * @return the proof that the body ended
+     * @throws IllegalStateException if `super_` was called already, the constructor of the superclass throws a checked exception the constructor does not declare, or an argument uses a variable out of scope or throws one
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> Terminated<Void> super_(CtorRef16<S, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> ctor, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Expr<? extends A10> a10, Expr<? extends A11> a11, Expr<? extends A12> a12, Expr<? extends A13> a13, Expr<? extends A14> a14, Expr<? extends A15> a15, Expr<? extends A16> a16, InstanceBody0<Self, VoidBody, Void> rest) {
+        return call(ctor, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16), Passing.EACH, rest);
+    }
+
+    /**
+     * `super(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, ...);` by a `public` constructor of a superclass that is not abstract, the arguments of its last parameter, which is of variable arity, one by one, then the rest of the body.
+     *
+     * @param ctor the constructor of the superclass
+     * @param a1 the first argument
+     * @param a2 the second argument
+     * @param a3 the third argument
+     * @param a4 the fourth argument
+     * @param a5 the fifth argument
+     * @param a6 the sixth argument
+     * @param a7 the seventh argument
+     * @param a8 the eighth argument
+     * @param a9 the ninth argument
+     * @param a10 the tenth argument
+     * @param a11 the eleventh argument
+     * @param a12 the twelfth argument
+     * @param a13 the thirteenth argument
+     * @param a14 the fourteenth argument
+     * @param a15 the fifteenth argument
+     * @param rest the arguments of the last parameter
+     * @param body what follows the call, given its block and `this`
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @param <A15> the type of the fifteenth parameter
+     * @param <A16> the type of the sixteenth parameter
+     * @return the proof that the body ended
+     * @throws IllegalStateException if `super_` was called already, the constructor of the superclass throws a checked exception the constructor does not declare, or an argument uses a variable out of scope or throws one
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> Terminated<Void> super_(CtorRef16<S, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> ctor, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Expr<? extends A10> a10, Expr<? extends A11> a11, Expr<? extends A12> a12, Expr<? extends A13> a13, Expr<? extends A14> a14, Expr<? extends A15> a15, Varargs<A16> rest, InstanceBody0<Self, VoidBody, Void> body) {
+        return call(ctor, Expressions.spread(ctor, rest, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15)), Expressions.spreading(rest), body);
     }
 }

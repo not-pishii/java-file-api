@@ -6,6 +6,10 @@ import me.supcheg.javafile.facts.CtorRef1;
 import me.supcheg.javafile.facts.CtorRef10;
 import me.supcheg.javafile.facts.CtorRef11;
 import me.supcheg.javafile.facts.CtorRef12;
+import me.supcheg.javafile.facts.CtorRef13;
+import me.supcheg.javafile.facts.CtorRef14;
+import me.supcheg.javafile.facts.CtorRef15;
+import me.supcheg.javafile.facts.CtorRef16;
 import me.supcheg.javafile.facts.CtorRef2;
 import me.supcheg.javafile.facts.CtorRef3;
 import me.supcheg.javafile.facts.CtorRef4;
@@ -19,6 +23,10 @@ import me.supcheg.javafile.typed.TypedSubclassBodyArities.CtorBody1;
 import me.supcheg.javafile.typed.TypedSubclassBodyArities.CtorBody10;
 import me.supcheg.javafile.typed.TypedSubclassBodyArities.CtorBody11;
 import me.supcheg.javafile.typed.TypedSubclassBodyArities.CtorBody12;
+import me.supcheg.javafile.typed.TypedSubclassBodyArities.CtorBody13;
+import me.supcheg.javafile.typed.TypedSubclassBodyArities.CtorBody14;
+import me.supcheg.javafile.typed.TypedSubclassBodyArities.CtorBody15;
+import me.supcheg.javafile.typed.TypedSubclassBodyArities.CtorBody16;
 import me.supcheg.javafile.typed.TypedSubclassBodyArities.CtorBody2;
 import me.supcheg.javafile.typed.TypedSubclassBodyArities.CtorBody3;
 import me.supcheg.javafile.typed.TypedSubclassBodyArities.CtorBody4;
@@ -291,6 +299,120 @@ abstract sealed class TypedSubclassBuilderArities<Self, S> extends MemberBuilder
      * @throws IllegalStateException if the declarations have ended already, or leave undone what only a method of the class can do; if the constructor was not declared by this class; and as a definition of the bodies does
      */
     public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> TypedSubclassBodies<Self, S> bodies(CtorRef12<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> ctor, CtorBody12<Self, S, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> first) {
+        TypedSubclassBodies<Self, S> bodies = beginBodies();
+        bodies.define(ctor, first);
+        return bodies;
+    }
+
+    /**
+     * The declarations of the class end and the bodies of its members begin, with that of a constructor of 13 parameters.
+     *
+     * @param ctor a declared constructor of the class
+     * @param first its body, given the place of its `super(...)` and the parameters
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @return the stage that defines the other declared members
+     * @throws IllegalStateException if the declarations have ended already, or leave undone what only a method of the class can do; if the constructor was not declared by this class; and as a definition of the bodies does
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> TypedSubclassBodies<Self, S> bodies(CtorRef13<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> ctor, CtorBody13<Self, S, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> first) {
+        TypedSubclassBodies<Self, S> bodies = beginBodies();
+        bodies.define(ctor, first);
+        return bodies;
+    }
+
+    /**
+     * The declarations of the class end and the bodies of its members begin, with that of a constructor of 14 parameters.
+     *
+     * @param ctor a declared constructor of the class
+     * @param first its body, given the place of its `super(...)` and the parameters
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @return the stage that defines the other declared members
+     * @throws IllegalStateException if the declarations have ended already, or leave undone what only a method of the class can do; if the constructor was not declared by this class; and as a definition of the bodies does
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> TypedSubclassBodies<Self, S> bodies(CtorRef14<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> ctor, CtorBody14<Self, S, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> first) {
+        TypedSubclassBodies<Self, S> bodies = beginBodies();
+        bodies.define(ctor, first);
+        return bodies;
+    }
+
+    /**
+     * The declarations of the class end and the bodies of its members begin, with that of a constructor of 15 parameters.
+     *
+     * @param ctor a declared constructor of the class
+     * @param first its body, given the place of its `super(...)` and the parameters
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @param <A15> the type of the fifteenth parameter
+     * @return the stage that defines the other declared members
+     * @throws IllegalStateException if the declarations have ended already, or leave undone what only a method of the class can do; if the constructor was not declared by this class; and as a definition of the bodies does
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> TypedSubclassBodies<Self, S> bodies(CtorRef15<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> ctor, CtorBody15<Self, S, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> first) {
+        TypedSubclassBodies<Self, S> bodies = beginBodies();
+        bodies.define(ctor, first);
+        return bodies;
+    }
+
+    /**
+     * The declarations of the class end and the bodies of its members begin, with that of a constructor of 16 parameters.
+     *
+     * @param ctor a declared constructor of the class
+     * @param first its body, given the place of its `super(...)` and the parameters
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @param <A15> the type of the fifteenth parameter
+     * @param <A16> the type of the sixteenth parameter
+     * @return the stage that defines the other declared members
+     * @throws IllegalStateException if the declarations have ended already, or leave undone what only a method of the class can do; if the constructor was not declared by this class; and as a definition of the bodies does
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> TypedSubclassBodies<Self, S> bodies(CtorRef16<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> ctor, CtorBody16<Self, S, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> first) {
         TypedSubclassBodies<Self, S> bodies = beginBodies();
         bodies.define(ctor, first);
         return bodies;

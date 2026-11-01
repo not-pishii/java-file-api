@@ -25,6 +25,7 @@ sourceSets.test {
 
 val generatedDir = layout.projectDirectory.dir("src/generated/java")
 val generatedTestDir = layout.projectDirectory.dir("src/generatedTest/java")
+val arity = providers.gradleProperty("javafile.arity").getOrElse("16")
 
 tasks {
     val generateArities = register<JavaExec>("generateArities") {
@@ -32,7 +33,8 @@ tasks {
         description = "Regenerates the committed arity families"
         classpath = codegen.runtimeClasspath
         mainClass = "me.supcheg.javafile.facts.codegen.FactsCodegen"
-        args(generatedDir.asFile.absolutePath, generatedTestDir.asFile.absolutePath, "write")
+        args(generatedDir.asFile.absolutePath, generatedTestDir.asFile.absolutePath, "write", arity)
+        inputs.property("javafile.arity", arity)
     }
 
     val checkArities = register<JavaExec>("checkArities") {
@@ -40,7 +42,8 @@ tasks {
         description = "Checks that the committed arity families are up to date"
         classpath = codegen.runtimeClasspath
         mainClass = "me.supcheg.javafile.facts.codegen.FactsCodegen"
-        args(generatedDir.asFile.absolutePath, generatedTestDir.asFile.absolutePath, "check")
+        args(generatedDir.asFile.absolutePath, generatedTestDir.asFile.absolutePath, "check", arity)
+        inputs.property("javafile.arity", arity)
         inputs.dir(generatedDir)
         inputs.dir(generatedTestDir)
         val marker = layout.buildDirectory.file("checkArities/ok")

@@ -9,6 +9,10 @@ import me.supcheg.javafile.facts.MethodRef1;
 import me.supcheg.javafile.facts.MethodRef10;
 import me.supcheg.javafile.facts.MethodRef11;
 import me.supcheg.javafile.facts.MethodRef12;
+import me.supcheg.javafile.facts.MethodRef13;
+import me.supcheg.javafile.facts.MethodRef14;
+import me.supcheg.javafile.facts.MethodRef15;
+import me.supcheg.javafile.facts.MethodRef16;
 import me.supcheg.javafile.facts.MethodRef2;
 import me.supcheg.javafile.facts.MethodRef3;
 import me.supcheg.javafile.facts.MethodRef4;
@@ -24,6 +28,10 @@ import me.supcheg.javafile.facts.VoidMethodRef1;
 import me.supcheg.javafile.facts.VoidMethodRef10;
 import me.supcheg.javafile.facts.VoidMethodRef11;
 import me.supcheg.javafile.facts.VoidMethodRef12;
+import me.supcheg.javafile.facts.VoidMethodRef13;
+import me.supcheg.javafile.facts.VoidMethodRef14;
+import me.supcheg.javafile.facts.VoidMethodRef15;
+import me.supcheg.javafile.facts.VoidMethodRef16;
 import me.supcheg.javafile.facts.VoidMethodRef2;
 import me.supcheg.javafile.facts.VoidMethodRef3;
 import me.supcheg.javafile.facts.VoidMethodRef4;
@@ -397,5 +405,117 @@ abstract sealed class OverrideArities permits Overrides {
      */
     public static <Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> VoidMethodRef12<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> own(FinalClassToken<Self> self, VoidMethodRef12<?, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> method, List<ClassToken<? extends Throwable>> thrown) {
         return UnsafeInvocables.voidMethod(self, method.name(), method.param1(), method.param2(), method.param3(), method.param4(), method.param5(), method.param6(), method.param7(), method.param8(), method.param9(), method.param10(), method.param11(), method.param12(), Overrides.traits(method, thrown));
+    }
+
+    /**
+     * The method of `self` that overrides `method`, declaring `thrown`.
+     */
+    public static <Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> MethodRef13<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> own(FinalClassToken<Self> self, MethodRef13<?, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> method, List<ClassToken<? extends Throwable>> thrown) {
+        return UnsafeInvocables.method(self, method.name(), method.result(), method.param1(), method.param2(), method.param3(), method.param4(), method.param5(), method.param6(), method.param7(), method.param8(), method.param9(), method.param10(), method.param11(), method.param12(), method.param13(), Overrides.traits(method, thrown));
+    }
+
+    /**
+     * The method of `self` that overrides `method` with the result `result`, declaring `thrown`.
+     */
+    public static <Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> MethodRef13<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> own(FinalClassToken<Self> self, MethodRef13<?, ? super R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> method, RefToken<R> result, List<ClassToken<? extends Throwable>> thrown) {
+        return UnsafeInvocables.method(self, method.name(), result, method.param1(), method.param2(), method.param3(), method.param4(), method.param5(), method.param6(), method.param7(), method.param8(), method.param9(), method.param10(), method.param11(), method.param12(), method.param13(), Overrides.traits(method, thrown));
+    }
+
+    /**
+     * The method of `self` that overrides `method` with the class itself for its result, declaring `thrown`.
+     */
+    public static <Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> MethodRef13<Self, Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> ownOfSelf(FinalClassToken<Self> self, MethodRef13<?, ?, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> method, List<ClassToken<? extends Throwable>> thrown) {
+        return UnsafeInvocables.method(self, method.name(), self, method.param1(), method.param2(), method.param3(), method.param4(), method.param5(), method.param6(), method.param7(), method.param8(), method.param9(), method.param10(), method.param11(), method.param12(), method.param13(), Overrides.traits(method, thrown));
+    }
+
+    /**
+     * The method of `self` that overrides `method`, declaring `thrown`.
+     */
+    public static <Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> VoidMethodRef13<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> own(FinalClassToken<Self> self, VoidMethodRef13<?, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> method, List<ClassToken<? extends Throwable>> thrown) {
+        return UnsafeInvocables.voidMethod(self, method.name(), method.param1(), method.param2(), method.param3(), method.param4(), method.param5(), method.param6(), method.param7(), method.param8(), method.param9(), method.param10(), method.param11(), method.param12(), method.param13(), Overrides.traits(method, thrown));
+    }
+
+    /**
+     * The method of `self` that overrides `method`, declaring `thrown`.
+     */
+    public static <Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> MethodRef14<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> own(FinalClassToken<Self> self, MethodRef14<?, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> method, List<ClassToken<? extends Throwable>> thrown) {
+        return UnsafeInvocables.method(self, method.name(), method.result(), method.param1(), method.param2(), method.param3(), method.param4(), method.param5(), method.param6(), method.param7(), method.param8(), method.param9(), method.param10(), method.param11(), method.param12(), method.param13(), method.param14(), Overrides.traits(method, thrown));
+    }
+
+    /**
+     * The method of `self` that overrides `method` with the result `result`, declaring `thrown`.
+     */
+    public static <Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> MethodRef14<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> own(FinalClassToken<Self> self, MethodRef14<?, ? super R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> method, RefToken<R> result, List<ClassToken<? extends Throwable>> thrown) {
+        return UnsafeInvocables.method(self, method.name(), result, method.param1(), method.param2(), method.param3(), method.param4(), method.param5(), method.param6(), method.param7(), method.param8(), method.param9(), method.param10(), method.param11(), method.param12(), method.param13(), method.param14(), Overrides.traits(method, thrown));
+    }
+
+    /**
+     * The method of `self` that overrides `method` with the class itself for its result, declaring `thrown`.
+     */
+    public static <Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> MethodRef14<Self, Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> ownOfSelf(FinalClassToken<Self> self, MethodRef14<?, ?, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> method, List<ClassToken<? extends Throwable>> thrown) {
+        return UnsafeInvocables.method(self, method.name(), self, method.param1(), method.param2(), method.param3(), method.param4(), method.param5(), method.param6(), method.param7(), method.param8(), method.param9(), method.param10(), method.param11(), method.param12(), method.param13(), method.param14(), Overrides.traits(method, thrown));
+    }
+
+    /**
+     * The method of `self` that overrides `method`, declaring `thrown`.
+     */
+    public static <Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> VoidMethodRef14<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> own(FinalClassToken<Self> self, VoidMethodRef14<?, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> method, List<ClassToken<? extends Throwable>> thrown) {
+        return UnsafeInvocables.voidMethod(self, method.name(), method.param1(), method.param2(), method.param3(), method.param4(), method.param5(), method.param6(), method.param7(), method.param8(), method.param9(), method.param10(), method.param11(), method.param12(), method.param13(), method.param14(), Overrides.traits(method, thrown));
+    }
+
+    /**
+     * The method of `self` that overrides `method`, declaring `thrown`.
+     */
+    public static <Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> MethodRef15<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> own(FinalClassToken<Self> self, MethodRef15<?, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> method, List<ClassToken<? extends Throwable>> thrown) {
+        return UnsafeInvocables.method(self, method.name(), method.result(), method.param1(), method.param2(), method.param3(), method.param4(), method.param5(), method.param6(), method.param7(), method.param8(), method.param9(), method.param10(), method.param11(), method.param12(), method.param13(), method.param14(), method.param15(), Overrides.traits(method, thrown));
+    }
+
+    /**
+     * The method of `self` that overrides `method` with the result `result`, declaring `thrown`.
+     */
+    public static <Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> MethodRef15<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> own(FinalClassToken<Self> self, MethodRef15<?, ? super R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> method, RefToken<R> result, List<ClassToken<? extends Throwable>> thrown) {
+        return UnsafeInvocables.method(self, method.name(), result, method.param1(), method.param2(), method.param3(), method.param4(), method.param5(), method.param6(), method.param7(), method.param8(), method.param9(), method.param10(), method.param11(), method.param12(), method.param13(), method.param14(), method.param15(), Overrides.traits(method, thrown));
+    }
+
+    /**
+     * The method of `self` that overrides `method` with the class itself for its result, declaring `thrown`.
+     */
+    public static <Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> MethodRef15<Self, Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> ownOfSelf(FinalClassToken<Self> self, MethodRef15<?, ?, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> method, List<ClassToken<? extends Throwable>> thrown) {
+        return UnsafeInvocables.method(self, method.name(), self, method.param1(), method.param2(), method.param3(), method.param4(), method.param5(), method.param6(), method.param7(), method.param8(), method.param9(), method.param10(), method.param11(), method.param12(), method.param13(), method.param14(), method.param15(), Overrides.traits(method, thrown));
+    }
+
+    /**
+     * The method of `self` that overrides `method`, declaring `thrown`.
+     */
+    public static <Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> VoidMethodRef15<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> own(FinalClassToken<Self> self, VoidMethodRef15<?, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> method, List<ClassToken<? extends Throwable>> thrown) {
+        return UnsafeInvocables.voidMethod(self, method.name(), method.param1(), method.param2(), method.param3(), method.param4(), method.param5(), method.param6(), method.param7(), method.param8(), method.param9(), method.param10(), method.param11(), method.param12(), method.param13(), method.param14(), method.param15(), Overrides.traits(method, thrown));
+    }
+
+    /**
+     * The method of `self` that overrides `method`, declaring `thrown`.
+     */
+    public static <Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> MethodRef16<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> own(FinalClassToken<Self> self, MethodRef16<?, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> method, List<ClassToken<? extends Throwable>> thrown) {
+        return UnsafeInvocables.method(self, method.name(), method.result(), method.param1(), method.param2(), method.param3(), method.param4(), method.param5(), method.param6(), method.param7(), method.param8(), method.param9(), method.param10(), method.param11(), method.param12(), method.param13(), method.param14(), method.param15(), method.param16(), Overrides.traits(method, thrown));
+    }
+
+    /**
+     * The method of `self` that overrides `method` with the result `result`, declaring `thrown`.
+     */
+    public static <Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> MethodRef16<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> own(FinalClassToken<Self> self, MethodRef16<?, ? super R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> method, RefToken<R> result, List<ClassToken<? extends Throwable>> thrown) {
+        return UnsafeInvocables.method(self, method.name(), result, method.param1(), method.param2(), method.param3(), method.param4(), method.param5(), method.param6(), method.param7(), method.param8(), method.param9(), method.param10(), method.param11(), method.param12(), method.param13(), method.param14(), method.param15(), method.param16(), Overrides.traits(method, thrown));
+    }
+
+    /**
+     * The method of `self` that overrides `method` with the class itself for its result, declaring `thrown`.
+     */
+    public static <Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> MethodRef16<Self, Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> ownOfSelf(FinalClassToken<Self> self, MethodRef16<?, ?, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> method, List<ClassToken<? extends Throwable>> thrown) {
+        return UnsafeInvocables.method(self, method.name(), self, method.param1(), method.param2(), method.param3(), method.param4(), method.param5(), method.param6(), method.param7(), method.param8(), method.param9(), method.param10(), method.param11(), method.param12(), method.param13(), method.param14(), method.param15(), method.param16(), Overrides.traits(method, thrown));
+    }
+
+    /**
+     * The method of `self` that overrides `method`, declaring `thrown`.
+     */
+    public static <Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> VoidMethodRef16<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> own(FinalClassToken<Self> self, VoidMethodRef16<?, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> method, List<ClassToken<? extends Throwable>> thrown) {
+        return UnsafeInvocables.voidMethod(self, method.name(), method.param1(), method.param2(), method.param3(), method.param4(), method.param5(), method.param6(), method.param7(), method.param8(), method.param9(), method.param10(), method.param11(), method.param12(), method.param13(), method.param14(), method.param15(), method.param16(), Overrides.traits(method, thrown));
     }
 }

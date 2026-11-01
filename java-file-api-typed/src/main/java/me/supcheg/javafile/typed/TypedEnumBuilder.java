@@ -210,7 +210,7 @@ public final class TypedEnumBuilder<Self> extends EnumConstructorArities<Self> {
         return upcast;
     }
 
-    // The declarations of the enum's constructors, `constructor`, of every arity 0 to 12, are generated into the
+    // The declarations of the enum's constructors, `constructor`, of every arity 0 to 16, are generated into the
     // superclass of this class (EnumConstructorArities, see TypedCodegen). They call the hooks below.
 
     @Override

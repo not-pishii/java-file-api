@@ -1,0 +1,176 @@
+package me.supcheg.javafile.facts;
+
+import java.util.List;
+import java.util.Optional;
+import javax.annotation.processing.Generated;
+import me.supcheg.javafile.facts.MethodTableTemplate.Param;
+
+@Generated("me.supcheg.javafile.facts.codegen.FactsCodegen")
+public final class MethodRef15<O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> implements InvocableFamily {
+    private final DeclaredToken<O> owner;
+
+    private final String name;
+
+    private final TypeToken<R> result;
+
+    private final TypeToken<A1> param1;
+
+    private final TypeToken<A2> param2;
+
+    private final TypeToken<A3> param3;
+
+    private final TypeToken<A4> param4;
+
+    private final TypeToken<A5> param5;
+
+    private final TypeToken<A6> param6;
+
+    private final TypeToken<A7> param7;
+
+    private final TypeToken<A8> param8;
+
+    private final TypeToken<A9> param9;
+
+    private final TypeToken<A10> param10;
+
+    private final TypeToken<A11> param11;
+
+    private final TypeToken<A12> param12;
+
+    private final TypeToken<A13> param13;
+
+    private final TypeToken<A14> param14;
+
+    private final TypeToken<A15> param15;
+
+    private final MemberTraits traits;
+
+    private final List<Param> declaredParams;
+
+    MethodRef15(DeclaredToken<O> owner, String name, TypeToken<R> result, TypeToken<A1> param1, TypeToken<A2> param2, TypeToken<A3> param3, TypeToken<A4> param4, TypeToken<A5> param5, TypeToken<A6> param6, TypeToken<A7> param7, TypeToken<A8> param8, TypeToken<A9> param9, TypeToken<A10> param10, TypeToken<A11> param11, TypeToken<A12> param12, TypeToken<A13> param13, TypeToken<A14> param14, TypeToken<A15> param15, MemberTraits traits, List<Param> declaredParams) {
+        this.owner = owner;
+        this.name = Invocables.requireMethodName(name);
+        this.result = result;
+        this.param1 = param1;
+        this.param2 = param2;
+        this.param3 = param3;
+        this.param4 = param4;
+        this.param5 = param5;
+        this.param6 = param6;
+        this.param7 = param7;
+        this.param8 = param8;
+        this.param9 = param9;
+        this.param10 = param10;
+        this.param11 = param11;
+        this.param12 = param12;
+        this.param13 = param13;
+        this.param14 = param14;
+        this.param15 = param15;
+        this.traits = traits;
+        this.declaredParams = declaredParams;
+    }
+
+    @Override
+    public InvocableKind kind() {
+        return InvocableKind.INSTANCE_METHOD;
+    }
+
+    @Override
+    public DeclaredToken<O> owner() {
+        return this.owner;
+    }
+
+    @Override
+    public String name() {
+        return this.name;
+    }
+
+    public TypeToken<R> result() {
+        return this.result;
+    }
+
+    public TypeToken<A1> param1() {
+        return this.param1;
+    }
+
+    public TypeToken<A2> param2() {
+        return this.param2;
+    }
+
+    public TypeToken<A3> param3() {
+        return this.param3;
+    }
+
+    public TypeToken<A4> param4() {
+        return this.param4;
+    }
+
+    public TypeToken<A5> param5() {
+        return this.param5;
+    }
+
+    public TypeToken<A6> param6() {
+        return this.param6;
+    }
+
+    public TypeToken<A7> param7() {
+        return this.param7;
+    }
+
+    public TypeToken<A8> param8() {
+        return this.param8;
+    }
+
+    public TypeToken<A9> param9() {
+        return this.param9;
+    }
+
+    public TypeToken<A10> param10() {
+        return this.param10;
+    }
+
+    public TypeToken<A11> param11() {
+        return this.param11;
+    }
+
+    public TypeToken<A12> param12() {
+        return this.param12;
+    }
+
+    public TypeToken<A13> param13() {
+        return this.param13;
+    }
+
+    public TypeToken<A14> param14() {
+        return this.param14;
+    }
+
+    public TypeToken<A15> param15() {
+        return this.param15;
+    }
+
+    @Override
+    public Optional<TypeToken<?>> resultType() {
+        return Optional.of(this.result);
+    }
+
+    @Override
+    public List<TypeToken<?>> params() {
+        return List.of(this.param1, this.param2, this.param3, this.param4, this.param5, this.param6, this.param7, this.param8, this.param9, this.param10, this.param11, this.param12, this.param13, this.param14, this.param15);
+    }
+
+    @Override
+    public MemberTraits traits() {
+        return this.traits;
+    }
+
+    @Override
+    public List<Param> declaredParams() {
+        return this.declaredParams;
+    }
+
+    @Override
+    public String toString() {
+        return Invocables.describe(this);
+    }
+}

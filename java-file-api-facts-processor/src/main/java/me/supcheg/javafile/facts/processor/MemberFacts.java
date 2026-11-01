@@ -109,7 +109,7 @@ final class MemberFacts {
     private static final ClassDesc CD_LIST = ClassDesc.of("java.util.List");
 
     /// The greatest number of parameters of a member with a fact.
-    private static final int MAX_ARITY = 12;
+    private static final int MAX_ARITY = me.supcheg.javafile.facts.FactsArity.MAX_ARITY;
 
     /// A fact as a member of the metamodel.
     sealed interface Spec {

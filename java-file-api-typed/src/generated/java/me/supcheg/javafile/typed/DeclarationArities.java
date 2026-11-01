@@ -8,6 +8,10 @@ import me.supcheg.javafile.facts.CtorRef1;
 import me.supcheg.javafile.facts.CtorRef10;
 import me.supcheg.javafile.facts.CtorRef11;
 import me.supcheg.javafile.facts.CtorRef12;
+import me.supcheg.javafile.facts.CtorRef13;
+import me.supcheg.javafile.facts.CtorRef14;
+import me.supcheg.javafile.facts.CtorRef15;
+import me.supcheg.javafile.facts.CtorRef16;
 import me.supcheg.javafile.facts.CtorRef2;
 import me.supcheg.javafile.facts.CtorRef3;
 import me.supcheg.javafile.facts.CtorRef4;
@@ -23,6 +27,10 @@ import me.supcheg.javafile.facts.MethodRef1;
 import me.supcheg.javafile.facts.MethodRef10;
 import me.supcheg.javafile.facts.MethodRef11;
 import me.supcheg.javafile.facts.MethodRef12;
+import me.supcheg.javafile.facts.MethodRef13;
+import me.supcheg.javafile.facts.MethodRef14;
+import me.supcheg.javafile.facts.MethodRef15;
+import me.supcheg.javafile.facts.MethodRef16;
 import me.supcheg.javafile.facts.MethodRef2;
 import me.supcheg.javafile.facts.MethodRef3;
 import me.supcheg.javafile.facts.MethodRef4;
@@ -37,6 +45,10 @@ import me.supcheg.javafile.facts.StaticMethodRef1;
 import me.supcheg.javafile.facts.StaticMethodRef10;
 import me.supcheg.javafile.facts.StaticMethodRef11;
 import me.supcheg.javafile.facts.StaticMethodRef12;
+import me.supcheg.javafile.facts.StaticMethodRef13;
+import me.supcheg.javafile.facts.StaticMethodRef14;
+import me.supcheg.javafile.facts.StaticMethodRef15;
+import me.supcheg.javafile.facts.StaticMethodRef16;
 import me.supcheg.javafile.facts.StaticMethodRef2;
 import me.supcheg.javafile.facts.StaticMethodRef3;
 import me.supcheg.javafile.facts.StaticMethodRef4;
@@ -52,6 +64,10 @@ import me.supcheg.javafile.facts.VoidMethodRef1;
 import me.supcheg.javafile.facts.VoidMethodRef10;
 import me.supcheg.javafile.facts.VoidMethodRef11;
 import me.supcheg.javafile.facts.VoidMethodRef12;
+import me.supcheg.javafile.facts.VoidMethodRef13;
+import me.supcheg.javafile.facts.VoidMethodRef14;
+import me.supcheg.javafile.facts.VoidMethodRef15;
+import me.supcheg.javafile.facts.VoidMethodRef16;
 import me.supcheg.javafile.facts.VoidMethodRef2;
 import me.supcheg.javafile.facts.VoidMethodRef3;
 import me.supcheg.javafile.facts.VoidMethodRef4;
@@ -65,6 +81,10 @@ import me.supcheg.javafile.facts.VoidStaticMethodRef1;
 import me.supcheg.javafile.facts.VoidStaticMethodRef10;
 import me.supcheg.javafile.facts.VoidStaticMethodRef11;
 import me.supcheg.javafile.facts.VoidStaticMethodRef12;
+import me.supcheg.javafile.facts.VoidStaticMethodRef13;
+import me.supcheg.javafile.facts.VoidStaticMethodRef14;
+import me.supcheg.javafile.facts.VoidStaticMethodRef15;
+import me.supcheg.javafile.facts.VoidStaticMethodRef16;
 import me.supcheg.javafile.facts.VoidStaticMethodRef2;
 import me.supcheg.javafile.facts.VoidStaticMethodRef3;
 import me.supcheg.javafile.facts.VoidStaticMethodRef4;
@@ -1036,6 +1056,502 @@ abstract sealed class DeclarationArities<Self, S> permits Declarations {
     }
 
     /**
+     * Declares a `public` constructor, to be defined by the bodies of the class.
+     *
+     * @param p1 the first parameter type
+     * @param <A1> the first parameter type
+     * @param p2 the second parameter type
+     * @param <A2> the second parameter type
+     * @param p3 the third parameter type
+     * @param <A3> the third parameter type
+     * @param p4 the fourth parameter type
+     * @param <A4> the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param <A5> the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param <A6> the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param <A7> the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param <A8> the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param <A9> the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param <A10> the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param <A11> the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param <A12> the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param <A13> the thirteenth parameter type
+     * @return the fact of the constructor
+     * @throws IllegalArgumentException if javac would reject the constructor (see [SignatureRegistry])
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> CtorRef13<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> declareConstructor(TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13) {
+        return declare(UnsafeInvocables.ctor(builder().self(), p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, traits(MemberTraits.DEFAULT)));
+    }
+
+    /**
+     * Declares a `public` method returning `R`, to be defined by the bodies of the class.
+     *
+     * @param name the method name
+     * @param result the result type
+     * @param <R> the result type
+     * @param p1 the first parameter type
+     * @param <A1> the first parameter type
+     * @param p2 the second parameter type
+     * @param <A2> the second parameter type
+     * @param p3 the third parameter type
+     * @param <A3> the third parameter type
+     * @param p4 the fourth parameter type
+     * @param <A4> the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param <A5> the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param <A6> the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param <A7> the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param <A8> the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param <A9> the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param <A10> the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param <A11> the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param <A12> the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param <A13> the thirteenth parameter type
+     * @return the fact of the method
+     * @throws IllegalArgumentException if javac would reject the method (see [SignatureRegistry])
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> MethodRef13<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> declareMethod(String name, TypeToken<R> result, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13) {
+        return declare(UnsafeInvocables.method(builder().self(), name, result, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, traits(MemberTraits.FINAL)));
+    }
+
+    /**
+     * Declares a `public void` method, to be defined by the bodies of the class.
+     *
+     * @param name the method name
+     * @param p1 the first parameter type
+     * @param <A1> the first parameter type
+     * @param p2 the second parameter type
+     * @param <A2> the second parameter type
+     * @param p3 the third parameter type
+     * @param <A3> the third parameter type
+     * @param p4 the fourth parameter type
+     * @param <A4> the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param <A5> the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param <A6> the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param <A7> the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param <A8> the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param <A9> the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param <A10> the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param <A11> the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param <A12> the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param <A13> the thirteenth parameter type
+     * @return the fact of the method
+     * @throws IllegalArgumentException if javac would reject the method (see [SignatureRegistry])
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> VoidMethodRef13<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> declareVoidMethod(String name, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13) {
+        return declare(UnsafeInvocables.voidMethod(builder().self(), name, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, traits(MemberTraits.FINAL)));
+    }
+
+    /**
+     * Declares a `public` constructor, to be defined by the bodies of the class.
+     *
+     * @param p1 the first parameter type
+     * @param <A1> the first parameter type
+     * @param p2 the second parameter type
+     * @param <A2> the second parameter type
+     * @param p3 the third parameter type
+     * @param <A3> the third parameter type
+     * @param p4 the fourth parameter type
+     * @param <A4> the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param <A5> the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param <A6> the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param <A7> the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param <A8> the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param <A9> the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param <A10> the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param <A11> the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param <A12> the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param <A13> the thirteenth parameter type
+     * @param p14 the fourteenth parameter type
+     * @param <A14> the fourteenth parameter type
+     * @return the fact of the constructor
+     * @throws IllegalArgumentException if javac would reject the constructor (see [SignatureRegistry])
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> CtorRef14<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> declareConstructor(TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, TypeToken<A14> p14) {
+        return declare(UnsafeInvocables.ctor(builder().self(), p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, traits(MemberTraits.DEFAULT)));
+    }
+
+    /**
+     * Declares a `public` method returning `R`, to be defined by the bodies of the class.
+     *
+     * @param name the method name
+     * @param result the result type
+     * @param <R> the result type
+     * @param p1 the first parameter type
+     * @param <A1> the first parameter type
+     * @param p2 the second parameter type
+     * @param <A2> the second parameter type
+     * @param p3 the third parameter type
+     * @param <A3> the third parameter type
+     * @param p4 the fourth parameter type
+     * @param <A4> the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param <A5> the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param <A6> the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param <A7> the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param <A8> the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param <A9> the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param <A10> the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param <A11> the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param <A12> the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param <A13> the thirteenth parameter type
+     * @param p14 the fourteenth parameter type
+     * @param <A14> the fourteenth parameter type
+     * @return the fact of the method
+     * @throws IllegalArgumentException if javac would reject the method (see [SignatureRegistry])
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> MethodRef14<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> declareMethod(String name, TypeToken<R> result, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, TypeToken<A14> p14) {
+        return declare(UnsafeInvocables.method(builder().self(), name, result, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, traits(MemberTraits.FINAL)));
+    }
+
+    /**
+     * Declares a `public void` method, to be defined by the bodies of the class.
+     *
+     * @param name the method name
+     * @param p1 the first parameter type
+     * @param <A1> the first parameter type
+     * @param p2 the second parameter type
+     * @param <A2> the second parameter type
+     * @param p3 the third parameter type
+     * @param <A3> the third parameter type
+     * @param p4 the fourth parameter type
+     * @param <A4> the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param <A5> the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param <A6> the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param <A7> the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param <A8> the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param <A9> the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param <A10> the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param <A11> the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param <A12> the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param <A13> the thirteenth parameter type
+     * @param p14 the fourteenth parameter type
+     * @param <A14> the fourteenth parameter type
+     * @return the fact of the method
+     * @throws IllegalArgumentException if javac would reject the method (see [SignatureRegistry])
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> VoidMethodRef14<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> declareVoidMethod(String name, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, TypeToken<A14> p14) {
+        return declare(UnsafeInvocables.voidMethod(builder().self(), name, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, traits(MemberTraits.FINAL)));
+    }
+
+    /**
+     * Declares a `public` constructor, to be defined by the bodies of the class.
+     *
+     * @param p1 the first parameter type
+     * @param <A1> the first parameter type
+     * @param p2 the second parameter type
+     * @param <A2> the second parameter type
+     * @param p3 the third parameter type
+     * @param <A3> the third parameter type
+     * @param p4 the fourth parameter type
+     * @param <A4> the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param <A5> the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param <A6> the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param <A7> the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param <A8> the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param <A9> the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param <A10> the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param <A11> the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param <A12> the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param <A13> the thirteenth parameter type
+     * @param p14 the fourteenth parameter type
+     * @param <A14> the fourteenth parameter type
+     * @param p15 the fifteenth parameter type
+     * @param <A15> the fifteenth parameter type
+     * @return the fact of the constructor
+     * @throws IllegalArgumentException if javac would reject the constructor (see [SignatureRegistry])
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> CtorRef15<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> declareConstructor(TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, TypeToken<A14> p14, TypeToken<A15> p15) {
+        return declare(UnsafeInvocables.ctor(builder().self(), p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, traits(MemberTraits.DEFAULT)));
+    }
+
+    /**
+     * Declares a `public` method returning `R`, to be defined by the bodies of the class.
+     *
+     * @param name the method name
+     * @param result the result type
+     * @param <R> the result type
+     * @param p1 the first parameter type
+     * @param <A1> the first parameter type
+     * @param p2 the second parameter type
+     * @param <A2> the second parameter type
+     * @param p3 the third parameter type
+     * @param <A3> the third parameter type
+     * @param p4 the fourth parameter type
+     * @param <A4> the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param <A5> the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param <A6> the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param <A7> the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param <A8> the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param <A9> the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param <A10> the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param <A11> the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param <A12> the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param <A13> the thirteenth parameter type
+     * @param p14 the fourteenth parameter type
+     * @param <A14> the fourteenth parameter type
+     * @param p15 the fifteenth parameter type
+     * @param <A15> the fifteenth parameter type
+     * @return the fact of the method
+     * @throws IllegalArgumentException if javac would reject the method (see [SignatureRegistry])
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> MethodRef15<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> declareMethod(String name, TypeToken<R> result, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, TypeToken<A14> p14, TypeToken<A15> p15) {
+        return declare(UnsafeInvocables.method(builder().self(), name, result, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, traits(MemberTraits.FINAL)));
+    }
+
+    /**
+     * Declares a `public void` method, to be defined by the bodies of the class.
+     *
+     * @param name the method name
+     * @param p1 the first parameter type
+     * @param <A1> the first parameter type
+     * @param p2 the second parameter type
+     * @param <A2> the second parameter type
+     * @param p3 the third parameter type
+     * @param <A3> the third parameter type
+     * @param p4 the fourth parameter type
+     * @param <A4> the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param <A5> the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param <A6> the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param <A7> the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param <A8> the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param <A9> the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param <A10> the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param <A11> the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param <A12> the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param <A13> the thirteenth parameter type
+     * @param p14 the fourteenth parameter type
+     * @param <A14> the fourteenth parameter type
+     * @param p15 the fifteenth parameter type
+     * @param <A15> the fifteenth parameter type
+     * @return the fact of the method
+     * @throws IllegalArgumentException if javac would reject the method (see [SignatureRegistry])
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> VoidMethodRef15<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> declareVoidMethod(String name, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, TypeToken<A14> p14, TypeToken<A15> p15) {
+        return declare(UnsafeInvocables.voidMethod(builder().self(), name, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, traits(MemberTraits.FINAL)));
+    }
+
+    /**
+     * Declares a `public` constructor, to be defined by the bodies of the class.
+     *
+     * @param p1 the first parameter type
+     * @param <A1> the first parameter type
+     * @param p2 the second parameter type
+     * @param <A2> the second parameter type
+     * @param p3 the third parameter type
+     * @param <A3> the third parameter type
+     * @param p4 the fourth parameter type
+     * @param <A4> the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param <A5> the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param <A6> the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param <A7> the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param <A8> the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param <A9> the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param <A10> the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param <A11> the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param <A12> the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param <A13> the thirteenth parameter type
+     * @param p14 the fourteenth parameter type
+     * @param <A14> the fourteenth parameter type
+     * @param p15 the fifteenth parameter type
+     * @param <A15> the fifteenth parameter type
+     * @param p16 the sixteenth parameter type
+     * @param <A16> the sixteenth parameter type
+     * @return the fact of the constructor
+     * @throws IllegalArgumentException if javac would reject the constructor (see [SignatureRegistry])
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> CtorRef16<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> declareConstructor(TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, TypeToken<A14> p14, TypeToken<A15> p15, TypeToken<A16> p16) {
+        return declare(UnsafeInvocables.ctor(builder().self(), p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, traits(MemberTraits.DEFAULT)));
+    }
+
+    /**
+     * Declares a `public` method returning `R`, to be defined by the bodies of the class.
+     *
+     * @param name the method name
+     * @param result the result type
+     * @param <R> the result type
+     * @param p1 the first parameter type
+     * @param <A1> the first parameter type
+     * @param p2 the second parameter type
+     * @param <A2> the second parameter type
+     * @param p3 the third parameter type
+     * @param <A3> the third parameter type
+     * @param p4 the fourth parameter type
+     * @param <A4> the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param <A5> the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param <A6> the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param <A7> the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param <A8> the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param <A9> the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param <A10> the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param <A11> the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param <A12> the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param <A13> the thirteenth parameter type
+     * @param p14 the fourteenth parameter type
+     * @param <A14> the fourteenth parameter type
+     * @param p15 the fifteenth parameter type
+     * @param <A15> the fifteenth parameter type
+     * @param p16 the sixteenth parameter type
+     * @param <A16> the sixteenth parameter type
+     * @return the fact of the method
+     * @throws IllegalArgumentException if javac would reject the method (see [SignatureRegistry])
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> MethodRef16<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> declareMethod(String name, TypeToken<R> result, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, TypeToken<A14> p14, TypeToken<A15> p15, TypeToken<A16> p16) {
+        return declare(UnsafeInvocables.method(builder().self(), name, result, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, traits(MemberTraits.FINAL)));
+    }
+
+    /**
+     * Declares a `public void` method, to be defined by the bodies of the class.
+     *
+     * @param name the method name
+     * @param p1 the first parameter type
+     * @param <A1> the first parameter type
+     * @param p2 the second parameter type
+     * @param <A2> the second parameter type
+     * @param p3 the third parameter type
+     * @param <A3> the third parameter type
+     * @param p4 the fourth parameter type
+     * @param <A4> the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param <A5> the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param <A6> the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param <A7> the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param <A8> the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param <A9> the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param <A10> the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param <A11> the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param <A12> the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param <A13> the thirteenth parameter type
+     * @param p14 the fourteenth parameter type
+     * @param <A14> the fourteenth parameter type
+     * @param p15 the fifteenth parameter type
+     * @param <A15> the fifteenth parameter type
+     * @param p16 the sixteenth parameter type
+     * @param <A16> the sixteenth parameter type
+     * @return the fact of the method
+     * @throws IllegalArgumentException if javac would reject the method (see [SignatureRegistry])
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> VoidMethodRef16<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> declareVoidMethod(String name, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, TypeToken<A14> p14, TypeToken<A15> p15, TypeToken<A16> p16) {
+        return declare(UnsafeInvocables.voidMethod(builder().self(), name, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, traits(MemberTraits.FINAL)));
+    }
+
+    /**
      * Declares a `public static` method returning `R`, to be defined by the bodies of the class.
      *
      * @param name the method name
@@ -1683,6 +2199,342 @@ abstract sealed class DeclarationArities<Self, S> permits Declarations {
      */
     public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> VoidStaticMethodRef12<A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> declareVoidStaticMethod(String name, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12) {
         return declare(UnsafeInvocables.voidStaticMethod(builder().self(), name, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, traits(MemberTraits.FINAL)));
+    }
+
+    /**
+     * Declares a `public static` method returning `R`, to be defined by the bodies of the class.
+     *
+     * @param name the method name
+     * @param result the result type
+     * @param <R> the result type
+     * @param p1 the first parameter type
+     * @param <A1> the first parameter type
+     * @param p2 the second parameter type
+     * @param <A2> the second parameter type
+     * @param p3 the third parameter type
+     * @param <A3> the third parameter type
+     * @param p4 the fourth parameter type
+     * @param <A4> the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param <A5> the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param <A6> the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param <A7> the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param <A8> the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param <A9> the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param <A10> the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param <A11> the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param <A12> the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param <A13> the thirteenth parameter type
+     * @return the fact of the method
+     * @throws IllegalArgumentException if javac would reject the method (see [SignatureRegistry])
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> StaticMethodRef13<R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> declareStaticMethod(String name, TypeToken<R> result, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13) {
+        return declare(UnsafeInvocables.staticMethod(builder().self(), name, result, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, traits(MemberTraits.FINAL)));
+    }
+
+    /**
+     * Declares a `public static void` method, to be defined by the bodies of the class.
+     *
+     * @param name the method name
+     * @param p1 the first parameter type
+     * @param <A1> the first parameter type
+     * @param p2 the second parameter type
+     * @param <A2> the second parameter type
+     * @param p3 the third parameter type
+     * @param <A3> the third parameter type
+     * @param p4 the fourth parameter type
+     * @param <A4> the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param <A5> the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param <A6> the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param <A7> the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param <A8> the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param <A9> the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param <A10> the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param <A11> the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param <A12> the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param <A13> the thirteenth parameter type
+     * @return the fact of the method
+     * @throws IllegalArgumentException if javac would reject the method (see [SignatureRegistry])
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> VoidStaticMethodRef13<A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> declareVoidStaticMethod(String name, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13) {
+        return declare(UnsafeInvocables.voidStaticMethod(builder().self(), name, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, traits(MemberTraits.FINAL)));
+    }
+
+    /**
+     * Declares a `public static` method returning `R`, to be defined by the bodies of the class.
+     *
+     * @param name the method name
+     * @param result the result type
+     * @param <R> the result type
+     * @param p1 the first parameter type
+     * @param <A1> the first parameter type
+     * @param p2 the second parameter type
+     * @param <A2> the second parameter type
+     * @param p3 the third parameter type
+     * @param <A3> the third parameter type
+     * @param p4 the fourth parameter type
+     * @param <A4> the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param <A5> the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param <A6> the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param <A7> the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param <A8> the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param <A9> the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param <A10> the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param <A11> the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param <A12> the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param <A13> the thirteenth parameter type
+     * @param p14 the fourteenth parameter type
+     * @param <A14> the fourteenth parameter type
+     * @return the fact of the method
+     * @throws IllegalArgumentException if javac would reject the method (see [SignatureRegistry])
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> StaticMethodRef14<R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> declareStaticMethod(String name, TypeToken<R> result, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, TypeToken<A14> p14) {
+        return declare(UnsafeInvocables.staticMethod(builder().self(), name, result, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, traits(MemberTraits.FINAL)));
+    }
+
+    /**
+     * Declares a `public static void` method, to be defined by the bodies of the class.
+     *
+     * @param name the method name
+     * @param p1 the first parameter type
+     * @param <A1> the first parameter type
+     * @param p2 the second parameter type
+     * @param <A2> the second parameter type
+     * @param p3 the third parameter type
+     * @param <A3> the third parameter type
+     * @param p4 the fourth parameter type
+     * @param <A4> the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param <A5> the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param <A6> the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param <A7> the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param <A8> the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param <A9> the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param <A10> the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param <A11> the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param <A12> the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param <A13> the thirteenth parameter type
+     * @param p14 the fourteenth parameter type
+     * @param <A14> the fourteenth parameter type
+     * @return the fact of the method
+     * @throws IllegalArgumentException if javac would reject the method (see [SignatureRegistry])
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> VoidStaticMethodRef14<A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> declareVoidStaticMethod(String name, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, TypeToken<A14> p14) {
+        return declare(UnsafeInvocables.voidStaticMethod(builder().self(), name, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, traits(MemberTraits.FINAL)));
+    }
+
+    /**
+     * Declares a `public static` method returning `R`, to be defined by the bodies of the class.
+     *
+     * @param name the method name
+     * @param result the result type
+     * @param <R> the result type
+     * @param p1 the first parameter type
+     * @param <A1> the first parameter type
+     * @param p2 the second parameter type
+     * @param <A2> the second parameter type
+     * @param p3 the third parameter type
+     * @param <A3> the third parameter type
+     * @param p4 the fourth parameter type
+     * @param <A4> the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param <A5> the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param <A6> the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param <A7> the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param <A8> the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param <A9> the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param <A10> the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param <A11> the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param <A12> the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param <A13> the thirteenth parameter type
+     * @param p14 the fourteenth parameter type
+     * @param <A14> the fourteenth parameter type
+     * @param p15 the fifteenth parameter type
+     * @param <A15> the fifteenth parameter type
+     * @return the fact of the method
+     * @throws IllegalArgumentException if javac would reject the method (see [SignatureRegistry])
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> StaticMethodRef15<R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> declareStaticMethod(String name, TypeToken<R> result, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, TypeToken<A14> p14, TypeToken<A15> p15) {
+        return declare(UnsafeInvocables.staticMethod(builder().self(), name, result, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, traits(MemberTraits.FINAL)));
+    }
+
+    /**
+     * Declares a `public static void` method, to be defined by the bodies of the class.
+     *
+     * @param name the method name
+     * @param p1 the first parameter type
+     * @param <A1> the first parameter type
+     * @param p2 the second parameter type
+     * @param <A2> the second parameter type
+     * @param p3 the third parameter type
+     * @param <A3> the third parameter type
+     * @param p4 the fourth parameter type
+     * @param <A4> the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param <A5> the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param <A6> the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param <A7> the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param <A8> the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param <A9> the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param <A10> the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param <A11> the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param <A12> the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param <A13> the thirteenth parameter type
+     * @param p14 the fourteenth parameter type
+     * @param <A14> the fourteenth parameter type
+     * @param p15 the fifteenth parameter type
+     * @param <A15> the fifteenth parameter type
+     * @return the fact of the method
+     * @throws IllegalArgumentException if javac would reject the method (see [SignatureRegistry])
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> VoidStaticMethodRef15<A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> declareVoidStaticMethod(String name, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, TypeToken<A14> p14, TypeToken<A15> p15) {
+        return declare(UnsafeInvocables.voidStaticMethod(builder().self(), name, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, traits(MemberTraits.FINAL)));
+    }
+
+    /**
+     * Declares a `public static` method returning `R`, to be defined by the bodies of the class.
+     *
+     * @param name the method name
+     * @param result the result type
+     * @param <R> the result type
+     * @param p1 the first parameter type
+     * @param <A1> the first parameter type
+     * @param p2 the second parameter type
+     * @param <A2> the second parameter type
+     * @param p3 the third parameter type
+     * @param <A3> the third parameter type
+     * @param p4 the fourth parameter type
+     * @param <A4> the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param <A5> the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param <A6> the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param <A7> the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param <A8> the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param <A9> the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param <A10> the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param <A11> the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param <A12> the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param <A13> the thirteenth parameter type
+     * @param p14 the fourteenth parameter type
+     * @param <A14> the fourteenth parameter type
+     * @param p15 the fifteenth parameter type
+     * @param <A15> the fifteenth parameter type
+     * @param p16 the sixteenth parameter type
+     * @param <A16> the sixteenth parameter type
+     * @return the fact of the method
+     * @throws IllegalArgumentException if javac would reject the method (see [SignatureRegistry])
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> StaticMethodRef16<R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> declareStaticMethod(String name, TypeToken<R> result, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, TypeToken<A14> p14, TypeToken<A15> p15, TypeToken<A16> p16) {
+        return declare(UnsafeInvocables.staticMethod(builder().self(), name, result, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, traits(MemberTraits.FINAL)));
+    }
+
+    /**
+     * Declares a `public static void` method, to be defined by the bodies of the class.
+     *
+     * @param name the method name
+     * @param p1 the first parameter type
+     * @param <A1> the first parameter type
+     * @param p2 the second parameter type
+     * @param <A2> the second parameter type
+     * @param p3 the third parameter type
+     * @param <A3> the third parameter type
+     * @param p4 the fourth parameter type
+     * @param <A4> the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param <A5> the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param <A6> the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param <A7> the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param <A8> the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param <A9> the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param <A10> the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param <A11> the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param <A12> the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param <A13> the thirteenth parameter type
+     * @param p14 the fourteenth parameter type
+     * @param <A14> the fourteenth parameter type
+     * @param p15 the fifteenth parameter type
+     * @param <A15> the fifteenth parameter type
+     * @param p16 the sixteenth parameter type
+     * @param <A16> the sixteenth parameter type
+     * @return the fact of the method
+     * @throws IllegalArgumentException if javac would reject the method (see [SignatureRegistry])
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> VoidStaticMethodRef16<A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> declareVoidStaticMethod(String name, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, TypeToken<A14> p14, TypeToken<A15> p15, TypeToken<A16> p16) {
+        return declare(UnsafeInvocables.voidStaticMethod(builder().self(), name, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, traits(MemberTraits.FINAL)));
     }
 
     /**
@@ -3814,6 +4666,934 @@ abstract sealed class DeclarationArities<Self, S> permits Declarations {
      * @throws IllegalStateException if the declarations of the class have ended
      */
     public <O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> VoidMethodRef12<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> declareOverride(Upcast<Self, ? extends O> up, VoidMethodRef12<O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> method) {
+        return overriding(Overrides.own(builder().self(), method, thrown()));
+    }
+
+    /**
+     * Overrides a method of 13 parameters the class inherits from its superclass: declares it anew, `@Override public`.
+     *
+     * @param method the fact of the overridden method
+     * @param <R> the result type of the overridden method
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @return the fact of the overriding method
+     * @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> MethodRef13<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> declareOverride(MethodRef13<? super S, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> method) {
+        return overriding(Overrides.own(builder().self(), method, thrown()));
+    }
+
+    /**
+     * Overrides a method of 13 parameters of a supertype the class has by the witness `up`.
+     *
+     * @param method the fact of the overridden method
+     * @param up the witness that the class is of the supertype
+     * @param <O> the type that has the method
+     * @param <R> the result type of the overridden method
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @return the fact of the overriding method
+     * @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> MethodRef13<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> declareOverride(Upcast<Self, ? extends O> up, MethodRef13<O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> method) {
+        return overriding(Overrides.own(builder().self(), method, thrown()));
+    }
+
+    /**
+     * Overrides a method with a method of a narrower result (JLS 8.4.5) of 13 parameters the class inherits from its superclass: declares it anew, `@Override public`.
+     *
+     * @param method the fact of the overridden method
+     * @param result the result type of the method of the class
+     * @param <R> the result type of the overridden method
+     * @param <R2> the result type of the method of the class
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @return the fact of the overriding method
+     * @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <R, R2 extends R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> MethodRef13<Self, R2, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> declareOverride(MethodRef13<? super S, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> method, RefToken<R2> result) {
+        return overriding(Overrides.own(builder().self(), method, result, thrown()));
+    }
+
+    /**
+     * Overrides a method with a method of a narrower result (JLS 8.4.5) of 13 parameters of a supertype the class has by the witness `up`.
+     *
+     * @param method the fact of the overridden method
+     * @param up the witness that the class is of the supertype
+     * @param result the result type of the method of the class
+     * @param <O> the type that has the method
+     * @param <R> the result type of the overridden method
+     * @param <R2> the result type of the method of the class
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @return the fact of the overriding method
+     * @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <O, R, R2 extends R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> MethodRef13<Self, R2, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> declareOverride(Upcast<Self, ? extends O> up, MethodRef13<O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> method, RefToken<R2> result) {
+        return overriding(Overrides.own(builder().self(), method, result, thrown()));
+    }
+
+    /**
+     * Overrides a method with a method whose result is the class itself (JLS 8.4.5) of 13 parameters the class inherits from its superclass: declares it anew, `@Override public`.
+     *
+     * @param method the fact of the overridden method
+     * @param result the witness that the class is of the result type
+     * @param <R> the result type of the overridden method
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @return the fact of the overriding method
+     * @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> MethodRef13<Self, Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> declareOverride(MethodRef13<? super S, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> method, Upcast<Self, ? extends R> result) {
+        return overriding(Overrides.ownOfSelf(builder().self(), method, thrown()));
+    }
+
+    /**
+     * Overrides a method with a method whose result is the class itself (JLS 8.4.5) of 13 parameters of a supertype the class has by the witness `up`.
+     *
+     * @param method the fact of the overridden method
+     * @param up the witness that the class is of the supertype
+     * @param result the witness that the class is of the result type
+     * @param <O> the type that has the method
+     * @param <R> the result type of the overridden method
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @return the fact of the overriding method
+     * @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> MethodRef13<Self, Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> declareOverride(Upcast<Self, ? extends O> up, MethodRef13<O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> method, Upcast<Self, ? extends R> result) {
+        return overriding(Overrides.ownOfSelf(builder().self(), method, thrown()));
+    }
+
+    /**
+     * Overrides a `void` method of 13 parameters the class inherits from its superclass: declares it anew, `@Override public`.
+     *
+     * @param method the fact of the overridden method
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @return the fact of the overriding method
+     * @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> VoidMethodRef13<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> declareOverride(VoidMethodRef13<? super S, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> method) {
+        return overriding(Overrides.own(builder().self(), method, thrown()));
+    }
+
+    /**
+     * Overrides a `void` method of 13 parameters of a supertype the class has by the witness `up`.
+     *
+     * @param method the fact of the overridden method
+     * @param up the witness that the class is of the supertype
+     * @param <O> the type that has the method
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @return the fact of the overriding method
+     * @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> VoidMethodRef13<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> declareOverride(Upcast<Self, ? extends O> up, VoidMethodRef13<O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> method) {
+        return overriding(Overrides.own(builder().self(), method, thrown()));
+    }
+
+    /**
+     * Overrides a method of 14 parameters the class inherits from its superclass: declares it anew, `@Override public`.
+     *
+     * @param method the fact of the overridden method
+     * @param <R> the result type of the overridden method
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @return the fact of the overriding method
+     * @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> MethodRef14<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> declareOverride(MethodRef14<? super S, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> method) {
+        return overriding(Overrides.own(builder().self(), method, thrown()));
+    }
+
+    /**
+     * Overrides a method of 14 parameters of a supertype the class has by the witness `up`.
+     *
+     * @param method the fact of the overridden method
+     * @param up the witness that the class is of the supertype
+     * @param <O> the type that has the method
+     * @param <R> the result type of the overridden method
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @return the fact of the overriding method
+     * @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> MethodRef14<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> declareOverride(Upcast<Self, ? extends O> up, MethodRef14<O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> method) {
+        return overriding(Overrides.own(builder().self(), method, thrown()));
+    }
+
+    /**
+     * Overrides a method with a method of a narrower result (JLS 8.4.5) of 14 parameters the class inherits from its superclass: declares it anew, `@Override public`.
+     *
+     * @param method the fact of the overridden method
+     * @param result the result type of the method of the class
+     * @param <R> the result type of the overridden method
+     * @param <R2> the result type of the method of the class
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @return the fact of the overriding method
+     * @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <R, R2 extends R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> MethodRef14<Self, R2, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> declareOverride(MethodRef14<? super S, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> method, RefToken<R2> result) {
+        return overriding(Overrides.own(builder().self(), method, result, thrown()));
+    }
+
+    /**
+     * Overrides a method with a method of a narrower result (JLS 8.4.5) of 14 parameters of a supertype the class has by the witness `up`.
+     *
+     * @param method the fact of the overridden method
+     * @param up the witness that the class is of the supertype
+     * @param result the result type of the method of the class
+     * @param <O> the type that has the method
+     * @param <R> the result type of the overridden method
+     * @param <R2> the result type of the method of the class
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @return the fact of the overriding method
+     * @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <O, R, R2 extends R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> MethodRef14<Self, R2, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> declareOverride(Upcast<Self, ? extends O> up, MethodRef14<O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> method, RefToken<R2> result) {
+        return overriding(Overrides.own(builder().self(), method, result, thrown()));
+    }
+
+    /**
+     * Overrides a method with a method whose result is the class itself (JLS 8.4.5) of 14 parameters the class inherits from its superclass: declares it anew, `@Override public`.
+     *
+     * @param method the fact of the overridden method
+     * @param result the witness that the class is of the result type
+     * @param <R> the result type of the overridden method
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @return the fact of the overriding method
+     * @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> MethodRef14<Self, Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> declareOverride(MethodRef14<? super S, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> method, Upcast<Self, ? extends R> result) {
+        return overriding(Overrides.ownOfSelf(builder().self(), method, thrown()));
+    }
+
+    /**
+     * Overrides a method with a method whose result is the class itself (JLS 8.4.5) of 14 parameters of a supertype the class has by the witness `up`.
+     *
+     * @param method the fact of the overridden method
+     * @param up the witness that the class is of the supertype
+     * @param result the witness that the class is of the result type
+     * @param <O> the type that has the method
+     * @param <R> the result type of the overridden method
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @return the fact of the overriding method
+     * @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> MethodRef14<Self, Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> declareOverride(Upcast<Self, ? extends O> up, MethodRef14<O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> method, Upcast<Self, ? extends R> result) {
+        return overriding(Overrides.ownOfSelf(builder().self(), method, thrown()));
+    }
+
+    /**
+     * Overrides a `void` method of 14 parameters the class inherits from its superclass: declares it anew, `@Override public`.
+     *
+     * @param method the fact of the overridden method
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @return the fact of the overriding method
+     * @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> VoidMethodRef14<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> declareOverride(VoidMethodRef14<? super S, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> method) {
+        return overriding(Overrides.own(builder().self(), method, thrown()));
+    }
+
+    /**
+     * Overrides a `void` method of 14 parameters of a supertype the class has by the witness `up`.
+     *
+     * @param method the fact of the overridden method
+     * @param up the witness that the class is of the supertype
+     * @param <O> the type that has the method
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @return the fact of the overriding method
+     * @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> VoidMethodRef14<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> declareOverride(Upcast<Self, ? extends O> up, VoidMethodRef14<O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> method) {
+        return overriding(Overrides.own(builder().self(), method, thrown()));
+    }
+
+    /**
+     * Overrides a method of 15 parameters the class inherits from its superclass: declares it anew, `@Override public`.
+     *
+     * @param method the fact of the overridden method
+     * @param <R> the result type of the overridden method
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @param <A15> the type of the fifteenth parameter
+     * @return the fact of the overriding method
+     * @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> MethodRef15<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> declareOverride(MethodRef15<? super S, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> method) {
+        return overriding(Overrides.own(builder().self(), method, thrown()));
+    }
+
+    /**
+     * Overrides a method of 15 parameters of a supertype the class has by the witness `up`.
+     *
+     * @param method the fact of the overridden method
+     * @param up the witness that the class is of the supertype
+     * @param <O> the type that has the method
+     * @param <R> the result type of the overridden method
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @param <A15> the type of the fifteenth parameter
+     * @return the fact of the overriding method
+     * @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> MethodRef15<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> declareOverride(Upcast<Self, ? extends O> up, MethodRef15<O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> method) {
+        return overriding(Overrides.own(builder().self(), method, thrown()));
+    }
+
+    /**
+     * Overrides a method with a method of a narrower result (JLS 8.4.5) of 15 parameters the class inherits from its superclass: declares it anew, `@Override public`.
+     *
+     * @param method the fact of the overridden method
+     * @param result the result type of the method of the class
+     * @param <R> the result type of the overridden method
+     * @param <R2> the result type of the method of the class
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @param <A15> the type of the fifteenth parameter
+     * @return the fact of the overriding method
+     * @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <R, R2 extends R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> MethodRef15<Self, R2, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> declareOverride(MethodRef15<? super S, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> method, RefToken<R2> result) {
+        return overriding(Overrides.own(builder().self(), method, result, thrown()));
+    }
+
+    /**
+     * Overrides a method with a method of a narrower result (JLS 8.4.5) of 15 parameters of a supertype the class has by the witness `up`.
+     *
+     * @param method the fact of the overridden method
+     * @param up the witness that the class is of the supertype
+     * @param result the result type of the method of the class
+     * @param <O> the type that has the method
+     * @param <R> the result type of the overridden method
+     * @param <R2> the result type of the method of the class
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @param <A15> the type of the fifteenth parameter
+     * @return the fact of the overriding method
+     * @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <O, R, R2 extends R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> MethodRef15<Self, R2, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> declareOverride(Upcast<Self, ? extends O> up, MethodRef15<O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> method, RefToken<R2> result) {
+        return overriding(Overrides.own(builder().self(), method, result, thrown()));
+    }
+
+    /**
+     * Overrides a method with a method whose result is the class itself (JLS 8.4.5) of 15 parameters the class inherits from its superclass: declares it anew, `@Override public`.
+     *
+     * @param method the fact of the overridden method
+     * @param result the witness that the class is of the result type
+     * @param <R> the result type of the overridden method
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @param <A15> the type of the fifteenth parameter
+     * @return the fact of the overriding method
+     * @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> MethodRef15<Self, Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> declareOverride(MethodRef15<? super S, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> method, Upcast<Self, ? extends R> result) {
+        return overriding(Overrides.ownOfSelf(builder().self(), method, thrown()));
+    }
+
+    /**
+     * Overrides a method with a method whose result is the class itself (JLS 8.4.5) of 15 parameters of a supertype the class has by the witness `up`.
+     *
+     * @param method the fact of the overridden method
+     * @param up the witness that the class is of the supertype
+     * @param result the witness that the class is of the result type
+     * @param <O> the type that has the method
+     * @param <R> the result type of the overridden method
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @param <A15> the type of the fifteenth parameter
+     * @return the fact of the overriding method
+     * @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> MethodRef15<Self, Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> declareOverride(Upcast<Self, ? extends O> up, MethodRef15<O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> method, Upcast<Self, ? extends R> result) {
+        return overriding(Overrides.ownOfSelf(builder().self(), method, thrown()));
+    }
+
+    /**
+     * Overrides a `void` method of 15 parameters the class inherits from its superclass: declares it anew, `@Override public`.
+     *
+     * @param method the fact of the overridden method
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @param <A15> the type of the fifteenth parameter
+     * @return the fact of the overriding method
+     * @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> VoidMethodRef15<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> declareOverride(VoidMethodRef15<? super S, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> method) {
+        return overriding(Overrides.own(builder().self(), method, thrown()));
+    }
+
+    /**
+     * Overrides a `void` method of 15 parameters of a supertype the class has by the witness `up`.
+     *
+     * @param method the fact of the overridden method
+     * @param up the witness that the class is of the supertype
+     * @param <O> the type that has the method
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @param <A15> the type of the fifteenth parameter
+     * @return the fact of the overriding method
+     * @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> VoidMethodRef15<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> declareOverride(Upcast<Self, ? extends O> up, VoidMethodRef15<O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> method) {
+        return overriding(Overrides.own(builder().self(), method, thrown()));
+    }
+
+    /**
+     * Overrides a method of 16 parameters the class inherits from its superclass: declares it anew, `@Override public`.
+     *
+     * @param method the fact of the overridden method
+     * @param <R> the result type of the overridden method
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @param <A15> the type of the fifteenth parameter
+     * @param <A16> the type of the sixteenth parameter
+     * @return the fact of the overriding method
+     * @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> MethodRef16<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> declareOverride(MethodRef16<? super S, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> method) {
+        return overriding(Overrides.own(builder().self(), method, thrown()));
+    }
+
+    /**
+     * Overrides a method of 16 parameters of a supertype the class has by the witness `up`.
+     *
+     * @param method the fact of the overridden method
+     * @param up the witness that the class is of the supertype
+     * @param <O> the type that has the method
+     * @param <R> the result type of the overridden method
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @param <A15> the type of the fifteenth parameter
+     * @param <A16> the type of the sixteenth parameter
+     * @return the fact of the overriding method
+     * @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> MethodRef16<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> declareOverride(Upcast<Self, ? extends O> up, MethodRef16<O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> method) {
+        return overriding(Overrides.own(builder().self(), method, thrown()));
+    }
+
+    /**
+     * Overrides a method with a method of a narrower result (JLS 8.4.5) of 16 parameters the class inherits from its superclass: declares it anew, `@Override public`.
+     *
+     * @param method the fact of the overridden method
+     * @param result the result type of the method of the class
+     * @param <R> the result type of the overridden method
+     * @param <R2> the result type of the method of the class
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @param <A15> the type of the fifteenth parameter
+     * @param <A16> the type of the sixteenth parameter
+     * @return the fact of the overriding method
+     * @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <R, R2 extends R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> MethodRef16<Self, R2, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> declareOverride(MethodRef16<? super S, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> method, RefToken<R2> result) {
+        return overriding(Overrides.own(builder().self(), method, result, thrown()));
+    }
+
+    /**
+     * Overrides a method with a method of a narrower result (JLS 8.4.5) of 16 parameters of a supertype the class has by the witness `up`.
+     *
+     * @param method the fact of the overridden method
+     * @param up the witness that the class is of the supertype
+     * @param result the result type of the method of the class
+     * @param <O> the type that has the method
+     * @param <R> the result type of the overridden method
+     * @param <R2> the result type of the method of the class
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @param <A15> the type of the fifteenth parameter
+     * @param <A16> the type of the sixteenth parameter
+     * @return the fact of the overriding method
+     * @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <O, R, R2 extends R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> MethodRef16<Self, R2, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> declareOverride(Upcast<Self, ? extends O> up, MethodRef16<O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> method, RefToken<R2> result) {
+        return overriding(Overrides.own(builder().self(), method, result, thrown()));
+    }
+
+    /**
+     * Overrides a method with a method whose result is the class itself (JLS 8.4.5) of 16 parameters the class inherits from its superclass: declares it anew, `@Override public`.
+     *
+     * @param method the fact of the overridden method
+     * @param result the witness that the class is of the result type
+     * @param <R> the result type of the overridden method
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @param <A15> the type of the fifteenth parameter
+     * @param <A16> the type of the sixteenth parameter
+     * @return the fact of the overriding method
+     * @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> MethodRef16<Self, Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> declareOverride(MethodRef16<? super S, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> method, Upcast<Self, ? extends R> result) {
+        return overriding(Overrides.ownOfSelf(builder().self(), method, thrown()));
+    }
+
+    /**
+     * Overrides a method with a method whose result is the class itself (JLS 8.4.5) of 16 parameters of a supertype the class has by the witness `up`.
+     *
+     * @param method the fact of the overridden method
+     * @param up the witness that the class is of the supertype
+     * @param result the witness that the class is of the result type
+     * @param <O> the type that has the method
+     * @param <R> the result type of the overridden method
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @param <A15> the type of the fifteenth parameter
+     * @param <A16> the type of the sixteenth parameter
+     * @return the fact of the overriding method
+     * @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> MethodRef16<Self, Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> declareOverride(Upcast<Self, ? extends O> up, MethodRef16<O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> method, Upcast<Self, ? extends R> result) {
+        return overriding(Overrides.ownOfSelf(builder().self(), method, thrown()));
+    }
+
+    /**
+     * Overrides a `void` method of 16 parameters the class inherits from its superclass: declares it anew, `@Override public`.
+     *
+     * @param method the fact of the overridden method
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @param <A15> the type of the fifteenth parameter
+     * @param <A16> the type of the sixteenth parameter
+     * @return the fact of the overriding method
+     * @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> VoidMethodRef16<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> declareOverride(VoidMethodRef16<? super S, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> method) {
+        return overriding(Overrides.own(builder().self(), method, thrown()));
+    }
+
+    /**
+     * Overrides a `void` method of 16 parameters of a supertype the class has by the witness `up`.
+     *
+     * @param method the fact of the overridden method
+     * @param up the witness that the class is of the supertype
+     * @param <O> the type that has the method
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @param <A13> the type of the thirteenth parameter
+     * @param <A14> the type of the fourteenth parameter
+     * @param <A15> the type of the fifteenth parameter
+     * @param <A16> the type of the sixteenth parameter
+     * @return the fact of the overriding method
+     * @throws IllegalArgumentException if the method cannot be overridden, see [SignatureRegistry]
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> VoidMethodRef16<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> declareOverride(Upcast<Self, ? extends O> up, VoidMethodRef16<O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> method) {
         return overriding(Overrides.own(builder().self(), method, thrown()));
     }
 }

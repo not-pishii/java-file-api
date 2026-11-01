@@ -250,7 +250,7 @@ final class NestedDeclarations {
     }
 
     /// Declares a member interface with the `parameters` the specification's tokens describe: what
-    /// the generated stages of four to twelve type parameters build, the hand-written ones of one to
+    /// the generated stages of four to sixteen type parameters build, the hand-written ones of one to
     /// three taking the tokens themselves.
     static <I> NestedType<InterfaceToken<I>> interface_(
             TargetClasspath target,
@@ -321,7 +321,7 @@ final class NestedDeclarations {
     }
 
     /// Declares a member record with the `parameters` the specification's tokens describe: what the
-    /// generated stages of four to twelve type parameters build, the hand-written ones of one to three
+    /// generated stages of four to sixteen type parameters build, the hand-written ones of one to three
     /// taking the tokens themselves.
     static <R> NestedType<FinalClassToken<R>> record(
             TargetClasspath target,

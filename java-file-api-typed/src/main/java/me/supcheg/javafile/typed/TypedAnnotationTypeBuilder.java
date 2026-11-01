@@ -336,7 +336,7 @@ public final class TypedAnnotationTypeBuilder<Self> extends AnnotationTypeBuilde
     }
 
     /// Adds a member class of the annotation type with the type parameters of a generated stage:
-    /// what [AnnotationTypeBuilderArities] declares of four to twelve.
+    /// what [AnnotationTypeBuilderArities] declares of four to sixteen.
     @Override
     final <N> FinalClassToken<N> nestedClassToken(
             String name, List<TypeParameter<?>> parameters, NestedDeclarations.ClassBodies spec) {

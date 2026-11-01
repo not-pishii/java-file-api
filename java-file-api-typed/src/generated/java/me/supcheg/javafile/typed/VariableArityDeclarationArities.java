@@ -6,6 +6,10 @@ import me.supcheg.javafile.facts.CtorRef1;
 import me.supcheg.javafile.facts.CtorRef10;
 import me.supcheg.javafile.facts.CtorRef11;
 import me.supcheg.javafile.facts.CtorRef12;
+import me.supcheg.javafile.facts.CtorRef13;
+import me.supcheg.javafile.facts.CtorRef14;
+import me.supcheg.javafile.facts.CtorRef15;
+import me.supcheg.javafile.facts.CtorRef16;
 import me.supcheg.javafile.facts.CtorRef2;
 import me.supcheg.javafile.facts.CtorRef3;
 import me.supcheg.javafile.facts.CtorRef4;
@@ -21,6 +25,10 @@ import me.supcheg.javafile.facts.MethodRef1;
 import me.supcheg.javafile.facts.MethodRef10;
 import me.supcheg.javafile.facts.MethodRef11;
 import me.supcheg.javafile.facts.MethodRef12;
+import me.supcheg.javafile.facts.MethodRef13;
+import me.supcheg.javafile.facts.MethodRef14;
+import me.supcheg.javafile.facts.MethodRef15;
+import me.supcheg.javafile.facts.MethodRef16;
 import me.supcheg.javafile.facts.MethodRef2;
 import me.supcheg.javafile.facts.MethodRef3;
 import me.supcheg.javafile.facts.MethodRef4;
@@ -33,6 +41,10 @@ import me.supcheg.javafile.facts.StaticMethodRef1;
 import me.supcheg.javafile.facts.StaticMethodRef10;
 import me.supcheg.javafile.facts.StaticMethodRef11;
 import me.supcheg.javafile.facts.StaticMethodRef12;
+import me.supcheg.javafile.facts.StaticMethodRef13;
+import me.supcheg.javafile.facts.StaticMethodRef14;
+import me.supcheg.javafile.facts.StaticMethodRef15;
+import me.supcheg.javafile.facts.StaticMethodRef16;
 import me.supcheg.javafile.facts.StaticMethodRef2;
 import me.supcheg.javafile.facts.StaticMethodRef3;
 import me.supcheg.javafile.facts.StaticMethodRef4;
@@ -47,6 +59,10 @@ import me.supcheg.javafile.facts.VoidMethodRef1;
 import me.supcheg.javafile.facts.VoidMethodRef10;
 import me.supcheg.javafile.facts.VoidMethodRef11;
 import me.supcheg.javafile.facts.VoidMethodRef12;
+import me.supcheg.javafile.facts.VoidMethodRef13;
+import me.supcheg.javafile.facts.VoidMethodRef14;
+import me.supcheg.javafile.facts.VoidMethodRef15;
+import me.supcheg.javafile.facts.VoidMethodRef16;
 import me.supcheg.javafile.facts.VoidMethodRef2;
 import me.supcheg.javafile.facts.VoidMethodRef3;
 import me.supcheg.javafile.facts.VoidMethodRef4;
@@ -59,6 +75,10 @@ import me.supcheg.javafile.facts.VoidStaticMethodRef1;
 import me.supcheg.javafile.facts.VoidStaticMethodRef10;
 import me.supcheg.javafile.facts.VoidStaticMethodRef11;
 import me.supcheg.javafile.facts.VoidStaticMethodRef12;
+import me.supcheg.javafile.facts.VoidStaticMethodRef13;
+import me.supcheg.javafile.facts.VoidStaticMethodRef14;
+import me.supcheg.javafile.facts.VoidStaticMethodRef15;
+import me.supcheg.javafile.facts.VoidStaticMethodRef16;
 import me.supcheg.javafile.facts.VoidStaticMethodRef2;
 import me.supcheg.javafile.facts.VoidStaticMethodRef3;
 import me.supcheg.javafile.facts.VoidStaticMethodRef4;
@@ -989,6 +1009,502 @@ abstract sealed class VariableArityDeclarationArities<Self, S> permits VariableA
     }
 
     /**
+     * Declares a `public` constructor, to be defined by the bodies of the class.
+     *
+     * @param last the array type of the last parameter, which is of variable arity
+     * @param <A> the array type
+     * @param p1 the first parameter type
+     * @param <A1> the first parameter type
+     * @param p2 the second parameter type
+     * @param <A2> the second parameter type
+     * @param p3 the third parameter type
+     * @param <A3> the third parameter type
+     * @param p4 the fourth parameter type
+     * @param <A4> the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param <A5> the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param <A6> the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param <A7> the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param <A8> the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param <A9> the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param <A10> the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param <A11> the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param <A12> the twelfth parameter type
+     * @return the fact of the constructor
+     * @throws IllegalArgumentException if javac would reject the constructor
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A> CtorRef13<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A> declareConstructor(TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, ArrayToken<A, ?> last) {
+        return declare(UnsafeInvocables.ctor(self(), p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, last, traits(MemberTraits.DEFAULT, last)));
+    }
+
+    /**
+     * Declares a `public` method returning `R`, to be defined by the bodies of the class.
+     *
+     * @param name the method name
+     * @param result the result type
+     * @param <R> the result type
+     * @param last the array type of the last parameter, which is of variable arity
+     * @param <A> the array type
+     * @param p1 the first parameter type
+     * @param <A1> the first parameter type
+     * @param p2 the second parameter type
+     * @param <A2> the second parameter type
+     * @param p3 the third parameter type
+     * @param <A3> the third parameter type
+     * @param p4 the fourth parameter type
+     * @param <A4> the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param <A5> the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param <A6> the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param <A7> the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param <A8> the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param <A9> the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param <A10> the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param <A11> the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param <A12> the twelfth parameter type
+     * @return the fact of the method
+     * @throws IllegalArgumentException if javac would reject the method
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A> MethodRef13<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A> declareMethod(String name, TypeToken<R> result, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, ArrayToken<A, ?> last) {
+        return declare(UnsafeInvocables.method(self(), name, result, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, last, traits(MemberTraits.FINAL, last)));
+    }
+
+    /**
+     * Declares a `public void` method, to be defined by the bodies of the class.
+     *
+     * @param name the method name
+     * @param last the array type of the last parameter, which is of variable arity
+     * @param <A> the array type
+     * @param p1 the first parameter type
+     * @param <A1> the first parameter type
+     * @param p2 the second parameter type
+     * @param <A2> the second parameter type
+     * @param p3 the third parameter type
+     * @param <A3> the third parameter type
+     * @param p4 the fourth parameter type
+     * @param <A4> the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param <A5> the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param <A6> the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param <A7> the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param <A8> the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param <A9> the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param <A10> the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param <A11> the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param <A12> the twelfth parameter type
+     * @return the fact of the method
+     * @throws IllegalArgumentException if javac would reject the method
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A> VoidMethodRef13<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A> declareVoidMethod(String name, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, ArrayToken<A, ?> last) {
+        return declare(UnsafeInvocables.voidMethod(self(), name, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, last, traits(MemberTraits.FINAL, last)));
+    }
+
+    /**
+     * Declares a `public` constructor, to be defined by the bodies of the class.
+     *
+     * @param last the array type of the last parameter, which is of variable arity
+     * @param <A> the array type
+     * @param p1 the first parameter type
+     * @param <A1> the first parameter type
+     * @param p2 the second parameter type
+     * @param <A2> the second parameter type
+     * @param p3 the third parameter type
+     * @param <A3> the third parameter type
+     * @param p4 the fourth parameter type
+     * @param <A4> the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param <A5> the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param <A6> the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param <A7> the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param <A8> the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param <A9> the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param <A10> the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param <A11> the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param <A12> the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param <A13> the thirteenth parameter type
+     * @return the fact of the constructor
+     * @throws IllegalArgumentException if javac would reject the constructor
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A> CtorRef14<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A> declareConstructor(TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, ArrayToken<A, ?> last) {
+        return declare(UnsafeInvocables.ctor(self(), p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, last, traits(MemberTraits.DEFAULT, last)));
+    }
+
+    /**
+     * Declares a `public` method returning `R`, to be defined by the bodies of the class.
+     *
+     * @param name the method name
+     * @param result the result type
+     * @param <R> the result type
+     * @param last the array type of the last parameter, which is of variable arity
+     * @param <A> the array type
+     * @param p1 the first parameter type
+     * @param <A1> the first parameter type
+     * @param p2 the second parameter type
+     * @param <A2> the second parameter type
+     * @param p3 the third parameter type
+     * @param <A3> the third parameter type
+     * @param p4 the fourth parameter type
+     * @param <A4> the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param <A5> the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param <A6> the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param <A7> the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param <A8> the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param <A9> the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param <A10> the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param <A11> the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param <A12> the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param <A13> the thirteenth parameter type
+     * @return the fact of the method
+     * @throws IllegalArgumentException if javac would reject the method
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A> MethodRef14<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A> declareMethod(String name, TypeToken<R> result, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, ArrayToken<A, ?> last) {
+        return declare(UnsafeInvocables.method(self(), name, result, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, last, traits(MemberTraits.FINAL, last)));
+    }
+
+    /**
+     * Declares a `public void` method, to be defined by the bodies of the class.
+     *
+     * @param name the method name
+     * @param last the array type of the last parameter, which is of variable arity
+     * @param <A> the array type
+     * @param p1 the first parameter type
+     * @param <A1> the first parameter type
+     * @param p2 the second parameter type
+     * @param <A2> the second parameter type
+     * @param p3 the third parameter type
+     * @param <A3> the third parameter type
+     * @param p4 the fourth parameter type
+     * @param <A4> the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param <A5> the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param <A6> the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param <A7> the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param <A8> the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param <A9> the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param <A10> the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param <A11> the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param <A12> the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param <A13> the thirteenth parameter type
+     * @return the fact of the method
+     * @throws IllegalArgumentException if javac would reject the method
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A> VoidMethodRef14<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A> declareVoidMethod(String name, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, ArrayToken<A, ?> last) {
+        return declare(UnsafeInvocables.voidMethod(self(), name, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, last, traits(MemberTraits.FINAL, last)));
+    }
+
+    /**
+     * Declares a `public` constructor, to be defined by the bodies of the class.
+     *
+     * @param last the array type of the last parameter, which is of variable arity
+     * @param <A> the array type
+     * @param p1 the first parameter type
+     * @param <A1> the first parameter type
+     * @param p2 the second parameter type
+     * @param <A2> the second parameter type
+     * @param p3 the third parameter type
+     * @param <A3> the third parameter type
+     * @param p4 the fourth parameter type
+     * @param <A4> the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param <A5> the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param <A6> the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param <A7> the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param <A8> the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param <A9> the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param <A10> the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param <A11> the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param <A12> the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param <A13> the thirteenth parameter type
+     * @param p14 the fourteenth parameter type
+     * @param <A14> the fourteenth parameter type
+     * @return the fact of the constructor
+     * @throws IllegalArgumentException if javac would reject the constructor
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A> CtorRef15<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A> declareConstructor(TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, TypeToken<A14> p14, ArrayToken<A, ?> last) {
+        return declare(UnsafeInvocables.ctor(self(), p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, last, traits(MemberTraits.DEFAULT, last)));
+    }
+
+    /**
+     * Declares a `public` method returning `R`, to be defined by the bodies of the class.
+     *
+     * @param name the method name
+     * @param result the result type
+     * @param <R> the result type
+     * @param last the array type of the last parameter, which is of variable arity
+     * @param <A> the array type
+     * @param p1 the first parameter type
+     * @param <A1> the first parameter type
+     * @param p2 the second parameter type
+     * @param <A2> the second parameter type
+     * @param p3 the third parameter type
+     * @param <A3> the third parameter type
+     * @param p4 the fourth parameter type
+     * @param <A4> the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param <A5> the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param <A6> the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param <A7> the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param <A8> the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param <A9> the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param <A10> the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param <A11> the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param <A12> the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param <A13> the thirteenth parameter type
+     * @param p14 the fourteenth parameter type
+     * @param <A14> the fourteenth parameter type
+     * @return the fact of the method
+     * @throws IllegalArgumentException if javac would reject the method
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A> MethodRef15<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A> declareMethod(String name, TypeToken<R> result, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, TypeToken<A14> p14, ArrayToken<A, ?> last) {
+        return declare(UnsafeInvocables.method(self(), name, result, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, last, traits(MemberTraits.FINAL, last)));
+    }
+
+    /**
+     * Declares a `public void` method, to be defined by the bodies of the class.
+     *
+     * @param name the method name
+     * @param last the array type of the last parameter, which is of variable arity
+     * @param <A> the array type
+     * @param p1 the first parameter type
+     * @param <A1> the first parameter type
+     * @param p2 the second parameter type
+     * @param <A2> the second parameter type
+     * @param p3 the third parameter type
+     * @param <A3> the third parameter type
+     * @param p4 the fourth parameter type
+     * @param <A4> the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param <A5> the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param <A6> the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param <A7> the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param <A8> the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param <A9> the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param <A10> the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param <A11> the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param <A12> the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param <A13> the thirteenth parameter type
+     * @param p14 the fourteenth parameter type
+     * @param <A14> the fourteenth parameter type
+     * @return the fact of the method
+     * @throws IllegalArgumentException if javac would reject the method
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A> VoidMethodRef15<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A> declareVoidMethod(String name, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, TypeToken<A14> p14, ArrayToken<A, ?> last) {
+        return declare(UnsafeInvocables.voidMethod(self(), name, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, last, traits(MemberTraits.FINAL, last)));
+    }
+
+    /**
+     * Declares a `public` constructor, to be defined by the bodies of the class.
+     *
+     * @param last the array type of the last parameter, which is of variable arity
+     * @param <A> the array type
+     * @param p1 the first parameter type
+     * @param <A1> the first parameter type
+     * @param p2 the second parameter type
+     * @param <A2> the second parameter type
+     * @param p3 the third parameter type
+     * @param <A3> the third parameter type
+     * @param p4 the fourth parameter type
+     * @param <A4> the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param <A5> the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param <A6> the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param <A7> the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param <A8> the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param <A9> the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param <A10> the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param <A11> the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param <A12> the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param <A13> the thirteenth parameter type
+     * @param p14 the fourteenth parameter type
+     * @param <A14> the fourteenth parameter type
+     * @param p15 the fifteenth parameter type
+     * @param <A15> the fifteenth parameter type
+     * @return the fact of the constructor
+     * @throws IllegalArgumentException if javac would reject the constructor
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A> CtorRef16<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A> declareConstructor(TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, TypeToken<A14> p14, TypeToken<A15> p15, ArrayToken<A, ?> last) {
+        return declare(UnsafeInvocables.ctor(self(), p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, last, traits(MemberTraits.DEFAULT, last)));
+    }
+
+    /**
+     * Declares a `public` method returning `R`, to be defined by the bodies of the class.
+     *
+     * @param name the method name
+     * @param result the result type
+     * @param <R> the result type
+     * @param last the array type of the last parameter, which is of variable arity
+     * @param <A> the array type
+     * @param p1 the first parameter type
+     * @param <A1> the first parameter type
+     * @param p2 the second parameter type
+     * @param <A2> the second parameter type
+     * @param p3 the third parameter type
+     * @param <A3> the third parameter type
+     * @param p4 the fourth parameter type
+     * @param <A4> the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param <A5> the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param <A6> the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param <A7> the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param <A8> the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param <A9> the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param <A10> the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param <A11> the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param <A12> the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param <A13> the thirteenth parameter type
+     * @param p14 the fourteenth parameter type
+     * @param <A14> the fourteenth parameter type
+     * @param p15 the fifteenth parameter type
+     * @param <A15> the fifteenth parameter type
+     * @return the fact of the method
+     * @throws IllegalArgumentException if javac would reject the method
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A> MethodRef16<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A> declareMethod(String name, TypeToken<R> result, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, TypeToken<A14> p14, TypeToken<A15> p15, ArrayToken<A, ?> last) {
+        return declare(UnsafeInvocables.method(self(), name, result, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, last, traits(MemberTraits.FINAL, last)));
+    }
+
+    /**
+     * Declares a `public void` method, to be defined by the bodies of the class.
+     *
+     * @param name the method name
+     * @param last the array type of the last parameter, which is of variable arity
+     * @param <A> the array type
+     * @param p1 the first parameter type
+     * @param <A1> the first parameter type
+     * @param p2 the second parameter type
+     * @param <A2> the second parameter type
+     * @param p3 the third parameter type
+     * @param <A3> the third parameter type
+     * @param p4 the fourth parameter type
+     * @param <A4> the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param <A5> the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param <A6> the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param <A7> the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param <A8> the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param <A9> the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param <A10> the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param <A11> the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param <A12> the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param <A13> the thirteenth parameter type
+     * @param p14 the fourteenth parameter type
+     * @param <A14> the fourteenth parameter type
+     * @param p15 the fifteenth parameter type
+     * @param <A15> the fifteenth parameter type
+     * @return the fact of the method
+     * @throws IllegalArgumentException if javac would reject the method
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A> VoidMethodRef16<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A> declareVoidMethod(String name, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, TypeToken<A14> p14, TypeToken<A15> p15, ArrayToken<A, ?> last) {
+        return declare(UnsafeInvocables.voidMethod(self(), name, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, last, traits(MemberTraits.FINAL, last)));
+    }
+
+    /**
      * Declares a `public static` method returning `R`, to be defined by the bodies of the class.
      *
      * @param name the method name
@@ -1610,5 +2126,341 @@ abstract sealed class VariableArityDeclarationArities<Self, S> permits VariableA
      */
     public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A> VoidStaticMethodRef12<A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A> declareVoidStaticMethod(String name, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, ArrayToken<A, ?> last) {
         return declare(UnsafeInvocables.voidStaticMethod(self(), name, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, last, traits(MemberTraits.FINAL, last)));
+    }
+
+    /**
+     * Declares a `public static` method returning `R`, to be defined by the bodies of the class.
+     *
+     * @param name the method name
+     * @param result the result type
+     * @param <R> the result type
+     * @param last the array type of the last parameter, which is of variable arity
+     * @param <A> the array type
+     * @param p1 the first parameter type
+     * @param <A1> the first parameter type
+     * @param p2 the second parameter type
+     * @param <A2> the second parameter type
+     * @param p3 the third parameter type
+     * @param <A3> the third parameter type
+     * @param p4 the fourth parameter type
+     * @param <A4> the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param <A5> the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param <A6> the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param <A7> the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param <A8> the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param <A9> the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param <A10> the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param <A11> the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param <A12> the twelfth parameter type
+     * @return the fact of the method
+     * @throws IllegalArgumentException if javac would reject the method
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A> StaticMethodRef13<R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A> declareStaticMethod(String name, TypeToken<R> result, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, ArrayToken<A, ?> last) {
+        return declare(UnsafeInvocables.staticMethod(self(), name, result, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, last, traits(MemberTraits.FINAL, last)));
+    }
+
+    /**
+     * Declares a `public static void` method, to be defined by the bodies of the class.
+     *
+     * @param name the method name
+     * @param last the array type of the last parameter, which is of variable arity
+     * @param <A> the array type
+     * @param p1 the first parameter type
+     * @param <A1> the first parameter type
+     * @param p2 the second parameter type
+     * @param <A2> the second parameter type
+     * @param p3 the third parameter type
+     * @param <A3> the third parameter type
+     * @param p4 the fourth parameter type
+     * @param <A4> the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param <A5> the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param <A6> the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param <A7> the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param <A8> the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param <A9> the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param <A10> the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param <A11> the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param <A12> the twelfth parameter type
+     * @return the fact of the method
+     * @throws IllegalArgumentException if javac would reject the method
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A> VoidStaticMethodRef13<A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A> declareVoidStaticMethod(String name, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, ArrayToken<A, ?> last) {
+        return declare(UnsafeInvocables.voidStaticMethod(self(), name, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, last, traits(MemberTraits.FINAL, last)));
+    }
+
+    /**
+     * Declares a `public static` method returning `R`, to be defined by the bodies of the class.
+     *
+     * @param name the method name
+     * @param result the result type
+     * @param <R> the result type
+     * @param last the array type of the last parameter, which is of variable arity
+     * @param <A> the array type
+     * @param p1 the first parameter type
+     * @param <A1> the first parameter type
+     * @param p2 the second parameter type
+     * @param <A2> the second parameter type
+     * @param p3 the third parameter type
+     * @param <A3> the third parameter type
+     * @param p4 the fourth parameter type
+     * @param <A4> the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param <A5> the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param <A6> the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param <A7> the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param <A8> the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param <A9> the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param <A10> the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param <A11> the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param <A12> the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param <A13> the thirteenth parameter type
+     * @return the fact of the method
+     * @throws IllegalArgumentException if javac would reject the method
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A> StaticMethodRef14<R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A> declareStaticMethod(String name, TypeToken<R> result, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, ArrayToken<A, ?> last) {
+        return declare(UnsafeInvocables.staticMethod(self(), name, result, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, last, traits(MemberTraits.FINAL, last)));
+    }
+
+    /**
+     * Declares a `public static void` method, to be defined by the bodies of the class.
+     *
+     * @param name the method name
+     * @param last the array type of the last parameter, which is of variable arity
+     * @param <A> the array type
+     * @param p1 the first parameter type
+     * @param <A1> the first parameter type
+     * @param p2 the second parameter type
+     * @param <A2> the second parameter type
+     * @param p3 the third parameter type
+     * @param <A3> the third parameter type
+     * @param p4 the fourth parameter type
+     * @param <A4> the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param <A5> the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param <A6> the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param <A7> the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param <A8> the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param <A9> the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param <A10> the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param <A11> the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param <A12> the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param <A13> the thirteenth parameter type
+     * @return the fact of the method
+     * @throws IllegalArgumentException if javac would reject the method
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A> VoidStaticMethodRef14<A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A> declareVoidStaticMethod(String name, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, ArrayToken<A, ?> last) {
+        return declare(UnsafeInvocables.voidStaticMethod(self(), name, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, last, traits(MemberTraits.FINAL, last)));
+    }
+
+    /**
+     * Declares a `public static` method returning `R`, to be defined by the bodies of the class.
+     *
+     * @param name the method name
+     * @param result the result type
+     * @param <R> the result type
+     * @param last the array type of the last parameter, which is of variable arity
+     * @param <A> the array type
+     * @param p1 the first parameter type
+     * @param <A1> the first parameter type
+     * @param p2 the second parameter type
+     * @param <A2> the second parameter type
+     * @param p3 the third parameter type
+     * @param <A3> the third parameter type
+     * @param p4 the fourth parameter type
+     * @param <A4> the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param <A5> the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param <A6> the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param <A7> the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param <A8> the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param <A9> the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param <A10> the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param <A11> the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param <A12> the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param <A13> the thirteenth parameter type
+     * @param p14 the fourteenth parameter type
+     * @param <A14> the fourteenth parameter type
+     * @return the fact of the method
+     * @throws IllegalArgumentException if javac would reject the method
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A> StaticMethodRef15<R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A> declareStaticMethod(String name, TypeToken<R> result, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, TypeToken<A14> p14, ArrayToken<A, ?> last) {
+        return declare(UnsafeInvocables.staticMethod(self(), name, result, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, last, traits(MemberTraits.FINAL, last)));
+    }
+
+    /**
+     * Declares a `public static void` method, to be defined by the bodies of the class.
+     *
+     * @param name the method name
+     * @param last the array type of the last parameter, which is of variable arity
+     * @param <A> the array type
+     * @param p1 the first parameter type
+     * @param <A1> the first parameter type
+     * @param p2 the second parameter type
+     * @param <A2> the second parameter type
+     * @param p3 the third parameter type
+     * @param <A3> the third parameter type
+     * @param p4 the fourth parameter type
+     * @param <A4> the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param <A5> the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param <A6> the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param <A7> the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param <A8> the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param <A9> the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param <A10> the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param <A11> the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param <A12> the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param <A13> the thirteenth parameter type
+     * @param p14 the fourteenth parameter type
+     * @param <A14> the fourteenth parameter type
+     * @return the fact of the method
+     * @throws IllegalArgumentException if javac would reject the method
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A> VoidStaticMethodRef15<A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A> declareVoidStaticMethod(String name, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, TypeToken<A14> p14, ArrayToken<A, ?> last) {
+        return declare(UnsafeInvocables.voidStaticMethod(self(), name, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, last, traits(MemberTraits.FINAL, last)));
+    }
+
+    /**
+     * Declares a `public static` method returning `R`, to be defined by the bodies of the class.
+     *
+     * @param name the method name
+     * @param result the result type
+     * @param <R> the result type
+     * @param last the array type of the last parameter, which is of variable arity
+     * @param <A> the array type
+     * @param p1 the first parameter type
+     * @param <A1> the first parameter type
+     * @param p2 the second parameter type
+     * @param <A2> the second parameter type
+     * @param p3 the third parameter type
+     * @param <A3> the third parameter type
+     * @param p4 the fourth parameter type
+     * @param <A4> the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param <A5> the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param <A6> the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param <A7> the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param <A8> the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param <A9> the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param <A10> the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param <A11> the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param <A12> the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param <A13> the thirteenth parameter type
+     * @param p14 the fourteenth parameter type
+     * @param <A14> the fourteenth parameter type
+     * @param p15 the fifteenth parameter type
+     * @param <A15> the fifteenth parameter type
+     * @return the fact of the method
+     * @throws IllegalArgumentException if javac would reject the method
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A> StaticMethodRef16<R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A> declareStaticMethod(String name, TypeToken<R> result, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, TypeToken<A14> p14, TypeToken<A15> p15, ArrayToken<A, ?> last) {
+        return declare(UnsafeInvocables.staticMethod(self(), name, result, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, last, traits(MemberTraits.FINAL, last)));
+    }
+
+    /**
+     * Declares a `public static void` method, to be defined by the bodies of the class.
+     *
+     * @param name the method name
+     * @param last the array type of the last parameter, which is of variable arity
+     * @param <A> the array type
+     * @param p1 the first parameter type
+     * @param <A1> the first parameter type
+     * @param p2 the second parameter type
+     * @param <A2> the second parameter type
+     * @param p3 the third parameter type
+     * @param <A3> the third parameter type
+     * @param p4 the fourth parameter type
+     * @param <A4> the fourth parameter type
+     * @param p5 the fifth parameter type
+     * @param <A5> the fifth parameter type
+     * @param p6 the sixth parameter type
+     * @param <A6> the sixth parameter type
+     * @param p7 the seventh parameter type
+     * @param <A7> the seventh parameter type
+     * @param p8 the eighth parameter type
+     * @param <A8> the eighth parameter type
+     * @param p9 the ninth parameter type
+     * @param <A9> the ninth parameter type
+     * @param p10 the tenth parameter type
+     * @param <A10> the tenth parameter type
+     * @param p11 the eleventh parameter type
+     * @param <A11> the eleventh parameter type
+     * @param p12 the twelfth parameter type
+     * @param <A12> the twelfth parameter type
+     * @param p13 the thirteenth parameter type
+     * @param <A13> the thirteenth parameter type
+     * @param p14 the fourteenth parameter type
+     * @param <A14> the fourteenth parameter type
+     * @param p15 the fifteenth parameter type
+     * @param <A15> the fifteenth parameter type
+     * @return the fact of the method
+     * @throws IllegalArgumentException if javac would reject the method
+     * @throws IllegalStateException if the declarations of the class have ended
+     */
+    public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A> VoidStaticMethodRef16<A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A> declareVoidStaticMethod(String name, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, TypeToken<A14> p14, TypeToken<A15> p15, ArrayToken<A, ?> last) {
+        return declare(UnsafeInvocables.voidStaticMethod(self(), name, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, last, traits(MemberTraits.FINAL, last)));
     }
 }

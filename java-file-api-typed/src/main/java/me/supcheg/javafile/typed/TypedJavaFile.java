@@ -34,7 +34,7 @@ import java.util.Objects;
 ///
 /// The entry points of a generic class, interface or record, and the specification stages they take,
 /// are generated into [GenericDeclarationArities] for every number of type parameters from one to
-/// twelve: the class extends it, so `TypedJavaFile.declareClass(...)` and
+/// sixteen: the class extends it, so `TypedJavaFile.declareClass(...)` and
 /// `new TypedJavaFile.TypedGenericClassSpec4<>()` read here as they read there.
 public final class TypedJavaFile extends GenericDeclarationArities {
     private TypedJavaFile() {}

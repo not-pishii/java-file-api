@@ -728,8 +728,8 @@ class MirrorTranslatorTypeTest {
                 package p;
                 public class Odd {
                     public Outer<String>.Inner inner;
-                    public void thirteen(int a, int b, int c, int d, int e, int f, int g, int h, int i, int j, int k, int l, int m) {}
-                    public Odd(int a, int b, int c, int d, int e, int f, int g, int h, int i, int j, int k, int l, int m) {}
+                    public void seventeen(int a, int b, int c, int d, int e, int f, int g, int h, int i, int j, int k, int l, int m, int n, int o, int p, int q) {}
+                    public Odd(int a, int b, int c, int d, int e, int f, int g, int h, int i, int j, int k, int l, int m, int n, int o, int p, int q) {}
                     public void twelve(int a, int b, int c, int d, int e, int f, int g, int h, int i, int j, int k, int l) {}
                 }
                 """, """
@@ -744,11 +744,11 @@ class MirrorTranslatorTypeTest {
                                 "field inner",
                                 "member class p.Outer.Inner of parameterized type p.Outer<java.lang.String>"),
                         new SkippedMember(
-                                "method thirteen(int,int,int,int,int,int,int,int,int,int,int,int,int)",
-                                "has 13 parameters, more than 12"),
+                                "method seventeen(int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int)",
+                                "has 17 parameters, more than 16"),
                         new SkippedMember(
-                                "constructor Odd(int,int,int,int,int,int,int,int,int,int,int,int,int)",
-                                "has 13 parameters, more than 12"));
+                                "constructor Odd(int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int,int)",
+                                "has 17 parameters, more than 16"));
     }
 
     // ---- deferred

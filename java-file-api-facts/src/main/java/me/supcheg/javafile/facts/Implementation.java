@@ -37,6 +37,10 @@ public sealed interface Implementation<Self>
                 Implementation10,
                 Implementation11,
                 Implementation12,
+                Implementation13,
+                Implementation14,
+                Implementation15,
+                Implementation16,
                 VoidImplementation0,
                 VoidImplementation1,
                 VoidImplementation2,
@@ -49,7 +53,11 @@ public sealed interface Implementation<Self>
                 VoidImplementation9,
                 VoidImplementation10,
                 VoidImplementation11,
-                VoidImplementation12 {
+                VoidImplementation12,
+                VoidImplementation13,
+                VoidImplementation14,
+                VoidImplementation15,
+                VoidImplementation16 {
 
     /// How the class has the method.
     ///

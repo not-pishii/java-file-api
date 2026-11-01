@@ -10,6 +10,10 @@ import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericClassSpec
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericClassSpec10;
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericClassSpec11;
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericClassSpec12;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericClassSpec13;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericClassSpec14;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericClassSpec15;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericClassSpec16;
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericClassSpec2;
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericClassSpec3;
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericClassSpec4;
@@ -22,6 +26,10 @@ import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericInterface
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericInterfaceSpec10;
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericInterfaceSpec11;
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericInterfaceSpec12;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericInterfaceSpec13;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericInterfaceSpec14;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericInterfaceSpec15;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericInterfaceSpec16;
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericInterfaceSpec2;
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericInterfaceSpec3;
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericInterfaceSpec4;
@@ -34,6 +42,10 @@ import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericRecordSpe
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericRecordSpec10;
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericRecordSpec11;
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericRecordSpec12;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericRecordSpec13;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericRecordSpec14;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericRecordSpec15;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericRecordSpec16;
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericRecordSpec2;
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericRecordSpec3;
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericRecordSpec4;
@@ -1327,6 +1339,720 @@ abstract sealed class GenericDeclarationArities permits TypedJavaFile {
     }
 
     /**
+     * The specification of a generic class with thirteen type parameters, whose leftmost bounds are `B1`, `B2`, `B3`, `B4`, `B5`, `B6`, `B7`, `B8`, `B9`, `B10`, `B11`, `B12` and `B13`.
+     *
+     * @param <B1> the leftmost bound of the first type parameter, `Object` for none
+     * @param <B2> the leftmost bound of the second type parameter, `Object` for none
+     * @param <B3> the leftmost bound of the third type parameter, `Object` for none
+     * @param <B4> the leftmost bound of the fourth type parameter, `Object` for none
+     * @param <B5> the leftmost bound of the fifth type parameter, `Object` for none
+     * @param <B6> the leftmost bound of the sixth type parameter, `Object` for none
+     * @param <B7> the leftmost bound of the seventh type parameter, `Object` for none
+     * @param <B8> the leftmost bound of the eighth type parameter, `Object` for none
+     * @param <B9> the leftmost bound of the ninth type parameter, `Object` for none
+     * @param <B10> the leftmost bound of the tenth type parameter, `Object` for none
+     * @param <B11> the leftmost bound of the eleventh type parameter, `Object` for none
+     * @param <B12> the leftmost bound of the twelfth type parameter, `Object` for none
+     * @param <B13> the leftmost bound of the thirteenth type parameter, `Object` for none
+     */
+    @Generated("me.supcheg.javafile.typed.codegen.TypedCodegen")
+    public interface TypedGenericClassSpec13<B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13> {
+        /**
+         * Declares the class through `h`, branded with a fresh `Self`, with the tokens of its type parameters.
+         *
+         * @param h the self-branded first stage of the header of the class
+         * @param t1 the token of the first type parameter
+         * @param t2 the token of the second type parameter
+         * @param t3 the token of the third type parameter
+         * @param t4 the token of the fourth type parameter
+         * @param t5 the token of the fifth type parameter
+         * @param t6 the token of the sixth type parameter
+         * @param t7 the token of the seventh type parameter
+         * @param t8 the token of the eighth type parameter
+         * @param t9 the token of the ninth type parameter
+         * @param t10 the token of the tenth type parameter
+         * @param t11 the token of the eleventh type parameter
+         * @param t12 the token of the twelfth type parameter
+         * @param t13 the token of the thirteenth type parameter
+         * @param <Self> the brand of the class being declared
+         * @param <T1> the brand of the first type parameter
+         * @param <T2> the brand of the second type parameter
+         * @param <T3> the brand of the third type parameter
+         * @param <T4> the brand of the fourth type parameter
+         * @param <T5> the brand of the fifth type parameter
+         * @param <T6> the brand of the sixth type parameter
+         * @param <T7> the brand of the seventh type parameter
+         * @param <T8> the brand of the eighth type parameter
+         * @param <T9> the brand of the ninth type parameter
+         * @param <T10> the brand of the tenth type parameter
+         * @param <T11> the brand of the eleventh type parameter
+         * @param <T12> the brand of the twelfth type parameter
+         * @param <T13> the brand of the thirteenth type parameter
+         * @return the bodies of the members: the stage the declaration of the class ends in
+         */
+        <Self, T1 extends B1, T2 extends B2, T3 extends B3, T4 extends B4, T5 extends B5, T6 extends B6, T7 extends B7, T8 extends B8, T9 extends B9, T10 extends B10, T11 extends B11, T12 extends B12, T13 extends B13> MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<T1> t1, TypeVarToken<T2> t2, TypeVarToken<T3> t3, TypeVarToken<T4> t4, TypeVarToken<T5> t5, TypeVarToken<T6> t6, TypeVarToken<T7> t7, TypeVarToken<T8> t8, TypeVarToken<T9> t9, TypeVarToken<T10> t10, TypeVarToken<T11> t11, TypeVarToken<T12> t12, TypeVarToken<T13> t13);
+    }
+
+    /**
+     * The specification of a generic interface with thirteen type parameters, whose leftmost bounds are `B1`, `B2`, `B3`, `B4`, `B5`, `B6`, `B7`, `B8`, `B9`, `B10`, `B11`, `B12` and `B13`.
+     *
+     * @param <B1> the leftmost bound of the first type parameter, `Object` for none
+     * @param <B2> the leftmost bound of the second type parameter, `Object` for none
+     * @param <B3> the leftmost bound of the third type parameter, `Object` for none
+     * @param <B4> the leftmost bound of the fourth type parameter, `Object` for none
+     * @param <B5> the leftmost bound of the fifth type parameter, `Object` for none
+     * @param <B6> the leftmost bound of the sixth type parameter, `Object` for none
+     * @param <B7> the leftmost bound of the seventh type parameter, `Object` for none
+     * @param <B8> the leftmost bound of the eighth type parameter, `Object` for none
+     * @param <B9> the leftmost bound of the ninth type parameter, `Object` for none
+     * @param <B10> the leftmost bound of the tenth type parameter, `Object` for none
+     * @param <B11> the leftmost bound of the eleventh type parameter, `Object` for none
+     * @param <B12> the leftmost bound of the twelfth type parameter, `Object` for none
+     * @param <B13> the leftmost bound of the thirteenth type parameter, `Object` for none
+     */
+    @Generated("me.supcheg.javafile.typed.codegen.TypedCodegen")
+    public interface TypedGenericInterfaceSpec13<B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13> {
+        /**
+         * Declares the interface through `ib`, branded with a fresh `Self`, with the tokens of its type parameters.
+         *
+         * @param ib the self-branded builder of the interface
+         * @param t1 the token of the first type parameter
+         * @param t2 the token of the second type parameter
+         * @param t3 the token of the third type parameter
+         * @param t4 the token of the fourth type parameter
+         * @param t5 the token of the fifth type parameter
+         * @param t6 the token of the sixth type parameter
+         * @param t7 the token of the seventh type parameter
+         * @param t8 the token of the eighth type parameter
+         * @param t9 the token of the ninth type parameter
+         * @param t10 the token of the tenth type parameter
+         * @param t11 the token of the eleventh type parameter
+         * @param t12 the token of the twelfth type parameter
+         * @param t13 the token of the thirteenth type parameter
+         * @param <Self> the brand of the interface being declared
+         * @param <T1> the brand of the first type parameter
+         * @param <T2> the brand of the second type parameter
+         * @param <T3> the brand of the third type parameter
+         * @param <T4> the brand of the fourth type parameter
+         * @param <T5> the brand of the fifth type parameter
+         * @param <T6> the brand of the sixth type parameter
+         * @param <T7> the brand of the seventh type parameter
+         * @param <T8> the brand of the eighth type parameter
+         * @param <T9> the brand of the ninth type parameter
+         * @param <T10> the brand of the tenth type parameter
+         * @param <T11> the brand of the eleventh type parameter
+         * @param <T12> the brand of the twelfth type parameter
+         * @param <T13> the brand of the thirteenth type parameter
+         * @return the bodies of the members: the stage the declaration of the interface ends in
+         */
+        <Self, T1 extends B1, T2 extends B2, T3 extends B3, T4 extends B4, T5 extends B5, T6 extends B6, T7 extends B7, T8 extends B8, T9 extends B9, T10 extends B10, T11 extends B11, T12 extends B12, T13 extends B13> TypedInterfaceBodies<Self> build(TypedInterfaceBuilder<Self> ib, TypeVarToken<T1> t1, TypeVarToken<T2> t2, TypeVarToken<T3> t3, TypeVarToken<T4> t4, TypeVarToken<T5> t5, TypeVarToken<T6> t6, TypeVarToken<T7> t7, TypeVarToken<T8> t8, TypeVarToken<T9> t9, TypeVarToken<T10> t10, TypeVarToken<T11> t11, TypeVarToken<T12> t12, TypeVarToken<T13> t13);
+    }
+
+    /**
+     * The specification of a generic record with thirteen type parameters, whose leftmost bounds are `B1`, `B2`, `B3`, `B4`, `B5`, `B6`, `B7`, `B8`, `B9`, `B10`, `B11`, `B12` and `B13`.
+     *
+     * @param <B1> the leftmost bound of the first type parameter, `Object` for none
+     * @param <B2> the leftmost bound of the second type parameter, `Object` for none
+     * @param <B3> the leftmost bound of the third type parameter, `Object` for none
+     * @param <B4> the leftmost bound of the fourth type parameter, `Object` for none
+     * @param <B5> the leftmost bound of the fifth type parameter, `Object` for none
+     * @param <B6> the leftmost bound of the sixth type parameter, `Object` for none
+     * @param <B7> the leftmost bound of the seventh type parameter, `Object` for none
+     * @param <B8> the leftmost bound of the eighth type parameter, `Object` for none
+     * @param <B9> the leftmost bound of the ninth type parameter, `Object` for none
+     * @param <B10> the leftmost bound of the tenth type parameter, `Object` for none
+     * @param <B11> the leftmost bound of the eleventh type parameter, `Object` for none
+     * @param <B12> the leftmost bound of the twelfth type parameter, `Object` for none
+     * @param <B13> the leftmost bound of the thirteenth type parameter, `Object` for none
+     */
+    @Generated("me.supcheg.javafile.typed.codegen.TypedCodegen")
+    public interface TypedGenericRecordSpec13<B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13> {
+        /**
+         * Declares the record through `rb`, branded with a fresh `Self`, with the tokens of its type parameters.
+         *
+         * @param rb the self-branded builder of the record
+         * @param t1 the token of the first type parameter
+         * @param t2 the token of the second type parameter
+         * @param t3 the token of the third type parameter
+         * @param t4 the token of the fourth type parameter
+         * @param t5 the token of the fifth type parameter
+         * @param t6 the token of the sixth type parameter
+         * @param t7 the token of the seventh type parameter
+         * @param t8 the token of the eighth type parameter
+         * @param t9 the token of the ninth type parameter
+         * @param t10 the token of the tenth type parameter
+         * @param t11 the token of the eleventh type parameter
+         * @param t12 the token of the twelfth type parameter
+         * @param t13 the token of the thirteenth type parameter
+         * @param <Self> the brand of the record being declared
+         * @param <T1> the brand of the first type parameter
+         * @param <T2> the brand of the second type parameter
+         * @param <T3> the brand of the third type parameter
+         * @param <T4> the brand of the fourth type parameter
+         * @param <T5> the brand of the fifth type parameter
+         * @param <T6> the brand of the sixth type parameter
+         * @param <T7> the brand of the seventh type parameter
+         * @param <T8> the brand of the eighth type parameter
+         * @param <T9> the brand of the ninth type parameter
+         * @param <T10> the brand of the tenth type parameter
+         * @param <T11> the brand of the eleventh type parameter
+         * @param <T12> the brand of the twelfth type parameter
+         * @param <T13> the brand of the thirteenth type parameter
+         * @return the bodies of the members: the stage the declaration of the record ends in
+         */
+        <Self, T1 extends B1, T2 extends B2, T3 extends B3, T4 extends B4, T5 extends B5, T6 extends B6, T7 extends B7, T8 extends B8, T9 extends B9, T10 extends B10, T11 extends B11, T12 extends B12, T13 extends B13> TypedRecordBodies<Self> build(TypedRecordBuilder<Self> rb, TypeVarToken<T1> t1, TypeVarToken<T2> t2, TypeVarToken<T3> t3, TypeVarToken<T4> t4, TypeVarToken<T5> t5, TypeVarToken<T6> t6, TypeVarToken<T7> t7, TypeVarToken<T8> t8, TypeVarToken<T9> t9, TypeVarToken<T10> t10, TypeVarToken<T11> t11, TypeVarToken<T12> t12, TypeVarToken<T13> t13);
+    }
+
+    /**
+     * The specification of a generic class with fourteen type parameters, whose leftmost bounds are `B1`, `B2`, `B3`, `B4`, `B5`, `B6`, `B7`, `B8`, `B9`, `B10`, `B11`, `B12`, `B13` and `B14`.
+     *
+     * @param <B1> the leftmost bound of the first type parameter, `Object` for none
+     * @param <B2> the leftmost bound of the second type parameter, `Object` for none
+     * @param <B3> the leftmost bound of the third type parameter, `Object` for none
+     * @param <B4> the leftmost bound of the fourth type parameter, `Object` for none
+     * @param <B5> the leftmost bound of the fifth type parameter, `Object` for none
+     * @param <B6> the leftmost bound of the sixth type parameter, `Object` for none
+     * @param <B7> the leftmost bound of the seventh type parameter, `Object` for none
+     * @param <B8> the leftmost bound of the eighth type parameter, `Object` for none
+     * @param <B9> the leftmost bound of the ninth type parameter, `Object` for none
+     * @param <B10> the leftmost bound of the tenth type parameter, `Object` for none
+     * @param <B11> the leftmost bound of the eleventh type parameter, `Object` for none
+     * @param <B12> the leftmost bound of the twelfth type parameter, `Object` for none
+     * @param <B13> the leftmost bound of the thirteenth type parameter, `Object` for none
+     * @param <B14> the leftmost bound of the fourteenth type parameter, `Object` for none
+     */
+    @Generated("me.supcheg.javafile.typed.codegen.TypedCodegen")
+    public interface TypedGenericClassSpec14<B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14> {
+        /**
+         * Declares the class through `h`, branded with a fresh `Self`, with the tokens of its type parameters.
+         *
+         * @param h the self-branded first stage of the header of the class
+         * @param t1 the token of the first type parameter
+         * @param t2 the token of the second type parameter
+         * @param t3 the token of the third type parameter
+         * @param t4 the token of the fourth type parameter
+         * @param t5 the token of the fifth type parameter
+         * @param t6 the token of the sixth type parameter
+         * @param t7 the token of the seventh type parameter
+         * @param t8 the token of the eighth type parameter
+         * @param t9 the token of the ninth type parameter
+         * @param t10 the token of the tenth type parameter
+         * @param t11 the token of the eleventh type parameter
+         * @param t12 the token of the twelfth type parameter
+         * @param t13 the token of the thirteenth type parameter
+         * @param t14 the token of the fourteenth type parameter
+         * @param <Self> the brand of the class being declared
+         * @param <T1> the brand of the first type parameter
+         * @param <T2> the brand of the second type parameter
+         * @param <T3> the brand of the third type parameter
+         * @param <T4> the brand of the fourth type parameter
+         * @param <T5> the brand of the fifth type parameter
+         * @param <T6> the brand of the sixth type parameter
+         * @param <T7> the brand of the seventh type parameter
+         * @param <T8> the brand of the eighth type parameter
+         * @param <T9> the brand of the ninth type parameter
+         * @param <T10> the brand of the tenth type parameter
+         * @param <T11> the brand of the eleventh type parameter
+         * @param <T12> the brand of the twelfth type parameter
+         * @param <T13> the brand of the thirteenth type parameter
+         * @param <T14> the brand of the fourteenth type parameter
+         * @return the bodies of the members: the stage the declaration of the class ends in
+         */
+        <Self, T1 extends B1, T2 extends B2, T3 extends B3, T4 extends B4, T5 extends B5, T6 extends B6, T7 extends B7, T8 extends B8, T9 extends B9, T10 extends B10, T11 extends B11, T12 extends B12, T13 extends B13, T14 extends B14> MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<T1> t1, TypeVarToken<T2> t2, TypeVarToken<T3> t3, TypeVarToken<T4> t4, TypeVarToken<T5> t5, TypeVarToken<T6> t6, TypeVarToken<T7> t7, TypeVarToken<T8> t8, TypeVarToken<T9> t9, TypeVarToken<T10> t10, TypeVarToken<T11> t11, TypeVarToken<T12> t12, TypeVarToken<T13> t13, TypeVarToken<T14> t14);
+    }
+
+    /**
+     * The specification of a generic interface with fourteen type parameters, whose leftmost bounds are `B1`, `B2`, `B3`, `B4`, `B5`, `B6`, `B7`, `B8`, `B9`, `B10`, `B11`, `B12`, `B13` and `B14`.
+     *
+     * @param <B1> the leftmost bound of the first type parameter, `Object` for none
+     * @param <B2> the leftmost bound of the second type parameter, `Object` for none
+     * @param <B3> the leftmost bound of the third type parameter, `Object` for none
+     * @param <B4> the leftmost bound of the fourth type parameter, `Object` for none
+     * @param <B5> the leftmost bound of the fifth type parameter, `Object` for none
+     * @param <B6> the leftmost bound of the sixth type parameter, `Object` for none
+     * @param <B7> the leftmost bound of the seventh type parameter, `Object` for none
+     * @param <B8> the leftmost bound of the eighth type parameter, `Object` for none
+     * @param <B9> the leftmost bound of the ninth type parameter, `Object` for none
+     * @param <B10> the leftmost bound of the tenth type parameter, `Object` for none
+     * @param <B11> the leftmost bound of the eleventh type parameter, `Object` for none
+     * @param <B12> the leftmost bound of the twelfth type parameter, `Object` for none
+     * @param <B13> the leftmost bound of the thirteenth type parameter, `Object` for none
+     * @param <B14> the leftmost bound of the fourteenth type parameter, `Object` for none
+     */
+    @Generated("me.supcheg.javafile.typed.codegen.TypedCodegen")
+    public interface TypedGenericInterfaceSpec14<B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14> {
+        /**
+         * Declares the interface through `ib`, branded with a fresh `Self`, with the tokens of its type parameters.
+         *
+         * @param ib the self-branded builder of the interface
+         * @param t1 the token of the first type parameter
+         * @param t2 the token of the second type parameter
+         * @param t3 the token of the third type parameter
+         * @param t4 the token of the fourth type parameter
+         * @param t5 the token of the fifth type parameter
+         * @param t6 the token of the sixth type parameter
+         * @param t7 the token of the seventh type parameter
+         * @param t8 the token of the eighth type parameter
+         * @param t9 the token of the ninth type parameter
+         * @param t10 the token of the tenth type parameter
+         * @param t11 the token of the eleventh type parameter
+         * @param t12 the token of the twelfth type parameter
+         * @param t13 the token of the thirteenth type parameter
+         * @param t14 the token of the fourteenth type parameter
+         * @param <Self> the brand of the interface being declared
+         * @param <T1> the brand of the first type parameter
+         * @param <T2> the brand of the second type parameter
+         * @param <T3> the brand of the third type parameter
+         * @param <T4> the brand of the fourth type parameter
+         * @param <T5> the brand of the fifth type parameter
+         * @param <T6> the brand of the sixth type parameter
+         * @param <T7> the brand of the seventh type parameter
+         * @param <T8> the brand of the eighth type parameter
+         * @param <T9> the brand of the ninth type parameter
+         * @param <T10> the brand of the tenth type parameter
+         * @param <T11> the brand of the eleventh type parameter
+         * @param <T12> the brand of the twelfth type parameter
+         * @param <T13> the brand of the thirteenth type parameter
+         * @param <T14> the brand of the fourteenth type parameter
+         * @return the bodies of the members: the stage the declaration of the interface ends in
+         */
+        <Self, T1 extends B1, T2 extends B2, T3 extends B3, T4 extends B4, T5 extends B5, T6 extends B6, T7 extends B7, T8 extends B8, T9 extends B9, T10 extends B10, T11 extends B11, T12 extends B12, T13 extends B13, T14 extends B14> TypedInterfaceBodies<Self> build(TypedInterfaceBuilder<Self> ib, TypeVarToken<T1> t1, TypeVarToken<T2> t2, TypeVarToken<T3> t3, TypeVarToken<T4> t4, TypeVarToken<T5> t5, TypeVarToken<T6> t6, TypeVarToken<T7> t7, TypeVarToken<T8> t8, TypeVarToken<T9> t9, TypeVarToken<T10> t10, TypeVarToken<T11> t11, TypeVarToken<T12> t12, TypeVarToken<T13> t13, TypeVarToken<T14> t14);
+    }
+
+    /**
+     * The specification of a generic record with fourteen type parameters, whose leftmost bounds are `B1`, `B2`, `B3`, `B4`, `B5`, `B6`, `B7`, `B8`, `B9`, `B10`, `B11`, `B12`, `B13` and `B14`.
+     *
+     * @param <B1> the leftmost bound of the first type parameter, `Object` for none
+     * @param <B2> the leftmost bound of the second type parameter, `Object` for none
+     * @param <B3> the leftmost bound of the third type parameter, `Object` for none
+     * @param <B4> the leftmost bound of the fourth type parameter, `Object` for none
+     * @param <B5> the leftmost bound of the fifth type parameter, `Object` for none
+     * @param <B6> the leftmost bound of the sixth type parameter, `Object` for none
+     * @param <B7> the leftmost bound of the seventh type parameter, `Object` for none
+     * @param <B8> the leftmost bound of the eighth type parameter, `Object` for none
+     * @param <B9> the leftmost bound of the ninth type parameter, `Object` for none
+     * @param <B10> the leftmost bound of the tenth type parameter, `Object` for none
+     * @param <B11> the leftmost bound of the eleventh type parameter, `Object` for none
+     * @param <B12> the leftmost bound of the twelfth type parameter, `Object` for none
+     * @param <B13> the leftmost bound of the thirteenth type parameter, `Object` for none
+     * @param <B14> the leftmost bound of the fourteenth type parameter, `Object` for none
+     */
+    @Generated("me.supcheg.javafile.typed.codegen.TypedCodegen")
+    public interface TypedGenericRecordSpec14<B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14> {
+        /**
+         * Declares the record through `rb`, branded with a fresh `Self`, with the tokens of its type parameters.
+         *
+         * @param rb the self-branded builder of the record
+         * @param t1 the token of the first type parameter
+         * @param t2 the token of the second type parameter
+         * @param t3 the token of the third type parameter
+         * @param t4 the token of the fourth type parameter
+         * @param t5 the token of the fifth type parameter
+         * @param t6 the token of the sixth type parameter
+         * @param t7 the token of the seventh type parameter
+         * @param t8 the token of the eighth type parameter
+         * @param t9 the token of the ninth type parameter
+         * @param t10 the token of the tenth type parameter
+         * @param t11 the token of the eleventh type parameter
+         * @param t12 the token of the twelfth type parameter
+         * @param t13 the token of the thirteenth type parameter
+         * @param t14 the token of the fourteenth type parameter
+         * @param <Self> the brand of the record being declared
+         * @param <T1> the brand of the first type parameter
+         * @param <T2> the brand of the second type parameter
+         * @param <T3> the brand of the third type parameter
+         * @param <T4> the brand of the fourth type parameter
+         * @param <T5> the brand of the fifth type parameter
+         * @param <T6> the brand of the sixth type parameter
+         * @param <T7> the brand of the seventh type parameter
+         * @param <T8> the brand of the eighth type parameter
+         * @param <T9> the brand of the ninth type parameter
+         * @param <T10> the brand of the tenth type parameter
+         * @param <T11> the brand of the eleventh type parameter
+         * @param <T12> the brand of the twelfth type parameter
+         * @param <T13> the brand of the thirteenth type parameter
+         * @param <T14> the brand of the fourteenth type parameter
+         * @return the bodies of the members: the stage the declaration of the record ends in
+         */
+        <Self, T1 extends B1, T2 extends B2, T3 extends B3, T4 extends B4, T5 extends B5, T6 extends B6, T7 extends B7, T8 extends B8, T9 extends B9, T10 extends B10, T11 extends B11, T12 extends B12, T13 extends B13, T14 extends B14> TypedRecordBodies<Self> build(TypedRecordBuilder<Self> rb, TypeVarToken<T1> t1, TypeVarToken<T2> t2, TypeVarToken<T3> t3, TypeVarToken<T4> t4, TypeVarToken<T5> t5, TypeVarToken<T6> t6, TypeVarToken<T7> t7, TypeVarToken<T8> t8, TypeVarToken<T9> t9, TypeVarToken<T10> t10, TypeVarToken<T11> t11, TypeVarToken<T12> t12, TypeVarToken<T13> t13, TypeVarToken<T14> t14);
+    }
+
+    /**
+     * The specification of a generic class with fifteen type parameters, whose leftmost bounds are `B1`, `B2`, `B3`, `B4`, `B5`, `B6`, `B7`, `B8`, `B9`, `B10`, `B11`, `B12`, `B13`, `B14` and `B15`.
+     *
+     * @param <B1> the leftmost bound of the first type parameter, `Object` for none
+     * @param <B2> the leftmost bound of the second type parameter, `Object` for none
+     * @param <B3> the leftmost bound of the third type parameter, `Object` for none
+     * @param <B4> the leftmost bound of the fourth type parameter, `Object` for none
+     * @param <B5> the leftmost bound of the fifth type parameter, `Object` for none
+     * @param <B6> the leftmost bound of the sixth type parameter, `Object` for none
+     * @param <B7> the leftmost bound of the seventh type parameter, `Object` for none
+     * @param <B8> the leftmost bound of the eighth type parameter, `Object` for none
+     * @param <B9> the leftmost bound of the ninth type parameter, `Object` for none
+     * @param <B10> the leftmost bound of the tenth type parameter, `Object` for none
+     * @param <B11> the leftmost bound of the eleventh type parameter, `Object` for none
+     * @param <B12> the leftmost bound of the twelfth type parameter, `Object` for none
+     * @param <B13> the leftmost bound of the thirteenth type parameter, `Object` for none
+     * @param <B14> the leftmost bound of the fourteenth type parameter, `Object` for none
+     * @param <B15> the leftmost bound of the fifteenth type parameter, `Object` for none
+     */
+    @Generated("me.supcheg.javafile.typed.codegen.TypedCodegen")
+    public interface TypedGenericClassSpec15<B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15> {
+        /**
+         * Declares the class through `h`, branded with a fresh `Self`, with the tokens of its type parameters.
+         *
+         * @param h the self-branded first stage of the header of the class
+         * @param t1 the token of the first type parameter
+         * @param t2 the token of the second type parameter
+         * @param t3 the token of the third type parameter
+         * @param t4 the token of the fourth type parameter
+         * @param t5 the token of the fifth type parameter
+         * @param t6 the token of the sixth type parameter
+         * @param t7 the token of the seventh type parameter
+         * @param t8 the token of the eighth type parameter
+         * @param t9 the token of the ninth type parameter
+         * @param t10 the token of the tenth type parameter
+         * @param t11 the token of the eleventh type parameter
+         * @param t12 the token of the twelfth type parameter
+         * @param t13 the token of the thirteenth type parameter
+         * @param t14 the token of the fourteenth type parameter
+         * @param t15 the token of the fifteenth type parameter
+         * @param <Self> the brand of the class being declared
+         * @param <T1> the brand of the first type parameter
+         * @param <T2> the brand of the second type parameter
+         * @param <T3> the brand of the third type parameter
+         * @param <T4> the brand of the fourth type parameter
+         * @param <T5> the brand of the fifth type parameter
+         * @param <T6> the brand of the sixth type parameter
+         * @param <T7> the brand of the seventh type parameter
+         * @param <T8> the brand of the eighth type parameter
+         * @param <T9> the brand of the ninth type parameter
+         * @param <T10> the brand of the tenth type parameter
+         * @param <T11> the brand of the eleventh type parameter
+         * @param <T12> the brand of the twelfth type parameter
+         * @param <T13> the brand of the thirteenth type parameter
+         * @param <T14> the brand of the fourteenth type parameter
+         * @param <T15> the brand of the fifteenth type parameter
+         * @return the bodies of the members: the stage the declaration of the class ends in
+         */
+        <Self, T1 extends B1, T2 extends B2, T3 extends B3, T4 extends B4, T5 extends B5, T6 extends B6, T7 extends B7, T8 extends B8, T9 extends B9, T10 extends B10, T11 extends B11, T12 extends B12, T13 extends B13, T14 extends B14, T15 extends B15> MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<T1> t1, TypeVarToken<T2> t2, TypeVarToken<T3> t3, TypeVarToken<T4> t4, TypeVarToken<T5> t5, TypeVarToken<T6> t6, TypeVarToken<T7> t7, TypeVarToken<T8> t8, TypeVarToken<T9> t9, TypeVarToken<T10> t10, TypeVarToken<T11> t11, TypeVarToken<T12> t12, TypeVarToken<T13> t13, TypeVarToken<T14> t14, TypeVarToken<T15> t15);
+    }
+
+    /**
+     * The specification of a generic interface with fifteen type parameters, whose leftmost bounds are `B1`, `B2`, `B3`, `B4`, `B5`, `B6`, `B7`, `B8`, `B9`, `B10`, `B11`, `B12`, `B13`, `B14` and `B15`.
+     *
+     * @param <B1> the leftmost bound of the first type parameter, `Object` for none
+     * @param <B2> the leftmost bound of the second type parameter, `Object` for none
+     * @param <B3> the leftmost bound of the third type parameter, `Object` for none
+     * @param <B4> the leftmost bound of the fourth type parameter, `Object` for none
+     * @param <B5> the leftmost bound of the fifth type parameter, `Object` for none
+     * @param <B6> the leftmost bound of the sixth type parameter, `Object` for none
+     * @param <B7> the leftmost bound of the seventh type parameter, `Object` for none
+     * @param <B8> the leftmost bound of the eighth type parameter, `Object` for none
+     * @param <B9> the leftmost bound of the ninth type parameter, `Object` for none
+     * @param <B10> the leftmost bound of the tenth type parameter, `Object` for none
+     * @param <B11> the leftmost bound of the eleventh type parameter, `Object` for none
+     * @param <B12> the leftmost bound of the twelfth type parameter, `Object` for none
+     * @param <B13> the leftmost bound of the thirteenth type parameter, `Object` for none
+     * @param <B14> the leftmost bound of the fourteenth type parameter, `Object` for none
+     * @param <B15> the leftmost bound of the fifteenth type parameter, `Object` for none
+     */
+    @Generated("me.supcheg.javafile.typed.codegen.TypedCodegen")
+    public interface TypedGenericInterfaceSpec15<B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15> {
+        /**
+         * Declares the interface through `ib`, branded with a fresh `Self`, with the tokens of its type parameters.
+         *
+         * @param ib the self-branded builder of the interface
+         * @param t1 the token of the first type parameter
+         * @param t2 the token of the second type parameter
+         * @param t3 the token of the third type parameter
+         * @param t4 the token of the fourth type parameter
+         * @param t5 the token of the fifth type parameter
+         * @param t6 the token of the sixth type parameter
+         * @param t7 the token of the seventh type parameter
+         * @param t8 the token of the eighth type parameter
+         * @param t9 the token of the ninth type parameter
+         * @param t10 the token of the tenth type parameter
+         * @param t11 the token of the eleventh type parameter
+         * @param t12 the token of the twelfth type parameter
+         * @param t13 the token of the thirteenth type parameter
+         * @param t14 the token of the fourteenth type parameter
+         * @param t15 the token of the fifteenth type parameter
+         * @param <Self> the brand of the interface being declared
+         * @param <T1> the brand of the first type parameter
+         * @param <T2> the brand of the second type parameter
+         * @param <T3> the brand of the third type parameter
+         * @param <T4> the brand of the fourth type parameter
+         * @param <T5> the brand of the fifth type parameter
+         * @param <T6> the brand of the sixth type parameter
+         * @param <T7> the brand of the seventh type parameter
+         * @param <T8> the brand of the eighth type parameter
+         * @param <T9> the brand of the ninth type parameter
+         * @param <T10> the brand of the tenth type parameter
+         * @param <T11> the brand of the eleventh type parameter
+         * @param <T12> the brand of the twelfth type parameter
+         * @param <T13> the brand of the thirteenth type parameter
+         * @param <T14> the brand of the fourteenth type parameter
+         * @param <T15> the brand of the fifteenth type parameter
+         * @return the bodies of the members: the stage the declaration of the interface ends in
+         */
+        <Self, T1 extends B1, T2 extends B2, T3 extends B3, T4 extends B4, T5 extends B5, T6 extends B6, T7 extends B7, T8 extends B8, T9 extends B9, T10 extends B10, T11 extends B11, T12 extends B12, T13 extends B13, T14 extends B14, T15 extends B15> TypedInterfaceBodies<Self> build(TypedInterfaceBuilder<Self> ib, TypeVarToken<T1> t1, TypeVarToken<T2> t2, TypeVarToken<T3> t3, TypeVarToken<T4> t4, TypeVarToken<T5> t5, TypeVarToken<T6> t6, TypeVarToken<T7> t7, TypeVarToken<T8> t8, TypeVarToken<T9> t9, TypeVarToken<T10> t10, TypeVarToken<T11> t11, TypeVarToken<T12> t12, TypeVarToken<T13> t13, TypeVarToken<T14> t14, TypeVarToken<T15> t15);
+    }
+
+    /**
+     * The specification of a generic record with fifteen type parameters, whose leftmost bounds are `B1`, `B2`, `B3`, `B4`, `B5`, `B6`, `B7`, `B8`, `B9`, `B10`, `B11`, `B12`, `B13`, `B14` and `B15`.
+     *
+     * @param <B1> the leftmost bound of the first type parameter, `Object` for none
+     * @param <B2> the leftmost bound of the second type parameter, `Object` for none
+     * @param <B3> the leftmost bound of the third type parameter, `Object` for none
+     * @param <B4> the leftmost bound of the fourth type parameter, `Object` for none
+     * @param <B5> the leftmost bound of the fifth type parameter, `Object` for none
+     * @param <B6> the leftmost bound of the sixth type parameter, `Object` for none
+     * @param <B7> the leftmost bound of the seventh type parameter, `Object` for none
+     * @param <B8> the leftmost bound of the eighth type parameter, `Object` for none
+     * @param <B9> the leftmost bound of the ninth type parameter, `Object` for none
+     * @param <B10> the leftmost bound of the tenth type parameter, `Object` for none
+     * @param <B11> the leftmost bound of the eleventh type parameter, `Object` for none
+     * @param <B12> the leftmost bound of the twelfth type parameter, `Object` for none
+     * @param <B13> the leftmost bound of the thirteenth type parameter, `Object` for none
+     * @param <B14> the leftmost bound of the fourteenth type parameter, `Object` for none
+     * @param <B15> the leftmost bound of the fifteenth type parameter, `Object` for none
+     */
+    @Generated("me.supcheg.javafile.typed.codegen.TypedCodegen")
+    public interface TypedGenericRecordSpec15<B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15> {
+        /**
+         * Declares the record through `rb`, branded with a fresh `Self`, with the tokens of its type parameters.
+         *
+         * @param rb the self-branded builder of the record
+         * @param t1 the token of the first type parameter
+         * @param t2 the token of the second type parameter
+         * @param t3 the token of the third type parameter
+         * @param t4 the token of the fourth type parameter
+         * @param t5 the token of the fifth type parameter
+         * @param t6 the token of the sixth type parameter
+         * @param t7 the token of the seventh type parameter
+         * @param t8 the token of the eighth type parameter
+         * @param t9 the token of the ninth type parameter
+         * @param t10 the token of the tenth type parameter
+         * @param t11 the token of the eleventh type parameter
+         * @param t12 the token of the twelfth type parameter
+         * @param t13 the token of the thirteenth type parameter
+         * @param t14 the token of the fourteenth type parameter
+         * @param t15 the token of the fifteenth type parameter
+         * @param <Self> the brand of the record being declared
+         * @param <T1> the brand of the first type parameter
+         * @param <T2> the brand of the second type parameter
+         * @param <T3> the brand of the third type parameter
+         * @param <T4> the brand of the fourth type parameter
+         * @param <T5> the brand of the fifth type parameter
+         * @param <T6> the brand of the sixth type parameter
+         * @param <T7> the brand of the seventh type parameter
+         * @param <T8> the brand of the eighth type parameter
+         * @param <T9> the brand of the ninth type parameter
+         * @param <T10> the brand of the tenth type parameter
+         * @param <T11> the brand of the eleventh type parameter
+         * @param <T12> the brand of the twelfth type parameter
+         * @param <T13> the brand of the thirteenth type parameter
+         * @param <T14> the brand of the fourteenth type parameter
+         * @param <T15> the brand of the fifteenth type parameter
+         * @return the bodies of the members: the stage the declaration of the record ends in
+         */
+        <Self, T1 extends B1, T2 extends B2, T3 extends B3, T4 extends B4, T5 extends B5, T6 extends B6, T7 extends B7, T8 extends B8, T9 extends B9, T10 extends B10, T11 extends B11, T12 extends B12, T13 extends B13, T14 extends B14, T15 extends B15> TypedRecordBodies<Self> build(TypedRecordBuilder<Self> rb, TypeVarToken<T1> t1, TypeVarToken<T2> t2, TypeVarToken<T3> t3, TypeVarToken<T4> t4, TypeVarToken<T5> t5, TypeVarToken<T6> t6, TypeVarToken<T7> t7, TypeVarToken<T8> t8, TypeVarToken<T9> t9, TypeVarToken<T10> t10, TypeVarToken<T11> t11, TypeVarToken<T12> t12, TypeVarToken<T13> t13, TypeVarToken<T14> t14, TypeVarToken<T15> t15);
+    }
+
+    /**
+     * The specification of a generic class with sixteen type parameters, whose leftmost bounds are `B1`, `B2`, `B3`, `B4`, `B5`, `B6`, `B7`, `B8`, `B9`, `B10`, `B11`, `B12`, `B13`, `B14`, `B15` and `B16`.
+     *
+     * @param <B1> the leftmost bound of the first type parameter, `Object` for none
+     * @param <B2> the leftmost bound of the second type parameter, `Object` for none
+     * @param <B3> the leftmost bound of the third type parameter, `Object` for none
+     * @param <B4> the leftmost bound of the fourth type parameter, `Object` for none
+     * @param <B5> the leftmost bound of the fifth type parameter, `Object` for none
+     * @param <B6> the leftmost bound of the sixth type parameter, `Object` for none
+     * @param <B7> the leftmost bound of the seventh type parameter, `Object` for none
+     * @param <B8> the leftmost bound of the eighth type parameter, `Object` for none
+     * @param <B9> the leftmost bound of the ninth type parameter, `Object` for none
+     * @param <B10> the leftmost bound of the tenth type parameter, `Object` for none
+     * @param <B11> the leftmost bound of the eleventh type parameter, `Object` for none
+     * @param <B12> the leftmost bound of the twelfth type parameter, `Object` for none
+     * @param <B13> the leftmost bound of the thirteenth type parameter, `Object` for none
+     * @param <B14> the leftmost bound of the fourteenth type parameter, `Object` for none
+     * @param <B15> the leftmost bound of the fifteenth type parameter, `Object` for none
+     * @param <B16> the leftmost bound of the sixteenth type parameter, `Object` for none
+     */
+    @Generated("me.supcheg.javafile.typed.codegen.TypedCodegen")
+    public interface TypedGenericClassSpec16<B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15, B16> {
+        /**
+         * Declares the class through `h`, branded with a fresh `Self`, with the tokens of its type parameters.
+         *
+         * @param h the self-branded first stage of the header of the class
+         * @param t1 the token of the first type parameter
+         * @param t2 the token of the second type parameter
+         * @param t3 the token of the third type parameter
+         * @param t4 the token of the fourth type parameter
+         * @param t5 the token of the fifth type parameter
+         * @param t6 the token of the sixth type parameter
+         * @param t7 the token of the seventh type parameter
+         * @param t8 the token of the eighth type parameter
+         * @param t9 the token of the ninth type parameter
+         * @param t10 the token of the tenth type parameter
+         * @param t11 the token of the eleventh type parameter
+         * @param t12 the token of the twelfth type parameter
+         * @param t13 the token of the thirteenth type parameter
+         * @param t14 the token of the fourteenth type parameter
+         * @param t15 the token of the fifteenth type parameter
+         * @param t16 the token of the sixteenth type parameter
+         * @param <Self> the brand of the class being declared
+         * @param <T1> the brand of the first type parameter
+         * @param <T2> the brand of the second type parameter
+         * @param <T3> the brand of the third type parameter
+         * @param <T4> the brand of the fourth type parameter
+         * @param <T5> the brand of the fifth type parameter
+         * @param <T6> the brand of the sixth type parameter
+         * @param <T7> the brand of the seventh type parameter
+         * @param <T8> the brand of the eighth type parameter
+         * @param <T9> the brand of the ninth type parameter
+         * @param <T10> the brand of the tenth type parameter
+         * @param <T11> the brand of the eleventh type parameter
+         * @param <T12> the brand of the twelfth type parameter
+         * @param <T13> the brand of the thirteenth type parameter
+         * @param <T14> the brand of the fourteenth type parameter
+         * @param <T15> the brand of the fifteenth type parameter
+         * @param <T16> the brand of the sixteenth type parameter
+         * @return the bodies of the members: the stage the declaration of the class ends in
+         */
+        <Self, T1 extends B1, T2 extends B2, T3 extends B3, T4 extends B4, T5 extends B5, T6 extends B6, T7 extends B7, T8 extends B8, T9 extends B9, T10 extends B10, T11 extends B11, T12 extends B12, T13 extends B13, T14 extends B14, T15 extends B15, T16 extends B16> MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<T1> t1, TypeVarToken<T2> t2, TypeVarToken<T3> t3, TypeVarToken<T4> t4, TypeVarToken<T5> t5, TypeVarToken<T6> t6, TypeVarToken<T7> t7, TypeVarToken<T8> t8, TypeVarToken<T9> t9, TypeVarToken<T10> t10, TypeVarToken<T11> t11, TypeVarToken<T12> t12, TypeVarToken<T13> t13, TypeVarToken<T14> t14, TypeVarToken<T15> t15, TypeVarToken<T16> t16);
+    }
+
+    /**
+     * The specification of a generic interface with sixteen type parameters, whose leftmost bounds are `B1`, `B2`, `B3`, `B4`, `B5`, `B6`, `B7`, `B8`, `B9`, `B10`, `B11`, `B12`, `B13`, `B14`, `B15` and `B16`.
+     *
+     * @param <B1> the leftmost bound of the first type parameter, `Object` for none
+     * @param <B2> the leftmost bound of the second type parameter, `Object` for none
+     * @param <B3> the leftmost bound of the third type parameter, `Object` for none
+     * @param <B4> the leftmost bound of the fourth type parameter, `Object` for none
+     * @param <B5> the leftmost bound of the fifth type parameter, `Object` for none
+     * @param <B6> the leftmost bound of the sixth type parameter, `Object` for none
+     * @param <B7> the leftmost bound of the seventh type parameter, `Object` for none
+     * @param <B8> the leftmost bound of the eighth type parameter, `Object` for none
+     * @param <B9> the leftmost bound of the ninth type parameter, `Object` for none
+     * @param <B10> the leftmost bound of the tenth type parameter, `Object` for none
+     * @param <B11> the leftmost bound of the eleventh type parameter, `Object` for none
+     * @param <B12> the leftmost bound of the twelfth type parameter, `Object` for none
+     * @param <B13> the leftmost bound of the thirteenth type parameter, `Object` for none
+     * @param <B14> the leftmost bound of the fourteenth type parameter, `Object` for none
+     * @param <B15> the leftmost bound of the fifteenth type parameter, `Object` for none
+     * @param <B16> the leftmost bound of the sixteenth type parameter, `Object` for none
+     */
+    @Generated("me.supcheg.javafile.typed.codegen.TypedCodegen")
+    public interface TypedGenericInterfaceSpec16<B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15, B16> {
+        /**
+         * Declares the interface through `ib`, branded with a fresh `Self`, with the tokens of its type parameters.
+         *
+         * @param ib the self-branded builder of the interface
+         * @param t1 the token of the first type parameter
+         * @param t2 the token of the second type parameter
+         * @param t3 the token of the third type parameter
+         * @param t4 the token of the fourth type parameter
+         * @param t5 the token of the fifth type parameter
+         * @param t6 the token of the sixth type parameter
+         * @param t7 the token of the seventh type parameter
+         * @param t8 the token of the eighth type parameter
+         * @param t9 the token of the ninth type parameter
+         * @param t10 the token of the tenth type parameter
+         * @param t11 the token of the eleventh type parameter
+         * @param t12 the token of the twelfth type parameter
+         * @param t13 the token of the thirteenth type parameter
+         * @param t14 the token of the fourteenth type parameter
+         * @param t15 the token of the fifteenth type parameter
+         * @param t16 the token of the sixteenth type parameter
+         * @param <Self> the brand of the interface being declared
+         * @param <T1> the brand of the first type parameter
+         * @param <T2> the brand of the second type parameter
+         * @param <T3> the brand of the third type parameter
+         * @param <T4> the brand of the fourth type parameter
+         * @param <T5> the brand of the fifth type parameter
+         * @param <T6> the brand of the sixth type parameter
+         * @param <T7> the brand of the seventh type parameter
+         * @param <T8> the brand of the eighth type parameter
+         * @param <T9> the brand of the ninth type parameter
+         * @param <T10> the brand of the tenth type parameter
+         * @param <T11> the brand of the eleventh type parameter
+         * @param <T12> the brand of the twelfth type parameter
+         * @param <T13> the brand of the thirteenth type parameter
+         * @param <T14> the brand of the fourteenth type parameter
+         * @param <T15> the brand of the fifteenth type parameter
+         * @param <T16> the brand of the sixteenth type parameter
+         * @return the bodies of the members: the stage the declaration of the interface ends in
+         */
+        <Self, T1 extends B1, T2 extends B2, T3 extends B3, T4 extends B4, T5 extends B5, T6 extends B6, T7 extends B7, T8 extends B8, T9 extends B9, T10 extends B10, T11 extends B11, T12 extends B12, T13 extends B13, T14 extends B14, T15 extends B15, T16 extends B16> TypedInterfaceBodies<Self> build(TypedInterfaceBuilder<Self> ib, TypeVarToken<T1> t1, TypeVarToken<T2> t2, TypeVarToken<T3> t3, TypeVarToken<T4> t4, TypeVarToken<T5> t5, TypeVarToken<T6> t6, TypeVarToken<T7> t7, TypeVarToken<T8> t8, TypeVarToken<T9> t9, TypeVarToken<T10> t10, TypeVarToken<T11> t11, TypeVarToken<T12> t12, TypeVarToken<T13> t13, TypeVarToken<T14> t14, TypeVarToken<T15> t15, TypeVarToken<T16> t16);
+    }
+
+    /**
+     * The specification of a generic record with sixteen type parameters, whose leftmost bounds are `B1`, `B2`, `B3`, `B4`, `B5`, `B6`, `B7`, `B8`, `B9`, `B10`, `B11`, `B12`, `B13`, `B14`, `B15` and `B16`.
+     *
+     * @param <B1> the leftmost bound of the first type parameter, `Object` for none
+     * @param <B2> the leftmost bound of the second type parameter, `Object` for none
+     * @param <B3> the leftmost bound of the third type parameter, `Object` for none
+     * @param <B4> the leftmost bound of the fourth type parameter, `Object` for none
+     * @param <B5> the leftmost bound of the fifth type parameter, `Object` for none
+     * @param <B6> the leftmost bound of the sixth type parameter, `Object` for none
+     * @param <B7> the leftmost bound of the seventh type parameter, `Object` for none
+     * @param <B8> the leftmost bound of the eighth type parameter, `Object` for none
+     * @param <B9> the leftmost bound of the ninth type parameter, `Object` for none
+     * @param <B10> the leftmost bound of the tenth type parameter, `Object` for none
+     * @param <B11> the leftmost bound of the eleventh type parameter, `Object` for none
+     * @param <B12> the leftmost bound of the twelfth type parameter, `Object` for none
+     * @param <B13> the leftmost bound of the thirteenth type parameter, `Object` for none
+     * @param <B14> the leftmost bound of the fourteenth type parameter, `Object` for none
+     * @param <B15> the leftmost bound of the fifteenth type parameter, `Object` for none
+     * @param <B16> the leftmost bound of the sixteenth type parameter, `Object` for none
+     */
+    @Generated("me.supcheg.javafile.typed.codegen.TypedCodegen")
+    public interface TypedGenericRecordSpec16<B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15, B16> {
+        /**
+         * Declares the record through `rb`, branded with a fresh `Self`, with the tokens of its type parameters.
+         *
+         * @param rb the self-branded builder of the record
+         * @param t1 the token of the first type parameter
+         * @param t2 the token of the second type parameter
+         * @param t3 the token of the third type parameter
+         * @param t4 the token of the fourth type parameter
+         * @param t5 the token of the fifth type parameter
+         * @param t6 the token of the sixth type parameter
+         * @param t7 the token of the seventh type parameter
+         * @param t8 the token of the eighth type parameter
+         * @param t9 the token of the ninth type parameter
+         * @param t10 the token of the tenth type parameter
+         * @param t11 the token of the eleventh type parameter
+         * @param t12 the token of the twelfth type parameter
+         * @param t13 the token of the thirteenth type parameter
+         * @param t14 the token of the fourteenth type parameter
+         * @param t15 the token of the fifteenth type parameter
+         * @param t16 the token of the sixteenth type parameter
+         * @param <Self> the brand of the record being declared
+         * @param <T1> the brand of the first type parameter
+         * @param <T2> the brand of the second type parameter
+         * @param <T3> the brand of the third type parameter
+         * @param <T4> the brand of the fourth type parameter
+         * @param <T5> the brand of the fifth type parameter
+         * @param <T6> the brand of the sixth type parameter
+         * @param <T7> the brand of the seventh type parameter
+         * @param <T8> the brand of the eighth type parameter
+         * @param <T9> the brand of the ninth type parameter
+         * @param <T10> the brand of the tenth type parameter
+         * @param <T11> the brand of the eleventh type parameter
+         * @param <T12> the brand of the twelfth type parameter
+         * @param <T13> the brand of the thirteenth type parameter
+         * @param <T14> the brand of the fourteenth type parameter
+         * @param <T15> the brand of the fifteenth type parameter
+         * @param <T16> the brand of the sixteenth type parameter
+         * @return the bodies of the members: the stage the declaration of the record ends in
+         */
+        <Self, T1 extends B1, T2 extends B2, T3 extends B3, T4 extends B4, T5 extends B5, T6 extends B6, T7 extends B7, T8 extends B8, T9 extends B9, T10 extends B10, T11 extends B11, T12 extends B12, T13 extends B13, T14 extends B14, T15 extends B15, T16 extends B16> TypedRecordBodies<Self> build(TypedRecordBuilder<Self> rb, TypeVarToken<T1> t1, TypeVarToken<T2> t2, TypeVarToken<T3> t3, TypeVarToken<T4> t4, TypeVarToken<T5> t5, TypeVarToken<T6> t6, TypeVarToken<T7> t7, TypeVarToken<T8> t8, TypeVarToken<T9> t9, TypeVarToken<T10> t10, TypeVarToken<T11> t11, TypeVarToken<T12> t12, TypeVarToken<T13> t13, TypeVarToken<T14> t14, TypeVarToken<T15> t15, TypeVarToken<T16> t16);
+    }
+
+    /**
      * Declares a generic `public final class` with one type parameter: the token is in scope in the header, the members and the member types of the class.
      *
      * @param target the classpath the class is compiled against
@@ -2474,6 +3200,582 @@ abstract sealed class GenericDeclarationArities permits TypedJavaFile {
             @Override
             public <Self> TypedRecordBodies<Self> build(TypedRecordBuilder<Self> builder) {
                 return spec.build(builder, GenericDeclarations.variable(builder, 0), GenericDeclarations.variable(builder, 1), GenericDeclarations.variable(builder, 2), GenericDeclarations.variable(builder, 3), GenericDeclarations.variable(builder, 4), GenericDeclarations.variable(builder, 5), GenericDeclarations.variable(builder, 6), GenericDeclarations.variable(builder, 7), GenericDeclarations.variable(builder, 8), GenericDeclarations.variable(builder, 9), GenericDeclarations.variable(builder, 10), GenericDeclarations.variable(builder, 11));
+            }
+        });
+    }
+
+    /**
+     * Declares a generic `public final class` with thirteen type parameters: the tokens are in scope in the header, the members and the member types of the class.
+     *
+     * @param target the classpath the class is compiled against
+     * @param desc the class's binary name
+     * @param p1 the first type parameter
+     * @param p2 the second type parameter
+     * @param p3 the third type parameter
+     * @param p4 the fourth type parameter
+     * @param p5 the fifth type parameter
+     * @param p6 the sixth type parameter
+     * @param p7 the seventh type parameter
+     * @param p8 the eighth type parameter
+     * @param p9 the ninth type parameter
+     * @param p10 the tenth type parameter
+     * @param p11 the eleventh type parameter
+     * @param p12 the twelfth type parameter
+     * @param p13 the thirteenth type parameter
+     * @return the rendered class
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the class, or its bound is a raw type; or if `desc` describes a nested type, or a name of it cannot be written
+     * @throws IllegalStateException if a member `spec` declared is not defined
+     * @param spec declares the class, given its header and the tokens of its type parameters
+     * @param <B1> the leftmost bound of the first type parameter
+     * @param <B2> the leftmost bound of the second type parameter
+     * @param <B3> the leftmost bound of the third type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter
+     * @param <B6> the leftmost bound of the sixth type parameter
+     * @param <B7> the leftmost bound of the seventh type parameter
+     * @param <B8> the leftmost bound of the eighth type parameter
+     * @param <B9> the leftmost bound of the ninth type parameter
+     * @param <B10> the leftmost bound of the tenth type parameter
+     * @param <B11> the leftmost bound of the eleventh type parameter
+     * @param <B12> the leftmost bound of the twelfth type parameter
+     * @param <B13> the leftmost bound of the thirteenth type parameter
+     */
+    public static <B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13> JavaFile declareClass(TargetClasspath target, ClassDesc desc, TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, TypeParameter<B6> p6, TypeParameter<B7> p7, TypeParameter<B8> p8, TypeParameter<B9> p9, TypeParameter<B10> p10, TypeParameter<B11> p11, TypeParameter<B12> p12, TypeParameter<B13> p13, TypedGenericClassSpec13<B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13> spec) {
+        return GenericDeclarations.declareClass(target, desc, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13), new ClassBodies() {
+            @Override
+            public <Self> MemberBodies<Self, ?> build(ClassDeclaration<Self> declaration) {
+                return spec.build(new ClassHeader<>(declaration), GenericDeclarations.variable(declaration, 0), GenericDeclarations.variable(declaration, 1), GenericDeclarations.variable(declaration, 2), GenericDeclarations.variable(declaration, 3), GenericDeclarations.variable(declaration, 4), GenericDeclarations.variable(declaration, 5), GenericDeclarations.variable(declaration, 6), GenericDeclarations.variable(declaration, 7), GenericDeclarations.variable(declaration, 8), GenericDeclarations.variable(declaration, 9), GenericDeclarations.variable(declaration, 10), GenericDeclarations.variable(declaration, 11), GenericDeclarations.variable(declaration, 12));
+            }
+        });
+    }
+
+    /**
+     * Declares a generic `public interface` with thirteen type parameters: the tokens are in scope in the header, the members and the member types of the interface.
+     *
+     * @param target the classpath the interface is compiled against
+     * @param desc the interface's binary name
+     * @param p1 the first type parameter
+     * @param p2 the second type parameter
+     * @param p3 the third type parameter
+     * @param p4 the fourth type parameter
+     * @param p5 the fifth type parameter
+     * @param p6 the sixth type parameter
+     * @param p7 the seventh type parameter
+     * @param p8 the eighth type parameter
+     * @param p9 the ninth type parameter
+     * @param p10 the tenth type parameter
+     * @param p11 the eleventh type parameter
+     * @param p12 the twelfth type parameter
+     * @param p13 the thirteenth type parameter
+     * @return the rendered interface
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the interface, or its bound is a raw type; or if `desc` describes a nested type, or a name of it cannot be written
+     * @throws IllegalStateException if a member `spec` declared is not defined
+     * @param spec declares the interface, given its builder and the tokens of its type parameters
+     * @param <B1> the leftmost bound of the first type parameter
+     * @param <B2> the leftmost bound of the second type parameter
+     * @param <B3> the leftmost bound of the third type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter
+     * @param <B6> the leftmost bound of the sixth type parameter
+     * @param <B7> the leftmost bound of the seventh type parameter
+     * @param <B8> the leftmost bound of the eighth type parameter
+     * @param <B9> the leftmost bound of the ninth type parameter
+     * @param <B10> the leftmost bound of the tenth type parameter
+     * @param <B11> the leftmost bound of the eleventh type parameter
+     * @param <B12> the leftmost bound of the twelfth type parameter
+     * @param <B13> the leftmost bound of the thirteenth type parameter
+     */
+    public static <B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13> JavaFile interface_(TargetClasspath target, ClassDesc desc, TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, TypeParameter<B6> p6, TypeParameter<B7> p7, TypeParameter<B8> p8, TypeParameter<B9> p9, TypeParameter<B10> p10, TypeParameter<B11> p11, TypeParameter<B12> p12, TypeParameter<B13> p13, TypedGenericInterfaceSpec13<B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13> spec) {
+        return GenericDeclarations.interface_(target, desc, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13), new InterfaceBodies() {
+            @Override
+            public <Self> TypedInterfaceBodies<Self> build(TypedInterfaceBuilder<Self> builder) {
+                return spec.build(builder, GenericDeclarations.variable(builder, 0), GenericDeclarations.variable(builder, 1), GenericDeclarations.variable(builder, 2), GenericDeclarations.variable(builder, 3), GenericDeclarations.variable(builder, 4), GenericDeclarations.variable(builder, 5), GenericDeclarations.variable(builder, 6), GenericDeclarations.variable(builder, 7), GenericDeclarations.variable(builder, 8), GenericDeclarations.variable(builder, 9), GenericDeclarations.variable(builder, 10), GenericDeclarations.variable(builder, 11), GenericDeclarations.variable(builder, 12));
+            }
+        });
+    }
+
+    /**
+     * Declares a generic `public record` with thirteen type parameters: the tokens are in scope in the components, its header, its members and its member types.
+     *
+     * @param target the classpath the record is compiled against
+     * @param desc the record's binary name
+     * @param p1 the first type parameter
+     * @param p2 the second type parameter
+     * @param p3 the third type parameter
+     * @param p4 the fourth type parameter
+     * @param p5 the fifth type parameter
+     * @param p6 the sixth type parameter
+     * @param p7 the seventh type parameter
+     * @param p8 the eighth type parameter
+     * @param p9 the ninth type parameter
+     * @param p10 the tenth type parameter
+     * @param p11 the eleventh type parameter
+     * @param p12 the twelfth type parameter
+     * @param p13 the thirteenth type parameter
+     * @return the rendered record
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the record, or its bound is a raw type; or if `desc` describes a nested type, or a name of it cannot be written
+     * @throws IllegalStateException if a member `spec` declared is not defined
+     * @param spec declares the record, given its builder and the tokens of its type parameters
+     * @param <B1> the leftmost bound of the first type parameter
+     * @param <B2> the leftmost bound of the second type parameter
+     * @param <B3> the leftmost bound of the third type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter
+     * @param <B6> the leftmost bound of the sixth type parameter
+     * @param <B7> the leftmost bound of the seventh type parameter
+     * @param <B8> the leftmost bound of the eighth type parameter
+     * @param <B9> the leftmost bound of the ninth type parameter
+     * @param <B10> the leftmost bound of the tenth type parameter
+     * @param <B11> the leftmost bound of the eleventh type parameter
+     * @param <B12> the leftmost bound of the twelfth type parameter
+     * @param <B13> the leftmost bound of the thirteenth type parameter
+     */
+    public static <B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13> JavaFile record(TargetClasspath target, ClassDesc desc, TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, TypeParameter<B6> p6, TypeParameter<B7> p7, TypeParameter<B8> p8, TypeParameter<B9> p9, TypeParameter<B10> p10, TypeParameter<B11> p11, TypeParameter<B12> p12, TypeParameter<B13> p13, TypedGenericRecordSpec13<B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13> spec) {
+        return GenericDeclarations.record(target, desc, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13), new RecordBodies() {
+            @Override
+            public <Self> TypedRecordBodies<Self> build(TypedRecordBuilder<Self> builder) {
+                return spec.build(builder, GenericDeclarations.variable(builder, 0), GenericDeclarations.variable(builder, 1), GenericDeclarations.variable(builder, 2), GenericDeclarations.variable(builder, 3), GenericDeclarations.variable(builder, 4), GenericDeclarations.variable(builder, 5), GenericDeclarations.variable(builder, 6), GenericDeclarations.variable(builder, 7), GenericDeclarations.variable(builder, 8), GenericDeclarations.variable(builder, 9), GenericDeclarations.variable(builder, 10), GenericDeclarations.variable(builder, 11), GenericDeclarations.variable(builder, 12));
+            }
+        });
+    }
+
+    /**
+     * Declares a generic `public final class` with fourteen type parameters: the tokens are in scope in the header, the members and the member types of the class.
+     *
+     * @param target the classpath the class is compiled against
+     * @param desc the class's binary name
+     * @param p1 the first type parameter
+     * @param p2 the second type parameter
+     * @param p3 the third type parameter
+     * @param p4 the fourth type parameter
+     * @param p5 the fifth type parameter
+     * @param p6 the sixth type parameter
+     * @param p7 the seventh type parameter
+     * @param p8 the eighth type parameter
+     * @param p9 the ninth type parameter
+     * @param p10 the tenth type parameter
+     * @param p11 the eleventh type parameter
+     * @param p12 the twelfth type parameter
+     * @param p13 the thirteenth type parameter
+     * @param p14 the fourteenth type parameter
+     * @return the rendered class
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the class, or its bound is a raw type; or if `desc` describes a nested type, or a name of it cannot be written
+     * @throws IllegalStateException if a member `spec` declared is not defined
+     * @param spec declares the class, given its header and the tokens of its type parameters
+     * @param <B1> the leftmost bound of the first type parameter
+     * @param <B2> the leftmost bound of the second type parameter
+     * @param <B3> the leftmost bound of the third type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter
+     * @param <B6> the leftmost bound of the sixth type parameter
+     * @param <B7> the leftmost bound of the seventh type parameter
+     * @param <B8> the leftmost bound of the eighth type parameter
+     * @param <B9> the leftmost bound of the ninth type parameter
+     * @param <B10> the leftmost bound of the tenth type parameter
+     * @param <B11> the leftmost bound of the eleventh type parameter
+     * @param <B12> the leftmost bound of the twelfth type parameter
+     * @param <B13> the leftmost bound of the thirteenth type parameter
+     * @param <B14> the leftmost bound of the fourteenth type parameter
+     */
+    public static <B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14> JavaFile declareClass(TargetClasspath target, ClassDesc desc, TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, TypeParameter<B6> p6, TypeParameter<B7> p7, TypeParameter<B8> p8, TypeParameter<B9> p9, TypeParameter<B10> p10, TypeParameter<B11> p11, TypeParameter<B12> p12, TypeParameter<B13> p13, TypeParameter<B14> p14, TypedGenericClassSpec14<B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14> spec) {
+        return GenericDeclarations.declareClass(target, desc, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14), new ClassBodies() {
+            @Override
+            public <Self> MemberBodies<Self, ?> build(ClassDeclaration<Self> declaration) {
+                return spec.build(new ClassHeader<>(declaration), GenericDeclarations.variable(declaration, 0), GenericDeclarations.variable(declaration, 1), GenericDeclarations.variable(declaration, 2), GenericDeclarations.variable(declaration, 3), GenericDeclarations.variable(declaration, 4), GenericDeclarations.variable(declaration, 5), GenericDeclarations.variable(declaration, 6), GenericDeclarations.variable(declaration, 7), GenericDeclarations.variable(declaration, 8), GenericDeclarations.variable(declaration, 9), GenericDeclarations.variable(declaration, 10), GenericDeclarations.variable(declaration, 11), GenericDeclarations.variable(declaration, 12), GenericDeclarations.variable(declaration, 13));
+            }
+        });
+    }
+
+    /**
+     * Declares a generic `public interface` with fourteen type parameters: the tokens are in scope in the header, the members and the member types of the interface.
+     *
+     * @param target the classpath the interface is compiled against
+     * @param desc the interface's binary name
+     * @param p1 the first type parameter
+     * @param p2 the second type parameter
+     * @param p3 the third type parameter
+     * @param p4 the fourth type parameter
+     * @param p5 the fifth type parameter
+     * @param p6 the sixth type parameter
+     * @param p7 the seventh type parameter
+     * @param p8 the eighth type parameter
+     * @param p9 the ninth type parameter
+     * @param p10 the tenth type parameter
+     * @param p11 the eleventh type parameter
+     * @param p12 the twelfth type parameter
+     * @param p13 the thirteenth type parameter
+     * @param p14 the fourteenth type parameter
+     * @return the rendered interface
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the interface, or its bound is a raw type; or if `desc` describes a nested type, or a name of it cannot be written
+     * @throws IllegalStateException if a member `spec` declared is not defined
+     * @param spec declares the interface, given its builder and the tokens of its type parameters
+     * @param <B1> the leftmost bound of the first type parameter
+     * @param <B2> the leftmost bound of the second type parameter
+     * @param <B3> the leftmost bound of the third type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter
+     * @param <B6> the leftmost bound of the sixth type parameter
+     * @param <B7> the leftmost bound of the seventh type parameter
+     * @param <B8> the leftmost bound of the eighth type parameter
+     * @param <B9> the leftmost bound of the ninth type parameter
+     * @param <B10> the leftmost bound of the tenth type parameter
+     * @param <B11> the leftmost bound of the eleventh type parameter
+     * @param <B12> the leftmost bound of the twelfth type parameter
+     * @param <B13> the leftmost bound of the thirteenth type parameter
+     * @param <B14> the leftmost bound of the fourteenth type parameter
+     */
+    public static <B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14> JavaFile interface_(TargetClasspath target, ClassDesc desc, TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, TypeParameter<B6> p6, TypeParameter<B7> p7, TypeParameter<B8> p8, TypeParameter<B9> p9, TypeParameter<B10> p10, TypeParameter<B11> p11, TypeParameter<B12> p12, TypeParameter<B13> p13, TypeParameter<B14> p14, TypedGenericInterfaceSpec14<B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14> spec) {
+        return GenericDeclarations.interface_(target, desc, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14), new InterfaceBodies() {
+            @Override
+            public <Self> TypedInterfaceBodies<Self> build(TypedInterfaceBuilder<Self> builder) {
+                return spec.build(builder, GenericDeclarations.variable(builder, 0), GenericDeclarations.variable(builder, 1), GenericDeclarations.variable(builder, 2), GenericDeclarations.variable(builder, 3), GenericDeclarations.variable(builder, 4), GenericDeclarations.variable(builder, 5), GenericDeclarations.variable(builder, 6), GenericDeclarations.variable(builder, 7), GenericDeclarations.variable(builder, 8), GenericDeclarations.variable(builder, 9), GenericDeclarations.variable(builder, 10), GenericDeclarations.variable(builder, 11), GenericDeclarations.variable(builder, 12), GenericDeclarations.variable(builder, 13));
+            }
+        });
+    }
+
+    /**
+     * Declares a generic `public record` with fourteen type parameters: the tokens are in scope in the components, its header, its members and its member types.
+     *
+     * @param target the classpath the record is compiled against
+     * @param desc the record's binary name
+     * @param p1 the first type parameter
+     * @param p2 the second type parameter
+     * @param p3 the third type parameter
+     * @param p4 the fourth type parameter
+     * @param p5 the fifth type parameter
+     * @param p6 the sixth type parameter
+     * @param p7 the seventh type parameter
+     * @param p8 the eighth type parameter
+     * @param p9 the ninth type parameter
+     * @param p10 the tenth type parameter
+     * @param p11 the eleventh type parameter
+     * @param p12 the twelfth type parameter
+     * @param p13 the thirteenth type parameter
+     * @param p14 the fourteenth type parameter
+     * @return the rendered record
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the record, or its bound is a raw type; or if `desc` describes a nested type, or a name of it cannot be written
+     * @throws IllegalStateException if a member `spec` declared is not defined
+     * @param spec declares the record, given its builder and the tokens of its type parameters
+     * @param <B1> the leftmost bound of the first type parameter
+     * @param <B2> the leftmost bound of the second type parameter
+     * @param <B3> the leftmost bound of the third type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter
+     * @param <B6> the leftmost bound of the sixth type parameter
+     * @param <B7> the leftmost bound of the seventh type parameter
+     * @param <B8> the leftmost bound of the eighth type parameter
+     * @param <B9> the leftmost bound of the ninth type parameter
+     * @param <B10> the leftmost bound of the tenth type parameter
+     * @param <B11> the leftmost bound of the eleventh type parameter
+     * @param <B12> the leftmost bound of the twelfth type parameter
+     * @param <B13> the leftmost bound of the thirteenth type parameter
+     * @param <B14> the leftmost bound of the fourteenth type parameter
+     */
+    public static <B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14> JavaFile record(TargetClasspath target, ClassDesc desc, TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, TypeParameter<B6> p6, TypeParameter<B7> p7, TypeParameter<B8> p8, TypeParameter<B9> p9, TypeParameter<B10> p10, TypeParameter<B11> p11, TypeParameter<B12> p12, TypeParameter<B13> p13, TypeParameter<B14> p14, TypedGenericRecordSpec14<B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14> spec) {
+        return GenericDeclarations.record(target, desc, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14), new RecordBodies() {
+            @Override
+            public <Self> TypedRecordBodies<Self> build(TypedRecordBuilder<Self> builder) {
+                return spec.build(builder, GenericDeclarations.variable(builder, 0), GenericDeclarations.variable(builder, 1), GenericDeclarations.variable(builder, 2), GenericDeclarations.variable(builder, 3), GenericDeclarations.variable(builder, 4), GenericDeclarations.variable(builder, 5), GenericDeclarations.variable(builder, 6), GenericDeclarations.variable(builder, 7), GenericDeclarations.variable(builder, 8), GenericDeclarations.variable(builder, 9), GenericDeclarations.variable(builder, 10), GenericDeclarations.variable(builder, 11), GenericDeclarations.variable(builder, 12), GenericDeclarations.variable(builder, 13));
+            }
+        });
+    }
+
+    /**
+     * Declares a generic `public final class` with fifteen type parameters: the tokens are in scope in the header, the members and the member types of the class.
+     *
+     * @param target the classpath the class is compiled against
+     * @param desc the class's binary name
+     * @param p1 the first type parameter
+     * @param p2 the second type parameter
+     * @param p3 the third type parameter
+     * @param p4 the fourth type parameter
+     * @param p5 the fifth type parameter
+     * @param p6 the sixth type parameter
+     * @param p7 the seventh type parameter
+     * @param p8 the eighth type parameter
+     * @param p9 the ninth type parameter
+     * @param p10 the tenth type parameter
+     * @param p11 the eleventh type parameter
+     * @param p12 the twelfth type parameter
+     * @param p13 the thirteenth type parameter
+     * @param p14 the fourteenth type parameter
+     * @param p15 the fifteenth type parameter
+     * @return the rendered class
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the class, or its bound is a raw type; or if `desc` describes a nested type, or a name of it cannot be written
+     * @throws IllegalStateException if a member `spec` declared is not defined
+     * @param spec declares the class, given its header and the tokens of its type parameters
+     * @param <B1> the leftmost bound of the first type parameter
+     * @param <B2> the leftmost bound of the second type parameter
+     * @param <B3> the leftmost bound of the third type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter
+     * @param <B6> the leftmost bound of the sixth type parameter
+     * @param <B7> the leftmost bound of the seventh type parameter
+     * @param <B8> the leftmost bound of the eighth type parameter
+     * @param <B9> the leftmost bound of the ninth type parameter
+     * @param <B10> the leftmost bound of the tenth type parameter
+     * @param <B11> the leftmost bound of the eleventh type parameter
+     * @param <B12> the leftmost bound of the twelfth type parameter
+     * @param <B13> the leftmost bound of the thirteenth type parameter
+     * @param <B14> the leftmost bound of the fourteenth type parameter
+     * @param <B15> the leftmost bound of the fifteenth type parameter
+     */
+    public static <B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15> JavaFile declareClass(TargetClasspath target, ClassDesc desc, TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, TypeParameter<B6> p6, TypeParameter<B7> p7, TypeParameter<B8> p8, TypeParameter<B9> p9, TypeParameter<B10> p10, TypeParameter<B11> p11, TypeParameter<B12> p12, TypeParameter<B13> p13, TypeParameter<B14> p14, TypeParameter<B15> p15, TypedGenericClassSpec15<B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15> spec) {
+        return GenericDeclarations.declareClass(target, desc, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15), new ClassBodies() {
+            @Override
+            public <Self> MemberBodies<Self, ?> build(ClassDeclaration<Self> declaration) {
+                return spec.build(new ClassHeader<>(declaration), GenericDeclarations.variable(declaration, 0), GenericDeclarations.variable(declaration, 1), GenericDeclarations.variable(declaration, 2), GenericDeclarations.variable(declaration, 3), GenericDeclarations.variable(declaration, 4), GenericDeclarations.variable(declaration, 5), GenericDeclarations.variable(declaration, 6), GenericDeclarations.variable(declaration, 7), GenericDeclarations.variable(declaration, 8), GenericDeclarations.variable(declaration, 9), GenericDeclarations.variable(declaration, 10), GenericDeclarations.variable(declaration, 11), GenericDeclarations.variable(declaration, 12), GenericDeclarations.variable(declaration, 13), GenericDeclarations.variable(declaration, 14));
+            }
+        });
+    }
+
+    /**
+     * Declares a generic `public interface` with fifteen type parameters: the tokens are in scope in the header, the members and the member types of the interface.
+     *
+     * @param target the classpath the interface is compiled against
+     * @param desc the interface's binary name
+     * @param p1 the first type parameter
+     * @param p2 the second type parameter
+     * @param p3 the third type parameter
+     * @param p4 the fourth type parameter
+     * @param p5 the fifth type parameter
+     * @param p6 the sixth type parameter
+     * @param p7 the seventh type parameter
+     * @param p8 the eighth type parameter
+     * @param p9 the ninth type parameter
+     * @param p10 the tenth type parameter
+     * @param p11 the eleventh type parameter
+     * @param p12 the twelfth type parameter
+     * @param p13 the thirteenth type parameter
+     * @param p14 the fourteenth type parameter
+     * @param p15 the fifteenth type parameter
+     * @return the rendered interface
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the interface, or its bound is a raw type; or if `desc` describes a nested type, or a name of it cannot be written
+     * @throws IllegalStateException if a member `spec` declared is not defined
+     * @param spec declares the interface, given its builder and the tokens of its type parameters
+     * @param <B1> the leftmost bound of the first type parameter
+     * @param <B2> the leftmost bound of the second type parameter
+     * @param <B3> the leftmost bound of the third type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter
+     * @param <B6> the leftmost bound of the sixth type parameter
+     * @param <B7> the leftmost bound of the seventh type parameter
+     * @param <B8> the leftmost bound of the eighth type parameter
+     * @param <B9> the leftmost bound of the ninth type parameter
+     * @param <B10> the leftmost bound of the tenth type parameter
+     * @param <B11> the leftmost bound of the eleventh type parameter
+     * @param <B12> the leftmost bound of the twelfth type parameter
+     * @param <B13> the leftmost bound of the thirteenth type parameter
+     * @param <B14> the leftmost bound of the fourteenth type parameter
+     * @param <B15> the leftmost bound of the fifteenth type parameter
+     */
+    public static <B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15> JavaFile interface_(TargetClasspath target, ClassDesc desc, TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, TypeParameter<B6> p6, TypeParameter<B7> p7, TypeParameter<B8> p8, TypeParameter<B9> p9, TypeParameter<B10> p10, TypeParameter<B11> p11, TypeParameter<B12> p12, TypeParameter<B13> p13, TypeParameter<B14> p14, TypeParameter<B15> p15, TypedGenericInterfaceSpec15<B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15> spec) {
+        return GenericDeclarations.interface_(target, desc, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15), new InterfaceBodies() {
+            @Override
+            public <Self> TypedInterfaceBodies<Self> build(TypedInterfaceBuilder<Self> builder) {
+                return spec.build(builder, GenericDeclarations.variable(builder, 0), GenericDeclarations.variable(builder, 1), GenericDeclarations.variable(builder, 2), GenericDeclarations.variable(builder, 3), GenericDeclarations.variable(builder, 4), GenericDeclarations.variable(builder, 5), GenericDeclarations.variable(builder, 6), GenericDeclarations.variable(builder, 7), GenericDeclarations.variable(builder, 8), GenericDeclarations.variable(builder, 9), GenericDeclarations.variable(builder, 10), GenericDeclarations.variable(builder, 11), GenericDeclarations.variable(builder, 12), GenericDeclarations.variable(builder, 13), GenericDeclarations.variable(builder, 14));
+            }
+        });
+    }
+
+    /**
+     * Declares a generic `public record` with fifteen type parameters: the tokens are in scope in the components, its header, its members and its member types.
+     *
+     * @param target the classpath the record is compiled against
+     * @param desc the record's binary name
+     * @param p1 the first type parameter
+     * @param p2 the second type parameter
+     * @param p3 the third type parameter
+     * @param p4 the fourth type parameter
+     * @param p5 the fifth type parameter
+     * @param p6 the sixth type parameter
+     * @param p7 the seventh type parameter
+     * @param p8 the eighth type parameter
+     * @param p9 the ninth type parameter
+     * @param p10 the tenth type parameter
+     * @param p11 the eleventh type parameter
+     * @param p12 the twelfth type parameter
+     * @param p13 the thirteenth type parameter
+     * @param p14 the fourteenth type parameter
+     * @param p15 the fifteenth type parameter
+     * @return the rendered record
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the record, or its bound is a raw type; or if `desc` describes a nested type, or a name of it cannot be written
+     * @throws IllegalStateException if a member `spec` declared is not defined
+     * @param spec declares the record, given its builder and the tokens of its type parameters
+     * @param <B1> the leftmost bound of the first type parameter
+     * @param <B2> the leftmost bound of the second type parameter
+     * @param <B3> the leftmost bound of the third type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter
+     * @param <B6> the leftmost bound of the sixth type parameter
+     * @param <B7> the leftmost bound of the seventh type parameter
+     * @param <B8> the leftmost bound of the eighth type parameter
+     * @param <B9> the leftmost bound of the ninth type parameter
+     * @param <B10> the leftmost bound of the tenth type parameter
+     * @param <B11> the leftmost bound of the eleventh type parameter
+     * @param <B12> the leftmost bound of the twelfth type parameter
+     * @param <B13> the leftmost bound of the thirteenth type parameter
+     * @param <B14> the leftmost bound of the fourteenth type parameter
+     * @param <B15> the leftmost bound of the fifteenth type parameter
+     */
+    public static <B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15> JavaFile record(TargetClasspath target, ClassDesc desc, TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, TypeParameter<B6> p6, TypeParameter<B7> p7, TypeParameter<B8> p8, TypeParameter<B9> p9, TypeParameter<B10> p10, TypeParameter<B11> p11, TypeParameter<B12> p12, TypeParameter<B13> p13, TypeParameter<B14> p14, TypeParameter<B15> p15, TypedGenericRecordSpec15<B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15> spec) {
+        return GenericDeclarations.record(target, desc, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15), new RecordBodies() {
+            @Override
+            public <Self> TypedRecordBodies<Self> build(TypedRecordBuilder<Self> builder) {
+                return spec.build(builder, GenericDeclarations.variable(builder, 0), GenericDeclarations.variable(builder, 1), GenericDeclarations.variable(builder, 2), GenericDeclarations.variable(builder, 3), GenericDeclarations.variable(builder, 4), GenericDeclarations.variable(builder, 5), GenericDeclarations.variable(builder, 6), GenericDeclarations.variable(builder, 7), GenericDeclarations.variable(builder, 8), GenericDeclarations.variable(builder, 9), GenericDeclarations.variable(builder, 10), GenericDeclarations.variable(builder, 11), GenericDeclarations.variable(builder, 12), GenericDeclarations.variable(builder, 13), GenericDeclarations.variable(builder, 14));
+            }
+        });
+    }
+
+    /**
+     * Declares a generic `public final class` with sixteen type parameters: the tokens are in scope in the header, the members and the member types of the class.
+     *
+     * @param target the classpath the class is compiled against
+     * @param desc the class's binary name
+     * @param p1 the first type parameter
+     * @param p2 the second type parameter
+     * @param p3 the third type parameter
+     * @param p4 the fourth type parameter
+     * @param p5 the fifth type parameter
+     * @param p6 the sixth type parameter
+     * @param p7 the seventh type parameter
+     * @param p8 the eighth type parameter
+     * @param p9 the ninth type parameter
+     * @param p10 the tenth type parameter
+     * @param p11 the eleventh type parameter
+     * @param p12 the twelfth type parameter
+     * @param p13 the thirteenth type parameter
+     * @param p14 the fourteenth type parameter
+     * @param p15 the fifteenth type parameter
+     * @param p16 the sixteenth type parameter
+     * @return the rendered class
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the class, or its bound is a raw type; or if `desc` describes a nested type, or a name of it cannot be written
+     * @throws IllegalStateException if a member `spec` declared is not defined
+     * @param spec declares the class, given its header and the tokens of its type parameters
+     * @param <B1> the leftmost bound of the first type parameter
+     * @param <B2> the leftmost bound of the second type parameter
+     * @param <B3> the leftmost bound of the third type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter
+     * @param <B6> the leftmost bound of the sixth type parameter
+     * @param <B7> the leftmost bound of the seventh type parameter
+     * @param <B8> the leftmost bound of the eighth type parameter
+     * @param <B9> the leftmost bound of the ninth type parameter
+     * @param <B10> the leftmost bound of the tenth type parameter
+     * @param <B11> the leftmost bound of the eleventh type parameter
+     * @param <B12> the leftmost bound of the twelfth type parameter
+     * @param <B13> the leftmost bound of the thirteenth type parameter
+     * @param <B14> the leftmost bound of the fourteenth type parameter
+     * @param <B15> the leftmost bound of the fifteenth type parameter
+     * @param <B16> the leftmost bound of the sixteenth type parameter
+     */
+    public static <B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15, B16> JavaFile declareClass(TargetClasspath target, ClassDesc desc, TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, TypeParameter<B6> p6, TypeParameter<B7> p7, TypeParameter<B8> p8, TypeParameter<B9> p9, TypeParameter<B10> p10, TypeParameter<B11> p11, TypeParameter<B12> p12, TypeParameter<B13> p13, TypeParameter<B14> p14, TypeParameter<B15> p15, TypeParameter<B16> p16, TypedGenericClassSpec16<B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15, B16> spec) {
+        return GenericDeclarations.declareClass(target, desc, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16), new ClassBodies() {
+            @Override
+            public <Self> MemberBodies<Self, ?> build(ClassDeclaration<Self> declaration) {
+                return spec.build(new ClassHeader<>(declaration), GenericDeclarations.variable(declaration, 0), GenericDeclarations.variable(declaration, 1), GenericDeclarations.variable(declaration, 2), GenericDeclarations.variable(declaration, 3), GenericDeclarations.variable(declaration, 4), GenericDeclarations.variable(declaration, 5), GenericDeclarations.variable(declaration, 6), GenericDeclarations.variable(declaration, 7), GenericDeclarations.variable(declaration, 8), GenericDeclarations.variable(declaration, 9), GenericDeclarations.variable(declaration, 10), GenericDeclarations.variable(declaration, 11), GenericDeclarations.variable(declaration, 12), GenericDeclarations.variable(declaration, 13), GenericDeclarations.variable(declaration, 14), GenericDeclarations.variable(declaration, 15));
+            }
+        });
+    }
+
+    /**
+     * Declares a generic `public interface` with sixteen type parameters: the tokens are in scope in the header, the members and the member types of the interface.
+     *
+     * @param target the classpath the interface is compiled against
+     * @param desc the interface's binary name
+     * @param p1 the first type parameter
+     * @param p2 the second type parameter
+     * @param p3 the third type parameter
+     * @param p4 the fourth type parameter
+     * @param p5 the fifth type parameter
+     * @param p6 the sixth type parameter
+     * @param p7 the seventh type parameter
+     * @param p8 the eighth type parameter
+     * @param p9 the ninth type parameter
+     * @param p10 the tenth type parameter
+     * @param p11 the eleventh type parameter
+     * @param p12 the twelfth type parameter
+     * @param p13 the thirteenth type parameter
+     * @param p14 the fourteenth type parameter
+     * @param p15 the fifteenth type parameter
+     * @param p16 the sixteenth type parameter
+     * @return the rendered interface
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the interface, or its bound is a raw type; or if `desc` describes a nested type, or a name of it cannot be written
+     * @throws IllegalStateException if a member `spec` declared is not defined
+     * @param spec declares the interface, given its builder and the tokens of its type parameters
+     * @param <B1> the leftmost bound of the first type parameter
+     * @param <B2> the leftmost bound of the second type parameter
+     * @param <B3> the leftmost bound of the third type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter
+     * @param <B6> the leftmost bound of the sixth type parameter
+     * @param <B7> the leftmost bound of the seventh type parameter
+     * @param <B8> the leftmost bound of the eighth type parameter
+     * @param <B9> the leftmost bound of the ninth type parameter
+     * @param <B10> the leftmost bound of the tenth type parameter
+     * @param <B11> the leftmost bound of the eleventh type parameter
+     * @param <B12> the leftmost bound of the twelfth type parameter
+     * @param <B13> the leftmost bound of the thirteenth type parameter
+     * @param <B14> the leftmost bound of the fourteenth type parameter
+     * @param <B15> the leftmost bound of the fifteenth type parameter
+     * @param <B16> the leftmost bound of the sixteenth type parameter
+     */
+    public static <B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15, B16> JavaFile interface_(TargetClasspath target, ClassDesc desc, TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, TypeParameter<B6> p6, TypeParameter<B7> p7, TypeParameter<B8> p8, TypeParameter<B9> p9, TypeParameter<B10> p10, TypeParameter<B11> p11, TypeParameter<B12> p12, TypeParameter<B13> p13, TypeParameter<B14> p14, TypeParameter<B15> p15, TypeParameter<B16> p16, TypedGenericInterfaceSpec16<B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15, B16> spec) {
+        return GenericDeclarations.interface_(target, desc, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16), new InterfaceBodies() {
+            @Override
+            public <Self> TypedInterfaceBodies<Self> build(TypedInterfaceBuilder<Self> builder) {
+                return spec.build(builder, GenericDeclarations.variable(builder, 0), GenericDeclarations.variable(builder, 1), GenericDeclarations.variable(builder, 2), GenericDeclarations.variable(builder, 3), GenericDeclarations.variable(builder, 4), GenericDeclarations.variable(builder, 5), GenericDeclarations.variable(builder, 6), GenericDeclarations.variable(builder, 7), GenericDeclarations.variable(builder, 8), GenericDeclarations.variable(builder, 9), GenericDeclarations.variable(builder, 10), GenericDeclarations.variable(builder, 11), GenericDeclarations.variable(builder, 12), GenericDeclarations.variable(builder, 13), GenericDeclarations.variable(builder, 14), GenericDeclarations.variable(builder, 15));
+            }
+        });
+    }
+
+    /**
+     * Declares a generic `public record` with sixteen type parameters: the tokens are in scope in the components, its header, its members and its member types.
+     *
+     * @param target the classpath the record is compiled against
+     * @param desc the record's binary name
+     * @param p1 the first type parameter
+     * @param p2 the second type parameter
+     * @param p3 the third type parameter
+     * @param p4 the fourth type parameter
+     * @param p5 the fifth type parameter
+     * @param p6 the sixth type parameter
+     * @param p7 the seventh type parameter
+     * @param p8 the eighth type parameter
+     * @param p9 the ninth type parameter
+     * @param p10 the tenth type parameter
+     * @param p11 the eleventh type parameter
+     * @param p12 the twelfth type parameter
+     * @param p13 the thirteenth type parameter
+     * @param p14 the fourteenth type parameter
+     * @param p15 the fifteenth type parameter
+     * @param p16 the sixteenth type parameter
+     * @return the rendered record
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the record, or its bound is a raw type; or if `desc` describes a nested type, or a name of it cannot be written
+     * @throws IllegalStateException if a member `spec` declared is not defined
+     * @param spec declares the record, given its builder and the tokens of its type parameters
+     * @param <B1> the leftmost bound of the first type parameter
+     * @param <B2> the leftmost bound of the second type parameter
+     * @param <B3> the leftmost bound of the third type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter
+     * @param <B6> the leftmost bound of the sixth type parameter
+     * @param <B7> the leftmost bound of the seventh type parameter
+     * @param <B8> the leftmost bound of the eighth type parameter
+     * @param <B9> the leftmost bound of the ninth type parameter
+     * @param <B10> the leftmost bound of the tenth type parameter
+     * @param <B11> the leftmost bound of the eleventh type parameter
+     * @param <B12> the leftmost bound of the twelfth type parameter
+     * @param <B13> the leftmost bound of the thirteenth type parameter
+     * @param <B14> the leftmost bound of the fourteenth type parameter
+     * @param <B15> the leftmost bound of the fifteenth type parameter
+     * @param <B16> the leftmost bound of the sixteenth type parameter
+     */
+    public static <B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15, B16> JavaFile record(TargetClasspath target, ClassDesc desc, TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, TypeParameter<B6> p6, TypeParameter<B7> p7, TypeParameter<B8> p8, TypeParameter<B9> p9, TypeParameter<B10> p10, TypeParameter<B11> p11, TypeParameter<B12> p12, TypeParameter<B13> p13, TypeParameter<B14> p14, TypeParameter<B15> p15, TypeParameter<B16> p16, TypedGenericRecordSpec16<B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15, B16> spec) {
+        return GenericDeclarations.record(target, desc, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16), new RecordBodies() {
+            @Override
+            public <Self> TypedRecordBodies<Self> build(TypedRecordBuilder<Self> builder) {
+                return spec.build(builder, GenericDeclarations.variable(builder, 0), GenericDeclarations.variable(builder, 1), GenericDeclarations.variable(builder, 2), GenericDeclarations.variable(builder, 3), GenericDeclarations.variable(builder, 4), GenericDeclarations.variable(builder, 5), GenericDeclarations.variable(builder, 6), GenericDeclarations.variable(builder, 7), GenericDeclarations.variable(builder, 8), GenericDeclarations.variable(builder, 9), GenericDeclarations.variable(builder, 10), GenericDeclarations.variable(builder, 11), GenericDeclarations.variable(builder, 12), GenericDeclarations.variable(builder, 13), GenericDeclarations.variable(builder, 14), GenericDeclarations.variable(builder, 15));
             }
         });
     }

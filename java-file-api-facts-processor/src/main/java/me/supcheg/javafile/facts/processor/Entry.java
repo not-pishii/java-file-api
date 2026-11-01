@@ -51,7 +51,7 @@ import java.util.stream.Stream;
 sealed interface Entry permits Entry.Offered, Entry.Refused {
 
     /// The greatest number of parameters of a method an `ImplementationN` is of.
-    int MAX_ARITY = 12;
+    int MAX_ARITY = me.supcheg.javafile.facts.FactsArity.MAX_ARITY;
 
     /// The type has an entry: `extend` of a class, `implement` of an interface.
     ///

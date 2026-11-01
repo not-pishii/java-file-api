@@ -425,6 +425,134 @@ public final class UnsafeInvocables {
         return new VoidSam12<>(method);
     }
 
+    public static <O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> MethodRef13<O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> method(DeclaredToken<O> owner, String name, TypeToken<R> result, FactParam<A1> param1, FactParam<A2> param2, FactParam<A3> param3, FactParam<A4> param4, FactParam<A5> param5, FactParam<A6> param6, FactParam<A7> param7, FactParam<A8> param8, FactParam<A9> param9, FactParam<A10> param10, FactParam<A11> param11, FactParam<A12> param12, FactParam<A13> param13, MemberTraits traits) {
+        return new MethodRef13<>(owner, name, result, Invocables.token(param1), Invocables.token(param2), Invocables.token(param3), Invocables.token(param4), Invocables.token(param5), Invocables.token(param6), Invocables.token(param7), Invocables.token(param8), Invocables.token(param9), Invocables.token(param10), Invocables.token(param11), Invocables.token(param12), Invocables.token(param13), traits, Invocables.declared(owner, param1, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12, param13));
+    }
+
+    public static <O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> VoidMethodRef13<O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> voidMethod(DeclaredToken<O> owner, String name, FactParam<A1> param1, FactParam<A2> param2, FactParam<A3> param3, FactParam<A4> param4, FactParam<A5> param5, FactParam<A6> param6, FactParam<A7> param7, FactParam<A8> param8, FactParam<A9> param9, FactParam<A10> param10, FactParam<A11> param11, FactParam<A12> param12, FactParam<A13> param13, MemberTraits traits) {
+        return new VoidMethodRef13<>(owner, name, Invocables.token(param1), Invocables.token(param2), Invocables.token(param3), Invocables.token(param4), Invocables.token(param5), Invocables.token(param6), Invocables.token(param7), Invocables.token(param8), Invocables.token(param9), Invocables.token(param10), Invocables.token(param11), Invocables.token(param12), Invocables.token(param13), traits, Invocables.declared(owner, param1, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12, param13));
+    }
+
+    public static <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> StaticMethodRef13<R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> staticMethod(DeclaredToken<?> owner, String name, TypeToken<R> result, FactParam<A1> param1, FactParam<A2> param2, FactParam<A3> param3, FactParam<A4> param4, FactParam<A5> param5, FactParam<A6> param6, FactParam<A7> param7, FactParam<A8> param8, FactParam<A9> param9, FactParam<A10> param10, FactParam<A11> param11, FactParam<A12> param12, FactParam<A13> param13, MemberTraits traits) {
+        return new StaticMethodRef13<>(owner, name, result, Invocables.token(param1), Invocables.token(param2), Invocables.token(param3), Invocables.token(param4), Invocables.token(param5), Invocables.token(param6), Invocables.token(param7), Invocables.token(param8), Invocables.token(param9), Invocables.token(param10), Invocables.token(param11), Invocables.token(param12), Invocables.token(param13), traits, Invocables.declared(owner, param1, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12, param13));
+    }
+
+    public static <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> VoidStaticMethodRef13<A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> voidStaticMethod(DeclaredToken<?> owner, String name, FactParam<A1> param1, FactParam<A2> param2, FactParam<A3> param3, FactParam<A4> param4, FactParam<A5> param5, FactParam<A6> param6, FactParam<A7> param7, FactParam<A8> param8, FactParam<A9> param9, FactParam<A10> param10, FactParam<A11> param11, FactParam<A12> param12, FactParam<A13> param13, MemberTraits traits) {
+        return new VoidStaticMethodRef13<>(owner, name, Invocables.token(param1), Invocables.token(param2), Invocables.token(param3), Invocables.token(param4), Invocables.token(param5), Invocables.token(param6), Invocables.token(param7), Invocables.token(param8), Invocables.token(param9), Invocables.token(param10), Invocables.token(param11), Invocables.token(param12), Invocables.token(param13), traits, Invocables.declared(owner, param1, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12, param13));
+    }
+
+    public static <O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> CtorRef13<O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> ctor(ConcreteClassToken<O> owner, FactParam<A1> param1, FactParam<A2> param2, FactParam<A3> param3, FactParam<A4> param4, FactParam<A5> param5, FactParam<A6> param6, FactParam<A7> param7, FactParam<A8> param8, FactParam<A9> param9, FactParam<A10> param10, FactParam<A11> param11, FactParam<A12> param12, FactParam<A13> param13, MemberTraits traits) {
+        return new CtorRef13<>(owner, Invocables.token(param1), Invocables.token(param2), Invocables.token(param3), Invocables.token(param4), Invocables.token(param5), Invocables.token(param6), Invocables.token(param7), Invocables.token(param8), Invocables.token(param9), Invocables.token(param10), Invocables.token(param11), Invocables.token(param12), Invocables.token(param13), traits, Invocables.declared(owner, param1, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12, param13));
+    }
+
+    public static <O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> SuperCtorRef13<O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> superCtor(ExtendableClassToken<O> owner, FactParam<A1> param1, FactParam<A2> param2, FactParam<A3> param3, FactParam<A4> param4, FactParam<A5> param5, FactParam<A6> param6, FactParam<A7> param7, FactParam<A8> param8, FactParam<A9> param9, FactParam<A10> param10, FactParam<A11> param11, FactParam<A12> param12, FactParam<A13> param13, MemberTraits traits) {
+        return new SuperCtorRef13<>(owner, Invocables.token(param1), Invocables.token(param2), Invocables.token(param3), Invocables.token(param4), Invocables.token(param5), Invocables.token(param6), Invocables.token(param7), Invocables.token(param8), Invocables.token(param9), Invocables.token(param10), Invocables.token(param11), Invocables.token(param12), Invocables.token(param13), traits, Invocables.declared(owner, param1, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12, param13));
+    }
+
+    public static <F, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> Sam13<F, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> sam(MethodRef13<F, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> method) {
+        return new Sam13<>(method);
+    }
+
+    public static <F, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> VoidSam13<F, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> voidSam(VoidMethodRef13<F, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> method) {
+        return new VoidSam13<>(method);
+    }
+
+    public static <O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> MethodRef14<O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> method(DeclaredToken<O> owner, String name, TypeToken<R> result, FactParam<A1> param1, FactParam<A2> param2, FactParam<A3> param3, FactParam<A4> param4, FactParam<A5> param5, FactParam<A6> param6, FactParam<A7> param7, FactParam<A8> param8, FactParam<A9> param9, FactParam<A10> param10, FactParam<A11> param11, FactParam<A12> param12, FactParam<A13> param13, FactParam<A14> param14, MemberTraits traits) {
+        return new MethodRef14<>(owner, name, result, Invocables.token(param1), Invocables.token(param2), Invocables.token(param3), Invocables.token(param4), Invocables.token(param5), Invocables.token(param6), Invocables.token(param7), Invocables.token(param8), Invocables.token(param9), Invocables.token(param10), Invocables.token(param11), Invocables.token(param12), Invocables.token(param13), Invocables.token(param14), traits, Invocables.declared(owner, param1, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12, param13, param14));
+    }
+
+    public static <O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> VoidMethodRef14<O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> voidMethod(DeclaredToken<O> owner, String name, FactParam<A1> param1, FactParam<A2> param2, FactParam<A3> param3, FactParam<A4> param4, FactParam<A5> param5, FactParam<A6> param6, FactParam<A7> param7, FactParam<A8> param8, FactParam<A9> param9, FactParam<A10> param10, FactParam<A11> param11, FactParam<A12> param12, FactParam<A13> param13, FactParam<A14> param14, MemberTraits traits) {
+        return new VoidMethodRef14<>(owner, name, Invocables.token(param1), Invocables.token(param2), Invocables.token(param3), Invocables.token(param4), Invocables.token(param5), Invocables.token(param6), Invocables.token(param7), Invocables.token(param8), Invocables.token(param9), Invocables.token(param10), Invocables.token(param11), Invocables.token(param12), Invocables.token(param13), Invocables.token(param14), traits, Invocables.declared(owner, param1, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12, param13, param14));
+    }
+
+    public static <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> StaticMethodRef14<R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> staticMethod(DeclaredToken<?> owner, String name, TypeToken<R> result, FactParam<A1> param1, FactParam<A2> param2, FactParam<A3> param3, FactParam<A4> param4, FactParam<A5> param5, FactParam<A6> param6, FactParam<A7> param7, FactParam<A8> param8, FactParam<A9> param9, FactParam<A10> param10, FactParam<A11> param11, FactParam<A12> param12, FactParam<A13> param13, FactParam<A14> param14, MemberTraits traits) {
+        return new StaticMethodRef14<>(owner, name, result, Invocables.token(param1), Invocables.token(param2), Invocables.token(param3), Invocables.token(param4), Invocables.token(param5), Invocables.token(param6), Invocables.token(param7), Invocables.token(param8), Invocables.token(param9), Invocables.token(param10), Invocables.token(param11), Invocables.token(param12), Invocables.token(param13), Invocables.token(param14), traits, Invocables.declared(owner, param1, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12, param13, param14));
+    }
+
+    public static <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> VoidStaticMethodRef14<A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> voidStaticMethod(DeclaredToken<?> owner, String name, FactParam<A1> param1, FactParam<A2> param2, FactParam<A3> param3, FactParam<A4> param4, FactParam<A5> param5, FactParam<A6> param6, FactParam<A7> param7, FactParam<A8> param8, FactParam<A9> param9, FactParam<A10> param10, FactParam<A11> param11, FactParam<A12> param12, FactParam<A13> param13, FactParam<A14> param14, MemberTraits traits) {
+        return new VoidStaticMethodRef14<>(owner, name, Invocables.token(param1), Invocables.token(param2), Invocables.token(param3), Invocables.token(param4), Invocables.token(param5), Invocables.token(param6), Invocables.token(param7), Invocables.token(param8), Invocables.token(param9), Invocables.token(param10), Invocables.token(param11), Invocables.token(param12), Invocables.token(param13), Invocables.token(param14), traits, Invocables.declared(owner, param1, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12, param13, param14));
+    }
+
+    public static <O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> CtorRef14<O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> ctor(ConcreteClassToken<O> owner, FactParam<A1> param1, FactParam<A2> param2, FactParam<A3> param3, FactParam<A4> param4, FactParam<A5> param5, FactParam<A6> param6, FactParam<A7> param7, FactParam<A8> param8, FactParam<A9> param9, FactParam<A10> param10, FactParam<A11> param11, FactParam<A12> param12, FactParam<A13> param13, FactParam<A14> param14, MemberTraits traits) {
+        return new CtorRef14<>(owner, Invocables.token(param1), Invocables.token(param2), Invocables.token(param3), Invocables.token(param4), Invocables.token(param5), Invocables.token(param6), Invocables.token(param7), Invocables.token(param8), Invocables.token(param9), Invocables.token(param10), Invocables.token(param11), Invocables.token(param12), Invocables.token(param13), Invocables.token(param14), traits, Invocables.declared(owner, param1, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12, param13, param14));
+    }
+
+    public static <O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> SuperCtorRef14<O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> superCtor(ExtendableClassToken<O> owner, FactParam<A1> param1, FactParam<A2> param2, FactParam<A3> param3, FactParam<A4> param4, FactParam<A5> param5, FactParam<A6> param6, FactParam<A7> param7, FactParam<A8> param8, FactParam<A9> param9, FactParam<A10> param10, FactParam<A11> param11, FactParam<A12> param12, FactParam<A13> param13, FactParam<A14> param14, MemberTraits traits) {
+        return new SuperCtorRef14<>(owner, Invocables.token(param1), Invocables.token(param2), Invocables.token(param3), Invocables.token(param4), Invocables.token(param5), Invocables.token(param6), Invocables.token(param7), Invocables.token(param8), Invocables.token(param9), Invocables.token(param10), Invocables.token(param11), Invocables.token(param12), Invocables.token(param13), Invocables.token(param14), traits, Invocables.declared(owner, param1, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12, param13, param14));
+    }
+
+    public static <F, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> Sam14<F, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> sam(MethodRef14<F, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> method) {
+        return new Sam14<>(method);
+    }
+
+    public static <F, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> VoidSam14<F, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> voidSam(VoidMethodRef14<F, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> method) {
+        return new VoidSam14<>(method);
+    }
+
+    public static <O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> MethodRef15<O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> method(DeclaredToken<O> owner, String name, TypeToken<R> result, FactParam<A1> param1, FactParam<A2> param2, FactParam<A3> param3, FactParam<A4> param4, FactParam<A5> param5, FactParam<A6> param6, FactParam<A7> param7, FactParam<A8> param8, FactParam<A9> param9, FactParam<A10> param10, FactParam<A11> param11, FactParam<A12> param12, FactParam<A13> param13, FactParam<A14> param14, FactParam<A15> param15, MemberTraits traits) {
+        return new MethodRef15<>(owner, name, result, Invocables.token(param1), Invocables.token(param2), Invocables.token(param3), Invocables.token(param4), Invocables.token(param5), Invocables.token(param6), Invocables.token(param7), Invocables.token(param8), Invocables.token(param9), Invocables.token(param10), Invocables.token(param11), Invocables.token(param12), Invocables.token(param13), Invocables.token(param14), Invocables.token(param15), traits, Invocables.declared(owner, param1, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12, param13, param14, param15));
+    }
+
+    public static <O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> VoidMethodRef15<O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> voidMethod(DeclaredToken<O> owner, String name, FactParam<A1> param1, FactParam<A2> param2, FactParam<A3> param3, FactParam<A4> param4, FactParam<A5> param5, FactParam<A6> param6, FactParam<A7> param7, FactParam<A8> param8, FactParam<A9> param9, FactParam<A10> param10, FactParam<A11> param11, FactParam<A12> param12, FactParam<A13> param13, FactParam<A14> param14, FactParam<A15> param15, MemberTraits traits) {
+        return new VoidMethodRef15<>(owner, name, Invocables.token(param1), Invocables.token(param2), Invocables.token(param3), Invocables.token(param4), Invocables.token(param5), Invocables.token(param6), Invocables.token(param7), Invocables.token(param8), Invocables.token(param9), Invocables.token(param10), Invocables.token(param11), Invocables.token(param12), Invocables.token(param13), Invocables.token(param14), Invocables.token(param15), traits, Invocables.declared(owner, param1, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12, param13, param14, param15));
+    }
+
+    public static <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> StaticMethodRef15<R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> staticMethod(DeclaredToken<?> owner, String name, TypeToken<R> result, FactParam<A1> param1, FactParam<A2> param2, FactParam<A3> param3, FactParam<A4> param4, FactParam<A5> param5, FactParam<A6> param6, FactParam<A7> param7, FactParam<A8> param8, FactParam<A9> param9, FactParam<A10> param10, FactParam<A11> param11, FactParam<A12> param12, FactParam<A13> param13, FactParam<A14> param14, FactParam<A15> param15, MemberTraits traits) {
+        return new StaticMethodRef15<>(owner, name, result, Invocables.token(param1), Invocables.token(param2), Invocables.token(param3), Invocables.token(param4), Invocables.token(param5), Invocables.token(param6), Invocables.token(param7), Invocables.token(param8), Invocables.token(param9), Invocables.token(param10), Invocables.token(param11), Invocables.token(param12), Invocables.token(param13), Invocables.token(param14), Invocables.token(param15), traits, Invocables.declared(owner, param1, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12, param13, param14, param15));
+    }
+
+    public static <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> VoidStaticMethodRef15<A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> voidStaticMethod(DeclaredToken<?> owner, String name, FactParam<A1> param1, FactParam<A2> param2, FactParam<A3> param3, FactParam<A4> param4, FactParam<A5> param5, FactParam<A6> param6, FactParam<A7> param7, FactParam<A8> param8, FactParam<A9> param9, FactParam<A10> param10, FactParam<A11> param11, FactParam<A12> param12, FactParam<A13> param13, FactParam<A14> param14, FactParam<A15> param15, MemberTraits traits) {
+        return new VoidStaticMethodRef15<>(owner, name, Invocables.token(param1), Invocables.token(param2), Invocables.token(param3), Invocables.token(param4), Invocables.token(param5), Invocables.token(param6), Invocables.token(param7), Invocables.token(param8), Invocables.token(param9), Invocables.token(param10), Invocables.token(param11), Invocables.token(param12), Invocables.token(param13), Invocables.token(param14), Invocables.token(param15), traits, Invocables.declared(owner, param1, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12, param13, param14, param15));
+    }
+
+    public static <O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> CtorRef15<O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> ctor(ConcreteClassToken<O> owner, FactParam<A1> param1, FactParam<A2> param2, FactParam<A3> param3, FactParam<A4> param4, FactParam<A5> param5, FactParam<A6> param6, FactParam<A7> param7, FactParam<A8> param8, FactParam<A9> param9, FactParam<A10> param10, FactParam<A11> param11, FactParam<A12> param12, FactParam<A13> param13, FactParam<A14> param14, FactParam<A15> param15, MemberTraits traits) {
+        return new CtorRef15<>(owner, Invocables.token(param1), Invocables.token(param2), Invocables.token(param3), Invocables.token(param4), Invocables.token(param5), Invocables.token(param6), Invocables.token(param7), Invocables.token(param8), Invocables.token(param9), Invocables.token(param10), Invocables.token(param11), Invocables.token(param12), Invocables.token(param13), Invocables.token(param14), Invocables.token(param15), traits, Invocables.declared(owner, param1, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12, param13, param14, param15));
+    }
+
+    public static <O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> SuperCtorRef15<O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> superCtor(ExtendableClassToken<O> owner, FactParam<A1> param1, FactParam<A2> param2, FactParam<A3> param3, FactParam<A4> param4, FactParam<A5> param5, FactParam<A6> param6, FactParam<A7> param7, FactParam<A8> param8, FactParam<A9> param9, FactParam<A10> param10, FactParam<A11> param11, FactParam<A12> param12, FactParam<A13> param13, FactParam<A14> param14, FactParam<A15> param15, MemberTraits traits) {
+        return new SuperCtorRef15<>(owner, Invocables.token(param1), Invocables.token(param2), Invocables.token(param3), Invocables.token(param4), Invocables.token(param5), Invocables.token(param6), Invocables.token(param7), Invocables.token(param8), Invocables.token(param9), Invocables.token(param10), Invocables.token(param11), Invocables.token(param12), Invocables.token(param13), Invocables.token(param14), Invocables.token(param15), traits, Invocables.declared(owner, param1, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12, param13, param14, param15));
+    }
+
+    public static <F, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> Sam15<F, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> sam(MethodRef15<F, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> method) {
+        return new Sam15<>(method);
+    }
+
+    public static <F, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> VoidSam15<F, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> voidSam(VoidMethodRef15<F, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> method) {
+        return new VoidSam15<>(method);
+    }
+
+    public static <O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> MethodRef16<O, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> method(DeclaredToken<O> owner, String name, TypeToken<R> result, FactParam<A1> param1, FactParam<A2> param2, FactParam<A3> param3, FactParam<A4> param4, FactParam<A5> param5, FactParam<A6> param6, FactParam<A7> param7, FactParam<A8> param8, FactParam<A9> param9, FactParam<A10> param10, FactParam<A11> param11, FactParam<A12> param12, FactParam<A13> param13, FactParam<A14> param14, FactParam<A15> param15, FactParam<A16> param16, MemberTraits traits) {
+        return new MethodRef16<>(owner, name, result, Invocables.token(param1), Invocables.token(param2), Invocables.token(param3), Invocables.token(param4), Invocables.token(param5), Invocables.token(param6), Invocables.token(param7), Invocables.token(param8), Invocables.token(param9), Invocables.token(param10), Invocables.token(param11), Invocables.token(param12), Invocables.token(param13), Invocables.token(param14), Invocables.token(param15), Invocables.token(param16), traits, Invocables.declared(owner, param1, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12, param13, param14, param15, param16));
+    }
+
+    public static <O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> VoidMethodRef16<O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> voidMethod(DeclaredToken<O> owner, String name, FactParam<A1> param1, FactParam<A2> param2, FactParam<A3> param3, FactParam<A4> param4, FactParam<A5> param5, FactParam<A6> param6, FactParam<A7> param7, FactParam<A8> param8, FactParam<A9> param9, FactParam<A10> param10, FactParam<A11> param11, FactParam<A12> param12, FactParam<A13> param13, FactParam<A14> param14, FactParam<A15> param15, FactParam<A16> param16, MemberTraits traits) {
+        return new VoidMethodRef16<>(owner, name, Invocables.token(param1), Invocables.token(param2), Invocables.token(param3), Invocables.token(param4), Invocables.token(param5), Invocables.token(param6), Invocables.token(param7), Invocables.token(param8), Invocables.token(param9), Invocables.token(param10), Invocables.token(param11), Invocables.token(param12), Invocables.token(param13), Invocables.token(param14), Invocables.token(param15), Invocables.token(param16), traits, Invocables.declared(owner, param1, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12, param13, param14, param15, param16));
+    }
+
+    public static <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> StaticMethodRef16<R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> staticMethod(DeclaredToken<?> owner, String name, TypeToken<R> result, FactParam<A1> param1, FactParam<A2> param2, FactParam<A3> param3, FactParam<A4> param4, FactParam<A5> param5, FactParam<A6> param6, FactParam<A7> param7, FactParam<A8> param8, FactParam<A9> param9, FactParam<A10> param10, FactParam<A11> param11, FactParam<A12> param12, FactParam<A13> param13, FactParam<A14> param14, FactParam<A15> param15, FactParam<A16> param16, MemberTraits traits) {
+        return new StaticMethodRef16<>(owner, name, result, Invocables.token(param1), Invocables.token(param2), Invocables.token(param3), Invocables.token(param4), Invocables.token(param5), Invocables.token(param6), Invocables.token(param7), Invocables.token(param8), Invocables.token(param9), Invocables.token(param10), Invocables.token(param11), Invocables.token(param12), Invocables.token(param13), Invocables.token(param14), Invocables.token(param15), Invocables.token(param16), traits, Invocables.declared(owner, param1, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12, param13, param14, param15, param16));
+    }
+
+    public static <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> VoidStaticMethodRef16<A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> voidStaticMethod(DeclaredToken<?> owner, String name, FactParam<A1> param1, FactParam<A2> param2, FactParam<A3> param3, FactParam<A4> param4, FactParam<A5> param5, FactParam<A6> param6, FactParam<A7> param7, FactParam<A8> param8, FactParam<A9> param9, FactParam<A10> param10, FactParam<A11> param11, FactParam<A12> param12, FactParam<A13> param13, FactParam<A14> param14, FactParam<A15> param15, FactParam<A16> param16, MemberTraits traits) {
+        return new VoidStaticMethodRef16<>(owner, name, Invocables.token(param1), Invocables.token(param2), Invocables.token(param3), Invocables.token(param4), Invocables.token(param5), Invocables.token(param6), Invocables.token(param7), Invocables.token(param8), Invocables.token(param9), Invocables.token(param10), Invocables.token(param11), Invocables.token(param12), Invocables.token(param13), Invocables.token(param14), Invocables.token(param15), Invocables.token(param16), traits, Invocables.declared(owner, param1, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12, param13, param14, param15, param16));
+    }
+
+    public static <O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> CtorRef16<O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> ctor(ConcreteClassToken<O> owner, FactParam<A1> param1, FactParam<A2> param2, FactParam<A3> param3, FactParam<A4> param4, FactParam<A5> param5, FactParam<A6> param6, FactParam<A7> param7, FactParam<A8> param8, FactParam<A9> param9, FactParam<A10> param10, FactParam<A11> param11, FactParam<A12> param12, FactParam<A13> param13, FactParam<A14> param14, FactParam<A15> param15, FactParam<A16> param16, MemberTraits traits) {
+        return new CtorRef16<>(owner, Invocables.token(param1), Invocables.token(param2), Invocables.token(param3), Invocables.token(param4), Invocables.token(param5), Invocables.token(param6), Invocables.token(param7), Invocables.token(param8), Invocables.token(param9), Invocables.token(param10), Invocables.token(param11), Invocables.token(param12), Invocables.token(param13), Invocables.token(param14), Invocables.token(param15), Invocables.token(param16), traits, Invocables.declared(owner, param1, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12, param13, param14, param15, param16));
+    }
+
+    public static <O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> SuperCtorRef16<O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> superCtor(ExtendableClassToken<O> owner, FactParam<A1> param1, FactParam<A2> param2, FactParam<A3> param3, FactParam<A4> param4, FactParam<A5> param5, FactParam<A6> param6, FactParam<A7> param7, FactParam<A8> param8, FactParam<A9> param9, FactParam<A10> param10, FactParam<A11> param11, FactParam<A12> param12, FactParam<A13> param13, FactParam<A14> param14, FactParam<A15> param15, FactParam<A16> param16, MemberTraits traits) {
+        return new SuperCtorRef16<>(owner, Invocables.token(param1), Invocables.token(param2), Invocables.token(param3), Invocables.token(param4), Invocables.token(param5), Invocables.token(param6), Invocables.token(param7), Invocables.token(param8), Invocables.token(param9), Invocables.token(param10), Invocables.token(param11), Invocables.token(param12), Invocables.token(param13), Invocables.token(param14), Invocables.token(param15), Invocables.token(param16), traits, Invocables.declared(owner, param1, param2, param3, param4, param5, param6, param7, param8, param9, param10, param11, param12, param13, param14, param15, param16));
+    }
+
+    public static <F, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> Sam16<F, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> sam(MethodRef16<F, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> method) {
+        return new Sam16<>(method);
+    }
+
+    public static <F, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> VoidSam16<F, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> voidSam(VoidMethodRef16<F, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> method) {
+        return new VoidSam16<>(method);
+    }
+
     public static <Self, R> Overriding0<Self, R> overriding0(ByOverride how) {
         return new Overriding0<>(how);
     }
@@ -683,5 +811,85 @@ public final class UnsafeInvocables {
 
     public static <Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> VoidInherited12<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> voidInherited12(ByInheritance how) {
         return new VoidInherited12<>(how);
+    }
+
+    public static <Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> Overriding13<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> overriding13(ByOverride how) {
+        return new Overriding13<>(how);
+    }
+
+    public static <Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> SelfOverriding13<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> selfOverriding13(ByOverride how) {
+        return new SelfOverriding13<>(how);
+    }
+
+    public static <Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> Inherited13<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> inherited13(ByInheritance how) {
+        return new Inherited13<>(how);
+    }
+
+    public static <Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> VoidOverriding13<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> voidOverriding13(ByOverride how) {
+        return new VoidOverriding13<>(how);
+    }
+
+    public static <Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> VoidInherited13<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> voidInherited13(ByInheritance how) {
+        return new VoidInherited13<>(how);
+    }
+
+    public static <Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> Overriding14<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> overriding14(ByOverride how) {
+        return new Overriding14<>(how);
+    }
+
+    public static <Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> SelfOverriding14<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> selfOverriding14(ByOverride how) {
+        return new SelfOverriding14<>(how);
+    }
+
+    public static <Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> Inherited14<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> inherited14(ByInheritance how) {
+        return new Inherited14<>(how);
+    }
+
+    public static <Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> VoidOverriding14<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> voidOverriding14(ByOverride how) {
+        return new VoidOverriding14<>(how);
+    }
+
+    public static <Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> VoidInherited14<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> voidInherited14(ByInheritance how) {
+        return new VoidInherited14<>(how);
+    }
+
+    public static <Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> Overriding15<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> overriding15(ByOverride how) {
+        return new Overriding15<>(how);
+    }
+
+    public static <Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> SelfOverriding15<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> selfOverriding15(ByOverride how) {
+        return new SelfOverriding15<>(how);
+    }
+
+    public static <Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> Inherited15<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> inherited15(ByInheritance how) {
+        return new Inherited15<>(how);
+    }
+
+    public static <Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> VoidOverriding15<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> voidOverriding15(ByOverride how) {
+        return new VoidOverriding15<>(how);
+    }
+
+    public static <Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> VoidInherited15<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> voidInherited15(ByInheritance how) {
+        return new VoidInherited15<>(how);
+    }
+
+    public static <Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> Overriding16<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> overriding16(ByOverride how) {
+        return new Overriding16<>(how);
+    }
+
+    public static <Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> SelfOverriding16<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> selfOverriding16(ByOverride how) {
+        return new SelfOverriding16<>(how);
+    }
+
+    public static <Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> Inherited16<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> inherited16(ByInheritance how) {
+        return new Inherited16<>(how);
+    }
+
+    public static <Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> VoidOverriding16<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> voidOverriding16(ByOverride how) {
+        return new VoidOverriding16<>(how);
+    }
+
+    public static <Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> VoidInherited16<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> voidInherited16(ByInheritance how) {
+        return new VoidInherited16<>(how);
     }
 }

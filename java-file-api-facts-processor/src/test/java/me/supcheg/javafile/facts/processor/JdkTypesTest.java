@@ -611,7 +611,7 @@ class JdkTypesTest {
     void onlyMembersOfTooManyParametersOfTheGenericJdkTypesHaveNoFact() {
         assertThat(processed(GENERIC_TYPES).warnings())
                 .allMatch(warning -> warning.startsWith("java.util.Map: no fact of method <K,V>of(")
-                        && warning.endsWith(" parameters, more than 12"))
-                .hasSize(4);
+                        && warning.endsWith(" parameters, more than 16"))
+                .hasSize(2);
     }
 }

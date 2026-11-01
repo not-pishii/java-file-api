@@ -66,7 +66,7 @@ import java.util.stream.Stream;
 ///   where the declared type of the variable, field or returned value is
 ///   exactly the constructed type — `ArrayList<String> v = new ArrayList<>()`.
 ///
-/// **Arities.** `call` and `voidCall` are methods of [Expr] of any number of arguments, 0 to 12: one overload for
+/// **Arities.** `call` and `voidCall` are methods of [Expr] of any number of arguments, 0 to 16: one overload for
 /// each `MethodRefN` of the facts. `staticCall`, `voidStaticCall`, `new_`, `lambda` and `lambdaBlock` take the fact
 /// of a member likewise. They are generated (`TypedCodegen`) into the superclasses of [Expr] and of this class, and
 /// inherited, so that an `import static` of them finds them.
@@ -994,7 +994,7 @@ public final class Expressions extends ExpressionArities {
     //   block of the code around the loop: it does not see the loop
     //   variable, which javac would only refuse it for being assigned.
     //
-    // Of any arity 0..12.
+    // Of any arity 0..16.
     // ------------------------------------------------------------------
 
     /// The parameters and the body of an expression lambda.

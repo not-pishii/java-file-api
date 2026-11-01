@@ -489,7 +489,7 @@ public abstract sealed class MemberBuilder<Self, S> extends MemberBuilderArities
     }
 
     /// Declares a member class of the class with the `parameters` of a generated stage, which
-    /// specifies it by a specification of four to twelve type parameters.
+    /// specifies it by a specification of four to sixteen type parameters.
     @Override
     final <N> FinalClassToken<N> nestedClassToken(
             String name, List<TypeParameter<?>> parameters, NestedDeclarations.ClassBodies spec) {
@@ -1883,7 +1883,7 @@ public abstract sealed class MemberBuilder<Self, S> extends MemberBuilderArities
                 self, name, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, MemberTraits.ABSTRACT));
     }
 
-    /// Declares an abstract method with twelve parameters, see
+    /// Declares an abstract method with sixteen parameters, see
     /// [#declareAbstractMethod(String, TypeToken)].
     ///
     /// @param name the method name
@@ -1934,7 +1934,7 @@ public abstract sealed class MemberBuilder<Self, S> extends MemberBuilderArities
                 self, name, result, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, MemberTraits.ABSTRACT));
     }
 
-    /// Declares a `public abstract void` method with twelve parameters, see
+    /// Declares a `public abstract void` method with sixteen parameters, see
     /// [#declareAbstractMethod(String, TypeToken)].
     ///
     /// @param name the method name
