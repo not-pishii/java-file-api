@@ -96,6 +96,7 @@ The examples below assume `import static me.supcheg.javafile.code.Exprs.*;` and 
 - [Extending and implementing](#extending-and-implementing)
 - [Generic classes](#generic-classes)
 - [Typed method bodies: try/catch, lambdas, instanceof, enum switch](#typed-method-bodies-trycatch-lambdas-instanceof-enum-switch)
+- [Typed statements: text blocks, method references, assert, synchronized, resources, labels](#typed-statements-text-blocks-method-references-assert-synchronized-resources-labels)
 - [Varargs and arrays](#varargs-and-arrays)
 - [Annotations](#annotations)
 - [Refusals at generation time](#refusals-at-generation-time)
@@ -942,9 +943,10 @@ public final class Collections2<T extends Object & Comparable<T>> {
 The typed twin of [Method bodies](#method-bodies-try-with-resources-lambdas-pattern-switch). Statements are methods of
 the body `b`. One that ends a block (`return_`, `throw_`) returns the proof that it ended, which a body must give back,
 and a `switch_` over an enum has a case for every constant or a `default_`. A lambda is built from the functional
-method (`sam`) of its interface, and a checked exception is caught by `catch_` or declared by `throwing`. There is no
-`try`-with-resources and no pattern `switch` in the typed layer yet: `ifInstanceOf` tests a type, and a guard is an
-`if_` inside.
+method (`sam`) of its interface, and a checked exception is caught by `catch_` or declared by `throwing`. A
+`tryWithResources` declares resources the body uses, and a label of a loop or of a block is a `Label` that `break_` and
+`continue_` name, as the next section tells. There is no pattern `switch` in the typed layer yet: `ifInstanceOf` tests a
+type, and a guard is an `if_` inside.
 
 ```java
 JavaFile file = TypedJavaFile.class_(
@@ -1038,6 +1040,49 @@ public final class Signals {
         return (String v1) -> v1.startsWith(v0);
     }
 }
+```
+
+### Typed statements: text blocks, method references, assert, synchronized, resources, labels
+
+Six statements and expressions the core models are reached through facts, not names. `textBlock` is a `String`
+constant rendered with `"""` delimiters - or, where the value holds one of the three characters the white space check of
+a text block splits on, with an escaped string literal. A method reference is a combinator like a lambda: it takes the
+`sam` fact of the interface it implements, and refuses a method whose parameters or result are not the SAM's, rather
+than leaving that to javac. `assert_` has the bare and the message form, and is checked by the JVM as any `assert` is.
+
+```java
+Expr<Supplier<String>> trim = methodRef(s, String_.trim, supplier.token, supplier.sam.method());
+b.assert_(gtInt(value, literal(0)), literal("value must be positive"));
+```
+
+`synchronized_` takes a reference-typed monitor and a body - `synchronizedTerminated` when the body cannot complete
+normally - and `tryWithResources` declares `AutoCloseable` resources in its body, in declaration order, as a variable
+or as the one existing effectively-final one it allows. The body uses them, and they close on every way out; a close
+that throws while the body throws leaves the body's exception primary with the close's suppressed, as javac makes it.
+A resource that is not `AutoCloseable` is refused where it is declared, as is a second existing variable or a mutable
+one.
+
+```java
+b.tryWithResourcesTerminated(
+        h -> h.catch_(IllegalStateException_.TOKEN, (c, e) -> c.return_(call(e, Throwable_.getMessage))),
+        (t, resources) -> {
+            var resource = resources.resource_(Closing_.TOKEN, new_(Closing_.new_boolean, failing));
+            return t.if_(eqRef(resource, resource), _ -> {}).return_(literal("ok"));
+        });
+```
+
+A `Label` from `b.label()` names the statement that attaches it - `b.labeled(label, body)` or the labeled `while_` or
+`for_`. `break_(label)` leaves the labeled block or loop, and `continue_(label)` the labeled loop; a label not in scope,
+one that names a block where a `continue` is used, or one reached across a lambda boundary or out of a `switch`
+expression is refused.
+
+```java
+Label outer = b.label();
+b.for_(outer, PrimitiveToken.INT, literal(0), i -> ltInt(i, literal(3)),
+        i -> assign(i, addInt(i, literal(1))),
+        (loop, _, _) -> loop.for_(PrimitiveToken.INT, literal(0), j -> ltInt(j, literal(3)),
+                j -> assign(j, addInt(j, literal(1))),
+                (inner, j, _) -> inner.if_(eqInt(j, literal(1)), t -> t.break_(outer))));
 ```
 
 ### Varargs and arrays
