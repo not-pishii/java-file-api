@@ -99,6 +99,7 @@ The examples below assume `import static me.supcheg.javafile.code.Exprs.*;` and 
 - [Varargs and arrays](#varargs-and-arrays)
 - [Annotations](#annotations)
 - [Refusals at generation time](#refusals-at-generation-time)
+- [Modifiers and sealed declarations](#modifiers-and-sealed-declarations)
 - [What stays in the core API](#what-stays-in-the-core-api)
 
 ### Records and sealed interfaces
@@ -1175,8 +1176,8 @@ its parameters carry their annotations too, so a generator compiled against a li
 The typed layer declares every top-level kind the core does: `TypedJavaFile.interface_`, `record`, `enum_` and
 `annotationType` take the `TargetClasspath`, the name and a specification, and return an ordinary core file. The
 declaration is in the same two stages as a class: the builder declares each member and gives its fact, and `bodies()`
-ends the declarations and gives the stage that defines them. The forms of these kinds reach arity 4; the class
-builder's reach arity 12.
+ends the declarations and gives the stage that defines them. The methods of these kinds reach arity 4; their
+constructors reach arity 12, as the class builder's forms do.
 
 An interface has abstract, default, static and private methods, constants, `extends` of several interfaces and, with
 `permits`, `sealed`. It has no constructor, and `extends_` takes an interface token alone:
@@ -1399,6 +1400,61 @@ TypedJavaFile.class_(
 java.lang.IllegalArgumentException: the method void com.example.Handlers.handle(java.util.function.Consumer<java.lang.String>) of class com.example.Handlers is potentially ambiguous with void com.example.Handlers.handle(java.util.function.Function<java.lang.String, java.lang.String>): at a position each takes a functional interface of its own whose method has parameters, and javac warns of the pair (-Xlint:overloads) — name the method otherwise
 ```
 
+### Modifiers and sealed declarations
+
+Core renders the modifiers Java has in the order javac prints them: `public protected private abstract static final
+transient volatile synchronized native`, then `non-sealed`. `sealed` is not a constant but the `permits` clause of a
+declaration: a non-empty one makes it sealed. `default` is no modifier either — a `DefaultMethodDecl` is the method of
+an interface that is rendered `default`, and nothing else is. `strictfp` is obsolete: javac warns of it under
+`-Xlint:all` (`[strictfp]`, as of release 17 all floating-point expressions are evaluated strictly), so the model does
+not emit it.
+
+The typed layer exposes what its forms did not reach. A method is declared `synchronized`, or `native`:
+
+```java
+var spin = cb.modified(Modifier.SYNCHRONIZED).declareVoidMethod("spin");
+var read = cb.modified(Modifier.NATIVE).declareMethod("read", PrimitiveToken.INT);
+```
+
+A `synchronized` method is defined by the bodies as any other. A `native` method is whole when it is declared: it has no
+body, its fact is there to call, and the bodies neither define it nor wait for it. A constructor is neither
+`synchronized` nor `native`, and a `native` method is never `abstract`; the declaration rejects the rest.
+
+A field is `transient` or `volatile` by the exact set of modifiers it is rendered with. A `final` field may be
+`transient`; a mutable one may be `transient` or `volatile`. A `volatile` field is not `final` (JLS 8.3.1.4), and the
+typed layer keeps both instance fields: a `static` one is declared by `declareStaticField` or
+`declareMutableStaticField`.
+
+```java
+var cache = cb.declareField("cache", PrimitiveToken.INT,
+        Set.of(Modifier.PUBLIC, Modifier.FINAL, Modifier.TRANSIENT));
+var counter = cb.declareMutableField("counter", PrimitiveToken.INT,
+        Set.of(Modifier.PUBLIC, Modifier.VOLATILE));
+```
+
+The header of a class is no longer `public final` alone. It is `abstract`, `non-sealed`, or `sealed` with the
+subtypes it permits:
+
+```java
+JavaFile file = TypedJavaFile.declareClass(target, ClassDesc.of("com.example", "Node"),
+        new TypedJavaFile.TypedClassHeaderSpec() {
+            @Override
+            public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
+                h.permits(Leaf_.TOKEN);
+                return h.extendsObject().members().bodies();
+            }
+        });
+// public sealed class Node permits Leaf { }
+```
+
+`permits` takes a `ClassToken`, which proves the permitted type a class; a `ClassDesc` names one as an interface names
+one, and a bare name cannot tell a class from an interface. `permits` makes the class sealed, so it is not final, and
+`non-sealed` beside a `permits` clause is rejected. `nonSealed()` is allowed only where Java allows it: the class has to
+extend a sealed class or implement a sealed interface, which the end of the header holds it to. An `abstract` class has
+no constructor in the typed layer: nothing it declares is instantiated there. Extending a sealed type needs a heritage
+that tells the permitted subtypes, which a metamodel of a sealed type does not; the typed layer refuses such a supertype
+and says that it is sealed.
+
 ### What stays in the core API
 
 The typed layer declares every top-level kind: classes, interfaces, records, enums and annotation types, and the
@@ -1407,6 +1463,6 @@ The typed layer declares every top-level kind: classes, interfaces, records, enu
 initializer blocks, and the `Unsafe*` escape hatches. A generator may still use the core API for a declaration the typed
 layer does not express; the typed layer does not replace it.
 
-The typed declarations of §6.5 have forms of arity 4 for their members; the class builder's forms reach arity 12. A
-record or enum that implements an interface names it with `implements_`, which gives a witness, and declares each
-abstract method with `declareOverride(witness, fact)`, as a class does.
+The methods of the typed declarations of §6.5 reach arity 4; their constructors and the class builder's forms reach
+arity 12. A record or enum that implements an interface names it with `implements_`, which gives a witness, and declares
+each abstract method with `declareOverride(witness, fact)`, as a class does.
