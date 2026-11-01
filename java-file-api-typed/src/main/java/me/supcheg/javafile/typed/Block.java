@@ -3,6 +3,7 @@ package me.supcheg.javafile.typed;
 import me.supcheg.javafile.facts.ArrayToken;
 import me.supcheg.javafile.facts.ClassToken;
 import me.supcheg.javafile.facts.Prim;
+import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.TypeToken;
 
@@ -70,7 +71,8 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
         IF_ELSE("build it with ifElse, which returns the Terminated of this block"),
         LOOP_FOREVER("a loop that never completes ends the block: build it with loopForever, which returns the"
                 + " Terminated of this block, or break_ out of it"),
-        TRY_TERMINATED("build it with tryTerminated, which returns the Terminated of this block");
+        TRY_TERMINATED("build it with tryTerminated, which returns the Terminated of this block"),
+        SYNCHRONIZED("build it with synchronizedTerminated, which returns the Terminated of this block");
 
         private final String advice;
 
@@ -377,6 +379,44 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
     /// @return this block
     public final B assert_(Expr<Prim.Bool> condition, Expr<String> message) {
         return append(new Instr.Assert(condition.node(), Optional.of(message.node())));
+    }
+
+    /// Appends `synchronized (lock) { body }`.
+    ///
+    /// @param lock the monitor, a reference-typed expression
+    /// @param body builds the body
+    /// @return this block
+    /// @throws IllegalArgumentException if the monitor is of a primitive type
+    /// @throws IllegalStateException if the body cannot complete normally; build it with
+    ///     [#synchronizedTerminated(Expr, Function)] then
+    public final B synchronized_(Expr<?> lock, Consumer<? super B> body) {
+        requireReference(lock, "synchronized_");
+        B bodyBlock = open("body of synchronized_", body);
+        return continueWith(
+                new Instr.Synchronized(lock.node(), bodyBlock),
+                "synchronized_ whose body cannot complete normally",
+                Instead.SYNCHRONIZED);
+    }
+
+    /// Appends `synchronized (lock) { body }` whose body cannot complete normally, and so ends this block.
+    ///
+    /// @param lock the monitor, a reference-typed expression
+    /// @param body builds the body, which must end
+    /// @return the proof that this block ended
+    /// @throws IllegalArgumentException if the monitor is of a primitive type
+    public final Terminated<R> synchronizedTerminated(Expr<?> lock, Function<? super B, Terminated<R>> body) {
+        requireReference(lock, "synchronizedTerminated");
+        B bodyBlock = closed("body of synchronizedTerminated", body);
+        return appendFinal(new Instr.Synchronized(lock.node(), bodyBlock), "synchronizedTerminated");
+    }
+
+    /// A monitor is a reference: a primitive value is no object to lock on.
+    private static void requireReference(Expr<?> lock, String form) {
+        if (lock.type() instanceof PrimitiveToken<?, ?, ?> primitive) {
+            throw new IllegalArgumentException(form + " locks on an expression of the primitive type " + primitive
+                    + ": a monitor is a reference (JLS 14.19); box it first, e.g. box(PrimitiveToken."
+                    + primitive.typeRef().sourceName().toUpperCase(java.util.Locale.ROOT) + ", expr)");
+        }
     }
 
     /// Appends `if (condition) { then }`. It never ends this block.

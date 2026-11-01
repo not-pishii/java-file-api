@@ -42,6 +42,7 @@ final class ScopeCheck {
                 message.ifPresent(value -> node(value, in(block), block.path()));
             }
             case Instr.Exec(var effect) -> node(effect, in(block), block.path());
+            case Instr.Synchronized(var lock, var ignoredBody) -> node(lock, in(block), block.path());
             case Instr.If(var condition, var ignoredThen, var ignoredElse) -> node(condition, in(block), block.path());
             case Instr.IfInstance(var operand, var ignoredType, var ignoredVar, var ignoredThen, var ignoredElse) ->
                 node(operand, in(block), block.path());

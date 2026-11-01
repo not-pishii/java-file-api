@@ -30,6 +30,12 @@ sealed interface Instr {
     /// An expression statement: a call, an instance creation, or an assignment.
     record Exec(Node effect) implements Plain {}
 
+    /// `synchronized (lock) { ... }`.
+    ///
+    /// @param lock the monitor expression
+    /// @param body the body, which the statement completes normally exactly when it does
+    record Synchronized(Node lock, Block<?, ?> body) implements Instr {}
+
     /// `if (c) { ... }`, with what it does where `c` does not hold.
     record If(Node condition, Block<?, ?> then, Otherwise otherwise) implements Instr {}
 
@@ -134,6 +140,7 @@ sealed interface Instr {
     /// @return its blocks, in the order of the code
     static Stream<Block<?, ?>> blocks(Instr instr) {
         return switch (instr) {
+            case Synchronized(var _, var body) -> Stream.of(body);
             case If(var _, var then, var otherwise) -> Stream.concat(Stream.of(then), otherwise.blocks());
             case IfInstance(var _, var _, var _, var then, var otherwise) ->
                 Stream.concat(Stream.of(then), otherwise.blocks());

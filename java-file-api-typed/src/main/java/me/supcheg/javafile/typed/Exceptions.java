@@ -526,6 +526,7 @@ final class Exceptions {
             case Instr.Let(var _, var init) -> Stream.of(init);
             case Instr.Assert(var condition, var message) -> Stream.concat(Stream.of(condition), message.stream());
             case Instr.Exec(var effect) -> Stream.of(effect);
+            case Instr.Synchronized(var lock, var _) -> Stream.of(lock);
             case Instr.If(var condition, var _, var _) -> Stream.of(condition);
             case Instr.IfInstance(var operand, var _, var _, var _, var _) -> Stream.of(operand);
             case Instr.While(var _, var condition, var _) -> Stream.of(condition);

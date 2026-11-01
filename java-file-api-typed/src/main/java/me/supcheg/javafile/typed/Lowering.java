@@ -40,6 +40,7 @@ import me.supcheg.javafile.code.Stmt;
 import me.supcheg.javafile.code.SuperExpr;
 import me.supcheg.javafile.code.SwitchCase;
 import me.supcheg.javafile.code.SwitchExpr;
+import me.supcheg.javafile.code.SynchronizedStmt;
 import me.supcheg.javafile.code.ThisExpr;
 import me.supcheg.javafile.code.ThrowStmt;
 import me.supcheg.javafile.code.TryStmt;
@@ -429,6 +430,7 @@ final class Lowering {
                 yield new LocalVarDeclStmt.Typed(written(v.type()).typeRef(), name, Optional.of(initExpr));
             }
             case Instr.Assert(var condition, var message) -> new AssertStmt(expr(condition), message.map(this::expr));
+            case Instr.Synchronized(var lock, var body) -> new SynchronizedStmt(expr(lock), lowerBlock(body.instrs()));
             case Instr.Exec(var effect) -> effectStmt(effect);
             case Instr.If(var condition, var then, var otherwise) ->
                 new IfStmt(expr(condition), lowerBlock(then.instrs()), List.of(), lowerOptional(otherwise));

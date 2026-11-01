@@ -25,6 +25,7 @@ final class Reachability {
         return switch (instr) {
             case Instr.Plain _ -> true;
             case Instr.ForEach _ -> true;
+            case Instr.Synchronized(var _, var body) -> canCompleteNormally(body);
             case Instr.If(var _, var then, var otherwise) -> ifCompletes(then, otherwise);
             case Instr.IfInstance(var _, var _, var _, var then, var otherwise) -> ifCompletes(then, otherwise);
             case Instr.While(var ctl, var condition, var body) ->
