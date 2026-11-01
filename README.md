@@ -1176,8 +1176,8 @@ its parameters carry their annotations too, so a generator compiled against a li
 The typed layer declares every top-level kind the core does: `TypedJavaFile.interface_`, `record`, `enum_` and
 `annotationType` take the `TargetClasspath`, the name and a specification, and return an ordinary core file. The
 declaration is in the same two stages as a class: the builder declares each member and gives its fact, and `bodies()`
-ends the declarations and gives the stage that defines them. The methods of these kinds reach arity 4; their
-constructors reach arity 12, as the class builder's forms do.
+ends the declarations and gives the stage that defines them. The default, static and private methods of these kinds
+reach arity 4; their abstract methods and their constructors reach arity 12, as the class builder's forms do.
 
 An interface has abstract, default, static and private methods, constants, `extends` of several interfaces and, with
 `permits`, `sealed`. It has no constructor, and `extends_` takes an interface token alone:
@@ -1266,7 +1266,9 @@ public record Point(int x, int y) {
 
 An enum has constants without arguments, with arguments, and with a class body that overrides the abstract methods;
 interfaces, instance and static methods and fields; and constructors that are `private` and have no `CtorRef`, so
-`new_` does not take one:
+`new_` does not take one. A constant's body declares fields with their initializers, helper methods it calls, static
+fields and methods — which Java 25 accepts in the body of an anonymous class — and member types of every kind,
+including generic member classes:
 
 ```java
 JavaFile file = TypedJavaFile.enum_(
@@ -1311,6 +1313,22 @@ public enum Op {
     Op(int v0) {
     }
 }
+```
+
+A constant's body declares its fields with `declareField` and `declareStaticField`, gives each an initializer with
+`initialize`, declares helper methods with `declareMethod`, `declareVoidMethod`, `declareStaticMethod` and
+`declareVoidStaticMethod`, and defines them as any method of the enum does. A documented field or method takes
+`documented(...)` before its declaration, or a `DocComment` beside the field's annotations. A helper that names the
+signature of an abstract method the constant overrides is refused: that method is given by `override`.
+
+```java
+eb.constant("TWICE", List.of(literal(2)), cb -> {
+    var base = cb.declareField("base", PrimitiveToken.INT);
+    var helper = cb.declareMethod("helper", PrimitiveToken.INT, PrimitiveToken.INT);
+    cb.initialize(base, literal(10));
+    cb.define(helper, (b, self, x) -> b.return_(addInt(mulInt(x, literal(2)), field(self, base))));
+    cb.override(apply, (b, self, x) -> b.return_(call(self, helper, x)));
+});
 ```
 
 An annotation type has elements of the types JLS 9.6.1 allows, optional defaults, and meta-annotations through the
@@ -1416,12 +1434,11 @@ An enum and an annotation type have no type parameters: javac refuses `enum E<T>
 `IllegalArgumentException` before the specification runs, naming the type and why.
 
 A member type is declared through the declaration that encloses it, not as a file of its own. A class builder has
-`declareNestedClass` and `declareInnerClass`, and every kind — an interface, a record, an enum, an annotation type and
-an enum constant's body — has `declareNestedInterface`, `declareNestedRecord`, `declareNestedEnum` and
-`declareNestedAnnotationType`; the class and interface builders declare a member class, and so does the annotation type
-builder. A nested interface and record have the same generic stages 1 to 3 as a nested class does, with the same bounds;
-a nested enum and annotation type take no type parameters, which javac rejects. The call runs a declaration of its own,
-with its own brand and facts, and returns its token:
+`declareNestedClass` and `declareInnerClass`, and every kind - an interface, a record, an enum, an annotation type and
+an enum constant's body - has `declareNestedClass`, `declareNestedInterface`, `declareNestedRecord`,
+`declareNestedEnum` and `declareNestedAnnotationType`. A nested class, interface and record have the same generic
+stages 1 to 3, with the same bounds; a nested enum and annotation type take no type parameters, which javac rejects.
+The call runs a declaration of its own, with its own brand and facts, and returns its token:
 
 ```java
 var inner = cb.declareNestedClass("Inner", new TypedJavaFile.TypedClassHeaderSpec() {
@@ -1536,10 +1553,10 @@ var read = eb.modified(Modifier.NATIVE).declareMethod("read", PrimitiveToken.INT
 ```
 
 An abstract class declares abstract methods, in the same declare-then-define stages as the rest: `declareAbstractMethod`
-and `declareVoidAbstractMethod` take the name and the parameter types, and give a fact with no body, which the bodies
-neither define nor wait for. An abstract method is legal in an abstract class alone — a class that is not abstract
-implements every abstract method it inherits (JLS 8.4.3.1) — and javac's rules of `static`, `private`, `final`,
-`native` and `synchronized` hold: the typed layer offers none of those on an abstract method.
+and `declareVoidAbstractMethod` take the name and the parameter types, from none to twelve, and give a fact with no
+body, which the bodies neither define nor wait for. An abstract method is legal in an abstract class alone - a class
+that is not abstract implements every abstract method it inherits (JLS 8.4.3.1) - and javac's rules of `static`,
+`private`, `final`, `native` and `synchronized` hold: the typed layer offers none of those on an abstract method.
 
 A field is `transient` or `volatile` by the exact set of modifiers it is rendered with. A `final` field may be
 `transient`; a mutable one may be `transient` or `volatile`. A `volatile` field is not `final` (JLS 8.3.1.4), and the
@@ -1618,6 +1635,7 @@ What stays in the core API is what the typed layer does not model:
 escape hatches. A generator may still use the core API for a declaration the typed layer does not express; the typed
 layer does not replace it.
 
-The methods of the typed declarations of §6.5 reach arity 4; their constructors and the class builder's forms reach
-arity 12. A record or enum that implements an interface names it with `implements_`, which gives a witness, and declares
-each abstract method with `declareOverride(witness, fact)`, as a class does.
+The default, static and private methods of the typed declarations of §6.5 reach arity 4; their abstract methods and
+their constructors, and the class builder's forms, reach arity 12. A record or enum that implements an interface names
+it with `implements_`, which gives a witness, and declares each abstract method with `declareOverride(witness, fact)`,
+as a class does.
