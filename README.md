@@ -1363,6 +1363,75 @@ ModuleFile module = TypedJavaFile.module(
                         ClassDesc.of("com.example.impl.PluginImpl")));
 ```
 
+### Generic interfaces and records, and member types
+
+An interface and a record take type parameters as a class does: `interface_` and `record` have the same overloads as
+`declareClass`, the token of each parameter is in scope in the header, the components and the members, and `Self` is
+the type with its own type parameters for its type arguments. A bound is the token `typeParam` takes, so a type
+parameter of these two kinds has the leftmost bound it was given — further bounds, which a class header says by a
+witness, are not expressible here yet.
+
+```java
+JavaFile file = TypedJavaFile.record(
+        UnsafeFacts.unverifiedClasspath(),
+        ClassDesc.of("com.example", "Box"),
+        typeParam("T", Number_.TOKEN),
+        new TypedJavaFile.TypedGenericRecordSpec1<>() {
+            @Override
+            public <Self, T extends Number> TypedRecordBodies<Self> build(
+                    TypedRecordBuilder<Self> rb, TypeVarToken<T> t) {
+                rb.implements_(new Comparable_<>(t).token);
+                var value = rb.component("value", t);
+                var compareTo = rb.declareMethod("compareTo", PrimitiveToken.INT, t);
+                var bodies = rb.bodies();
+                bodies.define(compareTo, (b, self, other) -> b.return_(literal(0)));
+                return bodies;
+            }
+        });
+```
+
+```java
+public record Box<T extends Number>(T value) implements Comparable<T> {
+    @Override
+    public int compareTo(T v0) {
+        return 0;
+    }
+}
+```
+
+An enum and an annotation type have no type parameters: javac refuses `enum E<T>` and `@interface A<T>` (JLS 8.9,
+9.6), and so does the entry point. `enum_` and `annotationType` take none, and the overloads that would take one throw
+`IllegalArgumentException` before the specification runs, naming the type and why.
+
+A member type is declared through the declaration that encloses it, not as a file of its own. A class builder has
+`declareNestedClass` and `declareInnerClass`, and every kind has `declareNestedInterface`, `declareNestedRecord`,
+`declareNestedEnum` and `declareNestedAnnotationType`; an enum constant's body declares them as well. The call runs a
+declaration of its own, with its own brand and facts, and returns its token:
+
+```java
+var inner = cb.declareNestedClass("Inner", new TypedJavaFile.TypedClassHeaderSpec() {
+    @Override
+    public <Self, T> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
+        var inner = h.extendsObject().members();
+        var value = inner.declareMethod("value", String_.TOKEN);
+        var bodies = inner.bodies();
+        bodies.define(value, (b, self) -> b.return_(literal("inner")));
+        return bodies;
+    }
+});
+```
+
+A member class of a class is `static` or inner; an inner one sees the type parameters of the class that encloses it,
+and a static one does not (JLS 8.1.2, 8.1.3). A member class, interface, record, enum or annotation type of an
+interface, a record or an enum is implicitly `static` and sees none. An annotation type declares elements alone, and a
+`package-info.java` and a `module-info.java` declare no type: `nestedType` on their builders refuses a member type, as
+does a member annotation type of an enum constant's body.
+
+The three generic declaration paths agree at three type parameters: `declareClass`, `interface_` and `record` offer
+the same three stages, and a member class of a class offers the same. The member forms reach twelve because they are
+generated as arity families; the declaration stages are hand-written specifications of the three kinds, and three is
+the limit the three paths share rather than one of them standing at another number.
+
 ### Refusals at generation time
 
 Java that javac accepts with a warning is not generated: the call that would produce it is refused, with a message that
