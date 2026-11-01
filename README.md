@@ -1716,6 +1716,16 @@ component has no declaration of its own in the header, so its comment is written
 tag of the record. A comment whose text contains `*/` is refused where it is given, since a traditional comment would
 end there instead of holding the text; the typed layer renders no broken source.
 
+### Deliberate gaps
+
+What follows is not a hole waiting to be filled: the typed layer does not express it on purpose.
+
+- **`switch` statements.** The typed layer models the same choices as a `switch` expression ([`switch_`](#typed-method-bodies-trycatch-lambdas-instanceof-enum-switch)), which yields a value or ends the body it is in and carries the terminality rules; a statement form would add no choice.
+- **Initializer blocks.** The core API has `withInitializerBlock` and `withStaticInitializerBlock`; the typed layer has no such member. The same work goes in a constructor, a method or a field initializer, where the typed layer's own ordering and exception checks apply, rather than in a block whose place among the fields the typed planning does not model.
+- **Local and anonymous classes.** The core API declares them (`LocalTypeDeclStmt`, an anonymous class body in `new`); the typed layer has no form for a type declared inside a body. The one anonymous class it writes is the body of an enum constant, which is no declaration the generator names.
+- **Compound assignment with narrowing.** `int += long` makes Java convert implicitly (JLS 15.26.2); the typed layer writes no implicit conversion, so the call does not type-check in the generator and is refused. Write the conversion out: `assign(x, AssignOp.ADD_ASSIGN, narrowTruncatingLongToInt(y))`.
+- **A resource whose `close()` throws out of the `try`.** A try-with-resources closes its resource on every way out, so a checked exception `close()` declares and the `try` catches nowhere and the member does not declare is refused when the resource is declared (JLS 14.20.3), rather than rendered into code javac rejects and that fails at run time.
+
 ### What stays in the core API
 
 The typed layer declares every top-level kind: classes, interfaces, records, enums and annotation types, the
