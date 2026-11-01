@@ -598,7 +598,9 @@ final class Lowering {
                     case Node.Target.Field(var t, var field) ->
                         new FieldAccessExpr(Optional.of(fieldReceiver(t, field)), field.name());
                     case Node.Target.StaticField(var field) ->
-                        new StaticFieldAccessExpr(staticOwner(field), field.name());
+                        localStatic(field.owner(), field.name())
+                                ? new FieldAccessExpr(Optional.empty(), field.name())
+                                : new StaticFieldAccessExpr(staticOwner(field), field.name());
                     // An array javac types narrower than its token takes fewer values (JLS 15.26.1).
                     case Node.Target.Element(var array, var index) ->
                         expr(array, Typing.EXACT).arrayAccess(expr(index));

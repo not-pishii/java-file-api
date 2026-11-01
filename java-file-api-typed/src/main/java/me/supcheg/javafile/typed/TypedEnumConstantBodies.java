@@ -12,6 +12,8 @@ import me.supcheg.javafile.facts.FinalClassToken;
 import me.supcheg.javafile.facts.InterfaceToken;
 import me.supcheg.javafile.facts.Invocable;
 import me.supcheg.javafile.facts.MethodSignature;
+import me.supcheg.javafile.facts.MutableFieldRef;
+import me.supcheg.javafile.facts.MutableStaticFieldRef;
 import me.supcheg.javafile.facts.StaticFieldRef;
 import me.supcheg.javafile.facts.TypeToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
@@ -212,6 +214,125 @@ public final class TypedEnumConstantBodies<Self> extends EnumConstantBodyArities
         StaticFieldRef<T> field = UnsafeFacts.staticField(self(), name, type);
         declaredStaticField(new Member.StaticField(
                 field, Set.of(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL), annotations, doc, Site.here()));
+        return field;
+    }
+
+    /// Declares a `public` instance field of the constant's body, not `final`, which [#initialize] gives
+    /// its initializer and whose fact the methods of the body assign: the state one constant keeps.
+    ///
+    /// @param name the field name
+    /// @param type the field type
+    /// @param <T> the field type
+    /// @return the fact of the field, which the methods of the body can read and assign
+    public <T> MutableFieldRef<Self, T> declareMutableField(String name, TypeToken<T> type) {
+        return declareMutableField(name, type, List.of(), takeDoc());
+    }
+
+    /// Declares a `public` instance field of the constant's body, not `final`, that declares
+    /// `annotations`; see [#declareMutableField(String, TypeToken)].
+    ///
+    /// @param name the field name
+    /// @param type the field type
+    /// @param annotations the annotations, in order
+    /// @param <T> the field type
+    /// @return the fact of the field, which the methods of the body can read and assign
+    @SafeVarargs
+    @SuppressWarnings("varargs")
+    public final <T> MutableFieldRef<Self, T> declareMutableField(
+            String name, TypeToken<T> type, AnnotationRef<?>... annotations) {
+        return declareMutableField(name, type, List.of(annotations), takeDoc());
+    }
+
+    /// Declares a documented `public` instance field of the constant's body, not `final`, that declares
+    /// `annotations`; see [#declareMutableField(String, TypeToken)].
+    ///
+    /// @param name the field name
+    /// @param type the field type
+    /// @param doc the documentation comment
+    /// @param annotations the annotations, in order
+    /// @param <T> the field type
+    /// @return the fact of the field, which the methods of the body can read and assign
+    @SafeVarargs
+    @SuppressWarnings("varargs")
+    public final <T> MutableFieldRef<Self, T> declareMutableField(
+            String name, TypeToken<T> type, DocComment doc, AnnotationRef<?>... annotations) {
+        return declareMutableField(
+                name, type, List.of(annotations), Optional.of(Docs.requireSafe(doc, fieldDescription(name))));
+    }
+
+    private <T> MutableFieldRef<Self, T> declareMutableField(
+            String name, TypeToken<T> type, List<AnnotationRef<?>> annotations, Optional<DocComment> doc) {
+        String what = fieldDescription(name);
+        Scopes.requireNoneOpen(what);
+        Tokens.requireNotRaw(type);
+        owner().scope("the type of " + what).require(type);
+        registry.field(name);
+        annotations.forEach(
+                annotation -> owner().target().verify(annotation.type().token()));
+        MutableFieldRef<Self, T> field = UnsafeFacts.mutableField(self(), name, type);
+        declaredField(new Member.Field(field, Set.of(Modifier.PUBLIC), annotations, doc, Site.here()));
+        return field;
+    }
+
+    /// Declares a `public static` field of the constant's body, not `final`, which [#initialize] gives
+    /// its initializer and whose fact the methods of the body assign: the state the constants share.
+    ///
+    /// @param name the field name
+    /// @param type the field type
+    /// @param <T> the field type
+    /// @return the fact of the field, which the methods of the body can read and assign
+    public <T> MutableStaticFieldRef<T> declareMutableStaticField(String name, TypeToken<T> type) {
+        return declareMutableStaticField(name, type, List.of(), takeDoc());
+    }
+
+    /// Declares a `public static` field of the constant's body, not `final`, that declares `annotations`;
+    /// see [#declareMutableStaticField(String, TypeToken)].
+    ///
+    /// @param name the field name
+    /// @param type the field type
+    /// @param annotations the annotations, in order
+    /// @param <T> the field type
+    /// @return the fact of the field, which the methods of the body can read and assign
+    @SafeVarargs
+    @SuppressWarnings("varargs")
+    public final <T> MutableStaticFieldRef<T> declareMutableStaticField(
+            String name, TypeToken<T> type, AnnotationRef<?>... annotations) {
+        return declareMutableStaticField(name, type, List.of(annotations), takeDoc());
+    }
+
+    /// Declares a documented `public static` field of the constant's body, not `final`, that declares
+    /// `annotations`; see [#declareMutableStaticField(String, TypeToken)].
+    ///
+    /// @param name the field name
+    /// @param type the field type
+    /// @param doc the documentation comment
+    /// @param annotations the annotations, in order
+    /// @param <T> the field type
+    /// @return the fact of the field, which the methods of the body can read and assign
+    @SafeVarargs
+    @SuppressWarnings("varargs")
+    public final <T> MutableStaticFieldRef<T> declareMutableStaticField(
+            String name, TypeToken<T> type, DocComment doc, AnnotationRef<?>... annotations) {
+        return declareMutableStaticField(
+                name,
+                type,
+                List.of(annotations),
+                Optional.of(Docs.requireSafe(doc, "static " + fieldDescription(name))));
+    }
+
+    private <T> MutableStaticFieldRef<T> declareMutableStaticField(
+            String name, TypeToken<T> type, List<AnnotationRef<?>> annotations, Optional<DocComment> doc) {
+        String what = "static " + fieldDescription(name);
+        Scopes.requireNoneOpen(what);
+        Tokens.requireNotRaw(type);
+        owner().staticScope("the type of " + what).require(type);
+        registry.field(name);
+        localStaticNames.add(name);
+        annotations.forEach(
+                annotation -> owner().target().verify(annotation.type().token()));
+        MutableStaticFieldRef<T> field = UnsafeFacts.mutableStaticField(self(), name, type);
+        declaredStaticField(
+                new Member.StaticField(field, Set.of(Modifier.PUBLIC, Modifier.STATIC), annotations, doc, Site.here()));
         return field;
     }
 
