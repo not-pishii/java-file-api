@@ -1317,11 +1317,15 @@ public enum Op {
 
 A constant's body declares its fields with `declareField` and `declareStaticField`, gives each an initializer with
 `initialize`, declares helper methods with `declareMethod`, `declareVoidMethod`, `declareStaticMethod` and
-`declareVoidStaticMethod`, and defines them as any method of the enum does. The helper forms reach twelve parameters,
-generated into the superclass of the body as the other arity families are, and so do the `define` overloads of a
-constant's body. A documented field or method takes
-`documented(...)` before its declaration, or a `DocComment` beside the field's annotations. A helper that names the
-signature of an abstract method the constant overrides is refused: that method is given by `override`.
+`declareVoidStaticMethod`, and defines them as any method of the enum does. `declareMutableField` and
+`declareMutableStaticField` declare a `public` field that is not `final`, with the same annotation and documentation
+forms, which `initialize` gives its initializer; the methods of the body assign it with `assignField` and
+`assignStaticField` through the fact the declaration returned. javac accepts both in the body of a constant, which is
+the body of an anonymous class (JLS 15.9.5), and warns of neither under `-Xlint:all`, so the typed layer declares them.
+The helper forms reach twelve parameters, generated into the superclass of the body as the other arity families are,
+and so do the `define` overloads of a constant's body. A documented field or method takes `documented(...)` before its
+declaration, or a `DocComment` beside the field's annotations. A helper that names the signature of an abstract method
+the constant overrides is refused: that method is given by `override`.
 
 ```java
 eb.constant("TWICE", List.of(literal(2)), cb -> {
@@ -1439,7 +1443,10 @@ A member type is declared through the declaration that encloses it, not as a fil
 `declareNestedClass` and `declareInnerClass`, and every kind - an interface, a record, an enum, an annotation type and
 an enum constant's body - has `declareNestedClass`, `declareNestedInterface`, `declareNestedRecord`,
 `declareNestedEnum` and `declareNestedAnnotationType`. A nested class, interface and record have the same generic
-stages 1 to 3, with the same bounds; a nested enum and annotation type take no type parameters, which javac rejects.
+stages 1 to 12, with the same bounds: the stages of four to twelve are generated into the superclass of each hierarchy
+that declares a member type - the member builder, the declarations of an interface, record or enum, the annotation
+type's builder and the body of an enum constant - so the calls of one to three type parameters read as they did
+before; a nested enum and annotation type take no type parameters, which javac rejects.
 The call runs a declaration of its own, with its own brand and facts, and returns its token:
 
 ```java
@@ -1489,7 +1496,8 @@ The generic declaration paths reach twelve type parameters: `declareClass`, `int
 twelve stages, one for each number from one to twelve, with the same bounds and the same refusals. The stages are
 generated into the superclass of [TypedJavaFile] as the member forms are arity families: `TypedJavaFile` extends it,
 so `declareClass(...)` is its static method and `new TypedJavaFile.TypedGenericClassSpec4<>()` is its nested type,
-while a class, an interface and a record of one to three type parameters read as they did before.
+while a class, an interface and a record of one to three type parameters read as they did before. The same twelve
+stages declare the member classes, interfaces and records of every hierarchy, with the same bounds and refusals.
 
 ### Refusals at generation time
 
