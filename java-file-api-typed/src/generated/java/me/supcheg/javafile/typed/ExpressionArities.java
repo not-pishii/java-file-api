@@ -18,6 +18,8 @@ import me.supcheg.javafile.facts.CtorRef6;
 import me.supcheg.javafile.facts.CtorRef7;
 import me.supcheg.javafile.facts.CtorRef8;
 import me.supcheg.javafile.facts.CtorRef9;
+import me.supcheg.javafile.facts.InterfaceToken;
+import me.supcheg.javafile.facts.Invocable;
 import me.supcheg.javafile.facts.Sam0;
 import me.supcheg.javafile.facts.Sam1;
 import me.supcheg.javafile.facts.Sam10;
@@ -1760,6 +1762,240 @@ abstract sealed class ExpressionArities permits Expressions {
      */
     public static <O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> Invocation<O> new_(CtorRef12<O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> ctor, Expr<? extends A1> a1, Expr<? extends A2> a2, Expr<? extends A3> a3, Expr<? extends A4> a4, Expr<? extends A5> a5, Expr<? extends A6> a6, Expr<? extends A7> a7, Expr<? extends A8> a8, Expr<? extends A9> a9, Expr<? extends A10> a10, Expr<? extends A11> a11, Varargs<A12> rest) {
         return new Invocation<>(Expressions.newNode(ctor, rest, Expressions.arguments(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11)), ctor.owner());
+    }
+
+    /**
+     * A constructor reference, `Type::new`, of a constructor of 0 parameters, of the functional interface `samType` whose method `sam` takes the parameters of the constructor and has the constructed class as its result.
+     *
+     * @param ctor the fact of the constructor
+     * @param samType the functional interface the reference implements
+     * @param sam the single abstract method of `samType`
+     * @return the constructor reference
+     */
+    public static <O, F> Expr<F> constructorRef(CtorRef0<O> ctor, InterfaceToken<F> samType, Invocable sam) {
+        return Expressions.constructorRef(ctor.owner(), ctor, samType, sam);
+    }
+
+    /**
+     * A constructor reference, `Type::new`, of a constructor of 1 parameter, of the functional interface `samType` whose method `sam` takes the parameters of the constructor and has the constructed class as its result.
+     *
+     * @param ctor the fact of the constructor
+     * @param samType the functional interface the reference implements
+     * @param sam the single abstract method of `samType`
+     * @param <A1> the type of the parameter
+     * @return the constructor reference
+     */
+    public static <O, A1, F> Expr<F> constructorRef(CtorRef1<O, A1> ctor, InterfaceToken<F> samType, Invocable sam) {
+        return Expressions.constructorRef(ctor.owner(), ctor, samType, sam);
+    }
+
+    /**
+     * A constructor reference, `Type::new`, of a constructor of 2 parameters, of the functional interface `samType` whose method `sam` takes the parameters of the constructor and has the constructed class as its result.
+     *
+     * @param ctor the fact of the constructor
+     * @param samType the functional interface the reference implements
+     * @param sam the single abstract method of `samType`
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @return the constructor reference
+     */
+    public static <O, A1, A2, F> Expr<F> constructorRef(CtorRef2<O, A1, A2> ctor, InterfaceToken<F> samType, Invocable sam) {
+        return Expressions.constructorRef(ctor.owner(), ctor, samType, sam);
+    }
+
+    /**
+     * A constructor reference, `Type::new`, of a constructor of 3 parameters, of the functional interface `samType` whose method `sam` takes the parameters of the constructor and has the constructed class as its result.
+     *
+     * @param ctor the fact of the constructor
+     * @param samType the functional interface the reference implements
+     * @param sam the single abstract method of `samType`
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @return the constructor reference
+     */
+    public static <O, A1, A2, A3, F> Expr<F> constructorRef(CtorRef3<O, A1, A2, A3> ctor, InterfaceToken<F> samType, Invocable sam) {
+        return Expressions.constructorRef(ctor.owner(), ctor, samType, sam);
+    }
+
+    /**
+     * A constructor reference, `Type::new`, of a constructor of 4 parameters, of the functional interface `samType` whose method `sam` takes the parameters of the constructor and has the constructed class as its result.
+     *
+     * @param ctor the fact of the constructor
+     * @param samType the functional interface the reference implements
+     * @param sam the single abstract method of `samType`
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @return the constructor reference
+     */
+    public static <O, A1, A2, A3, A4, F> Expr<F> constructorRef(CtorRef4<O, A1, A2, A3, A4> ctor, InterfaceToken<F> samType, Invocable sam) {
+        return Expressions.constructorRef(ctor.owner(), ctor, samType, sam);
+    }
+
+    /**
+     * A constructor reference, `Type::new`, of a constructor of 5 parameters, of the functional interface `samType` whose method `sam` takes the parameters of the constructor and has the constructed class as its result.
+     *
+     * @param ctor the fact of the constructor
+     * @param samType the functional interface the reference implements
+     * @param sam the single abstract method of `samType`
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @return the constructor reference
+     */
+    public static <O, A1, A2, A3, A4, A5, F> Expr<F> constructorRef(CtorRef5<O, A1, A2, A3, A4, A5> ctor, InterfaceToken<F> samType, Invocable sam) {
+        return Expressions.constructorRef(ctor.owner(), ctor, samType, sam);
+    }
+
+    /**
+     * A constructor reference, `Type::new`, of a constructor of 6 parameters, of the functional interface `samType` whose method `sam` takes the parameters of the constructor and has the constructed class as its result.
+     *
+     * @param ctor the fact of the constructor
+     * @param samType the functional interface the reference implements
+     * @param sam the single abstract method of `samType`
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @return the constructor reference
+     */
+    public static <O, A1, A2, A3, A4, A5, A6, F> Expr<F> constructorRef(CtorRef6<O, A1, A2, A3, A4, A5, A6> ctor, InterfaceToken<F> samType, Invocable sam) {
+        return Expressions.constructorRef(ctor.owner(), ctor, samType, sam);
+    }
+
+    /**
+     * A constructor reference, `Type::new`, of a constructor of 7 parameters, of the functional interface `samType` whose method `sam` takes the parameters of the constructor and has the constructed class as its result.
+     *
+     * @param ctor the fact of the constructor
+     * @param samType the functional interface the reference implements
+     * @param sam the single abstract method of `samType`
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @return the constructor reference
+     */
+    public static <O, A1, A2, A3, A4, A5, A6, A7, F> Expr<F> constructorRef(CtorRef7<O, A1, A2, A3, A4, A5, A6, A7> ctor, InterfaceToken<F> samType, Invocable sam) {
+        return Expressions.constructorRef(ctor.owner(), ctor, samType, sam);
+    }
+
+    /**
+     * A constructor reference, `Type::new`, of a constructor of 8 parameters, of the functional interface `samType` whose method `sam` takes the parameters of the constructor and has the constructed class as its result.
+     *
+     * @param ctor the fact of the constructor
+     * @param samType the functional interface the reference implements
+     * @param sam the single abstract method of `samType`
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @return the constructor reference
+     */
+    public static <O, A1, A2, A3, A4, A5, A6, A7, A8, F> Expr<F> constructorRef(CtorRef8<O, A1, A2, A3, A4, A5, A6, A7, A8> ctor, InterfaceToken<F> samType, Invocable sam) {
+        return Expressions.constructorRef(ctor.owner(), ctor, samType, sam);
+    }
+
+    /**
+     * A constructor reference, `Type::new`, of a constructor of 9 parameters, of the functional interface `samType` whose method `sam` takes the parameters of the constructor and has the constructed class as its result.
+     *
+     * @param ctor the fact of the constructor
+     * @param samType the functional interface the reference implements
+     * @param sam the single abstract method of `samType`
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @return the constructor reference
+     */
+    public static <O, A1, A2, A3, A4, A5, A6, A7, A8, A9, F> Expr<F> constructorRef(CtorRef9<O, A1, A2, A3, A4, A5, A6, A7, A8, A9> ctor, InterfaceToken<F> samType, Invocable sam) {
+        return Expressions.constructorRef(ctor.owner(), ctor, samType, sam);
+    }
+
+    /**
+     * A constructor reference, `Type::new`, of a constructor of 10 parameters, of the functional interface `samType` whose method `sam` takes the parameters of the constructor and has the constructed class as its result.
+     *
+     * @param ctor the fact of the constructor
+     * @param samType the functional interface the reference implements
+     * @param sam the single abstract method of `samType`
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @return the constructor reference
+     */
+    public static <O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, F> Expr<F> constructorRef(CtorRef10<O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> ctor, InterfaceToken<F> samType, Invocable sam) {
+        return Expressions.constructorRef(ctor.owner(), ctor, samType, sam);
+    }
+
+    /**
+     * A constructor reference, `Type::new`, of a constructor of 11 parameters, of the functional interface `samType` whose method `sam` takes the parameters of the constructor and has the constructed class as its result.
+     *
+     * @param ctor the fact of the constructor
+     * @param samType the functional interface the reference implements
+     * @param sam the single abstract method of `samType`
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @return the constructor reference
+     */
+    public static <O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, F> Expr<F> constructorRef(CtorRef11<O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> ctor, InterfaceToken<F> samType, Invocable sam) {
+        return Expressions.constructorRef(ctor.owner(), ctor, samType, sam);
+    }
+
+    /**
+     * A constructor reference, `Type::new`, of a constructor of 12 parameters, of the functional interface `samType` whose method `sam` takes the parameters of the constructor and has the constructed class as its result.
+     *
+     * @param ctor the fact of the constructor
+     * @param samType the functional interface the reference implements
+     * @param sam the single abstract method of `samType`
+     * @param <A1> the type of the first parameter
+     * @param <A2> the type of the second parameter
+     * @param <A3> the type of the third parameter
+     * @param <A4> the type of the fourth parameter
+     * @param <A5> the type of the fifth parameter
+     * @param <A6> the type of the sixth parameter
+     * @param <A7> the type of the seventh parameter
+     * @param <A8> the type of the eighth parameter
+     * @param <A9> the type of the ninth parameter
+     * @param <A10> the type of the tenth parameter
+     * @param <A11> the type of the eleventh parameter
+     * @param <A12> the type of the twelfth parameter
+     * @return the constructor reference
+     */
+    public static <O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, F> Expr<F> constructorRef(CtorRef12<O, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> ctor, InterfaceToken<F> samType, Invocable sam) {
+        return Expressions.constructorRef(ctor.owner(), ctor, samType, sam);
     }
 
     /**

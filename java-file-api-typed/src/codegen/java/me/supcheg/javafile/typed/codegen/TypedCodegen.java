@@ -1135,6 +1135,9 @@ public final class TypedCodegen {
                     }
                 }
             }
+            for (int n = 0; n <= REACH.calls(); n++) {
+                constructorRefForm(cb, n);
+            }
             for (int n = 0; n <= REACH.lambdas(); n++) {
                 expressionLambda(cb, n, true);
                 expressionLambda(cb, n, false);
@@ -1279,6 +1282,41 @@ public final class TypedCodegen {
                 staticCall(EXPRESSIONS, "staticCallNode", field("method"), field("rest"), arguments(leading));
             case NEW -> staticCall(EXPRESSIONS, "newNode", field("ctor"), field("rest"), arguments(leading));
         };
+    }
+
+    /// `constructorRef(ctor, samType, sam)`: a constructor reference of a constructor of `n` parameters, of
+    /// the functional interface whose method `sam` is.
+    private static void constructorRefForm(ClassBuilder cb, int n) {
+        List<String> as = as(n);
+        TypeRef fact = applied(
+                facts("CtorRef" + n),
+                Stream.concat(Stream.of(exact("O")), exacts(as).stream()).toList());
+        Doc doc = Doc.of("A constructor reference, `Type::new`, of a constructor of " + plural(n, "parameter")
+                        + ", of the functional interface `samType` whose method `sam` takes the parameters of the"
+                        + " constructor and has the constructed class as its result.")
+                .param("ctor", "the fact of the constructor")
+                .param("samType", "the functional interface the reference implements")
+                .param("sam", "the single abstract method of `samType`")
+                .typeParams(n, "type")
+                .returns("the constructor reference");
+        method(
+                cb,
+                STATIC,
+                typeVars(concat(concat(List.of("O"), as), List.of("F"))),
+                appliedTo(EXPR, "F"),
+                "constructorRef",
+                List.of(
+                        param("ctor", fact),
+                        param("samType", appliedTo(INTERFACE_TOKEN, "F")),
+                        param("sam", Types.of(INVOCABLE))),
+                doc,
+                b -> b.return_(staticCall(
+                        EXPRESSIONS,
+                        "constructorRef",
+                        field("ctor").call("owner"),
+                        field("ctor"),
+                        field("samType"),
+                        field("sam"))));
     }
 
     /// The leading type arguments of the sam: the functional interface, the result.

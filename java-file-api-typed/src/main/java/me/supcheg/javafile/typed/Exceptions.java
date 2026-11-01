@@ -681,6 +681,7 @@ final class Exceptions {
                 };
             // A method reference throws nothing where it stands: the method runs where the interface is called.
             case Node.MethodRef _ -> new Act.Computes();
+            case Node.ConstructorRef _ -> new Act.Computes();
             case Node.Lit _ -> new Act.Computes();
             case Node.TextBlock _ -> new Act.Computes();
             case Node.Null _ -> new Act.Computes();
@@ -731,6 +732,7 @@ final class Exceptions {
             case Instr.Let(var _, var init) -> Stream.of(init);
             case Instr.Assert(var condition, var message) -> Stream.concat(Stream.of(condition), message.stream());
             case Instr.Exec(var effect) -> Stream.of(effect);
+            case Instr.Empty _ -> Stream.empty();
             case Instr.Synchronized(var lock, var _) -> Stream.of(lock);
             case Instr.Labeled _ -> Stream.empty();
             case Instr.If(var condition, var _, var _) -> Stream.of(condition);
@@ -789,6 +791,7 @@ final class Exceptions {
             case Node.EnumConst _ -> Stream.empty();
             case Node.Raw _ -> Stream.empty();
             case Node.Lambda _ -> Stream.empty();
+            case Node.ConstructorRef _ -> Stream.empty();
             case Node.MethodRef(var receiver, var _, var _, var _) ->
                 receiver.stream().map(Node.Operand::node);
             case Node.Box(var _, var operand) -> Stream.of(operand);

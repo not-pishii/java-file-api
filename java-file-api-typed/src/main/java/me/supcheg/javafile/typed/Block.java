@@ -369,6 +369,13 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
         return rest.apply(var);
     }
 
+    /// Appends the empty statement, `;`. It changes neither reachability nor scope.
+    ///
+    /// @return this block
+    public final B empty() {
+        return append(new Instr.Empty());
+    }
+
     /// Appends `assert condition;`.
     ///
     /// @param condition the asserted condition

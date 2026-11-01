@@ -20,6 +20,7 @@ import me.supcheg.javafile.code.ConstructorInvocation;
 import me.supcheg.javafile.code.ContinueStmt;
 import me.supcheg.javafile.code.DefaultLabel;
 import me.supcheg.javafile.code.DoWhileStmt;
+import me.supcheg.javafile.code.EmptyStmt;
 import me.supcheg.javafile.code.EnhancedForStmt;
 import me.supcheg.javafile.code.Expr;
 import me.supcheg.javafile.code.ExprCaseBody;
@@ -484,6 +485,7 @@ final class Lowering {
             case Instr.Labeled(var label, var body) ->
                 new LabeledStmt(labels.of(label), new BlockStmt(lowerBlock(body.instrs())));
             case Instr.Exec(var effect) -> effectStmt(effect);
+            case Instr.Empty _ -> new EmptyStmt();
             case Instr.If(var condition, var then, var otherwise) ->
                 new IfStmt(expr(condition), lowerBlock(then.instrs()), List.of(), lowerOptional(otherwise));
             case Instr.IfInstance(var operand, var type, var binding, var then, var otherwise) -> {
@@ -821,6 +823,9 @@ final class Lowering {
             // A method reference has no type of its own either: the cast gives it the one of its fact.
             case Node.MethodRef methodRef ->
                 Exprs.cast(written(methodRef.sam().owner()).typeRef(), methodRef(methodRef));
+            // So has a constructor reference.
+            case Node.ConstructorRef reference ->
+                Exprs.cast(written(reference.sam().owner()).typeRef(), constructorRef(reference));
             case Node.Switch switch_ -> switchExpr(switch_);
             case Node.Assign ignored ->
                 throw new IllegalStateException(
@@ -1666,6 +1671,14 @@ final class Lowering {
         mentions(reference.type());
         return Exprs.methodRef(
                 written(reference.type()).typeRef(), reference.method().name());
+    }
+
+    /// `Type::new`, with the type arguments of the class the constructor belongs to, and without the
+    /// cast to the functional interface of its fact.
+    private Expr constructorRef(Node.ConstructorRef reference) {
+        uses(reference.constructor());
+        mentions(reference.type());
+        return Exprs.constructorRef(written(reference.type()).typeRef());
     }
 
     /// The parameters and the body of a lambda, lowered by the lowering of its body.

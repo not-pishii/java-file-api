@@ -40,7 +40,8 @@ import static me.supcheg.javafile.typed.codegen.TypedCodegen.param;
 ///   variable arity;
 /// - `Abstract{n}`, an abstract class whose constructors are `protected`;
 /// - `Widening{n}`, an interface of abstract and default methods;
-/// - `Fn{n}` and `Do{n}`, functional interfaces of a result and of none.
+/// - `Fn{n}` and `Do{n}`, functional interfaces of a result and of none;
+/// - `Make{n}`, a functional interface whose method constructs a `Wide{n}`.
 ///
 /// What a member tells is what the tests expect of it ([ArityTests]): the same text, made by the same functions.
 final class FixtureFiles {
@@ -210,6 +211,15 @@ final class FixtureFiles {
         });
     }
 
+    /// A functional interface whose method constructs a `Wide{n}`, for the constructor references of the tests.
+    static JavaFile make(int n) {
+        return JavaFile.interface_(fixture("Make", n), ib -> {
+            generated(ib);
+            ib.withAbstractMethod(
+                    "make", Types.of(fixture("Wide", n)), amb -> strings(n).forEach(amb::withParam));
+        });
+    }
+
     /// The names of the abstract methods of `Widening{n}`, in the order of the steps of the proof that implements it.
     static final List<String> ABSTRACT = List.of("inh", "inhVoid", "narrow", "plain", "self", "take");
 
@@ -267,7 +277,7 @@ final class FixtureFiles {
                             "value",
                             AnnotationValues.array(IntStream.rangeClosed(0, max)
                                     .boxed()
-                                    .flatMap(n -> Stream.of("Wide", "Abstract", "Widening", "Fn", "Do")
+                                    .flatMap(n -> Stream.of("Wide", "Abstract", "Widening", "Fn", "Do", "Make")
                                             .map(name -> AnnotationValues.classValue(fixture(name, n))))
                                     .toList())));
         });

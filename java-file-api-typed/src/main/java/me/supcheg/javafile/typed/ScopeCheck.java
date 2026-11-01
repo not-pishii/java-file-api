@@ -42,6 +42,7 @@ final class ScopeCheck {
                 message.ifPresent(value -> node(value, in(block), block.path()));
             }
             case Instr.Exec(var effect) -> node(effect, in(block), block.path());
+            case Instr.Empty ignored -> {}
             case Instr.Synchronized(var lock, var ignoredBody) -> node(lock, in(block), block.path());
             case Instr.Labeled ignored -> {}
             case Instr.If(var condition, var ignoredThen, var ignoredElse) -> node(condition, in(block), block.path());
@@ -165,6 +166,7 @@ final class ScopeCheck {
             case Node.Cast(var ignored, var operand) -> node(operand.node(), use, where);
             case Node.Upcast(var inner, var ignoredInner, var ignored) -> node(inner, use, where);
             case Node.Lambda(var ignoredSam, var ignoredParams, var body) -> lambda(body, use, where);
+            case Node.ConstructorRef _ -> {}
             case Node.MethodRef(var receiver, var ignoredType, var ignoredMethod, var ignoredSam) ->
                 receiver.ifPresent(r -> node(r.node(), use, where));
             case Node.Switch switch_ -> {

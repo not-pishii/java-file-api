@@ -48,6 +48,8 @@ sealed interface Node {
             case Upcast _ -> false;
             // a method reference has no type of its own to javac, only that of its context.
             case MethodRef _ -> false;
+            // neither has a constructor reference.
+            case ConstructorRef _ -> false;
             case Exact _ -> true;
         };
     }
@@ -305,6 +307,15 @@ sealed interface Node {
     /// @param sam the single abstract method of the functional interface the reference implements
     record MethodRef(Optional<Operand> receiver, DeclaredToken<?> type, Invocable method, Invocable sam)
             implements Node {}
+
+    /// A constructor reference typed by a functional interface fact, `Type::new`, where `type` is the
+    /// class the constructor belongs to. Like a lambda, it has no type of its own to javac, only that of
+    /// its context.
+    ///
+    /// @param type the class the reference constructs, the owner of the constructor
+    /// @param constructor the fact of the constructor
+    /// @param sam the single abstract method of the functional interface the reference implements
+    record ConstructorRef(DeclaredToken<?> type, Invocable constructor, Invocable sam) implements Node {}
 
     /// A `switch` expression over an enum, `switch (selector) { case A, B -> ...; default -> ... }`.
     /// Every result is of the type of the expression, see [Arm].

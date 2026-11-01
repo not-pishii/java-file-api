@@ -30,6 +30,9 @@ sealed interface Instr {
     /// An expression statement: a call, an instance creation, or an assignment.
     record Exec(Node effect) implements Plain {}
 
+    /// The empty statement, `;`: it has no effect and always completes normally.
+    record Empty() implements Plain {}
+
     /// `synchronized (lock) { ... }`.
     ///
     /// @param lock the monitor expression

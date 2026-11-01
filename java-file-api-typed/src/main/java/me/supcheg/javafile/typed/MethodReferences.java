@@ -38,8 +38,10 @@ final class MethodReferences {
     static void onType(DeclaredToken<?> type, Invocable method, InterfaceToken<?> samType, Invocable sam) {
         requireSamType(samType, sam);
         if (method.kind() == InvocableKind.CONSTRUCTOR) {
-            throw new IllegalArgumentException(
-                    "a method reference names a method, and " + method + " is a constructor: use constructorRef");
+            throw new IllegalArgumentException("a method reference names a method, and " + method
+                    + " is a constructor: use constructorRef(ctor, samType, sam), which takes the constructor"
+                    + " fact, the functional interface and its method; the reference names the class the"
+                    + " constructor constructs");
         }
         if (method.kind() == InvocableKind.STATIC_METHOD) {
             if (!Tokens.isSubtypeOf(type, method.owner().erasure())) {
@@ -74,7 +76,7 @@ final class MethodReferences {
         requireResult(method, sam, "an unbound method reference");
     }
 
-    private static void requireSamType(InterfaceToken<?> samType, Invocable sam) {
+    static void requireSamType(InterfaceToken<?> samType, Invocable sam) {
         if (!Tokens.sameType(samType, sam.owner())) {
             throw new IllegalArgumentException("the method of the functional interface is " + sam + " of "
                     + sam.owner() + ", and the method reference is used as " + samType
@@ -89,7 +91,7 @@ final class MethodReferences {
         }
     }
 
-    private static void requireParameters(Invocable method, Invocable sam, String form) {
+    static void requireParameters(Invocable method, Invocable sam, String form) {
         if (!method.params().equals(sam.params())) {
             throw new IllegalArgumentException(form + " to " + method + " passes " + describe(method.params(), 0)
                     + ", and the method of " + sam.owner() + " takes " + describe(sam.params(), 0)

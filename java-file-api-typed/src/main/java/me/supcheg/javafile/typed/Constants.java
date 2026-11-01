@@ -86,8 +86,8 @@ final class Constants {
                 type.erasure().equals(ConstantDescs.CD_String) ? fold(operand.node()) : NONE;
             // None of these is a constant expression (JLS 15.29): a name of a local variable is one of
             // a constant variable alone, which the typed layer declares none of, and a call, an
-            // instance creation, an access of an array or of an instance field, a lambda and a
-            // `switch` never are; nor is `null`.
+            // instance creation, an access of an array or of an instance field, a lambda, a method
+            // or constructor reference and a `switch` never are; nor is `null`.
             case Node.Null _,
                     Node.Local _,
                     Node.This _,
@@ -109,6 +109,7 @@ final class Constants {
                     Node.Upcast _,
                     Node.Lambda _,
                     Node.MethodRef _,
+                    Node.ConstructorRef _,
                     Node.Switch _,
                     Node.Assign _,
                     Node.Increment _,

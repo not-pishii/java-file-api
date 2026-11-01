@@ -1029,6 +1029,29 @@ public final class Expressions extends ExpressionArities {
         return Expr.of(new Node.MethodRef(Optional.empty(), type, method, sam), samType);
     }
 
+    /// A constructor reference, `Type::new`, of the functional interface `samType` whose method `sam`
+    /// takes the parameters of `ctor` and has the constructed class as its result. Like a lambda, it has
+    /// no type of its own to javac, only that of the interface it is used as, so the fact of that
+    /// interface is given too.
+    ///
+    /// The overloads of the arity families take a `CtorRefN` and name its class; this form takes a
+    /// constructor the facts know generically, and the class it must construct.
+    ///
+    /// @param type the class the reference constructs, the owner of `ctor`
+    /// @param ctor the fact of the constructor
+    /// @param samType the functional interface the reference implements
+    /// @param sam the single abstract method of `samType`
+    /// @param <F> the functional interface
+    /// @return the constructor reference
+    /// @throws IllegalArgumentException if `ctor` is no constructor, `type` is another class than its
+    ///     owner, `type` is an interface or an abstract class, or the parameters or result of `ctor` are
+    ///     not those of `sam`
+    public static <F> Expr<F> constructorRef(
+            DeclaredToken<?> type, Invocable ctor, InterfaceToken<F> samType, Invocable sam) {
+        ConstructorReferences.check(type, ctor, samType, sam);
+        return Expr.of(new Node.ConstructorRef(type, ctor, sam), samType);
+    }
+
     /// Builds an expression lambda in the innermost block being built:
     /// `body` runs with the lambda's own scope innermost, so a builder of
     /// the block around it cannot be used inside, and what it gives is

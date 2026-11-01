@@ -48,8 +48,8 @@ import static me.supcheg.javafile.typed.codegen.TypedCodegen.unbounded;
 ///
 /// - `Plain{n}`, which extends `Object` and implements `Widening{n}`: calls (`call`, `voidCall`, `staticCall`,
 ///   `voidStaticCall`, `new_`, also with the arguments of a last parameter of variable arity one by one), lambdas,
-///   declarations of every kind (by name, of variable arity, of overrides by a witness), the intentions of the
-///   header (`overriding`), and the bodies of all of them;
+///   constructor references, declarations of every kind (by name, of variable arity, of overrides by a witness),
+///   the intentions of the header (`overriding`), and the bodies of all of them;
 /// - `Sub{n}`, which extends `Wide{n}`: the overrides of its methods, `superCall`, `inherited`, `super_` by a
 ///   `CtorRefN`;
 /// - `Abs{n}`, which extends `Abstract{n}`: `super_` by a `SuperCtorRefN`.
@@ -94,7 +94,8 @@ final class ArityTests {
                                         FixtureFiles.abstractClass(n),
                                         FixtureFiles.widening(n),
                                         FixtureFiles.fn(n),
-                                        FixtureFiles.doing(n))),
+                                        FixtureFiles.doing(n),
+                                        FixtureFiles.make(n))),
                         Stream.of(FixtureFiles.factsHolder(max), arityFiles(max)),
                         IntStream.rangeClosed(0, max).mapToObj(ArityTests::arityTest))
                 .flatMap(files -> files)
@@ -398,6 +399,7 @@ final class ArityTests {
                                 "declareMethod",
                                 join(List.of(Exprs.literal("lam"), stringToken()), stringTokens(n))
                                         .toArray(Expr[]::new)));
+        b.localVar("viaCtorM", field("cb").call("declareStaticMethod", Exprs.literal("viaCtor"), token("Make", n)));
         if (n >= 1) {
             Expr variable = field("cb").call("variableArity");
             List<Expr> before = stringTokens(n - 1);
@@ -453,6 +455,7 @@ final class ArityTests {
                         field("b").call("return_", calling("staticCall", fact("Wide", n, methodFact("join", n)), p))));
         define(b, field("logM"), bodyOf(staticParams(n), ending("b", List.of(note(n, p)))));
         define(b, field("lamM"), bodyOf(instanceParams(n), lambdas(n)));
+        define(b, field("viaCtorM"), bodyOf(staticParams(0), field("b").call("return_", constructorReference(n))));
         if (n >= 1) {
             List<Expr> lead = ps("p", 1, n - 1);
             List<String> withRest = Stream.concat(instanceParams(n - 1).stream(), Stream.of("rest"))
@@ -553,6 +556,15 @@ final class ArityTests {
                 calling("new_", fact("Wide", n, ctorFact(n - 1, "IntegerArray")), with(lead, oneTwo())),
                 "w",
                 effects);
+    }
+
+    /// `constructorRef(Wide{n}_.new_..., Make{n}_.TOKEN, Make{n}_.sam.method())`: `Wide{n}::new` as the
+    /// functional interface whose method constructs a `Wide{n}`.
+    private static Expr constructorReference(int n) {
+        return calling(
+                "constructorRef",
+                fact("Wide", n, ctorFact(n)),
+                List.of(token("Make", n), staticField(factsOf("Make", n), "sam").call("method")));
     }
 
     /// The body of `lam`: the four lambdas, an expression and a block one of a result and of none.
@@ -992,6 +1004,10 @@ final class ArityTests {
         reset(b, n);
         check(b, invoke(plain, field("plain"), "lam", a), expectedTag("fn", n) + "/" + expectedTag("blk", n));
         check(b, noted(n), note("note:", j) + note("note:", j));
+        TypeRef make = Types.of(FixtureFiles.fixture("Make", n));
+        TypeRef wide = Types.of(FixtureFiles.fixture("Wide", n));
+        b.localVar("make", make, cast(make, invoke(plain, nothing(), "viaCtor", List.of())));
+        check(b, field("make").call("make", a.toArray(Expr[]::new)).field("told"), "new:" + j);
         b.localVar("widening", widening, cast(widening, field("plain")));
         Expr w = field("widening");
         check(b, w.call("inh", a.toArray(Expr[]::new)), expectedTag("inh", n));

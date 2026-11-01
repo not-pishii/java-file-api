@@ -10,12 +10,14 @@ import me.supcheg.javafile.typed.Arity0FormsTest.PlainSpec;
 import me.supcheg.javafile.typed.Arity0FormsTest.SubSpec;
 import me.supcheg.javafile.typed.TypedJavaFile.TypedClassHeaderSpec;
 import me.supcheg.javafile.typed.fixtures.Abstract0;
+import me.supcheg.javafile.typed.fixtures.Make0;
 import me.supcheg.javafile.typed.fixtures.Wide0;
 import me.supcheg.javafile.typed.fixtures.Widening0;
 import me.supcheg.javafile.typed.testfacts.java.lang.String_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Abstract0_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Do0_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Fn0_;
+import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Make0_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Wide0_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Widening0_;
 import org.assertj.core.api.Assertions;
@@ -52,6 +54,7 @@ class Arity0FormsTest {
             var makeM = cb.declareStaticMethod("make", String_.TOKEN);
             var logM = cb.declareVoidStaticMethod("log");
             var lamM = cb.declareMethod("lam", String_.TOKEN);
+            var viaCtorM = cb.declareStaticMethod("viaCtor", Make0_.TOKEN);
             var bodies = cb.bodies();
             bodies.define(inhO.method(), (b, self) -> b.return_(Expressions.literal("inh")));
             bodies.define(inhVoidO.method(), (b, self) -> b.exec(Expressions.voidStaticCall(Wide0_.note)).end());
@@ -69,6 +72,7 @@ class Arity0FormsTest {
             bodies.define(makeM, (b) -> b.return_(Expressions.staticCall(Wide0_.join)));
             bodies.define(logM, (b) -> b.exec(Expressions.voidStaticCall(Wide0_.note)).end());
             bodies.define(lamM, (b, self) -> b.let(Fn0_.TOKEN, Expressions.lambda(Fn0_.sam, () -> Expressions.literal("fn")), (f) -> b.let(Fn0_.TOKEN, Expressions.lambdaBlock(Fn0_.sam, (lb) -> lb.return_(Expressions.literal("blk"))), (g) -> b.let(Do0_.TOKEN, Expressions.lambda(Do0_.sam, () -> Expressions.voidStaticCall(Wide0_.note)), (d) -> b.let(Do0_.TOKEN, Expressions.lambdaBlock(Do0_.sam, (lb) -> lb.exec(Expressions.voidStaticCall(Wide0_.note)).end()), (e) -> b.exec(d.voidCall(Do0_.accept)).exec(e.voidCall(Do0_.accept)).return_(Expressions.concat(Expressions.concat(f.call(Fn0_.apply), Expressions.literal("/")), g.call(Fn0_.apply))))))));
+            bodies.define(viaCtorM, (b) -> b.return_(Expressions.constructorRef(Wide0_.new_, Make0_.TOKEN, Make0_.sam.method())));
             return bodies;
         }
     }
@@ -146,6 +150,8 @@ class Arity0FormsTest {
         Wide0.noted = "";
         Assertions.assertThat(ArityForms.invoke("Plain0", plain, "lam", List.of())).isEqualTo("fn/blk");
         Assertions.assertThat(Wide0.noted).isEqualTo("note:;note:;");
+        Make0 make = (Make0) ArityForms.invoke("Plain0", null, "viaCtor", List.of());
+        Assertions.assertThat(make.make().told).isEqualTo("new:");
         Widening0 widening = (Widening0) plain;
         Assertions.assertThat(widening.inh()).isEqualTo("inh");
         Assertions.assertThat(widening.narrow()).isEqualTo("narrow");
