@@ -34,7 +34,7 @@ public final class StandardRenderer implements SourceRenderer {
         };
     }
 
-    private String renderClassFile(JavaFile.Meta meta, Format format) {
+    private static String renderClassFile(JavaFile.Meta meta, Format format) {
         var imports = new ImportManager(meta.packageName());
         Context ctx = Context.of(format, imports);
         String body = TypeDeclRenderer.renderTypeDecl(meta.typeDecl(), ctx);
@@ -57,7 +57,7 @@ public final class StandardRenderer implements SourceRenderer {
         return out.toString();
     }
 
-    private String renderPackageInfo(PackageInfoFile.Meta meta, Format format) {
+    private static String renderPackageInfo(PackageInfoFile.Meta meta, Format format) {
         var imports = new ImportManager(meta.packageName());
         Context ctx = Context.of(format, imports);
         String annotationsText = AnnotationRenderer.renderAnnotations(meta.annotations(), ctx);
@@ -76,7 +76,7 @@ public final class StandardRenderer implements SourceRenderer {
         return out.toString();
     }
 
-    private String renderModuleInfo(ModuleFile.Meta meta, Format format) {
+    private static String renderModuleInfo(ModuleFile.Meta meta, Format format) {
         StringBuilder sb = new StringBuilder();
         if (meta.open()) {
             sb.append("open ");

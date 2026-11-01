@@ -5,4 +5,5 @@ import java.lang.constant.ClassDesc;
 /// A class literal annotation value, e.g. `Foo.class`.
 ///
 /// @param type the referenced class
+@SuppressWarnings("AvoidCommonTypeNames")
 public record ClassValue(ClassDesc type) implements SingleAnnotationValue {}

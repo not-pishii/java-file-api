@@ -1,5 +1,7 @@
 package me.supcheg.javafile.render;
 
+import java.util.Locale;
+
 final class JavaStrings {
 
     private JavaStrings() {}
@@ -16,7 +18,7 @@ final class JavaStrings {
                 case '\t' -> sb.append("\\t");
                 default -> {
                     if (c < 0x20) {
-                        sb.append(String.format("\\u%04x", (int) c));
+                        sb.append(String.format(Locale.ROOT, "\\u%04x", (int) c));
                     } else {
                         sb.append(c);
                     }

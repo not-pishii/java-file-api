@@ -57,6 +57,8 @@ class PackageInfoFileTest {
         Path expected = tempDir.resolve("package-info.java");
         assertThat(Files.exists(expected)).isTrue();
         assertThat(Files.readString(expected)).isEqualTo(file.render());
-        assertThat(Files.list(tempDir).toList()).containsExactly(expected);
+        try (var files = Files.list(tempDir)) {
+            assertThat(files.toList()).containsExactly(expected);
+        }
     }
 }
