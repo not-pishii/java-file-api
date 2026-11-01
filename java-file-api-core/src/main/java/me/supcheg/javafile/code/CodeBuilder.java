@@ -204,7 +204,7 @@ public final class CodeBuilder implements Consumer<Stmt> {
     /// @param block receives the builder to populate the try block's body
     /// @param spec receives the builder to populate resources, `catch` clauses, and the `finally` block
     /// @return this builder
-    /// @throws IllegalArgumentException if `spec` calls neither `catch_` nor `finally_`
+    /// @throws IllegalArgumentException if `spec` gives neither a resource, a `catch_` nor a `finally_`
     public CodeBuilder try_(Consumer<? super CodeBuilder> block, Consumer<? super TryBuilder> spec) {
         CodeBuilder blockBuilder = new CodeBuilder();
         block.accept(blockBuilder);

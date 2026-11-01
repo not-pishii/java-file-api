@@ -593,12 +593,29 @@ class CodeBuilderTest {
     }
 
     @Test
-    void tryWithNeitherCatchNorFinallyThrows() {
+    void tryWithResourcesAloneProducesResourcesOnly() {
+        CodeBuilder cb = new CodeBuilder();
+
+        cb.try_(
+                b -> b.exprStatement(call("body")),
+                tb -> tb.resource_("r", Types.of(ClassDesc.of("java.io", "Reader")), call("openReader")));
+
+        TryStmt.ResourcesOnly stmt =
+                (TryStmt.ResourcesOnly) cb.build().statements().get(0);
+        assertThat(stmt.resources())
+                .containsExactly(new Resource.Declared(
+                        Optional.of(Types.of(ClassDesc.of("java.io", "Reader"))),
+                        "r",
+                        new MethodCallExpr(Optional.empty(), "openReader", List.of())));
+    }
+
+    @Test
+    void tryWithNeitherResourceNorCatchNorFinallyThrows() {
         CodeBuilder cb = new CodeBuilder();
 
         assertThatThrownBy(() -> cb.try_(b -> {}, tb -> {}))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("try requires at least one catch clause or a finally block");
+                .hasMessageContaining("try requires at least one resource, catch clause or a finally block");
     }
 
     @Test

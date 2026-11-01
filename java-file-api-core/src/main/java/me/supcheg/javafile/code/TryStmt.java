@@ -7,8 +7,8 @@ import java.util.List;
 ///
 /// Usually created with [CodeBuilder#try_(Consumer,Consumer)]. A `try` with a
 /// `finally` block is [WithFinally]; one with only `catch` clauses is
-/// [CatchOnly].
-public sealed interface TryStmt extends Stmt permits TryStmt.WithFinally, TryStmt.CatchOnly {
+/// [CatchOnly]; one with resources and no handler is [ResourcesOnly].
+public sealed interface TryStmt extends Stmt permits TryStmt.WithFinally, TryStmt.CatchOnly, TryStmt.ResourcesOnly {
 
     /// A `try` with a `finally` block, and zero or more `catch` clauses.
     ///
@@ -32,6 +32,21 @@ public sealed interface TryStmt extends Stmt permits TryStmt.WithFinally, TryStm
     record CatchOnly(List<Resource> resources, CodeBody block, NonEmptyList<CatchClause> catches) implements TryStmt {
         public CatchOnly {
             resources = List.copyOf(resources);
+        }
+    }
+
+    /// A `try` with resources and neither a `catch` clause nor a `finally`
+    /// block, e.g. `try (Reader r = open()) { ... }` (JLS 14.20.3).
+    ///
+    /// @param resources the try-with-resources resources, in declaration order; at least one
+    /// @param block the try block's body
+    record ResourcesOnly(List<Resource> resources, CodeBody block) implements TryStmt {
+        /// @throws IllegalArgumentException if there is no resource
+        public ResourcesOnly {
+            resources = List.copyOf(resources);
+            if (resources.isEmpty()) {
+                throw new IllegalArgumentException("a try with resources alone has at least one resource");
+            }
         }
     }
 }

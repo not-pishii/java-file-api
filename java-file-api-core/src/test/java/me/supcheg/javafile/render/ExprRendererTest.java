@@ -1129,6 +1129,19 @@ class ExprRendererTest {
     }
 
     @Test
+    void tryWithResourcesAloneRendersWithoutHandler() {
+        TryStmt stmt = new TryStmt.ResourcesOnly(
+                List.of(new Resource.Declared(Optional.empty(), "r1", call("open"))), CodeBody.EMPTY);
+
+        String rendered = ExprRenderer.renderStmt(
+                stmt, Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad());
+
+        assertThat(rendered).isEqualTo("""
+                        try (var r1 = open()) {
+                        }""".indent(4).stripTrailing());
+    }
+
+    @Test
     void tryWithResourcesRendersDeclaredAndExistingForms() {
         ClassOrInterfaceTypeRef ioException = Types.of(ClassDesc.of("java.io", "IOException"));
         TryStmt stmt = new TryStmt.CatchOnly(

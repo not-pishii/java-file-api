@@ -8,6 +8,7 @@ import java.lang.constant.ClassDesc;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class TryStmtTest {
 
@@ -24,6 +25,13 @@ class TryStmtTest {
         assertThat(stmt.catches()).isEmpty();
         assertThat(stmt.finallyBody()).isEqualTo(finallyBody);
         assertThat((Stmt) stmt).isInstanceOf(TryStmt.class);
+    }
+
+    @Test
+    void resourcesOnlyHasAtLeastOneResource() {
+        assertThatThrownBy(() -> new TryStmt.ResourcesOnly(List.of(), CodeBody.EMPTY))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("at least one resource");
     }
 
     @Test

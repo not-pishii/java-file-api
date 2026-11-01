@@ -82,18 +82,23 @@ public final class TryBuilder {
     }
 
     /// Builds the [TryStmt], choosing [TryStmt.WithFinally] if [#finally_]
-    /// was called, otherwise [TryStmt.CatchOnly].
+    /// was called, [TryStmt.CatchOnly] if a [#catch_] was, and
+    /// [TryStmt.ResourcesOnly] for a `try` with resources alone.
     ///
     /// @param block the try block's body
     /// @return the built statement
-    /// @throws IllegalArgumentException if neither [#catch_] nor [#finally_] was called
+    /// @throws IllegalArgumentException if neither a resource, a [#catch_] nor a [#finally_] was given
     TryStmt build(CodeBody block) {
         List<Resource> resourcesCopy = List.copyOf(resources);
         if (finallyBody != null) {
             return new TryStmt.WithFinally(resourcesCopy, block, List.copyOf(catches), finallyBody);
         }
         if (catches.isEmpty()) {
-            throw new IllegalArgumentException("try requires at least one catch clause or a finally block");
+            if (resourcesCopy.isEmpty()) {
+                throw new IllegalArgumentException(
+                        "try requires at least one resource, catch clause or a finally block");
+            }
+            return new TryStmt.ResourcesOnly(resourcesCopy, block);
         }
         return new TryStmt.CatchOnly(resourcesCopy, block, NonEmptyList.copyOf(catches));
     }

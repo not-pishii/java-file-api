@@ -433,6 +433,14 @@ final class ExprRenderer {
                 }
                 yield sb.toString();
             }
+            case TryStmt.ResourcesOnly(var resources, var block) ->
+                ctx.pad()
+                        + "try "
+                        + renderResources(resources, ctx)
+                        + "{" + ctx.newline()
+                        + renderBlock(block, ctx.withIncreasedPad())
+                        + ctx.pad()
+                        + "}";
             case SwitchStmt(var selector, var cases) ->
                 ctx.pad()
                         + "switch ("
