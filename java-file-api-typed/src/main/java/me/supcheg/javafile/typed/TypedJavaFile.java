@@ -1,19 +1,14 @@
 package me.supcheg.javafile.typed;
 
-import me.supcheg.javafile.Identifiers;
 import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.ModuleFile;
 import me.supcheg.javafile.PackageInfoFile;
-import me.supcheg.javafile.PackageName;
 import me.supcheg.javafile.facts.DeclaredToken;
 import me.supcheg.javafile.facts.FactLookupException;
 import me.supcheg.javafile.facts.TargetClasspath;
 import me.supcheg.javafile.facts.TargetClasspathMismatchException;
-import me.supcheg.javafile.facts.TypeVarToken;
-import me.supcheg.javafile.type.ClassDescNames;
 
 import java.lang.constant.ClassDesc;
-import java.util.List;
 import java.util.Objects;
 
 /// Entry point of the typed eDSL (§6.5): declares a generated `final` class
@@ -36,7 +31,12 @@ import java.util.Objects;
 /// annotation processor it is `TargetClasspaths.of(processingEnv)` of
 /// `java-file-api-lang-model`, made in `init`; where there is no
 /// compilation to check against, `UnsafeFacts.unverifiedClasspath()`.
-public final class TypedJavaFile {
+///
+/// The entry points of a generic class, interface or record, and the specification stages they take,
+/// are generated into [GenericDeclarationArities] for every number of type parameters from one to
+/// twelve: the class extends it, so `TypedJavaFile.declareClass(...)` and
+/// `new TypedJavaFile.TypedGenericClassSpec4<>()` read here as they read there.
+public final class TypedJavaFile extends GenericDeclarationArities {
     private TypedJavaFile() {}
 
     /// Declares a `public final` class that extends `Object` and implements nothing; short for
@@ -74,7 +74,7 @@ public final class TypedJavaFile {
     /// @throws FactLookupException if a member the class uses has an overload on `target` that no
     ///     argument tells it from; as the mismatch is, a [me.supcheg.javafile.facts.FactException]
     public static JavaFile class_(TargetClasspath target, ClassDesc desc, TypedClassSpec spec) {
-        return declareClass(target, desc, new TypedClassHeaderSpec() {
+        return GenericDeclarations.class_(target, desc, new TypedClassHeaderSpec() {
             @Override
             public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
                 return spec.build(h.extendsObject().members());
@@ -113,12 +113,7 @@ public final class TypedJavaFile {
     /// @throws FactLookupException if a member the class uses has an overload on `target` that no
     ///     argument tells it from
     public static JavaFile declareClass(TargetClasspath target, ClassDesc desc, TypedClassHeaderSpec spec) {
-        return declared(target, desc, List.of(), new Generic() {
-            @Override
-            public <Self> MemberBodies<Self, ?> build(ClassDeclaration<Self> declaration) {
-                return spec.build(new ClassHeader<>(declaration));
-            }
-        });
+        return GenericDeclarations.class_(target, desc, spec);
     }
 
     /// Declares a `public` interface, from its members: abstract, default, static and private methods,
@@ -141,110 +136,7 @@ public final class TypedJavaFile {
     ///     be written in Java
     /// @throws IllegalStateException if a member `spec` declared is not defined
     public static JavaFile interface_(TargetClasspath target, ClassDesc desc, TypedInterfaceSpec spec) {
-        requireInterfaceName(desc);
-        return declaredInterface(target, declarable(desc, "interface"), List.of(), List.of(), spec);
-    }
-
-    /// Declares a generic `public` interface with one type parameter, from its members: the type
-    /// parameter's token is in scope in the header, the members and the member types of the interface,
-    /// as the token of the class's type parameter is ([#declareClass(TargetClasspath, ClassDesc,
-    /// TypeParameter, TypedGenericClassSpec1)]).
-    ///
-    /// @param target the classpath the interface is compiled against
-    /// @param desc the interface's binary name
-    /// @param p1 the type parameter
-    /// @param spec declares the interface, given its self-branded builder and the token of the type parameter
-    /// @param <B1> the leftmost bound of the type parameter
-    /// @return the rendered interface
-    /// @throws IllegalArgumentException if a type parameter has the name of another or of the interface, or
-    ///     its bound is a raw type; or if `desc` describes a nested type, or a name of it cannot be written
-    public static <B1> JavaFile interface_(
-            TargetClasspath target, ClassDesc desc, TypeParameter<B1> p1, TypedGenericInterfaceSpec1<B1> spec) {
-        requireInterfaceName(desc);
-        return declaredInterface(
-                target, declarable(desc, "interface"), List.of(p1), List.of(), new TypedInterfaceSpec() {
-                    @Override
-                    public <Self> TypedInterfaceBodies<Self> build(TypedInterfaceBuilder<Self> ib) {
-                        return spec.build(ib, TypedJavaFile.<B1>variable(ib, 0));
-                    }
-                });
-    }
-
-    /// Declares a generic `public` interface with two type parameters, see
-    /// [#interface_(TargetClasspath, ClassDesc, TypeParameter, TypedGenericInterfaceSpec1)].
-    ///
-    /// @param target the classpath the interface is compiled against
-    /// @param desc the interface's binary name
-    /// @param p1 the first type parameter
-    /// @param p2 the second type parameter
-    /// @param spec declares the interface, given its builder and the tokens of its type parameters
-    /// @param <B1> the leftmost bound of the first type parameter
-    /// @param <B2> the leftmost bound of the second type parameter
-    /// @return the rendered interface
-    public static <B1, B2> JavaFile interface_(
-            TargetClasspath target,
-            ClassDesc desc,
-            TypeParameter<B1> p1,
-            TypeParameter<B2> p2,
-            TypedGenericInterfaceSpec2<B1, B2> spec) {
-        requireInterfaceName(desc);
-        return declaredInterface(
-                target, declarable(desc, "interface"), List.of(p1, p2), List.of(), new TypedInterfaceSpec() {
-                    @Override
-                    public <Self> TypedInterfaceBodies<Self> build(TypedInterfaceBuilder<Self> ib) {
-                        return spec.build(ib, TypedJavaFile.<B1>variable(ib, 0), TypedJavaFile.<B2>variable(ib, 1));
-                    }
-                });
-    }
-
-    /// Declares a generic `public` interface with three type parameters, see
-    /// [#interface_(TargetClasspath, ClassDesc, TypeParameter, TypedGenericInterfaceSpec1)].
-    ///
-    /// @param target the classpath the interface is compiled against
-    /// @param desc the interface's binary name
-    /// @param p1 the first type parameter
-    /// @param p2 the second type parameter
-    /// @param p3 the third type parameter
-    /// @param spec declares the interface, given its builder and the tokens of its type parameters
-    /// @param <B1> the leftmost bound of the first type parameter
-    /// @param <B2> the leftmost bound of the second type parameter
-    /// @param <B3> the leftmost bound of the third type parameter
-    /// @return the rendered interface
-    public static <B1, B2, B3> JavaFile interface_(
-            TargetClasspath target,
-            ClassDesc desc,
-            TypeParameter<B1> p1,
-            TypeParameter<B2> p2,
-            TypeParameter<B3> p3,
-            TypedGenericInterfaceSpec3<B1, B2, B3> spec) {
-        requireInterfaceName(desc);
-        return declaredInterface(
-                target, declarable(desc, "interface"), List.of(p1, p2, p3), List.of(), new TypedInterfaceSpec() {
-                    @Override
-                    public <Self> TypedInterfaceBodies<Self> build(TypedInterfaceBuilder<Self> ib) {
-                        return spec.build(
-                                ib,
-                                TypedJavaFile.<B1>variable(ib, 0),
-                                TypedJavaFile.<B2>variable(ib, 1),
-                                TypedJavaFile.<B3>variable(ib, 2));
-                    }
-                });
-    }
-
-    private static void requireInterfaceName(ClassDesc desc) {
-        Scopes.requireNoneOpen(
-                "interface " + (desc.packageName().isEmpty() ? "" : desc.packageName() + ".") + desc.displayName());
-    }
-
-    private static <Self> JavaFile declaredInterface(
-            TargetClasspath target,
-            ClassDesc desc,
-            List<TypeParameter<?>> parameters,
-            List<me.supcheg.javafile.facts.DeclarationIdentity> enclosing,
-            TypedInterfaceSpec spec) {
-        TypedInterfaceBuilder<Self> builder = new TypedInterfaceBuilder<>(target, desc, parameters, enclosing);
-        return builder.complete(Objects.requireNonNull(
-                spec.build(builder), "a specification returns the bodies of the members of the interface"));
+        return GenericDeclarations.interface_(target, desc, spec);
     }
 
     /// The specification of an interface (§6.5).
@@ -257,60 +149,6 @@ public final class TypedJavaFile {
         <Self> TypedInterfaceBodies<Self> build(TypedInterfaceBuilder<Self> ib);
     }
 
-    /// The specification of a generic interface with one type parameter, whose leftmost bound is `B1`.
-    ///
-    /// @param <B1> the leftmost bound of the type parameter, `Object` for none
-    public interface TypedGenericInterfaceSpec1<B1> {
-        /// Declares the interface through `ib`, branded with a fresh `Self`, with the token of its type
-        /// parameter, branded with a fresh `T1`.
-        ///
-        /// @param ib the self-branded interface builder
-        /// @param t1 the token of the type parameter
-        /// @param <Self> the brand of the interface being declared
-        /// @param <T1> the brand of the type parameter
-        /// @return the bodies of the members: the stage the declaration of the interface ends in
-        <Self, T1 extends B1> TypedInterfaceBodies<Self> build(TypedInterfaceBuilder<Self> ib, TypeVarToken<T1> t1);
-    }
-
-    /// The specification of a generic interface with two type parameters, see [TypedGenericInterfaceSpec1].
-    ///
-    /// @param <B1> the leftmost bound of the first type parameter, `Object` for none
-    /// @param <B2> the leftmost bound of the second type parameter, `Object` for none
-    public interface TypedGenericInterfaceSpec2<B1, B2> {
-        /// Declares the interface through `ib`, with the tokens of its type parameters.
-        ///
-        /// @param ib the self-branded interface builder
-        /// @param t1 the token of the first type parameter
-        /// @param t2 the token of the second type parameter
-        /// @param <Self> the brand of the interface being declared
-        /// @param <T1> the brand of the first type parameter
-        /// @param <T2> the brand of the second type parameter
-        /// @return the bodies of the members
-        <Self, T1 extends B1, T2 extends B2> TypedInterfaceBodies<Self> build(
-                TypedInterfaceBuilder<Self> ib, TypeVarToken<T1> t1, TypeVarToken<T2> t2);
-    }
-
-    /// The specification of a generic interface with three type parameters, see [TypedGenericInterfaceSpec1].
-    ///
-    /// @param <B1> the leftmost bound of the first type parameter, `Object` for none
-    /// @param <B2> the leftmost bound of the second type parameter, `Object` for none
-    /// @param <B3> the leftmost bound of the third type parameter, `Object` for none
-    public interface TypedGenericInterfaceSpec3<B1, B2, B3> {
-        /// Declares the interface through `ib`, with the tokens of its type parameters.
-        ///
-        /// @param ib the self-branded interface builder
-        /// @param t1 the token of the first type parameter
-        /// @param t2 the token of the second type parameter
-        /// @param t3 the token of the third type parameter
-        /// @param <Self> the brand of the interface being declared
-        /// @param <T1> the brand of the first type parameter
-        /// @param <T2> the brand of the second type parameter
-        /// @param <T3> the brand of the third type parameter
-        /// @return the bodies of the members
-        <Self, T1 extends B1, T2 extends B2, T3 extends B3> TypedInterfaceBodies<Self> build(
-                TypedInterfaceBuilder<Self> ib, TypeVarToken<T1> t1, TypeVarToken<T2> t2, TypeVarToken<T3> t3);
-    }
-
     /// Declares a `public` record, from its components and members.
     ///
     /// @param target the classpath the record is compiled against
@@ -321,106 +159,7 @@ public final class TypedJavaFile {
     ///     be written in Java
     /// @throws IllegalStateException if a member `spec` declared is not defined
     public static JavaFile record(TargetClasspath target, ClassDesc desc, TypedRecordSpec spec) {
-        requireRecordName(desc);
-        return declaredRecord(target, declarable(desc, "record"), List.of(), List.of(), spec);
-    }
-
-    /// Declares a generic `public` record with one type parameter: the token is in scope in its
-    /// components, its header, its members and its member types.
-    ///
-    /// @param target the classpath the record is compiled against
-    /// @param desc the record's binary name
-    /// @param p1 the type parameter
-    /// @param spec declares the record, given its builder and the token of the type parameter
-    /// @param <B1> the leftmost bound of the type parameter
-    /// @return the rendered record
-    /// @throws IllegalArgumentException if a type parameter has the name of another or of the record, or
-    ///     its bound is a raw type; or if `desc` describes a nested type, or a name of it cannot be written
-    public static <B1> JavaFile record(
-            TargetClasspath target, ClassDesc desc, TypeParameter<B1> p1, TypedGenericRecordSpec1<B1> spec) {
-        requireRecordName(desc);
-        return declaredRecord(target, declarable(desc, "record"), List.of(p1), List.of(), new TypedRecordSpec() {
-            @Override
-            public <Self> TypedRecordBodies<Self> build(TypedRecordBuilder<Self> rb) {
-                return spec.build(rb, TypedJavaFile.<B1>variable(rb, 0));
-            }
-        });
-    }
-
-    /// Declares a generic `public` record with two type parameters, see
-    /// [#record(TargetClasspath, ClassDesc, TypeParameter, TypedGenericRecordSpec1)].
-    ///
-    /// @param target the classpath the record is compiled against
-    /// @param desc the record's binary name
-    /// @param p1 the first type parameter
-    /// @param p2 the second type parameter
-    /// @param spec declares the record, given its builder and the tokens of its type parameters
-    /// @param <B1> the leftmost bound of the first type parameter
-    /// @param <B2> the leftmost bound of the second type parameter
-    /// @return the rendered record
-    public static <B1, B2> JavaFile record(
-            TargetClasspath target,
-            ClassDesc desc,
-            TypeParameter<B1> p1,
-            TypeParameter<B2> p2,
-            TypedGenericRecordSpec2<B1, B2> spec) {
-        requireRecordName(desc);
-        return declaredRecord(target, declarable(desc, "record"), List.of(p1, p2), List.of(), new TypedRecordSpec() {
-            @Override
-            public <Self> TypedRecordBodies<Self> build(TypedRecordBuilder<Self> rb) {
-                return spec.build(rb, TypedJavaFile.<B1>variable(rb, 0), TypedJavaFile.<B2>variable(rb, 1));
-            }
-        });
-    }
-
-    /// Declares a generic `public` record with three type parameters, see
-    /// [#record(TargetClasspath, ClassDesc, TypeParameter, TypedGenericRecordSpec1)].
-    ///
-    /// @param target the classpath the record is compiled against
-    /// @param desc the record's binary name
-    /// @param p1 the first type parameter
-    /// @param p2 the second type parameter
-    /// @param p3 the third type parameter
-    /// @param spec declares the record, given its builder and the tokens of its type parameters
-    /// @param <B1> the leftmost bound of the first type parameter
-    /// @param <B2> the leftmost bound of the second type parameter
-    /// @param <B3> the leftmost bound of the third type parameter
-    /// @return the rendered record
-    public static <B1, B2, B3> JavaFile record(
-            TargetClasspath target,
-            ClassDesc desc,
-            TypeParameter<B1> p1,
-            TypeParameter<B2> p2,
-            TypeParameter<B3> p3,
-            TypedGenericRecordSpec3<B1, B2, B3> spec) {
-        requireRecordName(desc);
-        return declaredRecord(
-                target, declarable(desc, "record"), List.of(p1, p2, p3), List.of(), new TypedRecordSpec() {
-                    @Override
-                    public <Self> TypedRecordBodies<Self> build(TypedRecordBuilder<Self> rb) {
-                        return spec.build(
-                                rb,
-                                TypedJavaFile.<B1>variable(rb, 0),
-                                TypedJavaFile.<B2>variable(rb, 1),
-                                TypedJavaFile.<B3>variable(rb, 2));
-                    }
-                });
-    }
-
-    private static void requireRecordName(ClassDesc desc) {
-        Scopes.requireNoneOpen(
-                "record " + (desc.packageName().isEmpty() ? "" : desc.packageName() + ".") + desc.displayName());
-    }
-
-    private static <Self> JavaFile declaredRecord(
-            TargetClasspath target,
-            ClassDesc desc,
-            List<TypeParameter<?>> parameters,
-            List<me.supcheg.javafile.facts.DeclarationIdentity> enclosing,
-            TypedRecordSpec spec) {
-        TypedRecordBuilder<Self> builder = new TypedRecordBuilder<>(target, desc, parameters, enclosing);
-        return builder.complete(Objects.requireNonNull(
-                spec.build(builder), "a specification returns the bodies of the members of the record"));
+        return GenericDeclarations.record(target, desc, spec);
     }
 
     /// The specification of a record (§6.5).
@@ -433,60 +172,6 @@ public final class TypedJavaFile {
         <Self> TypedRecordBodies<Self> build(TypedRecordBuilder<Self> rb);
     }
 
-    /// The specification of a generic record with one type parameter, whose leftmost bound is `B1`.
-    ///
-    /// @param <B1> the leftmost bound of the type parameter, `Object` for none
-    public interface TypedGenericRecordSpec1<B1> {
-        /// Declares the record through `rb`, branded with a fresh `Self`, with the token of its type parameter.
-        ///
-        /// @param rb the self-branded record builder
-        /// @param t1 the token of the type parameter
-        /// @param <Self> the brand of the record being declared
-        /// @param <T1> the brand of the type parameter
-        /// @return the bodies of the members: the stage the declaration of the record ends in
-        <Self, T1 extends B1> TypedRecordBodies<Self> build(TypedRecordBuilder<Self> rb, TypeVarToken<T1> t1);
-    }
-
-    /// The specification of a generic record with two type parameters, see [TypedGenericRecordSpec1].
-    ///
-    /// @param <B1> the leftmost bound of the first type parameter, `Object` for none
-    /// @param <B2> the leftmost bound of the second type parameter, `Object` for none
-    public interface TypedGenericRecordSpec2<B1, B2> {
-        /// Declares the record through `rb`, with the tokens of its type parameters.
-        ///
-        /// @param rb the self-branded record builder
-        /// @param t1 the token of the first type parameter
-        /// @param t2 the token of the second type parameter
-        /// @param <Self> the brand of the record being declared
-        /// @param <T1> the brand of the first type parameter
-        /// @param <T2> the brand of the second type parameter
-        /// @return the bodies of the members
-        <Self, T1 extends B1, T2 extends B2> TypedRecordBodies<Self> build(
-                TypedRecordBuilder<Self> rb, TypeVarToken<T1> t1, TypeVarToken<T2> t2);
-    }
-
-    /// The specification of a generic record with three type parameters, see [TypedGenericRecordSpec1].
-    ///
-    /// @param <B1> the leftmost bound of the first type parameter, `Object` for none
-    /// @param <B2> the leftmost bound of the second type parameter, `Object` for none
-    /// @param <B3> the leftmost bound of the third type parameter, `Object` for none
-    public interface TypedGenericRecordSpec3<B1, B2, B3> {
-        /// Declares the record through `rb`, with the tokens of its type parameters.
-        ///
-        /// @param rb the self-branded record builder
-        /// @param t1 the token of the first type parameter
-        /// @param t2 the token of the second type parameter
-        /// @param t3 the token of the third type parameter
-        /// @param <Self> the brand of the record being declared
-        /// @param <T1> the brand of the first type parameter
-        /// @param <T2> the brand of the second type parameter
-        /// @param <T3> the brand of the third type parameter
-        /// @return the bodies of the members
-        <Self, T1 extends B1, T2 extends B2, T3 extends B3> TypedRecordBodies<Self> build(
-                TypedRecordBuilder<Self> rb, TypeVarToken<T1> t1, TypeVarToken<T2> t2, TypeVarToken<T3> t3);
-    }
-
-    /// Declares a `public` enum, from its constants and members.
     ///
     /// @param target the classpath the enum is compiled against
     /// @param desc the enum's binary name
@@ -498,7 +183,7 @@ public final class TypedJavaFile {
     public static JavaFile enum_(TargetClasspath target, ClassDesc desc, TypedEnumSpec spec) {
         Scopes.requireNoneOpen(
                 "enum " + (desc.packageName().isEmpty() ? "" : desc.packageName() + ".") + desc.displayName());
-        return declaredEnum(target, declarable(desc, "enum"), spec);
+        return declaredEnum(target, GenericDeclarations.declarable(desc, "enum"), spec);
     }
 
     private static <Self> JavaFile declaredEnum(TargetClasspath target, ClassDesc desc, TypedEnumSpec spec) {
@@ -542,7 +227,7 @@ public final class TypedJavaFile {
     public static JavaFile annotationType(TargetClasspath target, ClassDesc desc, TypedAnnotationTypeSpec spec) {
         Scopes.requireNoneOpen("annotation type " + (desc.packageName().isEmpty() ? "" : desc.packageName() + ".")
                 + desc.displayName());
-        return declaredAnnotationType(target, declarable(desc, "annotation type"), spec);
+        return declaredAnnotationType(target, GenericDeclarations.declarable(desc, "annotation type"), spec);
     }
 
     /// Refuses a generic annotation type: an annotation type cannot have type parameters (JLS 9.6), and
@@ -654,244 +339,6 @@ public final class TypedJavaFile {
     ///     of `permits`, `record`, `sealed`, `var` and `yield`
     public static <B> TypeParameter<B> typeParam(String name, DeclaredToken<B> bound) {
         return TypeParameter.bounded(name, bound);
-    }
-
-    /// Declares a generic `public final` class with one type parameter, from its header on:
-    /// `spec` receives the header, branded with a `Self` unique to this call, and the token of
-    /// the type parameter, branded with a type variable of its own whose bound is that of the
-    /// type parameter.
-    ///
-    /// ```java
-    /// JavaFile file = TypedJavaFile.declareClass(
-    ///         target, desc, typeParam("T", Number_.TOKEN), new TypedJavaFile.TypedGenericClassSpec1<Number>() {
-    ///     public <Self, T extends Number> MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<T> t) {
-    ///         var cb = h.extendsObject().members();
-    ///         var item = cb.declareField("item", t);
-    ///         var asInt = cb.declareMethod("asInt", INT);
-    ///         var bodies = cb.bodies();
-    ///         bodies.initialize(item, literalNull(t));
-    ///         bodies.define(asInt, (b, self) -> b.return_(call(field(self, item), Number_.intValue)));
-    ///         return bodies;
-    ///     }
-    /// });
-    /// // public final class Box<T extends Number> { ... }
-    /// ```
-    ///
-    /// `Self` is the class with its own type parameters for its type arguments, `Box<T>` — the
-    /// type of `this`, and the only type of the class there is a token of: `Box<String>` and
-    /// `Box<?>` are not expressible. A type parameter is in scope in the header and the instance
-    /// members of the class: mentioned in a `static` member, or in another class, it is rejected
-    /// (JLS 8.1.2, 6.3).
-    ///
-    /// @param target the classpath the class is compiled against
-    /// @param desc the class's binary name
-    /// @param p1 the type parameter
-    /// @param spec declares the class, given the first stage of its header and the token of its type parameter
-    /// @param <B1> the leftmost bound of the type parameter
-    /// @return the rendered class
-    /// @throws IllegalArgumentException if the type parameter has the simple name of the class, or its
-    ///     bound is a raw type
-    /// @throws IllegalArgumentException if `desc` describes a nested class, or a class of a package of
-    ///     `java`, or its package or simple name cannot be written in Java (a keyword, `var`, ...) — before
-    ///     `spec` is called
-    /// @throws IllegalStateException as [#declareClass(TargetClasspath, ClassDesc, TypedClassHeaderSpec)]
-    /// @throws TargetClasspathMismatchException if a metamodel the class uses does not hold on `target`
-    /// @throws FactLookupException if a member the class uses has an overload on `target` that no
-    ///     argument tells it from
-    public static <B1> JavaFile declareClass(
-            TargetClasspath target, ClassDesc desc, TypeParameter<B1> p1, TypedGenericClassSpec1<B1> spec) {
-        return declared(target, desc, List.of(p1), new Generic() {
-            @Override
-            public <Self> MemberBodies<Self, ?> build(ClassDeclaration<Self> declaration) {
-                return spec.build(new ClassHeader<>(declaration), TypedJavaFile.<B1>variable(declaration, 0));
-            }
-        });
-    }
-
-    /// Declares a generic `public final` class with two type parameters, see
-    /// [#declareClass(TargetClasspath, ClassDesc, TypeParameter, TypedGenericClassSpec1)].
-    ///
-    /// @param target the classpath the class is compiled against
-    /// @param desc the class's binary name
-    /// @param p1 the first type parameter
-    /// @param p2 the second type parameter
-    /// @param spec declares the class, given the first stage of its header and the tokens of its type parameters
-    /// @param <B1> the leftmost bound of the first type parameter
-    /// @param <B2> the leftmost bound of the second type parameter
-    /// @return the rendered class
-    /// @throws IllegalArgumentException if a type parameter has the name of the other or of the class, or
-    ///     its bound is a raw type
-    public static <B1, B2> JavaFile declareClass(
-            TargetClasspath target,
-            ClassDesc desc,
-            TypeParameter<B1> p1,
-            TypeParameter<B2> p2,
-            TypedGenericClassSpec2<B1, B2> spec) {
-        return declared(target, desc, List.of(p1, p2), new Generic() {
-            @Override
-            public <Self> MemberBodies<Self, ?> build(ClassDeclaration<Self> declaration) {
-                return spec.build(
-                        new ClassHeader<>(declaration),
-                        TypedJavaFile.<B1>variable(declaration, 0),
-                        TypedJavaFile.<B2>variable(declaration, 1));
-            }
-        });
-    }
-
-    /// Declares a generic `public final` class with three type parameters, see
-    /// [#declareClass(TargetClasspath, ClassDesc, TypeParameter, TypedGenericClassSpec1)].
-    ///
-    /// @param target the classpath the class is compiled against
-    /// @param desc the class's binary name
-    /// @param p1 the first type parameter
-    /// @param p2 the second type parameter
-    /// @param p3 the third type parameter
-    /// @param spec declares the class, given the first stage of its header and the tokens of its type parameters
-    /// @param <B1> the leftmost bound of the first type parameter
-    /// @param <B2> the leftmost bound of the second type parameter
-    /// @param <B3> the leftmost bound of the third type parameter
-    /// @return the rendered class
-    /// @throws IllegalArgumentException if a type parameter has the name of another or of the class, or
-    ///     its bound is a raw type
-    public static <B1, B2, B3> JavaFile declareClass(
-            TargetClasspath target,
-            ClassDesc desc,
-            TypeParameter<B1> p1,
-            TypeParameter<B2> p2,
-            TypeParameter<B3> p3,
-            TypedGenericClassSpec3<B1, B2, B3> spec) {
-        return declared(target, desc, List.of(p1, p2, p3), new Generic() {
-            @Override
-            public <Self> MemberBodies<Self, ?> build(ClassDeclaration<Self> declaration) {
-                return spec.build(
-                        new ClassHeader<>(declaration),
-                        TypedJavaFile.<B1>variable(declaration, 0),
-                        TypedJavaFile.<B2>variable(declaration, 1),
-                        TypedJavaFile.<B3>variable(declaration, 2));
-            }
-        });
-    }
-
-    /// The token of a type parameter of a declaration, as a specification takes it: of a type
-    /// variable of the generator the call of `build` makes anew, bounded by the leftmost bound.
-    @SuppressWarnings("unchecked")
-    private static <B> TypeVarToken<? extends B> variable(ClassDeclaration<?> declaration, int index) {
-        return (TypeVarToken<? extends B>) declaration.variable(index);
-    }
-
-    /// The token of a type parameter of an interface or a record, as a specification takes it.
-    @SuppressWarnings("unchecked")
-    private static <B> TypeVarToken<? extends B> variable(TypeDeclarationSupport<?> declaration, int index) {
-        return (TypeVarToken<? extends B>) declaration.variable(index);
-    }
-
-    /// What declares a class, given its declaration branded with a `Self` of its own.
-    private interface Generic {
-        <Self> MemberBodies<Self, ?> build(ClassDeclaration<Self> declaration);
-    }
-
-    private static JavaFile declared(
-            TargetClasspath target, ClassDesc desc, List<TypeParameter<?>> parameters, Generic spec) {
-        Scopes.requireNoneOpen(
-                "class " + (desc.packageName().isEmpty() ? "" : desc.packageName() + ".") + desc.displayName());
-        return declare(target, declarable(desc), parameters, spec);
-    }
-
-    /// The class `desc` describes, if the typed layer declares it: a top-level class, whose package and
-    /// simple name Java source writes as they are (JLS 3.8, 7.4.1), and of no package of the platform.
-    ///
-    /// @throws IllegalArgumentException if `desc` describes a nested class, or a name of it cannot be written
-    private static ClassDesc declarable(ClassDesc desc) {
-        return declarable(desc, "class");
-    }
-
-    /// The type `desc` describes, if the typed layer declares it: a top-level type of the kind `kind`,
-    /// whose package and simple name Java source writes as they are (JLS 3.8, 7.4.1), and of no package
-    /// of the platform.
-    ///
-    /// @throws IllegalArgumentException if `desc` describes a nested type, or a name of it cannot be written
-    private static ClassDesc declarable(ClassDesc desc, String kind) {
-        String described =
-                desc.packageName().isEmpty() ? desc.displayName() : desc.packageName() + "." + desc.displayName();
-        if (ClassDescNames.nestingChain(desc).size() != 1) {
-            throw new IllegalArgumentException("cannot declare the " + kind + " " + described + ": its name is"
-                    + " that of a nested " + kind + ", and the typed layer declares a top-level type alone");
-        }
-        try {
-            Identifiers.requireTypeIdentifier(desc.displayName());
-            PackageName.of(desc);
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException(
-                    "cannot declare the " + kind + " " + described + ": " + e.getMessage(), e);
-        }
-        if (desc.packageName().equals("java") || desc.packageName().startsWith("java.")) {
-            throw new IllegalArgumentException("cannot declare the " + kind + " " + described + ": a package of"
-                    + " java is one of the platform, which javac refuses to add to where the module java.base has"
-                    + " it and no class loader but the platform's defines a class of");
-        }
-        return desc;
-    }
-
-    private static <Self> JavaFile declare(
-            TargetClasspath target, ClassDesc desc, List<TypeParameter<?>> parameters, Generic spec) {
-        ClassDeclaration<Self> declaration = new ClassDeclaration<>(target, desc, parameters);
-        return declaration.complete(Objects.requireNonNull(
-                spec.build(declaration),
-                "a specification returns the bodies of the members of the class, the stage its declarations end in"));
-    }
-
-    /// The specification of a generic class with one type parameter, whose leftmost bound is `B1`.
-    ///
-    /// @param <B1> the leftmost bound of the type parameter, `Object` for none
-    public interface TypedGenericClassSpec1<B1> {
-        /// Declares the class through `h`, branded with a fresh `Self`, with the token of its type
-        /// parameter, branded with a fresh `T1`.
-        ///
-        /// @param h the first stage of the header of the class
-        /// @param t1 the token of the type parameter
-        /// @param <Self> the brand of the class being declared: the class with `T1` for its type argument
-        /// @param <T1> the brand of the type parameter
-        /// @return the bodies of the members: the stage the declaration of the class ends in
-        <Self, T1 extends B1> MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<T1> t1);
-    }
-
-    /// The specification of a generic class with two type parameters, see [TypedGenericClassSpec1].
-    ///
-    /// @param <B1> the leftmost bound of the first type parameter, `Object` for none
-    /// @param <B2> the leftmost bound of the second type parameter, `Object` for none
-    public interface TypedGenericClassSpec2<B1, B2> {
-        /// Declares the class through `h`, with the tokens of its type parameters.
-        ///
-        /// @param h the first stage of the header of the class
-        /// @param t1 the token of the first type parameter
-        /// @param t2 the token of the second type parameter
-        /// @param <Self> the brand of the class being declared
-        /// @param <T1> the brand of the first type parameter
-        /// @param <T2> the brand of the second type parameter
-        /// @return the bodies of the members: the stage the declaration of the class ends in
-        <Self, T1 extends B1, T2 extends B2> MemberBodies<Self, ?> build(
-                ClassHeader<Self> h, TypeVarToken<T1> t1, TypeVarToken<T2> t2);
-    }
-
-    /// The specification of a generic class with three type parameters, see [TypedGenericClassSpec1].
-    ///
-    /// @param <B1> the leftmost bound of the first type parameter, `Object` for none
-    /// @param <B2> the leftmost bound of the second type parameter, `Object` for none
-    /// @param <B3> the leftmost bound of the third type parameter, `Object` for none
-    public interface TypedGenericClassSpec3<B1, B2, B3> {
-        /// Declares the class through `h`, with the tokens of its type parameters.
-        ///
-        /// @param h the first stage of the header of the class
-        /// @param t1 the token of the first type parameter
-        /// @param t2 the token of the second type parameter
-        /// @param t3 the token of the third type parameter
-        /// @param <Self> the brand of the class being declared
-        /// @param <T1> the brand of the first type parameter
-        /// @param <T2> the brand of the second type parameter
-        /// @param <T3> the brand of the third type parameter
-        /// @return the bodies of the members: the stage the declaration of the class ends in
-        <Self, T1 extends B1, T2 extends B2, T3 extends B3> MemberBodies<Self, ?> build(
-                ClassHeader<Self> h, TypeVarToken<T1> t1, TypeVarToken<T2> t2, TypeVarToken<T3> t3);
     }
 
     /// A self-branded class specification that begins with the header of the class.

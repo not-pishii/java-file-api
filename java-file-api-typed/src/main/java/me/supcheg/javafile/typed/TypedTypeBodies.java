@@ -167,7 +167,7 @@ abstract class TypedTypeBodies<Self, M> {
     // Definitions
     // ------------------------------------------------------------------
 
-    private Slot.Awaiting definable(Invocable member) {
+    Slot.Awaiting definable(Invocable member) {
         String what = member.toString();
         owner.requireDefining(what);
         return slots.stream()
@@ -919,7 +919,7 @@ abstract class TypedTypeBodies<Self, M> {
     }
 
     /// The last parameter of a declared member, of `type`.
-    private static <T> Var<T> lastParameter(TypeToken<T> type, Block<?, ?> root) {
+    static <T> Var<T> lastParameter(TypeToken<T> type, Block<?, ?> root) {
         return new Var<>(type, Var.Role.Fixed.PARAMETER, root);
     }
 
@@ -927,11 +927,11 @@ abstract class TypedTypeBodies<Self, M> {
     // Lowering
     // ------------------------------------------------------------------
 
-    private This<Self> thisOf(Block<?, ?> root) {
+    This<Self> thisOf(Block<?, ?> root) {
         return new This<>(root, self);
     }
 
-    private <R, B extends Block<R, B>> void defineIn(
+    <R, B extends Block<R, B>> void defineIn(
             Slot.Awaiting slot, B root, List<Var<?>> params, Start start, Function<? super B, Terminated<R>> bodyFn) {
         MemberBodies.built(root, bodyFn);
         defined(slot, lower(slot.declared(), root, params, start), "the " + root.path());
@@ -1078,7 +1078,7 @@ abstract class TypedTypeBodies<Self, M> {
     private record Undefined(String what, Site site) {}
 
     /// How the body of a constructor begins.
-    private sealed interface Start {
+    sealed interface Start {
         Start IMPLICIT = new Implicit();
 
         record Implicit() implements Start {}

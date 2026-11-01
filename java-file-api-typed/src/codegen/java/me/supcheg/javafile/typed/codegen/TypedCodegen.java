@@ -143,7 +143,26 @@ public final class TypedCodegen {
     private static final ClassDesc SUPERCLASS = typed("Superclass");
     private static final ClassDesc STATIC_FIELD_DECLARATIONS = typed("StaticFieldDeclarations");
     private static final ClassDesc TYPED_RECORD_BUILDER = typed("TypedRecordBuilder");
+    private static final ClassDesc TYPED_RECORD_BODIES = typed("TypedRecordBodies");
+    private static final ClassDesc TYPED_INTERFACE_BUILDER = typed("TypedInterfaceBuilder");
+    private static final ClassDesc TYPED_INTERFACE_BODIES = typed("TypedInterfaceBodies");
+    private static final ClassDesc TYPED_TYPE_BODIES = typed("TypedTypeBodies");
+    private static final ClassDesc TYPED_ENUM_CONSTANT_BODIES = typed("TypedEnumConstantBodies");
     private static final ClassDesc TYPED_ENUM_BUILDER = typed("TypedEnumBuilder");
+    private static final ClassDesc ENUM_CONSTANT_MEMBER =
+            ClassDesc.of("me.supcheg.javafile.model", "EnumConstantMember");
+    private static final ClassDesc MEMBER_KIND =
+            typed("TypeDeclarationSupport").nested("Member").nested("Kind");
+    private static final ClassDesc GENERIC_DECLARATIONS = typed("GenericDeclarations");
+    private static final ClassDesc GENERIC_DECLARATION_ARITIES = typed("GenericDeclarationArities");
+    private static final ClassDesc ENUM_CONSTANT_BODY_ARITIES = typed("EnumConstantBodyArities");
+    private static final ClassDesc TYPE_PARAMETER = typed("TypeParameter");
+    private static final ClassDesc CLASS_HEADER = typed("ClassHeader");
+    private static final ClassDesc TYPE_VAR_TOKEN = facts("TypeVarToken");
+    private static final ClassDesc STRING = ClassDesc.of("java.lang", "String");
+    private static final ClassDesc JAVA_FILE = ClassDesc.of("me.supcheg.javafile", "JavaFile");
+    private static final ClassDesc TYPED_JAVA_FILE = typed("TypedJavaFile");
+    private static final ClassDesc OVERRIDE = ClassDesc.of("java.lang", "Override");
     private static final ClassDesc TARGET_CLASSPATH = facts("TargetClasspath");
     private static final ClassDesc CLASS_DESC = ClassDesc.of("java.lang.constant", "ClassDesc");
     private static final ClassDesc DOC_COMMENT = ClassDesc.of("me.supcheg.javafile.doc", "DocComment");
@@ -212,7 +231,9 @@ public final class TypedCodegen {
                                 subclassHeaderArities(),
                                 superSiteArities(),
                                 recordConstructorArities(),
-                                enumConstructorArities()),
+                                enumConstructorArities(),
+                                genericDeclarationArities(),
+                                enumConstantBodyArities()),
                         IntStream.rangeClosed(3, REACH.lambdas() + 1).mapToObj(TypedCodegen::function))
                 .flatMap(files -> files)
                 .toList();
@@ -330,6 +351,28 @@ public final class TypedCodegen {
             "eleventh",
             "twelfth",
             "thirteenth");
+
+    /// The words of the numbers a count of the forms reaches: `one`, `two`, ... .
+    private static final List<String> COUNTS = List.of(
+            "zero",
+            "one",
+            "two",
+            "three",
+            "four",
+            "five",
+            "six",
+            "seven",
+            "eight",
+            "nine",
+            "ten",
+            "eleven",
+            "twelve",
+            "thirteen");
+
+    /// The word of `n`, as the documentation of a form says it.
+    static String count(int n) {
+        return n < COUNTS.size() ? COUNTS.get(n) : Integer.toString(n);
+    }
 
     /// The type variables of the parameters of a member of `n` parameters: `A1` to `An`.
     static List<String> as(int n) {
@@ -494,6 +537,13 @@ public final class TypedCodegen {
                             (doc, i) ->
                                     doc.typeParam("A" + i, "the " + what + " of the " + ordinal(i, n) + "parameter"),
                             (_, last) -> last);
+        }
+
+        /// The parameters `p1` to `pn`, each described by its position.
+        Doc params(int n, String what) {
+            return IntStream.rangeClosed(1, n)
+                    .boxed()
+                    .reduce(this, (doc, i) -> doc.param("p" + i, "the " + ordinal(i, n) + what), (_, last) -> last);
         }
 
         @Override
@@ -2268,5 +2318,378 @@ public final class TypedCodegen {
                                 + " the constructor does not declare, or an argument uses a variable out of scope or"
                                 + " throws one");
         method(cb, PUBLIC, typeVars(as), terminatedVoid(), "super_", params, documented, b -> b.return_(invoked));
+    }
+
+    // ------------------------------------------------------------------
+    // The stages of a generic declaration
+    // ------------------------------------------------------------------
+
+    /// A kind of a type whose declaration takes type parameters: a class, an interface or a record.
+    ///
+    /// @param simple the word the generated stage types are named by
+    /// @param entry the name of the entry point
+    /// @param bridge the bridge interface of [GenericDeclarations] the entry point hands its spec to
+    /// @param builder the first stage of the declaration, which receives the tokens
+    /// @param bodies the stage the declaration ends in
+    /// @param parameter the name of the first stage of the declaration
+    /// @param wildcard whether the bodies are of a wildcard second type argument, as a class's are
+    private record GenericKind(
+            String simple,
+            String entry,
+            String bridge,
+            ClassDesc builder,
+            ClassDesc bodies,
+            String parameter,
+            boolean wildcard) {
+        String noun() {
+            return simple.toLowerCase();
+        }
+
+        String spec(int n) {
+            return "TypedGeneric" + simple + "Spec" + n;
+        }
+
+        TypeRef bodiesType(String self) {
+            return wildcard ? applied(bodies, exact(self), unbounded()) : appliedTo(bodies, self);
+        }
+    }
+
+    private static final GenericKind GENERIC_CLASS =
+            new GenericKind("Class", "declareClass", "ClassBodies", CLASS_HEADER, MEMBER_BODIES, "h", true);
+    private static final GenericKind GENERIC_INTERFACE = new GenericKind(
+            "Interface", "interface_", "InterfaceBodies", TYPED_INTERFACE_BUILDER, TYPED_INTERFACE_BODIES, "ib", false);
+    private static final GenericKind GENERIC_RECORD =
+            new GenericKind("Record", "record", "RecordBodies", TYPED_RECORD_BUILDER, TYPED_RECORD_BODIES, "rb", false);
+    private static final List<GenericKind> GENERIC_KINDS = List.of(GENERIC_CLASS, GENERIC_INTERFACE, GENERIC_RECORD);
+
+    /// The entry points of a generic class, interface and record, and their specification stages, for one
+    /// to [MAX_ARITY] type parameters: `TypedJavaFile` extends the class, so the stage types are its nested
+    /// types and the entry points are its static methods.
+    private static JavaFile genericDeclarationArities() {
+        return arities("GenericDeclarationArities", List.of(), TYPED_JAVA_FILE, cb -> {
+            IntStream.rangeClosed(1, MAX_ARITY).forEach(n -> GENERIC_KINDS.forEach(kind -> genericSpec(cb, kind, n)));
+            IntStream.rangeClosed(1, MAX_ARITY).forEach(n -> GENERIC_KINDS.forEach(kind -> genericEntry(cb, kind, n)));
+        });
+    }
+
+    /// `TypedGenericClassSpec{n}` and its like: the specification a generic declaration takes.
+    private static void genericSpec(ClassBuilder cb, GenericKind kind, int n) {
+        cb.withNestedInterface(GENERIC_DECLARATION_ARITIES.nested(kind.spec(n)), ib -> {
+            generated(ib);
+            IntStream.rangeClosed(1, n).forEach(i -> ib.withTypeParam("B" + i));
+            ib.withDoc(d -> {
+                d.paragraph("The specification of a generic " + kind.noun() + " with " + count(n) + " type"
+                        + (n == 1 ? " parameter" : " parameters") + ", whose leftmost "
+                        + (n == 1 ? "bound is `B1`" : "bounds are " + bounds(n)) + ".");
+                IntStream.rangeClosed(1, n)
+                        .forEach(i -> d.typeParam(
+                                "B" + i,
+                                "the leftmost bound of the " + ordinal(i, n) + "type parameter, `Object` for none"));
+            });
+            ib.withAbstractMethod("build", kind.bodiesType("Self"), amb -> {
+                amb.withDoc(d -> {
+                    d.paragraph("Declares the " + kind.noun() + " through `" + kind.parameter
+                            + "`, branded with a fresh `Self`, with the "
+                            + (n == 1 ? "token of its type parameter" : "tokens of its type parameters") + ".");
+                    d.param(
+                            kind.parameter,
+                            "the self-branded " + (kind == GENERIC_CLASS ? "first stage of the header" : "builder")
+                                    + " of the " + kind.noun());
+                    IntStream.rangeClosed(1, n)
+                            .forEach(i -> d.param("t" + i, "the token of the " + ordinal(i, n) + "type parameter"));
+                    d.typeParam("Self", "the brand of the " + kind.noun() + " being declared");
+                    IntStream.rangeClosed(1, n)
+                            .forEach(i -> d.typeParam("T" + i, "the brand of the " + ordinal(i, n) + "type parameter"));
+                    d.returns(
+                            "the bodies of the members: the stage the declaration of the " + kind.noun() + " ends in");
+                });
+                amb.withTypeParam("Self");
+                IntStream.rangeClosed(1, n).forEach(i -> amb.withTypeParam("T" + i, bound(tv("B" + i))));
+                amb.withParam(kind.parameter, appliedTo(kind.builder, "Self"));
+                IntStream.rangeClosed(1, n).forEach(i -> amb.withParam("t" + i, appliedTo(TYPE_VAR_TOKEN, "T" + i)));
+            });
+        });
+    }
+
+    /// ``B1`, `B2` and `B3` ``: the leftmost bounds of the type parameters of a stage.
+    private static String bounds(int n) {
+        String joined =
+                IntStream.rangeClosed(1, n).mapToObj(i -> "`B" + i + "`").collect(Collectors.joining(", "));
+        int last = joined.lastIndexOf(", ");
+        return last < 0 ? joined : joined.substring(0, last) + " and " + joined.substring(last + 2);
+    }
+
+    /// `declareClass(target, desc, p1, ..., pn, spec)` and its like: the entry point of a generic declaration.
+    private static void genericEntry(ClassBuilder cb, GenericKind kind, int n) {
+        List<String> bs = IntStream.rangeClosed(1, n).mapToObj(i -> "B" + i).toList();
+        List<Param> params = listOf(
+                List.of(param("target", Types.of(TARGET_CLASSPATH)), param("desc", Types.of(CLASS_DESC))),
+                IntStream.rangeClosed(1, n)
+                        .mapToObj(i -> param("p" + i, appliedTo(TYPE_PARAMETER, "B" + i)))
+                        .toList(),
+                List.of(param("spec", applied(GENERIC_DECLARATION_ARITIES.nested(kind.spec(n)), exacts(bs)))));
+        String inScope = kind == GENERIC_CLASS
+                ? "header, the members and the member types of the class"
+                : kind == GENERIC_INTERFACE
+                        ? "header, the members and the member types of the interface"
+                        : "components, its header, its members and its member types";
+        Doc doc = Doc.of("Declares a generic `public " + (kind.wildcard ? "final " : "") + kind.noun() + "` with "
+                        + (n == 1 ? "one type parameter" : count(n) + " type parameters")
+                        + ": the " + (n == 1 ? "token is" : "tokens are") + " in scope in the " + inScope + ".")
+                .param("target", "the classpath the " + kind.noun() + " is compiled against")
+                .param("desc", "the " + kind.noun() + "'s binary name")
+                .params(n, "type parameter")
+                .returns("the rendered " + kind.noun())
+                .throws_(
+                        ILLEGAL_ARGUMENT,
+                        "if a type parameter has the name of another or of the " + kind.noun()
+                                + ", or its bound is a raw type; or if `desc` describes a nested type, or a name of it"
+                                + " cannot be written")
+                .throws_(ILLEGAL_STATE, "if a member `spec` declared is not defined")
+                .param(
+                        "spec",
+                        "declares the " + kind.noun() + ", given its "
+                                + (kind == GENERIC_CLASS ? "header" : "builder")
+                                + " and the tokens of its type parameters");
+        for (int i = 1; i <= n; i++) {
+            doc = doc.typeParam("B" + i, "the leftmost bound of the " + ordinal(i, n) + "type parameter");
+        }
+        method(
+                cb,
+                STATIC,
+                typeVars(bs),
+                Types.of(JAVA_FILE),
+                kind.entry,
+                params,
+                doc,
+                b -> b.return_(staticCall(
+                        GENERIC_DECLARATIONS,
+                        kind.entry,
+                        field("target"),
+                        field("desc"),
+                        staticCall(LIST, "of", names("p", n)),
+                        declarationBodies(kind, n))));
+    }
+
+    /// `new GenericDeclarations.ClassBodies() { ... }` and its like: what gives the specification the
+    /// declaration and the tokens of its type parameters.
+    private static Expr declarationBodies(GenericKind kind, int n) {
+        String holder = kind == GENERIC_CLASS ? "declaration" : "builder";
+        return Exprs.newAnonymous(
+                Types.of(GENERIC_DECLARATIONS.nested(kind.bridge)),
+                List.of(),
+                acb -> acb.withMethod("build", kind.bodiesType("Self"), mb -> {
+                    mb.withAnnotation(OVERRIDE);
+                    mb.withTypeParam("Self");
+                    mb.withParam(holder, appliedTo(kind == GENERIC_CLASS ? CLASS_DECLARATION : kind.builder, "Self"));
+                    mb.withBody(b -> b.return_(field("spec")
+                            .call(
+                                    "build",
+                                    listOf(
+                                                    kind == GENERIC_CLASS
+                                                            ? List.<Expr>of(newDiamond(CLASS_HEADER, field(holder)))
+                                                            : List.<Expr>of(field(holder)),
+                                                    IntStream.rangeClosed(1, n)
+                                                            .mapToObj(i -> (Expr) staticCall(
+                                                                    GENERIC_DECLARATIONS,
+                                                                    "variable",
+                                                                    field(holder),
+                                                                    literal(i - 1)))
+                                                            .toList())
+                                            .toArray(Expr[]::new))));
+                }));
+    }
+
+    // ------------------------------------------------------------------
+    // The helper methods of the body of an enum constant
+    // ------------------------------------------------------------------
+
+    /// The helper methods of the body of an enum constant, of every arity, which `TypedEnumConstantBodies`
+    /// inherits: `declareMethod`, `declareVoidMethod`, `declareStaticMethod` and `declareVoidStaticMethod`.
+    private static JavaFile enumConstantBodyArities() {
+        return arities(
+                "EnumConstantBodyArities",
+                List.of("Self"),
+                Optional.of(
+                        bound(applied(TYPED_TYPE_BODIES, exact("Self"), exactType(Types.of(ENUM_CONSTANT_MEMBER))))),
+                TYPED_ENUM_CONSTANT_BODIES,
+                cb -> {
+                    cb.accept(new ConstructorDecl(
+                            List.of(),
+                            Set.of(),
+                            List.of(
+                                    param("owner", appliedTo(TYPED_ENUM_BUILDER, "Self")),
+                                    param("abstractMethods", applied(LIST, exactType(Types.of(INVOCABLE))))),
+                            new ConstructorBody.Explicit(
+                                    CodeBody.EMPTY,
+                                    new ConstructorInvocation.Super(List.of(
+                                            field("owner"),
+                                            staticCall(
+                                                    TYPED_ENUM_CONSTANT_BODIES,
+                                                    "declared",
+                                                    field("owner"),
+                                                    field("abstractMethods")))),
+                                    CodeBody.EMPTY),
+                            List.of(),
+                            Optional.empty()));
+                    hook(
+                            cb,
+                            List.of(TypeVar.of("F", Types.of(INVOCABLE))),
+                            tv("F"),
+                            "declaredHelper",
+                            param("member", tv("F")),
+                            param("kind", Types.of(MEMBER_KIND)));
+                    for (int n = 0; n <= MAX_ARITY; n++) {
+                        helper(cb, n, false, false);
+                        helper(cb, n, true, false);
+                        helper(cb, n, false, true);
+                        helper(cb, n, true, true);
+                    }
+                    for (int n = 5; n <= MAX_ARITY; n++) {
+                        defineHelper(cb, n, false, false);
+                        defineHelper(cb, n, true, false);
+                        defineHelper(cb, n, false, true);
+                        defineHelper(cb, n, true, true);
+                    }
+                });
+    }
+
+    /// `declareMethod(name, result, p1, ..., pn)` and its like.
+    ///
+    /// @param voidResult whether the helper is `void`
+    /// @param staticMember whether the helper is `static`
+    private static void helper(ClassBuilder cb, int n, boolean voidResult, boolean staticMember) {
+        List<String> as = as(n);
+        String name = voidResult
+                ? (staticMember ? "declareVoidStaticMethod" : "declareVoidMethod")
+                : (staticMember ? "declareStaticMethod" : "declareMethod");
+        String family = (voidResult ? "Void" : "") + (staticMember ? "Static" : "") + "MethodRef" + n;
+        TypeRef returned = applied(
+                facts(family),
+                (staticMember
+                                ? Stream.concat(Stream.of("R").filter(_ -> !voidResult), as.stream())
+                                : Stream.concat(
+                                        Stream.of("Self"),
+                                        Stream.concat(Stream.of("R").filter(_ -> !voidResult), as.stream())))
+                        .map(TypedCodegen::exact)
+                        .toList());
+        List<Param> params = listOf(
+                List.of(param("name", Types.of(STRING))),
+                !voidResult ? List.of(param("result", typeToken("R"))) : List.<Param>of(),
+                IntStream.rangeClosed(1, n)
+                        .mapToObj(i -> param("p" + i, typeToken("A" + i)))
+                        .toList());
+        List<String> vars = concat(voidResult ? List.of() : List.of("R"), as);
+        List<Expr> args = listOf(
+                List.of((Expr) call("self"), field("name")),
+                !voidResult ? List.of((Expr) field("result")) : List.<Expr>of(),
+                names("p", n),
+                List.of(staticField(MEMBER_TRAITS, staticMember ? "FINAL" : "DEFAULT")));
+        Doc doc = Doc.of("Declares a `public` "
+                        + (staticMember ? "`static` " : "")
+                        + (voidResult ? "`void` " : "")
+                        + "helper method"
+                        + (n == 0 ? "" : " of " + plural(n, "parameter"))
+                        + " of the constant's body, which [#define] gives its body.")
+                .param("name", "the method name")
+                .params(n, "parameter type")
+                .typeParams(n, "parameter type");
+        Doc documented = (!voidResult ? doc.param("result", "the result type").typeParam("R", "the result type") : doc)
+                .returns("the fact of the method")
+                .throws_(ILLEGAL_ARGUMENT, "if the method has the signature of a method the constant overrides")
+                .throws_(ILLEGAL_STATE, "if the declarations of the body have ended");
+        method(
+                cb,
+                PUBLIC,
+                typeVars(vars),
+                returned,
+                name,
+                params,
+                documented,
+                b -> b.return_(call(
+                        "declaredHelper",
+                        staticCall(
+                                UNSAFE_INVOCABLES,
+                                voidResult
+                                        ? (staticMember ? "voidStaticMethod" : "voidMethod")
+                                        : (staticMember ? "staticMethod" : "method"),
+                                args),
+                        staticField(MEMBER_KIND, staticMember ? "STATIC" : "METHOD"))));
+    }
+
+    /// `define(method, body)` of a helper of the body of an enum constant, of five to twelve parameters:
+    /// the body of a constant is defined by [TypedTypeBodies] up to four, as are the bodies of an
+    /// interface, a record and an enum, and the helpers reach twelve.
+    ///
+    /// @param voidResult whether the helper is `void`
+    /// @param staticMember whether the helper is `static`
+    private static void defineHelper(ClassBuilder cb, int n, boolean voidResult, boolean staticMember) {
+        List<String> as = as(n);
+        String family = (voidResult ? "Void" : "") + (staticMember ? "Static" : "") + "MethodRef" + n;
+        TypeRef methodType = applied(
+                facts(family),
+                (staticMember
+                                ? Stream.concat(Stream.of("R").filter(_ -> !voidResult), as.stream())
+                                : Stream.concat(
+                                        Stream.of("Self"),
+                                        Stream.concat(Stream.of("R").filter(_ -> !voidResult), as.stream())))
+                        .map(TypedCodegen::exact)
+                        .toList());
+        TypeRef bodyType;
+        if (staticMember) {
+            List<TypeArg> inputs = Stream.concat(
+                            Stream.of(exactType(voidResult ? Types.of(VOID_BODY) : appliedTo(BODY, "R"))),
+                            as.stream().map(a -> exactType(var(a))))
+                    .toList();
+            bodyType = function(inputs, exactType(voidResult ? terminatedVoid() : appliedTo(TERMINATED, "R")));
+        } else {
+            bodyType = instanceBody(
+                    n,
+                    voidResult ? Types.of(VOID_BODY) : appliedTo(BODY, "R"),
+                    voidResult ? Types.of(VOID) : tv("R"),
+                    as);
+        }
+        List<TypeVar> vars = typeVars(concat(voidResult ? List.of() : List.of("R"), as));
+        Doc doc = Doc.of("Defines the declared "
+                        + (staticMember ? "static " : "")
+                        + (voidResult ? "`void` " : "")
+                        + "helper method of " + plural(n, "parameter")
+                        + " of the constant's body.")
+                .param("method", "the declared method")
+                .param("body", "the body, given its block" + (staticMember ? "" : ", `this`") + " and the parameters")
+                .params(n, "parameter type")
+                .typeParams(n, "type parameter")
+                .throws_(ILLEGAL_STATE, "as a definition of a method of a class does ([MemberBodies])");
+        voidMethod(cb, FINAL, vars, "define", List.of(param("method", methodType), param("body", bodyType)), doc, b -> {
+            b.localVar(
+                    "slot",
+                    Types.of(TYPED_TYPE_BODIES.nested("Slot").nested("Awaiting")),
+                    call("definable", field("method")));
+            b.localVar(
+                    "root",
+                    voidResult ? Types.of(VOID_BODY) : appliedTo(BODY, "R"),
+                    staticCall(
+                            voidResult ? VOID_BODY : BODY,
+                            "root",
+                            add(literal("body of method "), field("method").call("name")),
+                            staticCall(MEMBER_BODIES, "declares", field("method"))));
+            if (!staticMember) {
+                b.localVar("self", appliedTo(THIS, "Self"), call("thisOf", field("root")));
+            }
+            IntStream.rangeClosed(1, n)
+                    .forEach(i -> b.localVar(
+                            "p" + i,
+                            var("A" + i),
+                            call("lastParameter", field("method").call("param" + i), field("root"))));
+            List<Expr> arguments = listOf(
+                    List.of((Expr) field("b")), staticMember ? List.<Expr>of() : List.of(field("self")), names("p", n));
+            b.exprStatement(call(
+                    "defineIn",
+                    field("slot"),
+                    field("root"),
+                    staticCall(LIST, "of", names("p", n)),
+                    staticField(TYPED_TYPE_BODIES.nested("Start"), "IMPLICIT"),
+                    Exprs.lambda(List.of("b"), field("body").call(staticMember ? "apply" : "build", arguments))));
+        });
     }
 }
