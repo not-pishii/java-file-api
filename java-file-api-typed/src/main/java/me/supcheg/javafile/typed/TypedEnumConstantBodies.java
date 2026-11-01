@@ -65,6 +65,73 @@ public final class TypedEnumConstantBodies<Self> extends TypedTypeBodies<Self, E
         return type.token();
     }
 
+    /// Declares a generic `public` member interface of the constant's body with one type parameter,
+    /// implicitly `static`.
+    ///
+    /// @param name the simple name of the member interface
+    /// @param p1 the type parameter
+    /// @param spec declares the interface, given its builder and the token of the type parameter
+    /// @param <I> the brand of the member interface
+    /// @param <B1> the leftmost bound of the type parameter
+    /// @return the token of the member interface
+    public <I, B1> InterfaceToken<I> declareNestedInterface(
+            String name, TypeParameter<B1> p1, TypedJavaFile.TypedGenericInterfaceSpec1<B1> spec) {
+        NestedDeclarations.NestedType<InterfaceToken<I>> type =
+                NestedDeclarations.interface_(owner().target(), owner().desc(), name, p1, spec);
+        nested = java.util.stream.Stream.concat(nested.stream(), java.util.stream.Stream.of(type.type()))
+                .toList();
+        return type.token();
+    }
+
+    /// Declares a generic `public` member interface of the constant's body with two type parameters,
+    /// see [#declareNestedInterface(String, TypeParameter, TypedJavaFile.TypedGenericInterfaceSpec1)].
+    ///
+    /// @param name the simple name of the member interface
+    /// @param p1 the first type parameter
+    /// @param p2 the second type parameter
+    /// @param spec declares the interface, given its builder and the tokens of its type parameters
+    /// @param <I> the brand of the member interface
+    /// @param <B1> the leftmost bound of the first type parameter
+    /// @param <B2> the leftmost bound of the second type parameter
+    /// @return the token of the member interface
+    public <I, B1, B2> InterfaceToken<I> declareNestedInterface(
+            String name,
+            TypeParameter<B1> p1,
+            TypeParameter<B2> p2,
+            TypedJavaFile.TypedGenericInterfaceSpec2<B1, B2> spec) {
+        NestedDeclarations.NestedType<InterfaceToken<I>> type =
+                NestedDeclarations.interface_(owner().target(), owner().desc(), name, p1, p2, spec);
+        nested = java.util.stream.Stream.concat(nested.stream(), java.util.stream.Stream.of(type.type()))
+                .toList();
+        return type.token();
+    }
+
+    /// Declares a generic `public` member interface of the constant's body with three type parameters,
+    /// see [#declareNestedInterface(String, TypeParameter, TypedJavaFile.TypedGenericInterfaceSpec1)].
+    ///
+    /// @param name the simple name of the member interface
+    /// @param p1 the first type parameter
+    /// @param p2 the second type parameter
+    /// @param p3 the third type parameter
+    /// @param spec declares the interface, given its builder and the tokens of its type parameters
+    /// @param <I> the brand of the member interface
+    /// @param <B1> the leftmost bound of the first type parameter
+    /// @param <B2> the leftmost bound of the second type parameter
+    /// @param <B3> the leftmost bound of the third type parameter
+    /// @return the token of the member interface
+    public <I, B1, B2, B3> InterfaceToken<I> declareNestedInterface(
+            String name,
+            TypeParameter<B1> p1,
+            TypeParameter<B2> p2,
+            TypeParameter<B3> p3,
+            TypedJavaFile.TypedGenericInterfaceSpec3<B1, B2, B3> spec) {
+        NestedDeclarations.NestedType<InterfaceToken<I>> type =
+                NestedDeclarations.interface_(owner().target(), owner().desc(), name, p1, p2, p3, spec);
+        nested = java.util.stream.Stream.concat(nested.stream(), java.util.stream.Stream.of(type.type()))
+                .toList();
+        return type.token();
+    }
+
     /// Declares a `public` member record of the constant's body, implicitly `static`.
     ///
     /// @param name the simple name of the member record
@@ -74,6 +141,73 @@ public final class TypedEnumConstantBodies<Self> extends TypedTypeBodies<Self, E
     public <R> FinalClassToken<R> declareNestedRecord(String name, TypedJavaFile.TypedRecordSpec spec) {
         NestedDeclarations.NestedType<FinalClassToken<R>> type =
                 NestedDeclarations.record(owner().target(), owner().desc(), name, spec);
+        nested = java.util.stream.Stream.concat(nested.stream(), java.util.stream.Stream.of(type.type()))
+                .toList();
+        return type.token();
+    }
+
+    /// Declares a generic `public` member record of the constant's body with one type parameter,
+    /// implicitly `static`.
+    ///
+    /// @param name the simple name of the member record
+    /// @param p1 the type parameter
+    /// @param spec declares the record, given its builder and the token of the type parameter
+    /// @param <R> the brand of the member record
+    /// @param <B1> the leftmost bound of the type parameter
+    /// @return the token of the member record
+    public <R, B1> FinalClassToken<R> declareNestedRecord(
+            String name, TypeParameter<B1> p1, TypedJavaFile.TypedGenericRecordSpec1<B1> spec) {
+        NestedDeclarations.NestedType<FinalClassToken<R>> type =
+                NestedDeclarations.record(owner().target(), owner().desc(), name, p1, spec);
+        nested = java.util.stream.Stream.concat(nested.stream(), java.util.stream.Stream.of(type.type()))
+                .toList();
+        return type.token();
+    }
+
+    /// Declares a generic `public` member record of the constant's body with two type parameters,
+    /// see [#declareNestedRecord(String, TypeParameter, TypedJavaFile.TypedGenericRecordSpec1)].
+    ///
+    /// @param name the simple name of the member record
+    /// @param p1 the first type parameter
+    /// @param p2 the second type parameter
+    /// @param spec declares the record, given its builder and the tokens of its type parameters
+    /// @param <R> the brand of the member record
+    /// @param <B1> the leftmost bound of the first type parameter
+    /// @param <B2> the leftmost bound of the second type parameter
+    /// @return the token of the member record
+    public <R, B1, B2> FinalClassToken<R> declareNestedRecord(
+            String name,
+            TypeParameter<B1> p1,
+            TypeParameter<B2> p2,
+            TypedJavaFile.TypedGenericRecordSpec2<B1, B2> spec) {
+        NestedDeclarations.NestedType<FinalClassToken<R>> type =
+                NestedDeclarations.record(owner().target(), owner().desc(), name, p1, p2, spec);
+        nested = java.util.stream.Stream.concat(nested.stream(), java.util.stream.Stream.of(type.type()))
+                .toList();
+        return type.token();
+    }
+
+    /// Declares a generic `public` member record of the constant's body with three type parameters,
+    /// see [#declareNestedRecord(String, TypeParameter, TypedJavaFile.TypedGenericRecordSpec1)].
+    ///
+    /// @param name the simple name of the member record
+    /// @param p1 the first type parameter
+    /// @param p2 the second type parameter
+    /// @param p3 the third type parameter
+    /// @param spec declares the record, given its builder and the tokens of its type parameters
+    /// @param <R> the brand of the member record
+    /// @param <B1> the leftmost bound of the first type parameter
+    /// @param <B2> the leftmost bound of the second type parameter
+    /// @param <B3> the leftmost bound of the third type parameter
+    /// @return the token of the member record
+    public <R, B1, B2, B3> FinalClassToken<R> declareNestedRecord(
+            String name,
+            TypeParameter<B1> p1,
+            TypeParameter<B2> p2,
+            TypeParameter<B3> p3,
+            TypedJavaFile.TypedGenericRecordSpec3<B1, B2, B3> spec) {
+        NestedDeclarations.NestedType<FinalClassToken<R>> type =
+                NestedDeclarations.record(owner().target(), owner().desc(), name, p1, p2, p3, spec);
         nested = java.util.stream.Stream.concat(nested.stream(), java.util.stream.Stream.of(type.type()))
                 .toList();
         return type.token();

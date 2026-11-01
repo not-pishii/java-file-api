@@ -945,4 +945,96 @@ class NestedTypesTest {
             }
         });
     }
+
+    @Test
+    void anEnumConstantBodyDeclaresGenericMemberInterfacesAndRecords() {
+        JavaFile file = TypedJavaFile.enum_(UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedEnumSpec() {
+            @Override
+            public <Self> TypedEnumBodies<Self> build(TypedEnumBuilder<Self> eb) {
+                eb.constant("A", body -> {
+                    body.declareNestedInterface("I1", typeParam("A"), genericInterface1());
+                    body.declareNestedInterface("I2", typeParam("A"), typeParam("B"), genericInterface2());
+                    body.declareNestedInterface(
+                            "I3", typeParam("A"), typeParam("B"), typeParam("C"), genericInterface3());
+                    body.declareNestedRecord("R1", typeParam("A"), genericRecord1());
+                    body.declareNestedRecord("R2", typeParam("A"), typeParam("B"), genericRecord2());
+                    body.declareNestedRecord("R3", typeParam("A"), typeParam("B"), typeParam("C"), genericRecord3());
+                });
+                return eb.bodies();
+            }
+        });
+
+        assertThat(file.render())
+                .contains("public interface I1<A> {")
+                .contains("public interface I2<A, B> {")
+                .contains("public interface I3<A, B, C> {")
+                .contains("public record R1<A>(A value) {")
+                .contains("public record R2<A, B>(A first, B second) {")
+                .contains("public record R3<A, B, C>(A first, B second, C third) {");
+        CompiledClasses.of(file);
+    }
+
+    private static TypedJavaFile.TypedGenericInterfaceSpec1<Object> genericInterface1() {
+        return new TypedJavaFile.TypedGenericInterfaceSpec1<>() {
+            @Override
+            public <Inner, A> TypedInterfaceBodies<Inner> build(TypedInterfaceBuilder<Inner> inner, TypeVarToken<A> a) {
+                return inner.bodies();
+            }
+        };
+    }
+
+    private static TypedJavaFile.TypedGenericInterfaceSpec2<Object, Object> genericInterface2() {
+        return new TypedJavaFile.TypedGenericInterfaceSpec2<>() {
+            @Override
+            public <Inner, A, B> TypedInterfaceBodies<Inner> build(
+                    TypedInterfaceBuilder<Inner> inner, TypeVarToken<A> a, TypeVarToken<B> b) {
+                return inner.bodies();
+            }
+        };
+    }
+
+    private static TypedJavaFile.TypedGenericInterfaceSpec3<Object, Object, Object> genericInterface3() {
+        return new TypedJavaFile.TypedGenericInterfaceSpec3<>() {
+            @Override
+            public <Inner, A, B, C> TypedInterfaceBodies<Inner> build(
+                    TypedInterfaceBuilder<Inner> inner, TypeVarToken<A> a, TypeVarToken<B> b, TypeVarToken<C> c) {
+                return inner.bodies();
+            }
+        };
+    }
+
+    private static TypedJavaFile.TypedGenericRecordSpec1<Object> genericRecord1() {
+        return new TypedJavaFile.TypedGenericRecordSpec1<>() {
+            @Override
+            public <Inner, A> TypedRecordBodies<Inner> build(TypedRecordBuilder<Inner> rb, TypeVarToken<A> a) {
+                rb.component("value", a);
+                return rb.bodies();
+            }
+        };
+    }
+
+    private static TypedJavaFile.TypedGenericRecordSpec2<Object, Object> genericRecord2() {
+        return new TypedJavaFile.TypedGenericRecordSpec2<>() {
+            @Override
+            public <Inner, A, B> TypedRecordBodies<Inner> build(
+                    TypedRecordBuilder<Inner> rb, TypeVarToken<A> a, TypeVarToken<B> b) {
+                rb.component("first", a);
+                rb.component("second", b);
+                return rb.bodies();
+            }
+        };
+    }
+
+    private static TypedJavaFile.TypedGenericRecordSpec3<Object, Object, Object> genericRecord3() {
+        return new TypedJavaFile.TypedGenericRecordSpec3<>() {
+            @Override
+            public <Inner, A, B, C> TypedRecordBodies<Inner> build(
+                    TypedRecordBuilder<Inner> rb, TypeVarToken<A> a, TypeVarToken<B> b, TypeVarToken<C> c) {
+                rb.component("first", a);
+                rb.component("second", b);
+                rb.component("third", c);
+                return rb.bodies();
+            }
+        };
+    }
 }
