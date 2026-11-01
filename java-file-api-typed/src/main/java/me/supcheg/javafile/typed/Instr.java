@@ -36,6 +36,12 @@ sealed interface Instr {
     /// @param body the body, which the statement completes normally exactly when it does
     record Synchronized(Node lock, Block<?, ?> body) implements Instr {}
 
+    /// `label: { ... }`.
+    ///
+    /// @param label the label
+    /// @param body the labeled block
+    record Labeled(Label label, Block<?, ?> body) implements Instr {}
+
     /// `if (c) { ... }`, with what it does where `c` does not hold.
     record If(Node condition, Block<?, ?> then, Otherwise otherwise) implements Instr {}
 
@@ -62,17 +68,20 @@ sealed interface Instr {
         }
     }
 
-    /// `while (c) { ... }`.
-    record While(LoopCtl ctl, Node condition, Block<?, ?> body) implements Instr {}
+    /// `while (c) { ... }`, and the label of the loop, if it has one.
+    record While(LoopCtl ctl, Optional<Label> label, Node condition, Block<?, ?> body) implements Instr {}
 
-    /// `do { ... } while (c);`.
-    record DoWhile(LoopCtl ctl, Block<?, ?> body, Node condition) implements Instr {}
+    /// `do { ... } while (c);`, and the label of the loop, if it has one.
+    record DoWhile(LoopCtl ctl, Optional<Label> label, Block<?, ?> body, Node condition) implements Instr {}
 
-    /// `for (T v = init; c; update) { ... }`.
-    record For(LoopCtl ctl, MutVar<?> var, Node init, Node condition, Node update, Block<?, ?> body) implements Instr {}
+    /// `for (T v = init; c; update) { ... }`, and the label of the loop, if it has one.
+    record For(
+            LoopCtl ctl, Optional<Label> label, MutVar<?> var, Node init, Node condition, Node update, Block<?, ?> body)
+            implements Instr {}
 
-    /// `for (T v : iterated) { ... }`.
-    record ForEach(LoopCtl ctl, Var<?> var, Iterated iterated, Block<?, ?> body) implements Instr {}
+    /// `for (T v : iterated) { ... }`, and the label of the loop, if it has one.
+    record ForEach(LoopCtl ctl, Optional<Label> label, Var<?> var, Iterated iterated, Block<?, ?> body)
+            implements Instr {}
 
     /// What a `for`-each loop iterates (JLS 14.14.2): an `Iterable`, or an array.
     sealed interface Iterated {
@@ -104,6 +113,12 @@ sealed interface Instr {
 
     /// `continue;` of a loop.
     record Continue(LoopCtl ctl) implements Jump {}
+
+    /// `break label;` out of the statement the label names.
+    record BreakLabel(Label label) implements Jump {}
+
+    /// `continue label;` of the loop the label names.
+    record ContinueLabel(Label label) implements Jump {}
 
     /// `try { ... } catch (...) { ... } finally { ... }`: a `catch` clause at least, or a `finally` block.
     record Try(Block<?, ?> body, List<Catch> catches, Finally finallyBlock) implements Instr {}
@@ -141,13 +156,14 @@ sealed interface Instr {
     static Stream<Block<?, ?>> blocks(Instr instr) {
         return switch (instr) {
             case Synchronized(var _, var body) -> Stream.of(body);
+            case Labeled(var _, var body) -> Stream.of(body);
             case If(var _, var then, var otherwise) -> Stream.concat(Stream.of(then), otherwise.blocks());
             case IfInstance(var _, var _, var _, var then, var otherwise) ->
                 Stream.concat(Stream.of(then), otherwise.blocks());
-            case While(var _, var _, var body) -> Stream.of(body);
-            case DoWhile(var _, var body, var _) -> Stream.of(body);
-            case For(var _, var _, var _, var _, var _, var body) -> Stream.of(body);
-            case ForEach(var _, var _, var _, var body) -> Stream.of(body);
+            case While(var _, var _, var _, var body) -> Stream.of(body);
+            case DoWhile(var _, var _, var body, var _) -> Stream.of(body);
+            case For(var _, var _, var _, var _, var _, var _, var body) -> Stream.of(body);
+            case ForEach(var _, var _, var _, var _, var body) -> Stream.of(body);
             case Try(var body, var catches, var finallyBlock) ->
                 Stream.of(Stream.of(body), catches.stream().map(Catch::body), finallyBlock.blocks())
                         .flatMap(Function.identity());

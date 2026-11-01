@@ -43,18 +43,28 @@ final class ScopeCheck {
             }
             case Instr.Exec(var effect) -> node(effect, in(block), block.path());
             case Instr.Synchronized(var lock, var ignoredBody) -> node(lock, in(block), block.path());
+            case Instr.Labeled ignored -> {}
             case Instr.If(var condition, var ignoredThen, var ignoredElse) -> node(condition, in(block), block.path());
             case Instr.IfInstance(var operand, var ignoredType, var ignoredVar, var ignoredThen, var ignoredElse) ->
                 node(operand, in(block), block.path());
-            case Instr.While(var ignored, var condition, var ignoredBody) -> node(condition, in(block), block.path());
-            case Instr.DoWhile(var ignored, var ignoredBody, var condition) -> node(condition, in(block), block.path());
-            case Instr.For(var ignored, var ignoredVar, var init, var condition, var update, var body) -> {
+            case Instr.While(var ignored, var ignoredLabel, var condition, var ignoredBody) ->
+                node(condition, in(block), block.path());
+            case Instr.DoWhile(var ignored, var ignoredLabel, var ignoredBody, var condition) ->
+                node(condition, in(block), block.path());
+            case Instr.For(
+                    var ignored,
+                    var ignoredLabel,
+                    var ignoredVar,
+                    var init,
+                    var condition,
+                    var update,
+                    var body) -> {
                 node(init, in(block), block.path());
                 // The condition and update are in the scope of the loop variable.
                 node(condition, in(body), body.path());
                 node(update, in(body), body.path());
             }
-            case Instr.ForEach(var ignored, var ignoredVar, var iterated, var ignoredBody) -> {
+            case Instr.ForEach(var ignored, var ignoredLabel, var ignoredVar, var iterated, var ignoredBody) -> {
                 switch (iterated) {
                     case Instr.Iterated.OfIterable(var iterable) -> node(iterable, in(block), block.path());
                     case Instr.Iterated.OfArray(var array) -> arrayOperand(array, in(block), block.path());
@@ -66,6 +76,14 @@ final class ScopeCheck {
             case Instr.Throw(var value, var ignoredType) -> node(value, in(block), block.path());
             case Instr.Break(var ctl) -> loopCtl(ctl, block, "break_");
             case Instr.Continue(var ctl) -> loopCtl(ctl, block, "continue_");
+            case Instr.BreakLabel(var label) -> label(label, block, "break_");
+            case Instr.ContinueLabel(var label) -> {
+                label(label, block, "continue_");
+                if (!label.labelsLoop()) {
+                    throw new IllegalStateException("continue_ in the " + block.path() + " names the label of the "
+                            + label.owner().path() + ", which is no loop: continue targets a loop (JLS 14.16)");
+                }
+            }
             case Instr.Try ignored -> {}
             case Instr.Raw ignored -> {}
         }
@@ -319,6 +337,31 @@ final class ScopeCheck {
                     throw new IllegalStateException(form + " in the " + where + " targets the loop of the "
                             + loopBody.path() + " out of a switch expression: a block of a switch expression"
                             + " cannot break or continue a loop around the switch (JLS 15.28.1)");
+            }
+        });
+    }
+
+    /// A label is in scope only inside the statement it names, and a `break` or a `continue` of it
+    /// does not leave a lambda body or a block of a `switch` expression.
+    private static void label(Label label, Block<?, ?> use, String form) {
+        Block<?, ?> owner = label.owner();
+        String where = use.path();
+        if (outside(owner, in(use))) {
+            throw new IllegalStateException(form + " in the " + where + " names the label of the " + owner.path()
+                    + ", which does not enclose it: a label is in scope only inside the statement it names"
+                    + " (JLS 14.7)");
+        }
+        use.chain().takeWhile(b -> b != owner).forEach(b -> {
+            switch (b.nesting()) {
+                case PLAIN, FINALLY_BLOCK -> {}
+                case LAMBDA_BODY ->
+                    throw new IllegalStateException(form + " in the " + where + " names the label of the "
+                            + owner.path() + " across a lambda boundary: a lambda body cannot break or continue"
+                            + " an enclosing statement (JLS 14.7)");
+                case SWITCH_BLOCK ->
+                    throw new IllegalStateException(form + " in the " + where + " names the label of the "
+                            + owner.path() + " out of a switch expression: a block of a switch expression cannot"
+                            + " break or continue a statement around the switch (JLS 15.28.1)");
             }
         });
     }

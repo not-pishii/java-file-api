@@ -9,6 +9,7 @@ import me.supcheg.javafile.code.AssignStmt;
 import me.supcheg.javafile.code.AssignTarget;
 import me.supcheg.javafile.code.BinaryExpr;
 import me.supcheg.javafile.code.BlockCaseBody;
+import me.supcheg.javafile.code.BlockStmt;
 import me.supcheg.javafile.code.BreakStmt;
 import me.supcheg.javafile.code.CaseBody;
 import me.supcheg.javafile.code.CaseLabel;
@@ -249,10 +250,16 @@ final class Lowering {
     private static final class Labels {
         private final Map<LoopCtl, String> names = new HashMap<>();
         private final Set<LoopCtl> used = new HashSet<>();
+        private final Map<Label, String> labels = new HashMap<>();
 
         /// The label of `ctl`, the next free one the first time.
         String of(LoopCtl ctl) {
             return names.computeIfAbsent(ctl, _ -> "loop" + names.size());
+        }
+
+        /// The name of the label `label`, the next free one the first time.
+        String of(Label label) {
+            return labels.computeIfAbsent(label, _ -> "label" + labels.size());
         }
     }
 
@@ -431,6 +438,8 @@ final class Lowering {
             }
             case Instr.Assert(var condition, var message) -> new AssertStmt(expr(condition), message.map(this::expr));
             case Instr.Synchronized(var lock, var body) -> new SynchronizedStmt(expr(lock), lowerBlock(body.instrs()));
+            case Instr.Labeled(var label, var body) ->
+                new LabeledStmt(labels.of(label), new BlockStmt(lowerBlock(body.instrs())));
             case Instr.Exec(var effect) -> effectStmt(effect);
             case Instr.If(var condition, var then, var otherwise) ->
                 new IfStmt(expr(condition), lowerBlock(then.instrs()), List.of(), lowerOptional(otherwise));
@@ -449,16 +458,16 @@ final class Lowering {
                 }
                 yield new IfStmt(condition, thenCode, List.of(), lowerOptional(otherwise));
             }
-            case Instr.While(var ctl, var condition, var body) -> {
+            case Instr.While(var ctl, var label, var condition, var body) -> {
                 Expr conditionExpr = expr(condition);
                 CodeBody bodyCode = withLoop(ctl, body);
-                yield labeled(ctl, new WhileStmt(conditionExpr, bodyCode));
+                yield labeled(label, ctl, new WhileStmt(conditionExpr, bodyCode));
             }
-            case Instr.DoWhile(var ctl, var body, var condition) -> {
+            case Instr.DoWhile(var ctl, var label, var body, var condition) -> {
                 CodeBody bodyCode = withLoop(ctl, body);
-                yield labeled(ctl, new DoWhileStmt(bodyCode, expr(condition)));
+                yield labeled(label, ctl, new DoWhileStmt(bodyCode, expr(condition)));
             }
-            case Instr.For(var ctl, var var_, var init, var condition, var update, var body) -> {
+            case Instr.For(var ctl, var label, var var_, var init, var condition, var update, var body) -> {
                 VariableInitializer initExpr = declared(init, var_.type());
                 // The loop variable is in scope in the condition, the update, and the body.
                 names.push();
@@ -476,11 +485,12 @@ final class Lowering {
                     names.pop();
                 }
                 yield labeled(
+                        label,
                         ctl,
                         new ForStmt(
                                 Optional.of(initStmt), Optional.of(conditionExpr), Optional.of(updateStmt), bodyCode));
             }
-            case Instr.ForEach(var ctl, var var_, var iterated, var body) -> {
+            case Instr.ForEach(var ctl, var label, var var_, var iterated, var body) -> {
                 // javac takes the type of the iterated expression itself (JLS 14.14.2): one seen
                 // through a witness is of the supertype the witness names. An array is iterated as it
                 // stands: its elements are assigned to the variable of the component, whatever javac types them.
@@ -499,7 +509,8 @@ final class Lowering {
                 } finally {
                     names.pop();
                 }
-                yield labeled(ctl, new EnhancedForStmt(written(var_.type()).typeRef(), name, iterableExpr, bodyCode));
+                yield labeled(
+                        label, ctl, new EnhancedForStmt(written(var_.type()).typeRef(), name, iterableExpr, bodyCode));
             }
             case Instr.Return(var value) -> {
                 // the result type of the body is known here alone: a primitive value of a reference one would box
@@ -519,6 +530,8 @@ final class Lowering {
             }
             case Instr.Break(var ctl) -> new BreakStmt(label(ctl));
             case Instr.Continue(var ctl) -> new ContinueStmt(label(ctl));
+            case Instr.BreakLabel(var label) -> new BreakStmt(Optional.of(labels.of(label)));
+            case Instr.ContinueLabel(var label) -> new ContinueStmt(Optional.of(labels.of(label)));
             case Instr.Try(var body, var catches, var finallyBlock) -> tryStmt(body, catches, finallyBlock);
             case Instr.Raw(var s) -> s;
         };
@@ -537,8 +550,10 @@ final class Lowering {
         }
     }
 
-    private Stmt labeled(LoopCtl ctl, Stmt loopStmt) {
-        return labels.used.contains(ctl) ? new LabeledStmt(labels.of(ctl), loopStmt) : loopStmt;
+    private Stmt labeled(Optional<Label> explicit, LoopCtl ctl, Stmt loopStmt) {
+        Stmt byControl = labels.used.contains(ctl) ? new LabeledStmt(labels.of(ctl), loopStmt) : loopStmt;
+        return explicit.map(label -> (Stmt) new LabeledStmt(labels.of(label), byControl))
+                .orElse(byControl);
     }
 
     /// The label of a `break` or a `continue` of `ctl`: none for the innermost loop, the label of an

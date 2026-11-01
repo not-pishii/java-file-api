@@ -72,7 +72,8 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
         LOOP_FOREVER("a loop that never completes ends the block: build it with loopForever, which returns the"
                 + " Terminated of this block, or break_ out of it"),
         TRY_TERMINATED("build it with tryTerminated, which returns the Terminated of this block"),
-        SYNCHRONIZED("build it with synchronizedTerminated, which returns the Terminated of this block");
+        SYNCHRONIZED("build it with synchronizedTerminated, which returns the Terminated of this block"),
+        LABELED("break_ the label instead, or give the body a way to complete normally");
 
         private final String advice;
 
@@ -517,21 +518,37 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
 
     /// Appends `while (condition) { body }`.
     ///
-    /// A loop that cannot complete normally — a constant `true` condition
-    /// and no `break_` — is rejected: use [#loopForever(Consumer)].
+    /// A loop that cannot complete normally - a constant `true` condition
+    /// and no `break_` - is rejected: use [#loopForever(Consumer)].
     ///
     /// @param condition the condition
     /// @param body builds the body, given the loop's `break`/`continue` capability
     /// @return this block
     /// @throws IllegalStateException if the condition is constant `false`, or the loop never completes
     public final B while_(Expr<Prim.Bool> condition, BiConsumer<? super B, LoopCtl> body) {
+        return while_(Optional.empty(), condition, body);
+    }
+
+    /// Appends `label: while (condition) { body }`.
+    ///
+    /// @param label the label of the loop
+    /// @param condition the condition
+    /// @param body builds the body, given the loop's `break`/`continue` capability
+    /// @return this block
+    /// @throws IllegalStateException if the condition is constant `false`, or the loop never completes
+    public final B while_(Label label, Expr<Prim.Bool> condition, BiConsumer<? super B, LoopCtl> body) {
+        return while_(Optional.of(label), condition, body);
+    }
+
+    private B while_(Optional<Label> label, Expr<Prim.Bool> condition, BiConsumer<? super B, LoopCtl> body) {
         requireOpen();
         requireReachableBody(condition, "while_");
         B bodyBlock = child("body of while_");
+        label.ifPresent(l -> l.attach(bodyBlock, true));
         LoopCtl ctl = new LoopCtl(bodyBlock);
         fill(bodyBlock, b -> body.accept(b, ctl));
         return continueWith(
-                new Instr.While(ctl, condition.node(), bodyBlock),
+                new Instr.While(ctl, label, condition.node(), bodyBlock),
                 "while_ with a constant true condition and no break_",
                 Instead.LOOP_FOREVER);
     }
@@ -548,7 +565,8 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
         B bodyBlock = child("body of loopForever");
         LoopCtl ctl = new LoopCtl(bodyBlock);
         fill(bodyBlock, body);
-        return appendFinal(new Instr.While(ctl, Expressions.literal(true).node(), bodyBlock), "loopForever");
+        return appendFinal(
+                new Instr.While(ctl, Optional.empty(), Expressions.literal(true).node(), bodyBlock), "loopForever");
     }
 
     /// Appends `do { body } while (condition);`.
@@ -563,7 +581,7 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
         LoopCtl ctl = new LoopCtl(bodyBlock);
         fill(bodyBlock, b -> body.accept(b, ctl));
         return continueWith(
-                new Instr.DoWhile(ctl, bodyBlock, condition.node()),
+                new Instr.DoWhile(ctl, Optional.empty(), bodyBlock, condition.node()),
                 "doWhile whose body ends without continue_, or whose condition is constant true, and no break_",
                 Instead.LOOP_FOREVER);
     }
@@ -584,8 +602,39 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
             Function<? super MutVar<T>, Expr<Prim.Bool>> condition,
             Function<? super MutVar<T>, ? extends Effect> update,
             LoopBody<? super B, ? super MutVar<T>> body) {
+        return for_(Optional.empty(), type, init, condition, update, body);
+    }
+
+    /// Appends `label: for (T v = init; condition; update) { body }`.
+    ///
+    /// @param label the label of the loop
+    /// @param type the loop variable type
+    /// @param init the initializer
+    /// @param condition the condition, given the variable
+    /// @param update the update, given the variable
+    /// @param body builds the body, given the variable and the loop capability
+    /// @param <T> the loop variable type
+    /// @return this block
+    public final <T> B for_(
+            Label label,
+            TypeToken<T> type,
+            Expr<? extends T> init,
+            Function<? super MutVar<T>, Expr<Prim.Bool>> condition,
+            Function<? super MutVar<T>, ? extends Effect> update,
+            LoopBody<? super B, ? super MutVar<T>> body) {
+        return for_(Optional.of(label), type, init, condition, update, body);
+    }
+
+    private <T> B for_(
+            Optional<Label> label,
+            TypeToken<T> type,
+            Expr<? extends T> init,
+            Function<? super MutVar<T>, Expr<Prim.Bool>> condition,
+            Function<? super MutVar<T>, ? extends Effect> update,
+            LoopBody<? super B, ? super MutVar<T>> body) {
         requireOpen();
         B bodyBlock = child("body of for_");
+        label.ifPresent(l -> l.attach(bodyBlock, true));
         LoopCtl ctl = new LoopCtl(bodyBlock);
         Tokens.requireNoBoxing(init.type(), type, "for_");
         MutVar<T> var = new MutVar<>(type, Var.Role.Mutable.FOR_VARIABLE, bodyBlock);
@@ -594,7 +643,7 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
         Node updateNode = Assignment.nodeOf(update.apply(var));
         fill(bodyBlock, b -> body.accept(b, var, ctl));
         return continueWith(
-                new Instr.For(ctl, var, init.node(), conditionExpr.node(), updateNode, bodyBlock),
+                new Instr.For(ctl, label, var, init.node(), conditionExpr.node(), updateNode, bodyBlock),
                 "for_ with a constant true condition and no break_",
                 Instead.LOOP_FOREVER);
     }
@@ -633,7 +682,31 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
         LoopCtl ctl = new LoopCtl(bodyBlock);
         Var<T> var = new Var<>(element, Var.Role.Fixed.FOR_EACH_VARIABLE, bodyBlock);
         fill(bodyBlock, b -> body.accept(b, var, ctl));
-        return append(new Instr.ForEach(ctl, var, iterated, bodyBlock));
+        return append(new Instr.ForEach(ctl, Optional.empty(), var, iterated, bodyBlock));
+    }
+
+    /// Creates a label for a statement of this block, which [#labeled(Label, Consumer)] or a loop
+    /// attaches to the statement it names.
+    ///
+    /// @return the label
+    public final Label label() {
+        return new Label();
+    }
+
+    /// Appends `label: { body }`.
+    ///
+    /// @param label the label of the block
+    /// @param body builds the block
+    /// @return this block
+    /// @throws IllegalStateException if the label names another statement already, or the body cannot
+    ///     complete normally without breaking the label
+    public final B labeled(Label label, Consumer<? super B> body) {
+        requireOpen();
+        B bodyBlock = child("body of labeled");
+        label.attach(bodyBlock, false);
+        fill(bodyBlock, body);
+        return continueWith(
+                new Instr.Labeled(label, bodyBlock), "labeled whose body cannot complete normally", Instead.LABELED);
     }
 
     /// Appends `break;` out of the loop `ctl` belongs to, and ends this block.
@@ -652,6 +725,25 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
     /// @throws IllegalStateException if this block is not inside that loop's body
     public final Terminated<R> continue_(LoopCtl ctl) {
         return appendFinal(new Instr.Continue(ctl), "continue_");
+    }
+
+    /// Appends `break label;` out of the statement the label names, and ends this block.
+    ///
+    /// @param label the label of an enclosing statement
+    /// @return the proof that this block ended
+    /// @throws IllegalStateException if the label names no statement yet, or it does not enclose this block
+    public final Terminated<R> break_(Label label) {
+        return appendFinal(new Instr.BreakLabel(label), "break_");
+    }
+
+    /// Appends `continue label;` of the loop the label names, and ends this block.
+    ///
+    /// @param label the label of an enclosing loop
+    /// @return the proof that this block ended
+    /// @throws IllegalStateException if the label names no statement yet, it does not enclose this block,
+    ///     or it names a block rather than a loop
+    public final Terminated<R> continue_(Label label) {
+        return appendFinal(new Instr.ContinueLabel(label), "continue_");
     }
 
     /// Appends `throw exception;` and ends this block. A checked exception —

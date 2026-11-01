@@ -26,16 +26,18 @@ final class Reachability {
             case Instr.Plain _ -> true;
             case Instr.ForEach _ -> true;
             case Instr.Synchronized(var _, var body) -> canCompleteNormally(body);
+            case Instr.Labeled(var label, var body) ->
+                canCompleteNormally(body) || holds(body, new Instr.BreakLabel(label));
             case Instr.If(var _, var then, var otherwise) -> ifCompletes(then, otherwise);
             case Instr.IfInstance(var _, var _, var _, var then, var otherwise) -> ifCompletes(then, otherwise);
-            case Instr.While(var ctl, var condition, var body) ->
-                !Constants.isConstant(condition, true) || holds(body, new Instr.Break(ctl));
-            case Instr.For(var ctl, var _, var _, var condition, var _, var body) ->
-                !Constants.isConstant(condition, true) || holds(body, new Instr.Break(ctl));
-            case Instr.DoWhile(var ctl, var body, var condition) ->
+            case Instr.While(var ctl, var label, var condition, var body) ->
+                !Constants.isConstant(condition, true) || breaks(ctl, label, body);
+            case Instr.For(var ctl, var label, var _, var _, var condition, var _, var body) ->
+                !Constants.isConstant(condition, true) || breaks(ctl, label, body);
+            case Instr.DoWhile(var ctl, var label, var body, var condition) ->
                 ((canCompleteNormally(body) || holds(body, new Instr.Continue(ctl)))
                                 && !Constants.isConstant(condition, true))
-                        || holds(body, new Instr.Break(ctl));
+                        || breaks(ctl, label, body);
             case Instr.Try(var body, var catches, var _) ->
                 // A finally block completes normally by its type (FinallyBody).
                 canCompleteNormally(body) || catches.stream().anyMatch(c -> canCompleteNormally(c.body()));
@@ -51,6 +53,13 @@ final class Reachability {
         return block.instrs().stream()
                 .anyMatch(instr ->
                         instr instanceof Instr.Yield || Instr.blocks(instr).anyMatch(Reachability::yields));
+    }
+
+    /// Whether the loop of `ctl`, labeled `label` if it has one, can be left by a `break`: of the
+    /// loop's own capability, or of the label it carries.
+    private static boolean breaks(LoopCtl ctl, java.util.Optional<Label> label, Block<?, ?> body) {
+        return holds(body, new Instr.Break(ctl))
+                || label.map(l -> holds(body, new Instr.BreakLabel(l))).orElse(false);
     }
 
     private static boolean ifCompletes(Block<?, ?> then, Instr.Otherwise otherwise) {

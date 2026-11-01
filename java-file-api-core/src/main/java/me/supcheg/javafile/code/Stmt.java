@@ -20,6 +20,7 @@ public sealed interface Stmt
                 ContinueStmt,
                 TryStmt,
                 LabeledStmt,
+                BlockStmt,
                 SynchronizedStmt,
                 AssertStmt,
                 EmptyStmt,

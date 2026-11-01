@@ -9,6 +9,7 @@ import me.supcheg.javafile.code.AssignStmt;
 import me.supcheg.javafile.code.BinaryExpr;
 import me.supcheg.javafile.code.BlockCaseBody;
 import me.supcheg.javafile.code.BlockLambdaBody;
+import me.supcheg.javafile.code.BlockStmt;
 import me.supcheg.javafile.code.BooleanLiteral;
 import me.supcheg.javafile.code.BreakStmt;
 import me.supcheg.javafile.code.CaseBody;
@@ -448,6 +449,8 @@ final class ExprRenderer {
                 ctx.pad() + "continue" + label.map(l -> " " + l).orElse("") + ";";
             case LabeledStmt(var label, var statement) ->
                 ctx.pad() + label + ": " + renderStmt(statement, ctx).stripLeading();
+            case BlockStmt(var body) ->
+                ctx.pad() + "{" + ctx.newline() + renderBlock(body, ctx.withIncreasedPad()) + ctx.pad() + "}";
             case SynchronizedStmt(var lock, var body) ->
                 ctx.pad()
                         + "synchronized ("

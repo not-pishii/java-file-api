@@ -527,19 +527,22 @@ final class Exceptions {
             case Instr.Assert(var condition, var message) -> Stream.concat(Stream.of(condition), message.stream());
             case Instr.Exec(var effect) -> Stream.of(effect);
             case Instr.Synchronized(var lock, var _) -> Stream.of(lock);
+            case Instr.Labeled _ -> Stream.empty();
             case Instr.If(var condition, var _, var _) -> Stream.of(condition);
             case Instr.IfInstance(var operand, var _, var _, var _, var _) -> Stream.of(operand);
-            case Instr.While(var _, var condition, var _) -> Stream.of(condition);
-            case Instr.DoWhile(var _, var _, var condition) -> Stream.of(condition);
-            case Instr.For(var _, var _, var init, var condition, var update, var _) ->
+            case Instr.While(var _, var _, var condition, var _) -> Stream.of(condition);
+            case Instr.DoWhile(var _, var _, var _, var condition) -> Stream.of(condition);
+            case Instr.For(var _, var _, var _, var init, var condition, var update, var _) ->
                 Stream.of(init, condition, update);
-            case Instr.ForEach(var _, var _, var iterated, var _) -> Stream.of(iterated.node());
+            case Instr.ForEach(var _, var _, var _, var iterated, var _) -> Stream.of(iterated.node());
             case Instr.Return(var value) -> Stream.of(value.node());
             case Instr.ReturnNothing _ -> Stream.empty();
             case Instr.Yield(var value) -> Stream.of(value);
             case Instr.Throw(var value, var _) -> Stream.of(value);
             case Instr.Break _ -> Stream.empty();
             case Instr.Continue _ -> Stream.empty();
+            case Instr.BreakLabel _ -> Stream.empty();
+            case Instr.ContinueLabel _ -> Stream.empty();
             case Instr.Try _ -> Stream.empty();
             case Instr.Raw _ -> Stream.empty();
         };

@@ -5,6 +5,7 @@ import me.supcheg.javafile.code.AssertStmt;
 import me.supcheg.javafile.code.AssignOp;
 import me.supcheg.javafile.code.AssignStmt;
 import me.supcheg.javafile.code.BlockCaseBody;
+import me.supcheg.javafile.code.BlockStmt;
 import me.supcheg.javafile.code.BreakStmt;
 import me.supcheg.javafile.code.CatchClause;
 import me.supcheg.javafile.code.CodeBody;
@@ -916,6 +917,19 @@ class ExprRendererTest {
                             if (i == 1) {
                                 break outer;
                             }
+                        }""".indent(4).stripTrailing());
+    }
+
+    @Test
+    void labeledStmtWrappingABlockStmtRendersLabelAndBracedBody() {
+        Stmt stmt = new LabeledStmt("outer", new BlockStmt(new CodeBody(List.of(new BreakStmt(Optional.of("outer"))))));
+
+        String rendered = ExprRenderer.renderStmt(
+                stmt, Context.of(standardFormat(), new ImportManager("p")).withIncreasedPad());
+
+        assertThat(rendered).isEqualTo("""
+                        outer: {
+                            break outer;
                         }""".indent(4).stripTrailing());
     }
 
