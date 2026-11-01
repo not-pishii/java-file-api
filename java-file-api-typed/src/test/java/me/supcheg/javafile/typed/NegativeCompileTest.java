@@ -244,7 +244,7 @@ class NegativeCompileTest {
                 void use() {
                     new TypeShape<DeclaredKind.FinalClass>(ShapeOrigin.UNSAFE, DeclaredKind.FINAL_CLASS,
                             ClassDesc.of("a.B"), List.of(), List.of(), List.of(), Supertypes.NONE, MethodTableTemplate.EMPTY,
-                            List.of(), false);
+                            List.of(), false, List.of());
                 }
                 """,
                 "is not public in me.supcheg.javafile.facts.TypeShape; cannot be accessed from outside package");

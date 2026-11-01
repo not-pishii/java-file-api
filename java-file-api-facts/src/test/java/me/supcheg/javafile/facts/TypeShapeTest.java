@@ -318,7 +318,7 @@ class TypeShapeTest {
                 Supertypes.NONE,
                 MethodTableTemplate.EMPTY,
                 List.of(),
-                true);
+                false);
 
         AbstractClassToken<Object> token = UnsafeFacts.abstractClassToken(failure);
 
@@ -449,7 +449,9 @@ class TypeShapeTest {
                 Supertypes.NONE,
                 MethodTableTemplate.EMPTY,
                 List.of(),
-                true);
+                true,
+                List.of(ClassDesc.of("fixtures", "Only")),
+                List.of());
 
         assertThat(shape.origin()).isSameAs(origin);
         assertThat(shape.kind()).isSameAs(DeclaredKind.OPEN_CLASS);
@@ -509,6 +511,43 @@ class TypeShapeTest {
         assertThat(token.methods()).isEqualTo(table);
         assertThat(token.methods()).isEqualTo(table);
         assertThat(asked).hasValue(2);
+    }
+
+    @Test
+    void aSealedShapeTellsTheSubtypesItPermits() {
+        ClassDesc only = ClassDesc.of("fixtures", "Only");
+        TypeShape<DeclaredKind.Interface> sealed = UnsafeFacts.shape(
+                DeclaredKind.INTERFACE,
+                ClassDesc.of("fixtures", "Sealed"),
+                List.of(),
+                List.of(),
+                List.of(),
+                Supertypes.NONE,
+                MethodTableTemplate.EMPTY,
+                List.of(),
+                true,
+                List.of(only));
+
+        assertThat(sealed.sealed()).isTrue();
+        assertThat(sealed.permitted()).containsExactly(only);
+    }
+
+    @Test
+    void aShapeThatIsNotSealedPermitsNoSubtype() {
+        ClassDesc only = ClassDesc.of("fixtures", "Only");
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> UnsafeFacts.shape(
+                        DeclaredKind.INTERFACE,
+                        ClassDesc.of("fixtures", "Open"),
+                        List.of(),
+                        List.of(),
+                        List.of(),
+                        Supertypes.NONE,
+                        MethodTableTemplate.EMPTY,
+                        List.of(),
+                        false,
+                        List.of(only)))
+                .withMessageContaining("permits fixtures.Only");
     }
 
     private static TypeShape<DeclaredKind.FinalClass> finalClass(ClassDesc desc) {

@@ -1451,9 +1451,9 @@ JavaFile file = TypedJavaFile.declareClass(target, ClassDesc.of("com.example", "
 cannot, and a permitted subtype of a class is never an interface. `permits` makes the class sealed, so it is not final,
 and `non-sealed` beside a `permits` clause is rejected. `nonSealed()` is allowed only where Java allows it: the class has to
 extend a sealed class or implement a sealed interface, which the end of the header holds it to. An `abstract` class has
-no constructor in the typed layer: nothing it declares is instantiated there. Extending a sealed type needs a heritage
-that tells the permitted subtypes, which a metamodel of a sealed type does not; the typed layer refuses such a supertype
-and says that it is sealed.
+no constructor in the typed layer: nothing it declares is instantiated there. A sealed type has its facts, and its
+shape tells the subtypes it permits: the typed layer extends or implements it exactly when the declared class is one of
+them, and otherwise says what the type permits. A type variable may be bounded by a sealed type, as in Java (JLS 4.4).
 
 ### What stays in the core API
 

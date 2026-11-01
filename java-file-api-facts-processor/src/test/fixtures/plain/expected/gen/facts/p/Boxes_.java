@@ -41,7 +41,7 @@ import p.Boxes;
 ///
 /// A generated class extends or implements [Boxes] by the proof its metamodel starts, with the stages of `Boxes_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Boxes.class, fingerprint = "1cdec2594f3a3f1c1c7c88b54328c1a44cfd0808d9feb51fb6b1b228eed89599", complete = true, format = 17)
+@GeneratedMetamodel(of = Boxes.class, fingerprint = "b945d829aa13714d47a652aeacd9bd0a75210f83549285ced7ab7d0c3f9e4151", complete = true, format = 18)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -52,7 +52,7 @@ public final class Boxes_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Boxes] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Boxes_"), "1cdec2594f3a3f1c1c7c88b54328c1a44cfd0808d9feb51fb6b1b228eed89599", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Boxes"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("box", Param.fixed(ConstantDescs.CD_double), Param.fixed(ClassDesc.of("java.lang.Long")), Param.fixed(ConstantDescs.CD_long), Param.fixed(ClassDesc.of("java.lang.Float")), Param.fixed(ConstantDescs.CD_float), Param.fixed(ClassDesc.of("java.lang.Byte")), Param.fixed(ConstantDescs.CD_byte), Param.fixed(ClassDesc.of("java.lang.Short")), Param.fixed(ConstantDescs.CD_short), Param.fixed(ClassDesc.of("java.lang.Integer")), Param.fixed(ConstantDescs.CD_int), Param.fixed(ClassDesc.of("java.lang.Character"))), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("flags", Param.fixed(ConstantDescs.CD_char), Param.fixed(ClassDesc.of("java.lang.Boolean")), Param.fixed(ConstantDescs.CD_boolean)), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Boxes")), Set.of()), false, List.of(), new Boxes_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Boxes_"), "b945d829aa13714d47a652aeacd9bd0a75210f83549285ced7ab7d0c3f9e4151", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Boxes"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("box", Param.fixed(ConstantDescs.CD_double), Param.fixed(ClassDesc.of("java.lang.Long")), Param.fixed(ConstantDescs.CD_long), Param.fixed(ClassDesc.of("java.lang.Float")), Param.fixed(ConstantDescs.CD_float), Param.fixed(ClassDesc.of("java.lang.Byte")), Param.fixed(ConstantDescs.CD_byte), Param.fixed(ClassDesc.of("java.lang.Short")), Param.fixed(ConstantDescs.CD_short), Param.fixed(ClassDesc.of("java.lang.Integer")), Param.fixed(ConstantDescs.CD_int), Param.fixed(ClassDesc.of("java.lang.Character"))), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("flags", Param.fixed(ConstantDescs.CD_char), Param.fixed(ClassDesc.of("java.lang.Boolean")), Param.fixed(ConstantDescs.CD_boolean)), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Boxes")), Set.of()), false, List.of(), List.of(), new Boxes_Heritage());
 
         private Data() {
         }
@@ -63,7 +63,7 @@ public final class Boxes_ {
     static final class Canonical {
         /// The canonical form of [Boxes].
         static final String TEXT = """
-        javafile-facts-canonical 11
+        javafile-facts-canonical 12
         type p.Boxes open-class sealed=no nesting=top
         annotations -
         annotation -

@@ -32,7 +32,7 @@ import p.Holder;
 ///
 /// @param <E> a type argument of [Holder]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Holder.class, fingerprint = "f3f84d1e8c42e7025865256eaa1a69d62ec67e9adf451a563ac18e520b3910fc", complete = false, format = 17)
+@GeneratedMetamodel(of = Holder.class, fingerprint = "a341dc960769f551376f63bd0740e545b3777e92a201e6122ed286181cd4efa5", complete = false, format = 18)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -43,7 +43,7 @@ public final class Holder_<E> {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Holder] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Holder_"), "f3f84d1e8c42e7025865256eaa1a69d62ec67e9adf451a563ac18e520b3910fc", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Holder"), List.of(new TypeParam("E", List.of())), List.of(ClassDesc.of("java.lang.Object")), List.of(), new Supertypes(List.of(Types.typeVar("E")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Holder")), Set.of()), List.of(), false, List.of());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Holder_"), "a341dc960769f551376f63bd0740e545b3777e92a201e6122ed286181cd4efa5", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Holder"), List.of(new TypeParam("E", List.of())), List.of(ClassDesc.of("java.lang.Object")), List.of(), new Supertypes(List.of(Types.typeVar("E")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Holder")), Set.of()), List.of(), false, List.of(), List.of());
 
         private Data() {
         }
@@ -54,7 +54,7 @@ public final class Holder_<E> {
     static final class Canonical {
         /// The canonical form of [Holder].
         static final String TEXT = """
-        javafile-facts-canonical 11
+        javafile-facts-canonical 12
         type p.Holder open-class sealed=no nesting=top
         annotations -
         annotation -

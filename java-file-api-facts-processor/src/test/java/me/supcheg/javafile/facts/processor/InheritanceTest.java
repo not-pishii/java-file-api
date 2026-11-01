@@ -4,12 +4,19 @@ import me.supcheg.javafile.facts.processor.harness.InCompilation;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /// What a type extends and implements, and whether a type that is not
 /// there yet may extend or implement it.
@@ -56,6 +63,18 @@ class InheritanceTest {
     @InCompilation.Sources(TYPES)
     void aSealedTypeIsOpenThroughASubtypeItPermitsThatIs(Elements elements) {
         assertThat(open(elements, "Closed", "Leaky", "LeakyB", "LeakyC")).containsExactly("Leaky", "LeakyB", "LeakyC");
+    }
+
+    @Test
+    void aSealedTypeThatPermitsATypeNotThereYetIsOpen() {
+        TypeElement sealed = mock(TypeElement.class);
+        TypeMirror notThereYet = mock(TypeMirror.class);
+        when(sealed.getKind()).thenReturn(ElementKind.INTERFACE);
+        when(sealed.getModifiers()).thenReturn(Set.of(Modifier.SEALED));
+        when(sealed.getPermittedSubclasses()).thenAnswer(_ -> List.of(notThereYet));
+        when(notThereYet.getKind()).thenReturn(TypeKind.ERROR);
+
+        assertThat(Inheritance.open(sealed)).isTrue();
     }
 
     @Test

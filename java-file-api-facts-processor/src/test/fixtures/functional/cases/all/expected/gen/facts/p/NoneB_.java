@@ -36,7 +36,7 @@ import p.NoneB;
 ///
 /// A generated class extends or implements [NoneB] by the proof its metamodel starts, with the stages of `NoneB_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = NoneB.class, fingerprint = "08d85f5d18c6bdaf68fafa2b8125c6611928982a0746895dcec8bd39eb1abe3f", complete = true, format = 17)
+@GeneratedMetamodel(of = NoneB.class, fingerprint = "4cc37d5c1f2c1b074b9eff1da0268beb24b8f55c17b4000c8b9be478c6eaabf7", complete = true, format = 18)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -47,7 +47,7 @@ public final class NoneB_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [NoneB] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.NoneB_"), "08d85f5d18c6bdaf68fafa2b8125c6611928982a0746895dcec8bd39eb1abe3f", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.NoneB"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("m")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), false, List.of(), new NoneB_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.NoneB_"), "4cc37d5c1f2c1b074b9eff1da0268beb24b8f55c17b4000c8b9be478c6eaabf7", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.NoneB"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("m")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), false, List.of(), List.of(), new NoneB_Heritage());
 
         private Data() {
         }
@@ -58,7 +58,7 @@ public final class NoneB_ {
     static final class Canonical {
         /// The canonical form of [NoneB].
         static final String TEXT = """
-        javafile-facts-canonical 11
+        javafile-facts-canonical 12
         type p.NoneB interface sealed=no nesting=top
         annotations -
         annotation -

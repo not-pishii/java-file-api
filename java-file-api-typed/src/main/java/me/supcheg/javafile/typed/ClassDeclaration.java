@@ -65,7 +65,7 @@ final class ClassDeclaration<Self> {
     private final TargetClasspath target;
     private final ClassDesc desc;
     private final String described;
-    private final Inheritance.Heir heir;
+    private final Inheritance.Heir.OfClass heir;
     private final DeclarationIdentity identity;
     private final FinalClassToken<Self> self;
     private List<Variable> variables;
@@ -84,7 +84,7 @@ final class ClassDeclaration<Self> {
         this.target = target;
         this.desc = desc;
         this.described = "class " + (desc.packageName().isEmpty() ? "" : desc.packageName() + ".") + desc.displayName();
-        this.heir = new Inheritance.Heir.OfClass(described, desc.packageName());
+        this.heir = new Inheritance.Heir.OfClass(described, desc);
         this.identity = UnsafeFacts.declarationIdentity(described);
         IntStream.range(0, parameters.size()).forEach(i -> {
             TypeParameter<?> parameter = parameters.get(i);
@@ -413,7 +413,7 @@ final class ClassDeclaration<Self> {
     void extendsObject() {
         Scopes.requireNoneOpen("the superclass of " + described);
         Phase.Named<Self> named = requireNamed();
-        Inheritance inherited = Inheritance.of(heir, Inheritance.supertype(described, target, Object_.TOKEN));
+        Inheritance inherited = Inheritance.of(heir, Inheritance.supertype(heir, target, Object_.TOKEN));
         heading(named, inherited, new Superclass.OfObject(Object_.TOKEN, inherited));
     }
 
@@ -439,7 +439,7 @@ final class ClassDeclaration<Self> {
         }
         headerScope().require(superclass);
         target.verify(superclass);
-        Inheritance inherited = Inheritance.of(heir, Inheritance.supertype(described, target, superclass));
+        Inheritance inherited = Inheritance.of(heir, Inheritance.supertype(heir, target, superclass));
         // No step is one by inheritance: what a class has of its superclass it says once the superclass is named.
         requireHolds(
                 proof,
@@ -647,7 +647,7 @@ final class ClassDeclaration<Self> {
         }
         headerScope().require(supertype);
         target.verify(supertype);
-        Inheritance merged = heading.inherited().with(Inheritance.supertype(described, target, supertype));
+        Inheritance merged = heading.inherited().with(Inheritance.supertype(heir, target, supertype));
         String none =
                 switch (heading.superclass()) {
                     case Superclass.OfObject _ -> "it extends Object, which has no such method";

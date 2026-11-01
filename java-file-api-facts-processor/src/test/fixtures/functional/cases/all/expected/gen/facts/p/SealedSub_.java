@@ -2,6 +2,7 @@ package gen.facts.p;
 
 import gen.facts.p.SealedSub_.Canonical;
 import gen.facts.p.SealedSub_.Data;
+import gen.facts.p.SealedSub_Heritage.Implement;
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
 import java.util.List;
@@ -13,6 +14,7 @@ import me.supcheg.javafile.facts.InterfaceToken;
 import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.MethodTableTemplate.Param;
 import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
+import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
@@ -26,9 +28,9 @@ import p.SealedSub;
 ///
 /// A member [SealedSub] inherits has its fact in the metamodel of the supertype that declares it: [Run_].
 ///
-/// No generated class extends or implements [SealedSub]: it is sealed: only the classes it permits extend or implement it.
+/// A generated class extends or implements [SealedSub] by the proof its metamodel starts, with the stages of `SealedSub_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = SealedSub.class, fingerprint = "76a0445d9703796a7cce71e1988db0cd4691c32cddf3095d540d5df99db34025", complete = true, format = 17)
+@GeneratedMetamodel(of = SealedSub.class, fingerprint = "3e33c3994ffcd7648aa71c6562dc20c7f35a630cb49004a3ae730993889474b9", complete = true, format = 18)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -39,7 +41,7 @@ public final class SealedSub_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [SealedSub] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.SealedSub_"), "76a0445d9703796a7cce71e1988db0cd4691c32cddf3095d540d5df99db34025", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.SealedSub"), List.of(), List.of(), List.of(ClassDesc.of("p.Run")), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("run")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), true, List.of(), new SealedSub_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.SealedSub_"), "3e33c3994ffcd7648aa71c6562dc20c7f35a630cb49004a3ae730993889474b9", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.SealedSub"), List.of(), List.of(), List.of(ClassDesc.of("p.Run")), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("run")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), true, List.of(ClassDesc.of("p.SealedSubImpl")), List.of(), new SealedSub_Heritage());
 
         private Data() {
         }
@@ -50,8 +52,8 @@ public final class SealedSub_ {
     static final class Canonical {
         /// The canonical form of [SealedSub].
         static final String TEXT = """
-        javafile-facts-canonical 11
-        type p.SealedSub interface sealed=yes nesting=top
+        javafile-facts-canonical 12
+        type p.SealedSub interface sealed=yes nesting=top permits=p.SealedSubImpl
         annotations -
         annotation -
         tparams -
@@ -75,5 +77,14 @@ public final class SealedSub_ {
     public static final InterfaceToken<SealedSub> TOKEN = UnsafeFacts.interfaceToken(Data.SHAPE);
 
     private SealedSub_() {
+    }
+
+    /// Starts the proof that a class being declared implements [SealedSub]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public static <Self> Implement<Self> implement(RefToken<Self> self) {
+        return new SealedSub_Heritage().implement(TOKEN, self);
     }
 }

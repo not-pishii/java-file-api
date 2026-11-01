@@ -37,7 +37,7 @@ import p.Comp;
 ///
 /// A generated class extends or implements [Comp] by the proof its metamodel starts, with the stages of `Comp_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Comp.class, fingerprint = "db06e9fdab5e8fb5c68dbeb0db63291cc7db063fcdc329ec0dafda7dfbeeeda4", complete = true, format = 17)
+@GeneratedMetamodel(of = Comp.class, fingerprint = "40014e65bdefddfb753bf5086670ac92319bc8dc0b3f44c78a42d6cefd9b455a", complete = true, format = 18)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -48,7 +48,7 @@ public final class Comp_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Comp] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Comp_"), "db06e9fdab5e8fb5c68dbeb0db63291cc7db063fcdc329ec0dafda7dfbeeeda4", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Comp"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("compareTo", Param.fixed(ClassDesc.of("p.Comp")))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), false, List.of(), new Comp_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Comp_"), "40014e65bdefddfb753bf5086670ac92319bc8dc0b3f44c78a42d6cefd9b455a", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Comp"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("compareTo", Param.fixed(ClassDesc.of("p.Comp")))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), false, List.of(), List.of(), new Comp_Heritage());
 
         private Data() {
         }
@@ -59,7 +59,7 @@ public final class Comp_ {
     static final class Canonical {
         /// The canonical form of [Comp].
         static final String TEXT = """
-        javafile-facts-canonical 11
+        javafile-facts-canonical 12
         type p.Comp interface sealed=no nesting=top
         annotations -
         annotation -

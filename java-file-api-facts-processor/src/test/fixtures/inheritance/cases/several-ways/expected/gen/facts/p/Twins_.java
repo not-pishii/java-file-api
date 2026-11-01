@@ -36,7 +36,7 @@ import p.Twins;
 ///
 /// A generated class extends or implements [Twins] by the proof its metamodel starts, with the stages of `Twins_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Twins.class, fingerprint = "42508d060361bc2d29cdde922a076e8e06edf20f09ab1e15cae37512746446e6", complete = true, format = 17)
+@GeneratedMetamodel(of = Twins.class, fingerprint = "4967a4291b5f4d33a501c92058330fa8277493a5284810f569bcb7923f9d9416", complete = true, format = 18)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -47,7 +47,7 @@ public final class Twins_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Twins] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<AbstractClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Twins_"), "42508d060361bc2d29cdde922a076e8e06edf20f09ab1e15cae37512746446e6", () -> Canonical.TEXT), DeclaredKind.ABSTRACT_CLASS, ClassDesc.of("p.Twins"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(ClassDesc.of("p.Loose"), ClassDesc.of("p.Tight")), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("twin")), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Twins")), Set.of()), false, List.of(), new Twins_Heritage());
+        public static final TypeShape<AbstractClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Twins_"), "4967a4291b5f4d33a501c92058330fa8277493a5284810f569bcb7923f9d9416", () -> Canonical.TEXT), DeclaredKind.ABSTRACT_CLASS, ClassDesc.of("p.Twins"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(ClassDesc.of("p.Loose"), ClassDesc.of("p.Tight")), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("twin")), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Twins")), Set.of()), false, List.of(), List.of(), new Twins_Heritage());
 
         private Data() {
         }
@@ -58,7 +58,7 @@ public final class Twins_ {
     static final class Canonical {
         /// The canonical form of [Twins].
         static final String TEXT = """
-        javafile-facts-canonical 11
+        javafile-facts-canonical 12
         type p.Twins abstract-class sealed=no nesting=top
         annotations -
         annotation -

@@ -38,6 +38,8 @@ import java.util.Optional;
 ///                `Object` that an interface redeclares abstract is not abstract
 /// @param enumConstants the enum constants, in declaration order; empty unless an enum
 /// @param sealed whether the type is `sealed`
+/// @param permitted the subtypes the type permits, in declaration order; empty unless it is `sealed`,
+///                  and for a sealed enum whose permitted subtypes have no name
 /// @param sam the single abstract method of a functional interface as a member of it, declared or
 ///            inherited, as [MirrorTranslator#sam(javax.lang.model.element.TypeElement)] finds it;
 ///            empty if the type is not functional or the method has no model
@@ -62,6 +64,7 @@ public record TypeModel(
         MethodTableTemplate methods,
         List<String> enumConstants,
         boolean sealed,
+        List<ClassDesc> permitted,
         Optional<MethodModel> sam,
         Heritage heritage,
         MemberFilter filter,
@@ -83,6 +86,7 @@ public record TypeModel(
     /// @param methods the method table
     /// @param enumConstants the enum constants
     /// @param sealed whether the type is `sealed`
+    /// @param permitted the subtypes the type permits
     /// @param sam the single abstract method of a functional interface
     /// @param heritage what a class that extends or implements the type inherits
     /// @param filter which members are in `members`
@@ -100,6 +104,7 @@ public record TypeModel(
             MethodTableTemplate methods,
             List<String> enumConstants,
             boolean sealed,
+            List<ClassDesc> permitted,
             Optional<MethodModel> sam,
             Heritage heritage,
             MemberFilter filter,
@@ -117,6 +122,7 @@ public record TypeModel(
                 methods,
                 enumConstants,
                 sealed,
+                permitted,
                 sam,
                 heritage,
                 filter,
@@ -140,6 +146,7 @@ public record TypeModel(
         superclasses = List.copyOf(superclasses);
         interfaces = List.copyOf(interfaces);
         enumConstants = List.copyOf(enumConstants);
+        permitted = List.copyOf(permitted);
         members = List.copyOf(members);
         skipped = List.copyOf(skipped);
         annotations = List.copyOf(annotations);
@@ -189,6 +196,7 @@ public record TypeModel(
                 methods,
                 enumConstants,
                 sealed,
+                permitted,
                 sam,
                 Heritage.UNTOLD,
                 MemberFilter.NONE,

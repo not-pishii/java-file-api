@@ -2,6 +2,7 @@ package gen.facts.java.lang.constant;
 
 import gen.facts.java.lang.constant.ConstantDesc_.Canonical;
 import gen.facts.java.lang.constant.ConstantDesc_.Data;
+import gen.facts.java.lang.constant.ConstantDesc_Heritage.Implement;
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDesc;
 import java.lang.constant.ConstantDescs;
@@ -17,6 +18,7 @@ import me.supcheg.javafile.facts.MethodRef1;
 import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.MethodTableTemplate.Param;
 import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
+import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.TypeShape;
@@ -32,9 +34,9 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// A member [ConstantDesc] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
-/// No generated class extends or implements [ConstantDesc]: it is sealed: only the classes it permits extend or implement it.
+/// A generated class extends or implements [ConstantDesc] by the proof its metamodel starts, with the stages of `ConstantDesc_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = ConstantDesc.class, fingerprint = "ccc9868a3b13a7f0181ea9880015ca1774a1ef9f28facd646e6b6b44880367e6", complete = true, format = 17)
+@GeneratedMetamodel(of = ConstantDesc.class, fingerprint = "01bef9f951f571d8fc4d0d83d25fedfb49a4af8ed715a1d24e1c5fb22975da05", complete = true, format = 18)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -45,7 +47,7 @@ public final class ConstantDesc_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [ConstantDesc] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.constant.ConstantDesc_"), "ccc9868a3b13a7f0181ea9880015ca1774a1ef9f28facd646e6b6b44880367e6", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("java.lang.constant.ConstantDesc"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("resolveConstantDesc", Param.fixed(ClassDesc.of("java.lang.invoke.MethodHandles$Lookup")))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), true, List.of(), new ConstantDesc_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.constant.ConstantDesc_"), "01bef9f951f571d8fc4d0d83d25fedfb49a4af8ed715a1d24e1c5fb22975da05", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("java.lang.constant.ConstantDesc"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("resolveConstantDesc", Param.fixed(ClassDesc.of("java.lang.invoke.MethodHandles$Lookup")))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), true, List.of(ClassDesc.of("java.lang.constant.ClassDesc"), ClassDesc.of("java.lang.constant.MethodHandleDesc"), ClassDesc.of("java.lang.constant.MethodTypeDesc"), ClassDesc.of("java.lang.Double"), ClassDesc.of("java.lang.constant.DynamicConstantDesc"), ClassDesc.of("java.lang.Float"), ClassDesc.of("java.lang.Integer"), ClassDesc.of("java.lang.Long"), ClassDesc.of("java.lang.String")), List.of(), new ConstantDesc_Heritage());
 
         private Data() {
         }
@@ -56,8 +58,8 @@ public final class ConstantDesc_ {
     static final class Canonical {
         /// The canonical form of [ConstantDesc].
         static final String TEXT = """
-        javafile-facts-canonical 11
-        type java.lang.constant.ConstantDesc interface sealed=yes nesting=top
+        javafile-facts-canonical 12
+        type java.lang.constant.ConstantDesc interface sealed=yes nesting=top permits=java.lang.Double; java.lang.Float; java.lang.Integer; java.lang.Long; java.lang.String; java.lang.constant.ClassDesc; java.lang.constant.DynamicConstantDesc; java.lang.constant.MethodHandleDesc; java.lang.constant.MethodTypeDesc
         annotations -
         annotation -
         tparams -
@@ -85,5 +87,14 @@ public final class ConstantDesc_ {
     public static final MethodRef1<ConstantDesc, Object, Lookup> resolveConstantDesc_MethodHandles_Lookup = UnsafeInvocables.method(TOKEN, "resolveConstantDesc", UnsafeFacts.<Object>openClassToken(gen.facts.java.lang.Object_.Data.SHAPE), UnsafeFacts.<Lookup>finalClassToken(gen.facts.java.lang.invoke.MethodHandles_Lookup_.Data.SHAPE), MemberTraits.ABSTRACT.throwing(UnsafeFacts.<ReflectiveOperationException>openClassToken(gen.facts.java.lang.ReflectiveOperationException_.Data.SHAPE)));
 
     private ConstantDesc_() {
+    }
+
+    /// Starts the proof that a class being declared implements [ConstantDesc]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public static <Self> Implement<Self> implement(RefToken<Self> self) {
+        return new ConstantDesc_Heritage().implement(TOKEN, self);
     }
 }

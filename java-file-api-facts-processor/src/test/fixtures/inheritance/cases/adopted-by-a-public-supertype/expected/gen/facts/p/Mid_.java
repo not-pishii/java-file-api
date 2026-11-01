@@ -40,7 +40,7 @@ import p.Mid;
 ///
 /// A generated class extends or implements [Mid] by the proof its metamodel starts, with the stages of `Mid_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Mid.class, fingerprint = "b3a7ace2f2df62efed18abb76c37875dc1f13190983745a66b91238ffa71fcad", complete = true, format = 17)
+@GeneratedMetamodel(of = Mid.class, fingerprint = "ca7a0ebeb0b564f359d34e9c0a4fa7b126699ef84d4e696b381ed2a7392f525a", complete = true, format = 18)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -51,7 +51,7 @@ public final class Mid_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Mid] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Mid_"), "b3a7ace2f2df62efed18abb76c37875dc1f13190983745a66b91238ffa71fcad", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Mid"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(ClassDesc.of("p.HiddenI")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("mid"), Signature.of("more"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("run"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Mid")), Set.of()), false, List.of(), new Mid_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Mid_"), "ca7a0ebeb0b564f359d34e9c0a4fa7b126699ef84d4e696b381ed2a7392f525a", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Mid"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(ClassDesc.of("p.HiddenI")), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("mid"), Signature.of("more"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("run"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Mid")), Set.of()), false, List.of(), List.of(), new Mid_Heritage());
 
         private Data() {
         }
@@ -62,7 +62,7 @@ public final class Mid_ {
     static final class Canonical {
         /// The canonical form of [Mid].
         static final String TEXT = """
-        javafile-facts-canonical 11
+        javafile-facts-canonical 12
         type p.Mid open-class sealed=no nesting=top
         annotations -
         annotation -

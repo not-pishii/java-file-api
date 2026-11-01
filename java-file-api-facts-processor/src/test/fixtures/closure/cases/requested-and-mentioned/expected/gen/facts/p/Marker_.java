@@ -31,7 +31,7 @@ import p.Marker;
 ///
 /// `@Facts` does not ask for [Marker]: it is only mentioned in the signatures of [p.A]. For the facts of its members add `Marker.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Marker.class, fingerprint = "536aefc91621436858f38cf6e4d36f07d493a2f1f1ec150d42557db90d8857bd", complete = false, format = 17)
+@GeneratedMetamodel(of = Marker.class, fingerprint = "2120a6cba0bc36c51ba767bc17771849a6d8d71616ef92abde223f1604ff9ade", complete = false, format = 18)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -42,7 +42,7 @@ public final class Marker_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Marker] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Marker_"), "536aefc91621436858f38cf6e4d36f07d493a2f1f1ec150d42557db90d8857bd", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Marker"), List.of(), List.of(), List.of(ClassDesc.of("java.lang.annotation.Annotation")), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("annotationType")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), List.of(), false, List.of());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Marker_"), "2120a6cba0bc36c51ba767bc17771849a6d8d71616ef92abde223f1604ff9ade", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Marker"), List.of(), List.of(), List.of(ClassDesc.of("java.lang.annotation.Annotation")), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("annotationType")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), List.of(), false, List.of(), List.of());
 
         private Data() {
         }
@@ -53,7 +53,7 @@ public final class Marker_ {
     static final class Canonical {
         /// The canonical form of [Marker].
         static final String TEXT = """
-        javafile-facts-canonical 11
+        javafile-facts-canonical 12
         type p.Marker interface sealed=no nesting=top
         annotations -
         annotation -; retention CLASS; targets -; repeatable no

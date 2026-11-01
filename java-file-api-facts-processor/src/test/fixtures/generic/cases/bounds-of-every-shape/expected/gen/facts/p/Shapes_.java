@@ -40,7 +40,7 @@ import p.Shapes;
 ///
 /// @param <T> a type argument of [Shapes]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Shapes.class, fingerprint = "9999af130d6ee17d401cc3746559942c69464dd1eb69b4c493daa7ce2a7ed565", complete = true, format = 17)
+@GeneratedMetamodel(of = Shapes.class, fingerprint = "4b561175b57cef1f5970b4cb4ab85deb13f0d2b0095835a261338fa708e1f3f0", complete = true, format = 18)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -51,7 +51,7 @@ public final class Shapes_<T extends Comparable<? super T> & Function<? extends 
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Shapes] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<FinalClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Shapes_"), "9999af130d6ee17d401cc3746559942c69464dd1eb69b4c493daa7ce2a7ed565", () -> Canonical.TEXT), DeclaredKind.FINAL_CLASS, ClassDesc.of("p.Shapes"), List.of(new TypeParam("T", List.of(new ParameterizedTypeRef(ClassDesc.of("java.lang.Comparable"), List.of(Types.superBound(Types.typeVar("T"))), List.of()), new ParameterizedTypeRef(ClassDesc.of("java.util.function.Function"), List.of(Types.extendsBound(Types.array(Types.typeVar("T"))), Types.exact(Types.array(PrimitiveTypeRef.INT))), List.of()), new ParameterizedTypeRef(ClassDesc.of("java.lang.Iterable"), List.of(Types.unbounded()), List.of())))), List.of(ClassDesc.of("java.lang.Object")), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Shapes")), Set.of()), List.of(), false, List.of());
+        public static final TypeShape<FinalClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Shapes_"), "4b561175b57cef1f5970b4cb4ab85deb13f0d2b0095835a261338fa708e1f3f0", () -> Canonical.TEXT), DeclaredKind.FINAL_CLASS, ClassDesc.of("p.Shapes"), List.of(new TypeParam("T", List.of(new ParameterizedTypeRef(ClassDesc.of("java.lang.Comparable"), List.of(Types.superBound(Types.typeVar("T"))), List.of()), new ParameterizedTypeRef(ClassDesc.of("java.util.function.Function"), List.of(Types.extendsBound(Types.array(Types.typeVar("T"))), Types.exact(Types.array(PrimitiveTypeRef.INT))), List.of()), new ParameterizedTypeRef(ClassDesc.of("java.lang.Iterable"), List.of(Types.unbounded()), List.of())))), List.of(ClassDesc.of("java.lang.Object")), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Shapes")), Set.of()), List.of(), false, List.of(), List.of());
 
         private Data() {
         }
@@ -62,7 +62,7 @@ public final class Shapes_<T extends Comparable<? super T> & Function<? extends 
     static final class Canonical {
         /// The canonical form of [Shapes].
         static final String TEXT = """
-        javafile-facts-canonical 11
+        javafile-facts-canonical 12
         type p.Shapes final-class sealed=no nesting=top
         annotations -
         annotation -

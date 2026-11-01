@@ -32,7 +32,7 @@ import p.Gen;
 ///
 /// No generated class extends or implements [Gen]: its abstract method id(java.lang.Object) is generic, and a generated method has no type parameters yet.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Gen.class, fingerprint = "89e997e9c19ac185ba2ad03964372d8bc71ee0376d72a5a195ea05f882e0fbae", complete = true, format = 17)
+@GeneratedMetamodel(of = Gen.class, fingerprint = "64c67ef589f34703642344a166cb220556e9236bfd7a058c8071c91f2d9c3311", complete = true, format = 18)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -43,7 +43,7 @@ public final class Gen_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Gen] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Gen_"), "89e997e9c19ac185ba2ad03964372d8bc71ee0376d72a5a195ea05f882e0fbae", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Gen"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("id", Param.fixed(ClassDesc.of("java.lang.Object")))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), false, List.of(), new Gen_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Gen_"), "64c67ef589f34703642344a166cb220556e9236bfd7a058c8071c91f2d9c3311", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Gen"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("id", Param.fixed(ClassDesc.of("java.lang.Object")))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), false, List.of(), List.of(), new Gen_Heritage());
 
         private Data() {
         }
@@ -54,7 +54,7 @@ public final class Gen_ {
     static final class Canonical {
         /// The canonical form of [Gen].
         static final String TEXT = """
-        javafile-facts-canonical 11
+        javafile-facts-canonical 12
         type p.Gen interface sealed=no nesting=top
         annotations -
         annotation -

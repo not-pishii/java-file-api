@@ -12,6 +12,11 @@
     Base.class,
     Mid.class,
     Shape.class,
+    SealedBase.class,
+    SealedChild.class,
+    SealedOpen.class,
+    SealedShape.class,
+    SealedDot.class,
     Joining.class,
     Labelled.class,
     Risking.class,
@@ -143,6 +148,11 @@ import me.supcheg.javafile.typed.fixtures.Tripling;
 import me.supcheg.javafile.typed.fixtures.Base;
 import me.supcheg.javafile.typed.fixtures.Holder;
 import me.supcheg.javafile.typed.fixtures.Mid;
+import me.supcheg.javafile.typed.fixtures.SealedBase;
+import me.supcheg.javafile.typed.fixtures.SealedChild;
+import me.supcheg.javafile.typed.fixtures.SealedDot;
+import me.supcheg.javafile.typed.fixtures.SealedOpen;
+import me.supcheg.javafile.typed.fixtures.SealedShape;
 import me.supcheg.javafile.typed.fixtures.Shape;
 import me.supcheg.javafile.typed.fixtures.Joining;
 import me.supcheg.javafile.typed.fixtures.Labelled;

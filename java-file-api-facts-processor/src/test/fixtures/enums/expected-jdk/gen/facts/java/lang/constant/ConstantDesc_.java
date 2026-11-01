@@ -26,7 +26,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// `@Facts` does not ask for [ConstantDesc]: it is only mentioned in the signatures of [java.lang.constant.Constable]. For the facts of its members add `ConstantDesc.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = ConstantDesc.class, fingerprint = "9671cd9fe8e30e8010c069f464f70831b5c189c31a21efffa730ea41cd70cbd3", complete = false, format = 17)
+@GeneratedMetamodel(of = ConstantDesc.class, fingerprint = "9a8d2d1a4e89f15aac5f39ed65048edfaeab923638a8bae584f56e0bc72ab601", complete = false, format = 18)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -37,7 +37,7 @@ public final class ConstantDesc_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [ConstantDesc] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.constant.ConstantDesc_"), "9671cd9fe8e30e8010c069f464f70831b5c189c31a21efffa730ea41cd70cbd3", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("java.lang.constant.ConstantDesc"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("resolveConstantDesc", Param.fixed(ClassDesc.of("java.lang.invoke.MethodHandles$Lookup")))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), List.of(), true, List.of());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.constant.ConstantDesc_"), "9a8d2d1a4e89f15aac5f39ed65048edfaeab923638a8bae584f56e0bc72ab601", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("java.lang.constant.ConstantDesc"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("resolveConstantDesc", Param.fixed(ClassDesc.of("java.lang.invoke.MethodHandles$Lookup")))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), List.of(), true, List.of(ClassDesc.of("java.lang.constant.ClassDesc"), ClassDesc.of("java.lang.constant.MethodHandleDesc"), ClassDesc.of("java.lang.constant.MethodTypeDesc"), ClassDesc.of("java.lang.Double"), ClassDesc.of("java.lang.constant.DynamicConstantDesc"), ClassDesc.of("java.lang.Float"), ClassDesc.of("java.lang.Integer"), ClassDesc.of("java.lang.Long"), ClassDesc.of("java.lang.String")), List.of());
 
         private Data() {
         }
@@ -48,8 +48,8 @@ public final class ConstantDesc_ {
     static final class Canonical {
         /// The canonical form of [ConstantDesc].
         static final String TEXT = """
-        javafile-facts-canonical 11
-        type java.lang.constant.ConstantDesc interface sealed=yes nesting=top
+        javafile-facts-canonical 12
+        type java.lang.constant.ConstantDesc interface sealed=yes nesting=top permits=java.lang.Double; java.lang.Float; java.lang.Integer; java.lang.Long; java.lang.String; java.lang.constant.ClassDesc; java.lang.constant.DynamicConstantDesc; java.lang.constant.MethodHandleDesc; java.lang.constant.MethodTypeDesc
         annotations -
         annotation -
         tparams -

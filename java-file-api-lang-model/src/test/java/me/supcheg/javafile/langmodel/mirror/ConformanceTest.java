@@ -325,7 +325,7 @@ class ConformanceTest {
                             "package p; final class Only extends T {}"),
                     "changed: type",
                     "  generated against: p.T abstract-class sealed=no nesting=top",
-                    "  target: p.T abstract-class sealed=yes nesting=top"),
+                    "  target: p.T abstract-class sealed=yes nesting=top permits=p.Only"),
             full(
                     "the type has a type parameter",
                     "package p; public class T {}",

@@ -41,7 +41,7 @@ import p.Sh;
 ///
 /// A generated class extends or implements [Sh] by the proof its metamodel starts, with the stages of `Sh_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Sh.class, fingerprint = "915b5ad4db846a1f2c09985898cac49fe14005e0f03d1a3d3d3e163b5b87e1a0", complete = true, format = 17)
+@GeneratedMetamodel(of = Sh.class, fingerprint = "05e5a5158191b8e50d960b310c9fa70e3fbe99d06db7503b8104db3f7f534805", complete = true, format = 18)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -52,7 +52,7 @@ public final class Sh_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Sh] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Sh_"), "915b5ad4db846a1f2c09985898cac49fe14005e0f03d1a3d3d3e163b5b87e1a0", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Sh"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("other"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), Signature.of("x")), Set.of(), Set.of(Signature.of("Sh")), Set.of()), false, List.of(), new Sh_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Sh_"), "05e5a5158191b8e50d960b310c9fa70e3fbe99d06db7503b8104db3f7f534805", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Sh"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("other"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), Signature.of("x")), Set.of(), Set.of(Signature.of("Sh")), Set.of()), false, List.of(), List.of(), new Sh_Heritage());
 
         private Data() {
         }
@@ -63,7 +63,7 @@ public final class Sh_ {
     static final class Canonical {
         /// The canonical form of [Sh].
         static final String TEXT = """
-        javafile-facts-canonical 11
+        javafile-facts-canonical 12
         type p.Sh open-class sealed=no nesting=top
         annotations -
         annotation -

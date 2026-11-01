@@ -74,7 +74,7 @@ import java.util.stream.Stream;
 /// For `interface List<E> extends SequencedCollection<E>` without members:
 ///
 /// ```
-/// javafile-facts-canonical 10
+/// javafile-facts-canonical 12
 /// type java.util.List interface sealed=no nesting=top
 /// tparams #0
 /// superclasses -
@@ -120,7 +120,9 @@ import java.util.stream.Stream;
 ///
 /// The `type` line tells what a class that extends the type has to know of
 /// where it is declared ([Nesting]): `nesting=inner` of a class that is
-/// extended with an instance of the class it is nested in.
+/// extended with an instance of the class it is nested in. A `sealed` type
+/// tells the subtypes it permits too, sorted by binary name:
+/// `permits=java.lang.Integer; java.lang.Long`.
 ///
 /// A type a class can extend or implement tells its heritage with its
 /// members ([TypeModel#heritage()]): a line per constructor, per signature
@@ -134,7 +136,7 @@ public final class Canonical {
     /// The first line of every canonical form: the name and version of the
     /// format. A new version changes every fingerprint, so a metamodel of
     /// another version never passes as matching.
-    public static final String HEADER = "javafile-facts-canonical 11";
+    public static final String HEADER = "javafile-facts-canonical 12";
 
     private static final Scope NO_VARIABLES = new Scope(List.of(), List.of());
 
@@ -162,7 +164,14 @@ public final class Canonical {
                                             case TOP_LEVEL -> "top";
                                             case STATIC_MEMBER -> "static";
                                             case INNER -> "inner";
-                                        },
+                                        }
+                                        + (model.sealed()
+                                                ? " permits="
+                                                        + items(model.permitted().stream()
+                                                                .map(Canonical::binaryName)
+                                                                .sorted()
+                                                                .toList())
+                                                : ""),
                                 "annotations "
                                         + items(model.annotations().stream()
                                                 .map(use -> annotation(use))

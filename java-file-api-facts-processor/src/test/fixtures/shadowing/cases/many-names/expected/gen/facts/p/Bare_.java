@@ -30,7 +30,7 @@ import p.Bare;
 ///
 /// A generated class extends or implements [Bare] by the proof its metamodel starts, with the stages of `Bare_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Bare.class, fingerprint = "e021946b4931875431cafc315d3d06ded2ece532718af29cc0f98d00afecd4d6", complete = true, format = 17)
+@GeneratedMetamodel(of = Bare.class, fingerprint = "d2c1bdb1a5d6698e2979299f29baa346768c472c273c44f8093a2d1f36546bd3", complete = true, format = 18)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -41,7 +41,7 @@ public final class Bare_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Bare] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Bare_"), "e021946b4931875431cafc315d3d06ded2ece532718af29cc0f98d00afecd4d6", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Bare"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), false, List.of(), new Bare_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Bare_"), "d2c1bdb1a5d6698e2979299f29baa346768c472c273c44f8093a2d1f36546bd3", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Bare"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), false, List.of(), List.of(), new Bare_Heritage());
 
         private Data() {
         }
@@ -52,7 +52,7 @@ public final class Bare_ {
     static final class Canonical {
         /// The canonical form of [Bare].
         static final String TEXT = """
-        javafile-facts-canonical 11
+        javafile-facts-canonical 12
         type p.Bare interface sealed=no nesting=top
         annotations -
         annotation -

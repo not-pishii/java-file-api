@@ -35,7 +35,7 @@ import p.B;
 ///
 /// A generated class extends or implements [B] by the proof its metamodel starts, with the stages of `B_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = B.class, fingerprint = "557203e44359c43875bfcea2cf012d6ccf7063e49e8ef6d983639e6b495ce694", complete = true, format = 17)
+@GeneratedMetamodel(of = B.class, fingerprint = "736df1f554fa563ddf22bb2cf59ed92b275da69124641da634cbbca882bb353d", complete = true, format = 18)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -46,7 +46,7 @@ public final class B_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [B] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.B_"), "557203e44359c43875bfcea2cf012d6ccf7063e49e8ef6d983639e6b495ce694", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.B"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("a"), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("B")), Set.of()), false, List.of(), new B_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.B_"), "736df1f554fa563ddf22bb2cf59ed92b275da69124641da634cbbca882bb353d", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.B"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("a"), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("B")), Set.of()), false, List.of(), List.of(), new B_Heritage());
 
         private Data() {
         }
@@ -57,7 +57,7 @@ public final class B_ {
     static final class Canonical {
         /// The canonical form of [B].
         static final String TEXT = """
-        javafile-facts-canonical 11
+        javafile-facts-canonical 12
         type p.B open-class sealed=no nesting=top
         annotations -
         annotation -

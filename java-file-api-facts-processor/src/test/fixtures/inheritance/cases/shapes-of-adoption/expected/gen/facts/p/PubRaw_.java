@@ -41,7 +41,7 @@ import p.PubRaw;
 ///
 /// A generated class extends or implements [PubRaw] by the proof its metamodel starts, with the stages of `PubRaw_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = PubRaw.class, fingerprint = "b13bbb09772cc30469cbe43fa176a51a53b5359ce2ab45d24a3b849f574213e9", complete = true, format = 17)
+@GeneratedMetamodel(of = PubRaw.class, fingerprint = "f5578cd1bb629dba581a4caa428bf180d84a4c2303609b82098ae0f22f9275b8", complete = true, format = 18)
 @SuppressWarnings({
     "rawtypes",
     "deprecation",
@@ -53,7 +53,7 @@ public final class PubRaw_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [PubRaw] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.PubRaw_"), "b13bbb09772cc30469cbe43fa176a51a53b5359ce2ab45d24a3b849f574213e9", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.PubRaw"), List.of(), List.of(ClassDesc.of("p.HG"), ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("all"), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("get"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("put", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("PubRaw")), Set.of()), false, List.of(), new PubRaw_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.PubRaw_"), "f5578cd1bb629dba581a4caa428bf180d84a4c2303609b82098ae0f22f9275b8", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.PubRaw"), List.of(), List.of(ClassDesc.of("p.HG"), ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("all"), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("get"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("put", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("PubRaw")), Set.of()), false, List.of(), List.of(), new PubRaw_Heritage());
 
         private Data() {
         }
@@ -64,7 +64,7 @@ public final class PubRaw_ {
     static final class Canonical {
         /// The canonical form of [PubRaw].
         static final String TEXT = """
-        javafile-facts-canonical 11
+        javafile-facts-canonical 12
         type p.PubRaw open-class sealed=no nesting=top
         annotations -
         annotation -

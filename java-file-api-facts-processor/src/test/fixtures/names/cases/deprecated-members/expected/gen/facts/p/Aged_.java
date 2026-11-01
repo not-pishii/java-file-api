@@ -37,7 +37,7 @@ import p.Aged;
 ///
 /// A generated class extends or implements [Aged] by the proof its metamodel starts, with the stages of `Aged_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Aged.class, fingerprint = "c10b6a875dc35dcab997a7ea7bb9677e44dc545cc976dfa042446d5fab4951db", complete = true, format = 17)
+@GeneratedMetamodel(of = Aged.class, fingerprint = "e10ca5ab6f07db03500193ec9f1311222bfc32c31cc8c405498eb84d41b948eb", complete = true, format = 18)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -48,7 +48,7 @@ public final class Aged_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Aged] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Aged_"), "c10b6a875dc35dcab997a7ea7bb9677e44dc545cc976dfa042446d5fab4951db", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Aged"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("gone"), Signature.of("hashCode"), Signature.of("here"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Aged"), Signature.of("Aged", Param.fixed(ClassDesc.of("java.lang.String")))), Set.of()), false, List.of(), new Aged_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Aged_"), "e10ca5ab6f07db03500193ec9f1311222bfc32c31cc8c405498eb84d41b948eb", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Aged"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("gone"), Signature.of("hashCode"), Signature.of("here"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Aged"), Signature.of("Aged", Param.fixed(ClassDesc.of("java.lang.String")))), Set.of()), false, List.of(), List.of(), new Aged_Heritage());
 
         private Data() {
         }
@@ -59,7 +59,7 @@ public final class Aged_ {
     static final class Canonical {
         /// The canonical form of [Aged].
         static final String TEXT = """
-        javafile-facts-canonical 11
+        javafile-facts-canonical 12
         type p.Aged open-class sealed=no nesting=top
         annotations -
         annotation -

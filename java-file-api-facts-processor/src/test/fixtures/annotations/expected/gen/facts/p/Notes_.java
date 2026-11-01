@@ -47,7 +47,7 @@ import p.Notes;
 ///
 /// A generated class extends or implements [Notes] by the proof its metamodel starts, with the stages of `Notes_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Notes.class, fingerprint = "2b8913640579b16bafa92447d43d17c4af04467f621e72a913aeca5a2d5470ba", complete = true, format = 17)
+@GeneratedMetamodel(of = Notes.class, fingerprint = "a69433a2c8d216fd8214471e31e64b8cc5cd04ed8eb4b870d7c692012dca45af", complete = true, format = 18)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -58,7 +58,7 @@ public final class Notes_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Notes] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Notes_"), "2b8913640579b16bafa92447d43d17c4af04467f621e72a913aeca5a2d5470ba", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Notes"), List.of(), List.of(), List.of(ClassDesc.of("java.lang.annotation.Annotation")), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("annotationType"), Signature.of("value")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), false, List.of(new AnnotationUse(ClassDesc.of("java.lang.annotation.Retention"), List.of(new AnnotationMember("value", AnnotationValues.enumValue(ClassDesc.of("java.lang.annotation.RetentionPolicy"), "RUNTIME")))), new AnnotationUse(ClassDesc.of("java.lang.annotation.Target"), List.of(new AnnotationMember("value", AnnotationValues.array(AnnotationValues.enumValue(ClassDesc.of("java.lang.annotation.ElementType"), "TYPE"), AnnotationValues.enumValue(ClassDesc.of("java.lang.annotation.ElementType"), "METHOD"), AnnotationValues.enumValue(ClassDesc.of("java.lang.annotation.ElementType"), "FIELD"), AnnotationValues.enumValue(ClassDesc.of("java.lang.annotation.ElementType"), "CONSTRUCTOR"), AnnotationValues.enumValue(ClassDesc.of("java.lang.annotation.ElementType"), "PARAMETER")))))), new Notes_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Notes_"), "a69433a2c8d216fd8214471e31e64b8cc5cd04ed8eb4b870d7c692012dca45af", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Notes"), List.of(), List.of(), List.of(ClassDesc.of("java.lang.annotation.Annotation")), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("annotationType"), Signature.of("value")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), false, List.of(), List.of(new AnnotationUse(ClassDesc.of("java.lang.annotation.Retention"), List.of(new AnnotationMember("value", AnnotationValues.enumValue(ClassDesc.of("java.lang.annotation.RetentionPolicy"), "RUNTIME")))), new AnnotationUse(ClassDesc.of("java.lang.annotation.Target"), List.of(new AnnotationMember("value", AnnotationValues.array(AnnotationValues.enumValue(ClassDesc.of("java.lang.annotation.ElementType"), "TYPE"), AnnotationValues.enumValue(ClassDesc.of("java.lang.annotation.ElementType"), "METHOD"), AnnotationValues.enumValue(ClassDesc.of("java.lang.annotation.ElementType"), "FIELD"), AnnotationValues.enumValue(ClassDesc.of("java.lang.annotation.ElementType"), "CONSTRUCTOR"), AnnotationValues.enumValue(ClassDesc.of("java.lang.annotation.ElementType"), "PARAMETER")))))), new Notes_Heritage());
 
         private Data() {
         }
@@ -69,7 +69,7 @@ public final class Notes_ {
     static final class Canonical {
         /// The canonical form of [Notes].
         static final String TEXT = """
-        javafile-facts-canonical 11
+        javafile-facts-canonical 12
         type p.Notes interface sealed=no nesting=top
         annotations @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.RUNTIME); @java.lang.annotation.Target({java.lang.annotation.ElementType.TYPE; java.lang.annotation.ElementType.METHOD; java.lang.annotation.ElementType.FIELD; java.lang.annotation.ElementType.CONSTRUCTOR; java.lang.annotation.ElementType.PARAMETER})
         annotation value: p.Author[]; retention RUNTIME; targets CONSTRUCTOR; FIELD; METHOD; PARAMETER; TYPE; repeatable no

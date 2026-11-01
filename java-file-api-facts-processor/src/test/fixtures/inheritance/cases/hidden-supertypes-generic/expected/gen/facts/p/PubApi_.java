@@ -36,7 +36,7 @@ import p.PubApi;
 ///
 /// A generated class extends or implements [PubApi] by the proof its metamodel starts, with the stages of `PubApi_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = PubApi.class, fingerprint = "e51d565e23ae8c9abf739c79d76f65b6595dc13a2ef7ea27b4780cfb6b29f038", complete = true, format = 17)
+@GeneratedMetamodel(of = PubApi.class, fingerprint = "7d227ebe57ff733371651999307d95cb38508e00e96a654df10dfc315b3a6d0d", complete = true, format = 18)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -47,7 +47,7 @@ public final class PubApi_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [PubApi] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.PubApi_"), "e51d565e23ae8c9abf739c79d76f65b6595dc13a2ef7ea27b4780cfb6b29f038", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.PubApi"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("pub")), Set.of(Signature.of("beyond"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), false, List.of(), new PubApi_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.PubApi_"), "7d227ebe57ff733371651999307d95cb38508e00e96a654df10dfc315b3a6d0d", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.PubApi"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("pub")), Set.of(Signature.of("beyond"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), false, List.of(), List.of(), new PubApi_Heritage());
 
         private Data() {
         }
@@ -58,7 +58,7 @@ public final class PubApi_ {
     static final class Canonical {
         /// The canonical form of [PubApi].
         static final String TEXT = """
-        javafile-facts-canonical 11
+        javafile-facts-canonical 12
         type p.PubApi interface sealed=no nesting=top
         annotations -
         annotation -

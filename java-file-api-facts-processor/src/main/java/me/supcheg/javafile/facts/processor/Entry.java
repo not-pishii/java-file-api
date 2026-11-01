@@ -46,7 +46,8 @@ import java.util.stream.Stream;
 /// that names it; a class has a constructor with a fact to call. Whatever
 /// the entry is refused for is read off the model of the type
 /// ([TypeModel]), which its canonical form tells, and off the facts of its
-/// metamodel.
+/// metamodel. A sealed type has an entry too: the typed layer lets the
+/// subtypes it permits alone take it.
 sealed interface Entry permits Entry.Offered, Entry.Refused {
 
     /// The greatest number of parameters of a method an `ImplementationN` is of.
@@ -65,7 +66,7 @@ sealed interface Entry permits Entry.Offered, Entry.Refused {
 
     /// The type has no entry.
     ///
-    /// @param reason why, as the rest of a sentence about the type: `it is sealed: …`
+    /// @param reason why, as the rest of a sentence about the type: `it is a final class, …`
     record Refused(String reason) implements Entry {}
 
     /// A step of the proof: an abstract method of the type.
@@ -117,9 +118,6 @@ sealed interface Entry permits Entry.Offered, Entry.Refused {
                 };
         if (closed.isPresent()) {
             return closed;
-        }
-        if (model.sealed()) {
-            return Optional.of("it is sealed: only the classes it permits extend or implement it");
         }
         String name = Models.binaryName(model.desc());
         if (name.equals("java.lang.Enum") || name.equals("java.lang.Record")) {

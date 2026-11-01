@@ -514,8 +514,8 @@ class EntryTest {
         assertThat(refusal("java.lang.String")).isEqualTo("it is a final class, which no class extends");
         assertThat(refusal("java.time.DayOfWeek")).isEqualTo("it is an enum class, which no class extends");
         assertThat(refusal("java.lang.Enum")).isEqualTo("no class extends java.lang.Enum but an enum or a record does");
-        assertThat(refusal("java.lang.constant.ConstantDesc"))
-                .isEqualTo("it is sealed: only the classes it permits extend or implement it");
+        // a sealed type has an entry too: the typed layer holds a generator to the subtypes it permits
+        assertThat(read("java.lang.constant.ConstantDesc").entry()).isInstanceOf(Entry.Offered.class);
         // an abstract method with type parameters of its own
         assertThat(refusal("java.util.Collection"))
                 .isEqualTo(

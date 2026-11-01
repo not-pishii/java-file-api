@@ -31,7 +31,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// @param <T> a type argument of [Iterable]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Iterable.class, fingerprint = "863946e4cbe7b5bd99bd73da136a8e074f0c3ebcc2018988671e7fba8394e854", complete = false, format = 17)
+@GeneratedMetamodel(of = Iterable.class, fingerprint = "0760a7fddf2f3bc6e820eb536a2a32de7e4a685418ad1610e921412166b58f1a", complete = false, format = 18)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -42,7 +42,7 @@ public final class Iterable_<T> {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Iterable] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.Iterable_"), "863946e4cbe7b5bd99bd73da136a8e074f0c3ebcc2018988671e7fba8394e854", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("java.lang.Iterable"), List.of(new TypeParam("T", List.of())), List.of(), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(Signature.of("iterator")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("forEach", Param.fixed(ClassDesc.of("java.util.function.Consumer"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("spliterator"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), List.of(), false, List.of());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.Iterable_"), "0760a7fddf2f3bc6e820eb536a2a32de7e4a685418ad1610e921412166b58f1a", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("java.lang.Iterable"), List.of(new TypeParam("T", List.of())), List.of(), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(Signature.of("iterator")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("forEach", Param.fixed(ClassDesc.of("java.util.function.Consumer"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("spliterator"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), List.of(), false, List.of(), List.of());
 
         private Data() {
         }
@@ -53,7 +53,7 @@ public final class Iterable_<T> {
     static final class Canonical {
         /// The canonical form of [Iterable].
         static final String TEXT = """
-        javafile-facts-canonical 11
+        javafile-facts-canonical 12
         type java.lang.Iterable interface sealed=no nesting=top
         annotations -
         annotation -

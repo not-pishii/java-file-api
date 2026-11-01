@@ -484,6 +484,7 @@ class TypedModifierTest {
                 Supertypes.NONE,
                 MethodTableTemplate.EMPTY,
                 true,
+                List.of(open),
                 List.of(),
                 () -> new Heritage.Told(
                         List.of(),
@@ -539,7 +540,8 @@ class TypedModifierTest {
                 Supertypes.NONE,
                 MethodTableTemplate.EMPTY,
                 List.of(),
-                true);
+                true,
+                List.of(ClassDesc.of(EXAMPLE, "Sub")));
         var sealedBase = UnsafeFacts.openClassToken(sealedShape);
 
         assertThatThrownBy(() -> TypedJavaFile.declareClass(

@@ -38,7 +38,7 @@ import p.Mentions;
 ///
 /// A generated class extends or implements [Mentions] by the proof its metamodel starts, with the stages of `Mentions_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Mentions.class, fingerprint = "54c189edbc8cd828f8e6f34b4c58b11f2ee886205147bc632642482070904df1", complete = true, format = 17)
+@GeneratedMetamodel(of = Mentions.class, fingerprint = "97b091fff2b6f0c3181666d0ae667f23503e923ac4ce76f083bf066af001b2e5", complete = true, format = 18)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -49,7 +49,7 @@ public final class Mentions_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Mentions] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Mentions_"), "54c189edbc8cd828f8e6f34b4c58b11f2ee886205147bc632642482070904df1", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Mentions"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("dollar"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("hidden"), Signature.of("marker"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Mentions")), Set.of()), false, List.of(), new Mentions_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Mentions_"), "97b091fff2b6f0c3181666d0ae667f23503e923ac4ce76f083bf066af001b2e5", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Mentions"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("dollar"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("hidden"), Signature.of("marker"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Mentions")), Set.of()), false, List.of(), List.of(), new Mentions_Heritage());
 
         private Data() {
         }
@@ -60,7 +60,7 @@ public final class Mentions_ {
     static final class Canonical {
         /// The canonical form of [Mentions].
         static final String TEXT = """
-        javafile-facts-canonical 11
+        javafile-facts-canonical 12
         type p.Mentions open-class sealed=no nesting=top
         annotations -
         annotation -

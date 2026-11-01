@@ -38,7 +38,7 @@ import p.Overloaded;
 ///
 /// A generated class extends or implements [Overloaded] by the proof its metamodel starts, with the stages of `Overloaded_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Overloaded.class, fingerprint = "7e6f075d261809ac2abe1b629eb0074743fdc837e172ace7d9c2d25cfe0cfdc9", complete = true, format = 17)
+@GeneratedMetamodel(of = Overloaded.class, fingerprint = "15a6140212e3e9e27daa9d0efafc27ce175b3ca9a380ec097bac5065ba3e0ebf", complete = true, format = 18)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -49,7 +49,7 @@ public final class Overloaded_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Overloaded] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Overloaded_"), "7e6f075d261809ac2abe1b629eb0074743fdc837e172ace7d9c2d25cfe0cfdc9", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Overloaded"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("run", Param.fixed(ConstantDescs.CD_long))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("run", Param.fixed(ConstantDescs.CD_int)), Signature.of("run", Param.fixed(ClassDesc.of("java.lang.Object")), Param.fixed(ConstantDescs.CD_int)), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), false, List.of(), new Overloaded_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Overloaded_"), "15a6140212e3e9e27daa9d0efafc27ce175b3ca9a380ec097bac5065ba3e0ebf", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Overloaded"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("run", Param.fixed(ConstantDescs.CD_long))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("run", Param.fixed(ConstantDescs.CD_int)), Signature.of("run", Param.fixed(ClassDesc.of("java.lang.Object")), Param.fixed(ConstantDescs.CD_int)), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), false, List.of(), List.of(), new Overloaded_Heritage());
 
         private Data() {
         }
@@ -60,7 +60,7 @@ public final class Overloaded_ {
     static final class Canonical {
         /// The canonical form of [Overloaded].
         static final String TEXT = """
-        javafile-facts-canonical 11
+        javafile-facts-canonical 12
         type p.Overloaded interface sealed=no nesting=top
         annotations -
         annotation -

@@ -33,7 +33,7 @@ import p.Open;
 ///
 /// A generated class extends or implements [Open] by the proof its metamodel starts, with the stages of `Open_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Open.class, fingerprint = "f5a605f29f9b16b76afcbcaabd632ef55122dd8a42ce13ac8564fde2c168a3cc", complete = true, format = 17)
+@GeneratedMetamodel(of = Open.class, fingerprint = "acc3db3c751c6766b6e8060feca99560462da9c6a29e5c168347a53cd6896ece", complete = true, format = 18)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -44,7 +44,7 @@ public final class Open_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Open] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Open_"), "f5a605f29f9b16b76afcbcaabd632ef55122dd8a42ce13ac8564fde2c168a3cc", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Open"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Open")), Set.of()), false, List.of(), new Open_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Open_"), "acc3db3c751c6766b6e8060feca99560462da9c6a29e5c168347a53cd6896ece", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Open"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Open")), Set.of()), false, List.of(), List.of(), new Open_Heritage());
 
         private Data() {
         }
@@ -55,7 +55,7 @@ public final class Open_ {
     static final class Canonical {
         /// The canonical form of [Open].
         static final String TEXT = """
-        javafile-facts-canonical 11
+        javafile-facts-canonical 12
         type p.Open open-class sealed=no nesting=top
         annotations -
         annotation -

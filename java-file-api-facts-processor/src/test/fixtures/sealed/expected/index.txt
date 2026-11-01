@@ -1,0 +1,10 @@
+META-INF/javafile/metamodel/full/java.lang.Object -> gen.facts.java.lang.Object_
+META-INF/javafile/metamodel/full/out.OtherOut -> gen.facts.out.OtherOut_
+META-INF/javafile/metamodel/full/out.OtherSealed -> gen.facts.out.OtherSealed_
+META-INF/javafile/metamodel/full/out.Out -> gen.facts.out.Out_
+META-INF/javafile/metamodel/full/out.SealedClass -> gen.facts.out.SealedClass_
+META-INF/javafile/metamodel/full/out.SealedInterface -> gen.facts.out.SealedInterface_
+META-INF/javafile/metamodel/token/java.lang.Class -> gen.facts.java.lang.Class_
+META-INF/javafile/metamodel/token/java.lang.CloneNotSupportedException -> gen.facts.java.lang.CloneNotSupportedException_
+META-INF/javafile/metamodel/token/java.lang.InterruptedException -> gen.facts.java.lang.InterruptedException_
+META-INF/javafile/metamodel/token/java.lang.String -> gen.facts.java.lang.String_

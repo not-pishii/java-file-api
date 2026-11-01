@@ -41,7 +41,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// A generated class extends or implements [Annotation] by the proof its metamodel starts, with the stages of `Annotation_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Annotation.class, fingerprint = "ce3501e10bbd27592e62b447a9fe749b508b9bb10212593e601b4b606ba9e83b", complete = true, format = 17)
+@GeneratedMetamodel(of = Annotation.class, fingerprint = "ff4d3b3598ef95248d722a9472519259c8084daf60e7d1c5e00255b5a83596e1", complete = true, format = 18)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -52,7 +52,7 @@ public final class Annotation_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Annotation] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.annotation.Annotation_"), "ce3501e10bbd27592e62b447a9fe749b508b9bb10212593e601b4b606ba9e83b", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("java.lang.annotation.Annotation"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("annotationType")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), false, List.of(), new Annotation_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.annotation.Annotation_"), "ff4d3b3598ef95248d722a9472519259c8084daf60e7d1c5e00255b5a83596e1", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("java.lang.annotation.Annotation"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("annotationType")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), false, List.of(), List.of(), new Annotation_Heritage());
 
         private Data() {
         }
@@ -63,7 +63,7 @@ public final class Annotation_ {
     static final class Canonical {
         /// The canonical form of [Annotation].
         static final String TEXT = """
-        javafile-facts-canonical 11
+        javafile-facts-canonical 12
         type java.lang.annotation.Annotation interface sealed=no nesting=top
         annotations -
         annotation -

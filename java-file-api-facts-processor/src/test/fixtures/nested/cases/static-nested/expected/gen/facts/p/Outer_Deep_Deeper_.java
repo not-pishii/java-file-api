@@ -33,7 +33,7 @@ import p.Outer.Deep.Deeper;
 ///
 /// A generated class extends or implements [Deeper] by the proof its metamodel starts, with the stages of `Outer_Deep_Deeper_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Deeper.class, fingerprint = "8aa61517a4ddfff0d0a9f460aa2249a4c6567fe522fc01fd5ef0b2c47ea05657", complete = true, format = 17)
+@GeneratedMetamodel(of = Deeper.class, fingerprint = "385e0edb80d4dcf49279dbf85c8c9136f01d9d2881dfc9ed32d14dde328846b7", complete = true, format = 18)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -44,7 +44,7 @@ public final class Outer_Deep_Deeper_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Deeper] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Outer_Deep_Deeper_"), "8aa61517a4ddfff0d0a9f460aa2249a4c6567fe522fc01fd5ef0b2c47ea05657", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Outer$Deep$Deeper"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Outer$Deep$Deeper")), Set.of()), false, List.of(), new Outer_Deep_Deeper_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Outer_Deep_Deeper_"), "385e0edb80d4dcf49279dbf85c8c9136f01d9d2881dfc9ed32d14dde328846b7", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Outer$Deep$Deeper"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Outer$Deep$Deeper")), Set.of()), false, List.of(), List.of(), new Outer_Deep_Deeper_Heritage());
 
         private Data() {
         }
@@ -55,7 +55,7 @@ public final class Outer_Deep_Deeper_ {
     static final class Canonical {
         /// The canonical form of [Deeper].
         static final String TEXT = """
-        javafile-facts-canonical 11
+        javafile-facts-canonical 12
         type p.Outer$Deep$Deeper open-class sealed=no nesting=static
         annotations -
         annotation -

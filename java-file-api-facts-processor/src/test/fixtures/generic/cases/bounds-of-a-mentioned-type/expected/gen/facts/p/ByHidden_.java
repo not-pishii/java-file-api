@@ -30,7 +30,7 @@ import p.ByHidden;
 ///
 /// The metamodel has no type parameters, and its token is of the raw type: a bound of a type parameter of [ByHidden] mentions a type the metamodel cannot name, so no full metamodel can be made of it either.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = ByHidden.class, fingerprint = "3d738ff9341e283b2b6908ffa2f436677fce8bec647e27ac0e8767d95238fb95", complete = false, format = 17)
+@GeneratedMetamodel(of = ByHidden.class, fingerprint = "e5ccf9d4028df7c40d1dd1f3090745211dcc361fff0bbaa1eb58cdb0b71c0370", complete = false, format = 18)
 @SuppressWarnings({
     "rawtypes",
     "deprecation",
@@ -42,7 +42,7 @@ public final class ByHidden_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [ByHidden] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.ByHidden_"), "3d738ff9341e283b2b6908ffa2f436677fce8bec647e27ac0e8767d95238fb95", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.ByHidden"), List.of(new TypeParam("T", List.of(Types.of(ClassDesc.of("p.Hidden"))))), List.of(ClassDesc.of("java.lang.Object")), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("ByHidden")), Set.of()), List.of(), false, List.of());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.ByHidden_"), "e5ccf9d4028df7c40d1dd1f3090745211dcc361fff0bbaa1eb58cdb0b71c0370", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.ByHidden"), List.of(new TypeParam("T", List.of(Types.of(ClassDesc.of("p.Hidden"))))), List.of(ClassDesc.of("java.lang.Object")), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("ByHidden")), Set.of()), List.of(), false, List.of(), List.of());
 
         private Data() {
         }
@@ -53,7 +53,7 @@ public final class ByHidden_ {
     static final class Canonical {
         /// The canonical form of [ByHidden].
         static final String TEXT = """
-        javafile-facts-canonical 11
+        javafile-facts-canonical 12
         type p.ByHidden open-class sealed=no nesting=top
         annotations -
         annotation -

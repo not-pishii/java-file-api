@@ -37,7 +37,7 @@ import p.Outer.NonStatic;
 ///
 /// A generated class extends or implements [Outer] by the proof its metamodel starts, with the stages of `Outer_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Outer.class, fingerprint = "0fc44e9d9f623f18321ab4022cf22dfd2f41f0036166544b3fb95fce5e2d3f32", complete = true, format = 17)
+@GeneratedMetamodel(of = Outer.class, fingerprint = "e46da189fd70be1211586260be29b0afc3817533ac9f45f520f9df9ecfcc46b7", complete = true, format = 18)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -48,7 +48,7 @@ public final class Outer_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Outer] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Outer_"), "0fc44e9d9f623f18321ab4022cf22dfd2f41f0036166544b3fb95fce5e2d3f32", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Outer"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("e"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("inner"), Signature.of("nonStatic"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Outer")), Set.of()), false, List.of(), new Outer_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Outer_"), "e46da189fd70be1211586260be29b0afc3817533ac9f45f520f9df9ecfcc46b7", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Outer"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("e"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("inner"), Signature.of("nonStatic"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Outer")), Set.of()), false, List.of(), List.of(), new Outer_Heritage());
 
         private Data() {
         }
@@ -59,7 +59,7 @@ public final class Outer_ {
     static final class Canonical {
         /// The canonical form of [Outer].
         static final String TEXT = """
-        javafile-facts-canonical 11
+        javafile-facts-canonical 12
         type p.Outer open-class sealed=no nesting=top
         annotations -
         annotation -

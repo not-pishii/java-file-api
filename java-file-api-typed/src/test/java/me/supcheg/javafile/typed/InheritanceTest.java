@@ -43,7 +43,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 /// shapes the JDK has none of at hand: the diamonds.
 class InheritanceTest {
     private static final String OWNER = "class x.Self";
-    private static final Inheritance.Heir HEIR = new Inheritance.Heir.OfClass(OWNER, "x");
+    private static final Inheritance.Heir HEIR = new Inheritance.Heir.OfClass(OWNER, ClassDesc.of("x", "Self"));
     private static final TargetClasspath TARGET = UnsafeFacts.unverifiedClasspath();
 
     private static final ClassDesc I = ClassDesc.of("x", "I");
@@ -288,7 +288,8 @@ class InheritanceTest {
         assertThat(ofClass.group(sig("m")).orElseThrow().unsettled())
                 .hasValueSatisfying(why -> assertThat(why).contains("IllegalAccessError"));
         // in the package of the method the class may inherit it, and a type variable is held to
-        Inheritance near = Inheritance.of(new Inheritance.Heir.OfClass("class y.Self", "y"), klass(far, hidden));
+        Inheritance near = Inheritance.of(
+                new Inheritance.Heir.OfClass("class y.Self", ClassDesc.of("y", "Self")), klass(far, hidden));
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> near.with(iface(I, m(Dispatch.DEFAULT, I))))
                 .withMessageContaining("the first has package access");

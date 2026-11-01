@@ -34,7 +34,7 @@ import p.OverDollar;
 ///
 /// A generated class extends or implements [OverDollar] by the proof its metamodel starts, with the stages of `OverDollar_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = OverDollar.class, fingerprint = "f1d14290936901a77b1682bc95292e2fb27bc6146bc6bf56624c2a470f6ae5f2", complete = true, format = 17)
+@GeneratedMetamodel(of = OverDollar.class, fingerprint = "62fa1d4e994cef841cbcdc378932b3feb7db275ed329c56564798a865345969f", complete = true, format = 18)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -45,7 +45,7 @@ public final class OverDollar_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [OverDollar] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.OverDollar_"), "f1d14290936901a77b1682bc95292e2fb27bc6146bc6bf56624c2a470f6ae5f2", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.OverDollar"), List.of(), List.of(ClassDesc.of("p.Dol$lar"), ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("own"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("OverDollar")), Set.of()), false, List.of(), new OverDollar_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.OverDollar_"), "62fa1d4e994cef841cbcdc378932b3feb7db275ed329c56564798a865345969f", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.OverDollar"), List.of(), List.of(ClassDesc.of("p.Dol$lar"), ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("own"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("OverDollar")), Set.of()), false, List.of(), List.of(), new OverDollar_Heritage());
 
         private Data() {
         }
@@ -56,7 +56,7 @@ public final class OverDollar_ {
     static final class Canonical {
         /// The canonical form of [OverDollar].
         static final String TEXT = """
-        javafile-facts-canonical 11
+        javafile-facts-canonical 12
         type p.OverDollar open-class sealed=no nesting=top
         annotations -
         annotation -

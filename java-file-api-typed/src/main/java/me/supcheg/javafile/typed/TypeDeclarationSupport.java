@@ -34,7 +34,7 @@ abstract class TypeDeclarationSupport<Self> {
     private final ClassDesc desc;
     private final String described;
     private final String kind;
-    private final Inheritance.Heir heir;
+    private final Inheritance.Heir.OfClass heir;
     private final DeclarationIdentity identity;
     private Inheritance inherited;
     private DeclaredToken<Self> self;
@@ -52,11 +52,11 @@ abstract class TypeDeclarationSupport<Self> {
         this.kind = kind;
         this.described =
                 kind + " " + (desc.packageName().isEmpty() ? "" : desc.packageName() + ".") + desc.displayName();
-        this.heir = new Inheritance.Heir.OfClass(described, desc.packageName());
+        this.heir = new Inheritance.Heir.OfClass(described, desc);
         this.identity = UnsafeFacts.declarationIdentity(described);
         // Every type has the methods of Object: an interface implicitly declares them, a record and an
         // enum inherit them.
-        this.inherited = Inheritance.of(heir, Inheritance.supertype(described, target, Object_.TOKEN));
+        this.inherited = Inheritance.of(heir, Inheritance.supertype(heir, target, Object_.TOKEN));
     }
 
     /// Makes the token of the type, once its kind knows how to make it.
@@ -117,7 +117,7 @@ abstract class TypeDeclarationSupport<Self> {
     final <X> Upcast<Self, X> addSupertype(DeclaredToken<X> supertype) {
         requireHeader("a supertype of " + described);
         target.verify(supertype);
-        inherited = inherited.with(Inheritance.supertype(described, target, supertype));
+        inherited = inherited.with(Inheritance.supertype(heir, target, supertype));
         return new Upcast<>(self, supertype);
     }
 

@@ -55,6 +55,7 @@ public final class TypeShape<K extends DeclaredKind> {
     private final Supplier<MethodTableTemplate> methods;
     private final List<String> enumConstants;
     private final boolean sealed;
+    private final List<ClassDesc> permitted;
     private final List<AnnotationUse> annotations;
     private final Supplier<? extends Heritage> heritage;
 
@@ -68,7 +69,8 @@ public final class TypeShape<K extends DeclaredKind> {
             Supertypes supertypes,
             MethodTableTemplate methods,
             List<String> enumConstants,
-            boolean sealed) {
+            boolean sealed,
+            List<ClassDesc> permitted) {
         this(
                 origin,
                 kind,
@@ -79,7 +81,8 @@ public final class TypeShape<K extends DeclaredKind> {
                 supertypes,
                 () -> methods,
                 enumConstants,
-                sealed);
+                sealed,
+                permitted);
         if (methods.typeParameterCount() > this.typeParameters.size()) {
             throw new IllegalArgumentException("the method table of " + this + " refers to type parameter #"
                     + (methods.typeParameterCount() - 1) + ", but the type has " + this.typeParameters.size()
@@ -99,7 +102,8 @@ public final class TypeShape<K extends DeclaredKind> {
             Supertypes supertypes,
             Supplier<MethodTableTemplate> methods,
             List<String> enumConstants,
-            boolean sealed) {
+            boolean sealed,
+            List<ClassDesc> permitted) {
         this(
                 origin,
                 kind,
@@ -111,6 +115,7 @@ public final class TypeShape<K extends DeclaredKind> {
                 methods,
                 enumConstants,
                 sealed,
+                permitted,
                 List.of(),
                 () -> Heritage.UNTOLD);
     }
@@ -126,6 +131,7 @@ public final class TypeShape<K extends DeclaredKind> {
             Supplier<MethodTableTemplate> methods,
             List<String> enumConstants,
             boolean sealed,
+            List<ClassDesc> permitted,
             List<AnnotationUse> annotations,
             Supplier<? extends Heritage> heritage) {
         this(
@@ -139,6 +145,7 @@ public final class TypeShape<K extends DeclaredKind> {
                 methods,
                 enumConstants,
                 sealed,
+                permitted,
                 annotations,
                 heritage);
     }
@@ -154,6 +161,7 @@ public final class TypeShape<K extends DeclaredKind> {
             Supplier<MethodTableTemplate> methods,
             List<String> enumConstants,
             boolean sealed,
+            List<ClassDesc> permitted,
             List<AnnotationUse> annotations,
             Supplier<? extends Heritage> heritage) {
         this.origin = origin;
@@ -170,6 +178,7 @@ public final class TypeShape<K extends DeclaredKind> {
         this.methods = methods;
         this.enumConstants = List.copyOf(enumConstants);
         this.sealed = sealed;
+        this.permitted = List.copyOf(permitted);
         this.annotations = List.copyOf(annotations);
         this.heritage = heritage;
         requireSupertypesOfTheTypeParameters();
@@ -179,6 +188,7 @@ public final class TypeShape<K extends DeclaredKind> {
         }
         requireInterfaces();
         requireKindData();
+        requirePermitted();
     }
 
     /// A shape vouched for by a legacy factory of [UnsafeFacts] that takes a
@@ -224,7 +234,8 @@ public final class TypeShape<K extends DeclaredKind> {
                 supertypes,
                 () -> MethodTableTemplate.of(methods.get()),
                 enumConstants,
-                false);
+                false,
+                List.of());
     }
 
     /// The shape of a final class that is being declared: its superclass is known once the
@@ -250,6 +261,7 @@ public final class TypeShape<K extends DeclaredKind> {
                 methods,
                 List.of(),
                 false,
+                List.of(),
                 List.of(),
                 () -> Heritage.UNTOLD);
     }
@@ -278,7 +290,8 @@ public final class TypeShape<K extends DeclaredKind> {
                 Supertypes.NONE,
                 methods,
                 List.of(),
-                false);
+                false,
+                List.of());
     }
 
     /// The shape of an enum class that is being declared: its constants are known when it declares
@@ -301,7 +314,8 @@ public final class TypeShape<K extends DeclaredKind> {
                 Supertypes.NONE,
                 methods,
                 constants,
-                false);
+                false,
+                List.of());
     }
 
     /// The shape of a type this module knows by definition.
@@ -316,7 +330,8 @@ public final class TypeShape<K extends DeclaredKind> {
                 Supertypes.NONE,
                 MethodTableTemplate.EMPTY,
                 List.of(),
-                false);
+                false,
+                List.of());
     }
 
     /// Who vouches for the shape.
@@ -401,6 +416,19 @@ public final class TypeShape<K extends DeclaredKind> {
     /// @return `true` for a sealed class or interface
     public boolean sealed() {
         return sealed;
+    }
+
+    /// The subtypes the type permits, in declaration order; empty for a type
+    /// that is not sealed, and for a sealed type whose permitted subtypes
+    /// have no name — an enum with a body on each constant (JLS 8.9).
+    ///
+    /// A permitted subtype is a [ClassDesc] rather than a token: the
+    /// metamodel of the type tells the names it permits, and a name need have
+    /// no token of its own yet.
+    ///
+    /// @return the permitted subtypes
+    public List<ClassDesc> permitted() {
+        return permitted;
     }
 
     /// The annotations the type declares, in declaration order.
@@ -558,6 +586,16 @@ public final class TypeShape<K extends DeclaredKind> {
         if (!both.isEmpty()) {
             throw new IllegalArgumentException(
                     this + " has " + describe(both) + " both as a superclass and as an interface");
+        }
+    }
+
+    /// A type that is not sealed permits no subtype. A sealed type may tell
+    /// none — an enum with a body on each constant is implicitly sealed, and
+    /// the types it permits have no name (JLS 8.9).
+    private void requirePermitted() {
+        if (!sealed && !permitted.isEmpty()) {
+            throw new IllegalArgumentException("a type that is not sealed permits no subtype: " + this + " permits "
+                    + permitted.stream().map(TypeNames::describe).collect(Collectors.joining(", ")));
         }
     }
 

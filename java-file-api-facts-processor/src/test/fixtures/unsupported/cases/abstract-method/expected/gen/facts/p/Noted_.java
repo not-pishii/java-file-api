@@ -34,7 +34,7 @@ import p.Noted;
 ///
 /// A generated class extends or implements [Noted] by the proof its metamodel starts, with the stages of `Noted_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Noted.class, fingerprint = "800098b90f1146a4aed1f8409fecdb2e53b79e7df656d0cae3a4c7c67b6921a2", complete = true, format = 17)
+@GeneratedMetamodel(of = Noted.class, fingerprint = "2f6e272af9edab9b2e63c9de47e88aa9c6648b473c8a023dcc9cb8b3e63cae89", complete = true, format = 18)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -45,7 +45,7 @@ public final class Noted_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Noted] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Noted_"), "800098b90f1146a4aed1f8409fecdb2e53b79e7df656d0cae3a4c7c67b6921a2", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Noted"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("note", Param.fixed(ClassDesc.of("java.lang.Deprecated")))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), false, List.of(), new Noted_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Noted_"), "2f6e272af9edab9b2e63c9de47e88aa9c6648b473c8a023dcc9cb8b3e63cae89", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Noted"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("note", Param.fixed(ClassDesc.of("java.lang.Deprecated")))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), false, List.of(), List.of(), new Noted_Heritage());
 
         private Data() {
         }
@@ -56,7 +56,7 @@ public final class Noted_ {
     static final class Canonical {
         /// The canonical form of [Noted].
         static final String TEXT = """
-        javafile-facts-canonical 11
+        javafile-facts-canonical 12
         type p.Noted interface sealed=no nesting=top
         annotations -
         annotation -

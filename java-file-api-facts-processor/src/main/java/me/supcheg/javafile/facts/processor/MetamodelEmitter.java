@@ -824,6 +824,9 @@ final class MetamodelEmitter {
                     case Heritage.Told _ ->
                         Stream.of(
                                 Exprs.literal(model.sealed()),
+                                list(model.permitted().stream()
+                                        .map(MetamodelEmitter::classDesc)
+                                        .toList()),
                                 annotationUses(model.annotations()),
                                 Exprs.new_(inherited));
                     case Heritage.Untold _ ->
@@ -832,6 +835,9 @@ final class MetamodelEmitter {
                                         .map(Exprs::literal)
                                         .toList()),
                                 Exprs.literal(model.sealed()),
+                                list(model.permitted().stream()
+                                        .map(MetamodelEmitter::classDesc)
+                                        .toList()),
                                 annotationUses(model.annotations()));
                 };
         return Exprs.staticCall(

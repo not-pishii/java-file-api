@@ -32,7 +32,7 @@ import p.PolyFn;
 ///
 /// No generated class extends or implements [PolyFn]: its abstract method apply(java.lang.Object) is generic, and a generated method has no type parameters yet.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = PolyFn.class, fingerprint = "f24c056aeb9e765892b23b42289b40f220be7e4f2a96b9b9156fcc1269e8d724", complete = true, format = 17)
+@GeneratedMetamodel(of = PolyFn.class, fingerprint = "15592a05bf20cf0c69455041cc8b16bfc99e3ab95fd7a31b11f16ed9c6420493", complete = true, format = 18)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -43,7 +43,7 @@ public final class PolyFn_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [PolyFn] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.PolyFn_"), "f24c056aeb9e765892b23b42289b40f220be7e4f2a96b9b9156fcc1269e8d724", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.PolyFn"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("apply", Param.fixed(ClassDesc.of("java.lang.Object")))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), false, List.of(), new PolyFn_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.PolyFn_"), "15592a05bf20cf0c69455041cc8b16bfc99e3ab95fd7a31b11f16ed9c6420493", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.PolyFn"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("apply", Param.fixed(ClassDesc.of("java.lang.Object")))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), false, List.of(), List.of(), new PolyFn_Heritage());
 
         private Data() {
         }
@@ -54,7 +54,7 @@ public final class PolyFn_ {
     static final class Canonical {
         /// The canonical form of [PolyFn].
         static final String TEXT = """
-        javafile-facts-canonical 11
+        javafile-facts-canonical 12
         type p.PolyFn interface sealed=no nesting=top
         annotations -
         annotation -

@@ -106,18 +106,39 @@ final class Inheritance {
         return new Inheritance(heir, all);
     }
 
-    /// The supertype `token` with its heritage as the target classpath has the type.
+    /// The supertype `token` with its heritage as the target classpath has the type, for a class
+    /// being declared. A sealed type is a supertype of `heir` alone if it permits it.
     ///
-    /// @param owner the class being declared, for messages
+    /// @param heir the class being declared, for messages and for the subtype the type must permit
     /// @param target the classpath the class is compiled against
+    /// @param token the supertype
+    /// @return the supertype with its heritage, applied to the type arguments of `token`
+    /// @throws IllegalArgumentException if `token` is sealed and does not permit `heir`, is raw or has
+    ///     a wildcard type argument (JLS 8.1.4, 8.1.5), or its shape tells no heritage
+    /// @throws TargetClasspathMismatchException if the metamodel of the type does not hold on `target`
+    static Supertype supertype(Heir.OfClass heir, TargetClasspath target, DeclaredToken<?> token) {
+        Heritage heritage = target.heritage(token.shape());
+        requirePermitted(heir, token);
+        return supertype(heir.described(), token, heritage);
+    }
+
+    /// The supertype `token` with its heritage, for a type variable bounded by it: Java lets a type
+    /// variable be bounded by a sealed type, whatever subtype it is later given (JLS 4.4).
+    ///
+    /// @param owner the type variable, for messages
+    /// @param target the classpath the type is compiled against
     /// @param token the supertype
     /// @return the supertype with its heritage, applied to the type arguments of `token`
     /// @throws IllegalArgumentException if `token` is raw or has a wildcard type argument (JLS 8.1.4,
     ///     8.1.5), or its shape tells no heritage
     /// @throws TargetClasspathMismatchException if the metamodel of the type does not hold on `target`
     static Supertype supertype(String owner, TargetClasspath target, DeclaredToken<?> token) {
+        return supertype(owner, token, target.heritage(token.shape()));
+    }
+
+    private static Supertype supertype(String owner, DeclaredToken<?> token, Heritage heritage) {
         TypeShape<?> shape = token.shape();
-        return switch (target.heritage(shape)) {
+        return switch (heritage) {
             case Heritage.Untold _ -> {
                 if (shape.sealed()) {
                     throw new IllegalArgumentException(owner + " cannot have the supertype " + token
@@ -133,6 +154,18 @@ final class Inheritance {
                 yield new Supertype(token, arguments, told.applied(arguments));
             }
         };
+    }
+
+    /// Holds a supertype to what its shape tells of the subtypes it permits.
+    private static void requirePermitted(Heir.OfClass heir, DeclaredToken<?> token) {
+        TypeShape<?> shape = token.shape();
+        if (!shape.sealed() || shape.permitted().contains(heir.desc())) {
+            return;
+        }
+        throw new IllegalArgumentException(heir.described() + " cannot have the supertype " + token
+                + ": it is sealed, and " + TypeNames.describe(shape.desc()) + " permits "
+                + shape.permitted().stream().map(TypeNames::describe).collect(Collectors.joining(", "))
+                + " — a sealed type is extended or implemented by the subtypes it permits alone");
     }
 
     private static List<TypeRef> arguments(String owner, DeclaredToken<?> token) {
@@ -254,8 +287,8 @@ final class Inheritance {
             case PUBLIC, PROTECTED -> true;
             case PACKAGE ->
                 switch (heir) {
-                    case Heir.OfClass(var _, var packageName) ->
-                        entry.method().declaredBy().packageName().equals(packageName);
+                    case Heir.OfClass(var _, ClassDesc desc) ->
+                        entry.method().declaredBy().packageName().equals(desc.packageName());
                     case Heir.OfVariable _ -> true;
                 };
         };
@@ -415,8 +448,8 @@ final class Inheritance {
         /// none of its members (JLS 8.4.8.1), and it has to implement every abstract method.
         ///
         /// @param described the class, for messages
-        /// @param packageName the package of the class
-        record OfClass(String described, String packageName) implements Heir {}
+        /// @param desc the class, by binary name: what a sealed supertype has to permit
+        record OfClass(String described, ClassDesc desc) implements Heir {}
 
         /// A type variable, by the class javac makes of its bounds (JLS 4.9): an abstract class of
         /// no package the typed layer knows, so every method with package access is held one of its.

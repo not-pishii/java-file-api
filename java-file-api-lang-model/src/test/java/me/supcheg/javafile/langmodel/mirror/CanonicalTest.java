@@ -79,7 +79,7 @@ class CanonicalTest {
                                 + " -> void throws -",
                         "table abstract -");
         assertThat(withoutHeritage(canonical.text())).isEqualTo("""
-                        javafile-facts-canonical 11
+                        javafile-facts-canonical 12
                         type p.T open-class sealed=no nesting=top
                         annotations -
                         annotation -
@@ -187,7 +187,7 @@ class CanonicalTest {
 
         assertThat(canonical.text())
                 .startsWith("""
-                        javafile-facts-canonical 11
+                        javafile-facts-canonical 12
                         type p.Day enum sealed=no nesting=top
                         annotations -
                         annotation -
@@ -436,7 +436,7 @@ class CanonicalTest {
     void theSamOfAFunctionalInterfaceIsALineOfItsOwn() {
         assertThat(functional(MemberFilter.NONE, FUNCTIONAL[0], FUNCTIONAL[1]).text())
                 .isEqualTo("""
-                        javafile-facts-canonical 11
+                        javafile-facts-canonical 12
                         type p.T interface sealed=no nesting=top
                         annotations -
                         annotation -
@@ -545,6 +545,7 @@ class CanonicalTest {
                 MethodTableTemplate.EMPTY,
                 List.of(),
                 false,
+                List.of(),
                 Optional.empty(),
                 Heritage.UNTOLD,
                 MemberFilter.DECLARED_ACCESSIBLE,
@@ -580,6 +581,7 @@ class CanonicalTest {
                 MethodTableTemplate.EMPTY,
                 List.of(),
                 false,
+                List.of(),
                 Optional.empty(),
                 Heritage.UNTOLD,
                 MemberFilter.DECLARED_ACCESSIBLE,

@@ -33,7 +33,7 @@ import p.Witness;
 ///
 /// A generated class extends or implements [Witness] by the proof its metamodel starts, with the stages of `Witness_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Witness.class, fingerprint = "cc6d9995bc3cbbd7bc5682d1fea600015720043a489c31d376476bc458a3d4f7", complete = true, format = 17)
+@GeneratedMetamodel(of = Witness.class, fingerprint = "76060c553a32b753826435a82fb8eef0777916e90e7f8058293cc272f5ddbcaa", complete = true, format = 18)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -44,7 +44,7 @@ public final class Witness_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Witness] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Witness_"), "cc6d9995bc3cbbd7bc5682d1fea600015720043a489c31d376476bc458a3d4f7", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Witness"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Witness")), Set.of()), false, List.of(), new Witness_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Witness_"), "76060c553a32b753826435a82fb8eef0777916e90e7f8058293cc272f5ddbcaa", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Witness"), List.of(), List.of(ClassDesc.of("java.lang.Object")), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Witness")), Set.of()), false, List.of(), List.of(), new Witness_Heritage());
 
         private Data() {
         }
@@ -55,7 +55,7 @@ public final class Witness_ {
     static final class Canonical {
         /// The canonical form of [Witness].
         static final String TEXT = """
-        javafile-facts-canonical 11
+        javafile-facts-canonical 12
         type p.Witness open-class sealed=no nesting=top
         annotations -
         annotation -

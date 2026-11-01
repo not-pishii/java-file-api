@@ -742,6 +742,7 @@ public final class MirrorTranslator {
                 .filter(e -> e.getKind() == ElementKind.ENUM_CONSTANT)
                 .map(e -> e.getSimpleName().toString())
                 .toList();
+        List<ClassDesc> permitted = permitted(element);
         List<AnnotationUse> annotations = annotations(element);
         Optional<AnnotationModel> annotation = annotationModel(element, shape);
         // a model with members reads what the type adopts once, for the members and for the sam
@@ -786,6 +787,7 @@ public final class MirrorTranslator {
                 methods,
                 enumConstants,
                 element.getModifiers().contains(Modifier.SEALED),
+                permitted,
                 sam,
                 switch (filter) {
                     case DECLARED_ACCESSIBLE -> inheritance(element);
@@ -796,6 +798,21 @@ public final class MirrorTranslator {
                 reads.stream().flatMap(Read::skips).toList(),
                 annotations,
                 annotation));
+    }
+
+    /// The subtypes a sealed type permits, in declaration order: the names
+    /// its metamodel tells so that a generator can prove that a subtype is one.
+    ///
+    /// @param element the class or interface
+    /// @return the permitted subtypes; empty unless the type is `sealed`
+    /// @throws Unresolved if a permitted subtype is not generated yet
+    private List<ClassDesc> permitted(TypeElement element) {
+        return element.getPermittedSubclasses().stream()
+                .map(subtype -> {
+                    requireResolved(subtype);
+                    return desc((TypeElement) ((DeclaredType) subtype).asElement());
+                })
+                .toList();
     }
 
     /// The annotations a type, a member or a parameter declares, in a

@@ -37,7 +37,7 @@ import p.SqlB;
 ///
 /// A generated class extends or implements [SqlB] by the proof its metamodel starts, with the stages of `SqlB_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = SqlB.class, fingerprint = "dbdd0e0c5bd0bcd1a4e2e7a88e01dd4d55d3b9962a68497a2b70f4a1988f49f6", complete = true, format = 17)
+@GeneratedMetamodel(of = SqlB.class, fingerprint = "f10040002b49b2b12acf2a1c8b7f7e02acb70f58423ace467ffb5393ffdae9f0", complete = true, format = 18)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -48,7 +48,7 @@ public final class SqlB_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [SqlB] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.SqlB_"), "dbdd0e0c5bd0bcd1a4e2e7a88e01dd4d55d3b9962a68497a2b70f4a1988f49f6", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.SqlB"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("m")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), false, List.of(), new SqlB_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.SqlB_"), "f10040002b49b2b12acf2a1c8b7f7e02acb70f58423ace467ffb5393ffdae9f0", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.SqlB"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("m")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), false, List.of(), List.of(), new SqlB_Heritage());
 
         private Data() {
         }
@@ -59,7 +59,7 @@ public final class SqlB_ {
     static final class Canonical {
         /// The canonical form of [SqlB].
         static final String TEXT = """
-        javafile-facts-canonical 11
+        javafile-facts-canonical 12
         type p.SqlB interface sealed=no nesting=top
         annotations -
         annotation -

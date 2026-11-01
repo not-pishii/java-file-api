@@ -96,7 +96,7 @@ class OverrideRefusalsTest {
     /// The methods `m` of the erased parameters `erasure` a class that extends `superclass` and
     /// implements `interfaces` inherits.
     private static Inheritance.Group group(List<ClassDesc> erasure, Supertype superclass, Supertype... interfaces) {
-        Inheritance inheritance = Inheritance.of(new Inheritance.Heir.OfClass(OWNER, "x"), superclass);
+        Inheritance inheritance = Inheritance.of(new Inheritance.Heir.OfClass(OWNER, SELF), superclass);
         for (Supertype anInterface : interfaces) {
             inheritance = inheritance.with(anInterface);
         }
