@@ -189,7 +189,7 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
         return Stream.concat(
                 Stream.of(this),
                 switch (enclosing) {
-                    case Enclosing.Root _ -> Stream.empty();
+                    case Enclosing.Root _ -> Stream.<Block<?, ?>>empty();
                     case Enclosing.In(var block) -> block.chain();
                 });
     }
@@ -197,7 +197,7 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
     /// The blocks `use` is, and is nested in, the innermost first; none outside of any body.
     static Stream<Block<?, ?>> chain(Enclosing use) {
         return switch (use) {
-            case Enclosing.Root _ -> Stream.empty();
+            case Enclosing.Root _ -> Stream.<Block<?, ?>>empty();
             case Enclosing.In(var block) -> block.chain();
         };
     }
