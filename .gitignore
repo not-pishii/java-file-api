@@ -3,6 +3,7 @@ build/
 .idea/
 *.iml
 out/
+!**/src/test/fixtures/**/out/
 _reference/
 *.zip
 .jqwik-database
