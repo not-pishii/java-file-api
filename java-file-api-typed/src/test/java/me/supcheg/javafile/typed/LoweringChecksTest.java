@@ -124,7 +124,8 @@ class LoweringChecksTest {
         Node one = literal(1).node();
 
         assertThatIllegalStateException()
-                .isThrownBy(() -> lowering.lowerExpr(new Node.Assign(new Node.Target.Element(one, one), one)))
+                .isThrownBy(() -> lowering.lowerExpr(new Node.Assign(
+                        new Node.Target.Element(one, one), me.supcheg.javafile.code.AssignOp.ASSIGN, one)))
                 .withMessageContaining("an assignment was used as a value");
     }
 

@@ -27,6 +27,7 @@ import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.Heritage;
 import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.Supertypes;
+import me.supcheg.javafile.facts.Thrown;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import me.supcheg.javafile.facts.meta.MetamodelFormat;
@@ -167,6 +168,8 @@ final class MetamodelEmitter {
     private static final ClassDesc CD_CONSTANT_DESCS = ClassDesc.of("java.lang.constant.ConstantDescs");
     private static final ClassDesc CD_LIST = ClassDesc.of("java.util.List");
     private static final ClassDesc CD_SET = ClassDesc.of("java.util.Set");
+    private static final ClassDesc CD_MAP = ClassDesc.of("java.util.Map");
+    private static final ClassDesc CD_THROWN = ClassDesc.of(FACTS, "Thrown");
     private static final ClassDesc CD_TYPES = ClassDesc.of(CORE_TYPE, "Types");
     private static final ClassDesc CD_TYPE_PARAM = ClassDesc.of(CORE_TYPE, "TypeParam");
     private static final ClassDesc CD_PARAMETERIZED = ClassDesc.of(CORE_TYPE, "ParameterizedTypeRef");
@@ -1303,7 +1306,36 @@ final class MetamodelEmitter {
                 signatures(template.concreteMethods()),
                 signatures(template.staticMethods()),
                 signatures(template.constructors()),
-                signatures(template.variableArity()));
+                signatures(template.variableArity()),
+                throwsTypes(template.throwsTypes()));
+    }
+
+    /// The `throws` clauses of a method table, by signature, as a map.
+    private static Expr throwsTypes(Map<MethodTableTemplate.Signature, List<Thrown>> throwsTypes) {
+        List<Expr> entries = throwsTypes.entrySet().stream()
+                .sorted(Map.Entry.comparingByKey(Comparator.comparing(MethodTableTemplate.Signature::toString)))
+                .<Expr>map(entry -> Exprs.staticCall(
+                        CD_MAP,
+                        "entry",
+                        signature(entry.getKey()),
+                        list(entry.getValue().stream()
+                                .map(MetamodelEmitter::thrown)
+                                .toList())))
+                .toList();
+        return Exprs.staticCall(CD_MAP, "ofEntries", entries);
+    }
+
+    /// A thrown type of a `throws` clause as the method table records it.
+    private static Expr thrown(Thrown thrown) {
+        return Exprs.new_(
+                CD_THROWN,
+                classDesc(thrown.erasure()),
+                list(thrown.superclasses().stream()
+                        .map(MetamodelEmitter::classDesc)
+                        .toList()),
+                thrown.variable()
+                        .<Expr>map(name -> Exprs.staticCall(CD_OPTIONAL, "of", Exprs.literal(name)))
+                        .orElseGet(() -> Exprs.staticCall(CD_OPTIONAL, "empty")));
     }
 
     private static Expr signatures(Collection<MethodTableTemplate.Signature> signatures) {

@@ -4,7 +4,6 @@ import me.supcheg.javafile.code.ArrayCreationExpr;
 import me.supcheg.javafile.code.ArrayInitializer;
 import me.supcheg.javafile.code.ArrayInitializerExpr;
 import me.supcheg.javafile.code.AssertStmt;
-import me.supcheg.javafile.code.AssignOp;
 import me.supcheg.javafile.code.AssignStmt;
 import me.supcheg.javafile.code.AssignTarget;
 import me.supcheg.javafile.code.BinaryExpr;
@@ -29,6 +28,7 @@ import me.supcheg.javafile.code.Exprs;
 import me.supcheg.javafile.code.FieldAccessExpr;
 import me.supcheg.javafile.code.ForStmt;
 import me.supcheg.javafile.code.IfStmt;
+import me.supcheg.javafile.code.IncDecExpr;
 import me.supcheg.javafile.code.LabeledStmt;
 import me.supcheg.javafile.code.LocalVarDeclStmt;
 import me.supcheg.javafile.code.MethodCallExpr;
@@ -585,9 +585,11 @@ final class Lowering {
             return switch (finallyBlock) {
                 case Instr.Finally.Of(var block) ->
                     new TryStmt.WithFinally(coreResources, bodyCode, coreCatches, lowerBlock(block.instrs()));
-                // A try without a finally block has a catch clause (CatchClauses.close).
+                // A try without a finally block has a catch clause, or resources alone.
                 case Instr.Finally.None _ ->
-                    new TryStmt.CatchOnly(coreResources, bodyCode, NonEmptyList.copyOf(coreCatches));
+                    coreCatches.isEmpty()
+                            ? new TryStmt.ResourcesOnly(coreResources, bodyCode)
+                            : new TryStmt.CatchOnly(coreResources, bodyCode, NonEmptyList.copyOf(coreCatches));
             };
         } finally {
             names.pop();
@@ -633,20 +635,23 @@ final class Lowering {
 
     private Stmt assignStmt(Node.Assign assign) {
         Expr value = expr(assign.value());
-        AssignTarget assigned =
-                switch (assign.target()) {
-                    case Node.Target.Local(var v) -> new FieldAccessExpr(Optional.empty(), names.nameOf(v));
-                    case Node.Target.Field(var t, var field) ->
-                        new FieldAccessExpr(Optional.of(fieldReceiver(t, field)), field.name());
-                    case Node.Target.StaticField(var field) ->
-                        localStatic(field.owner(), field.name())
-                                ? new FieldAccessExpr(Optional.empty(), field.name())
-                                : new StaticFieldAccessExpr(staticOwner(field), field.name());
-                    // An array javac types narrower than its token takes fewer values (JLS 15.26.1).
-                    case Node.Target.Element(var array, var index) ->
-                        expr(array, Typing.EXACT).arrayAccess(expr(index));
-                };
-        return new AssignStmt(assigned, AssignOp.ASSIGN, value);
+        return new AssignStmt((AssignTarget) assignedTarget(assign.target()), assign.op(), value);
+    }
+
+    /// The place an assignment, an increment or a decrement writes.
+    private Expr assignedTarget(Node.Target target) {
+        return switch (target) {
+            case Node.Target.Local(var v) -> new FieldAccessExpr(Optional.empty(), names.nameOf(v));
+            case Node.Target.Field(var t, var field) ->
+                new FieldAccessExpr(Optional.of(fieldReceiver(t, field)), field.name());
+            case Node.Target.StaticField(var field) ->
+                localStatic(field.owner(), field.name())
+                        ? new FieldAccessExpr(Optional.empty(), field.name())
+                        : new StaticFieldAccessExpr(staticOwner(field), field.name());
+            // An array javac types narrower than its token takes fewer values (JLS 15.26.1).
+            case Node.Target.Element(var array, var index) ->
+                expr(array, Typing.EXACT).arrayAccess(expr(index));
+        };
     }
 
     // ------------------------------------------------------------------
@@ -736,6 +741,16 @@ final class Lowering {
             case Node.Binary(var op, var left, var right) ->
                 new BinaryExpr(compared(op, left), op.rendered(), compared(op, right));
             case Node.Not(var operand) -> new UnaryExpr(UnaryOp.NOT, expr(operand));
+            case Node.Unary(var op, var operand) -> new UnaryExpr(op, expr(operand));
+            case Node.Increment(var op, var target) -> new IncDecExpr(op, assignedTarget(target));
+            case Node.ClassLiteral(var type) -> {
+                mentions(type);
+                yield Exprs.classLiteral(written(type).typeRef());
+            }
+            case Node.InstanceOf(var operand, var type) -> {
+                mentions(type);
+                yield expr(operand.node()).instanceOf(written(type).typeRef());
+            }
             case Node.Convert(var conversion, var operand) ->
                 Exprs.cast(conversion.type().typeRef(), expr(operand, Typing.EXACT));
             case Node.Cast(var type, var operand) -> {

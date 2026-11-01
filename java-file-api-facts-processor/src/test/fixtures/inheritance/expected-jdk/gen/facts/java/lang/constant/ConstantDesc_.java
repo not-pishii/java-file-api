@@ -6,6 +6,8 @@ import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDesc;
 import java.lang.constant.ConstantDescs;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import javax.annotation.processing.Generated;
 import me.supcheg.javafile.facts.DeclaredKind;
@@ -16,6 +18,7 @@ import me.supcheg.javafile.facts.MethodTableTemplate.Param;
 import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
 import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
+import me.supcheg.javafile.facts.Thrown;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
@@ -26,7 +29,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// `@Facts` does not ask for [ConstantDesc]: it is only mentioned in the signatures of [java.lang.constant.Constable]. For the facts of its members add `ConstantDesc.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = ConstantDesc.class, fingerprint = "9a8d2d1a4e89f15aac5f39ed65048edfaeab923638a8bae584f56e0bc72ab601", complete = false, format = 18)
+@GeneratedMetamodel(of = ConstantDesc.class, fingerprint = "9a8d2d1a4e89f15aac5f39ed65048edfaeab923638a8bae584f56e0bc72ab601", complete = false, format = 19)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -37,7 +40,7 @@ public final class ConstantDesc_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [ConstantDesc] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.constant.ConstantDesc_"), "9a8d2d1a4e89f15aac5f39ed65048edfaeab923638a8bae584f56e0bc72ab601", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("java.lang.constant.ConstantDesc"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("resolveConstantDesc", Param.fixed(ClassDesc.of("java.lang.invoke.MethodHandles$Lookup")))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), List.of(), true, List.of(ClassDesc.of("java.lang.constant.ClassDesc"), ClassDesc.of("java.lang.constant.MethodHandleDesc"), ClassDesc.of("java.lang.constant.MethodTypeDesc"), ClassDesc.of("java.lang.Double"), ClassDesc.of("java.lang.constant.DynamicConstantDesc"), ClassDesc.of("java.lang.Float"), ClassDesc.of("java.lang.Integer"), ClassDesc.of("java.lang.Long"), ClassDesc.of("java.lang.String")), List.of());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.constant.ConstantDesc_"), "9a8d2d1a4e89f15aac5f39ed65048edfaeab923638a8bae584f56e0bc72ab601", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("java.lang.constant.ConstantDesc"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("resolveConstantDesc", Param.fixed(ClassDesc.of("java.lang.invoke.MethodHandles$Lookup")))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of(), Map.ofEntries(Map.entry(Signature.of("resolveConstantDesc", Param.fixed(ClassDesc.of("java.lang.invoke.MethodHandles$Lookup"))), List.of(new Thrown(ClassDesc.of("java.lang.ReflectiveOperationException"), List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))), Map.entry(Signature.of("wait"), List.of(new Thrown(ClassDesc.of("java.lang.InterruptedException"), List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))), Map.entry(Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), List.of(new Thrown(ClassDesc.of("java.lang.InterruptedException"), List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))), Map.entry(Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), List.of(new Thrown(ClassDesc.of("java.lang.InterruptedException"), List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))))), List.of(), true, List.of(ClassDesc.of("java.lang.constant.ClassDesc"), ClassDesc.of("java.lang.constant.MethodHandleDesc"), ClassDesc.of("java.lang.constant.MethodTypeDesc"), ClassDesc.of("java.lang.Double"), ClassDesc.of("java.lang.constant.DynamicConstantDesc"), ClassDesc.of("java.lang.Float"), ClassDesc.of("java.lang.Integer"), ClassDesc.of("java.lang.Long"), ClassDesc.of("java.lang.String")), List.of());
 
         private Data() {
         }

@@ -1,18 +1,24 @@
 package me.supcheg.javafile.typed;
 
 import me.supcheg.javafile.facts.ArrayToken;
+import me.supcheg.javafile.facts.ClassToken;
 import me.supcheg.javafile.facts.DeclaredToken;
+import me.supcheg.javafile.facts.MethodTable;
+import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.Supertypes;
+import me.supcheg.javafile.facts.Thrown;
 import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeNames;
 import me.supcheg.javafile.facts.TypeToken;
 import me.supcheg.javafile.facts.TypeVarToken;
+import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.type.ExactTypeArg;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
 import me.supcheg.javafile.type.TypeRef;
 import me.supcheg.javafile.type.TypeVarRef;
+import me.supcheg.javafile.type.Types;
 import me.supcheg.javafile.type.UnboundedTypeArg;
 
 import java.lang.constant.ClassDesc;
@@ -44,6 +50,40 @@ final class Tokens {
                     + ", which is no subtype of java.lang.AutoCloseable: a try-with-resources closes its"
                     + " resources (JLS 14.20.3)");
         }
+    }
+
+    /// The exceptions a resource type's `close()` declares, as the method
+    /// table of its facts has them: a try-with-resources closes its resources
+    /// implicitly, and javac checks the `throws` clause of `close()` as it
+    /// checks that of a call the body makes (JLS 14.20.3, 11.2.3).
+    ///
+    /// @param type the resource type
+    /// @return the exception types of `close()`, in declaration order; empty for an unchecked-only
+    ///     `close()`
+    static List<ExceptionType> closeThrows(TypeToken<?> type) {
+        TypeToken<?> token = annotated(type);
+        if (!(token instanceof DeclaredToken<?> declared)) {
+            return List.of();
+        }
+        MethodTableTemplate methods = declared.shape().methods();
+        return methods
+                .throwsTypes()
+                .getOrDefault(new MethodTableTemplate.Signature("close", List.of()), List.of())
+                .stream()
+                .map(Tokens::exceptionType)
+                .toList();
+    }
+
+    /// The exception type of a thrown type of a method table.
+    static ExceptionType exceptionType(Thrown thrown) {
+        if (thrown.isVariable()) {
+            TypeVarToken<?> variable =
+                    UnsafeFacts.typeVarToken(Types.typeVar(thrown.variable().orElseThrow()), thrown.erasure());
+            return new ExceptionType.OfVariable(variable);
+        }
+        ClassToken<?> type =
+                UnsafeFacts.finalClassToken(Types.of(thrown.erasure()), thrown.superclasses(), MethodTable.EMPTY);
+        return new ExceptionType.OfClass(type);
     }
 
     /// Whether a value of the type `type` is assignable to `supertype`, as the facts record it: the

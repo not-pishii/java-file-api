@@ -5,7 +5,9 @@ import gen.facts.java.util.Map_Entry_.Data;
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import javax.annotation.processing.Generated;
 import me.supcheg.javafile.facts.DeclaredKind;
@@ -17,6 +19,7 @@ import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
 import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
+import me.supcheg.javafile.facts.Thrown;
 import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
@@ -33,7 +36,7 @@ import org.jspecify.annotations.NullMarked;
 /// @param <K> a type argument of [Entry]
 /// @param <V> a type argument of [Entry]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Entry.class, fingerprint = "9a7fbc99d6dea14cf214993c0afe2685283daecce1ccd5661ea5da2ba7a13ca5", complete = false, format = 18)
+@GeneratedMetamodel(of = Entry.class, fingerprint = "9a7fbc99d6dea14cf214993c0afe2685283daecce1ccd5661ea5da2ba7a13ca5", complete = false, format = 19)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -44,7 +47,7 @@ public final class Map_Entry_<K, V> {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Entry] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.util.Map_Entry_"), "9a7fbc99d6dea14cf214993c0afe2685283daecce1ccd5661ea5da2ba7a13ca5", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("java.util.Map$Entry"), List.of(new TypeParam("K", List.of()), new TypeParam("V", List.of())), List.of(), List.of(), new Supertypes(List.of(Types.typeVar("K"), Types.typeVar("V")), List.of()), new MethodTableTemplate(Set.of(Signature.of("getKey"), Signature.of("getValue"), Signature.of("setValue", Param.var(1))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("comparingByKey"), Signature.of("comparingByKey", Param.fixed(ClassDesc.of("java.util.Comparator"))), Signature.of("comparingByValue"), Signature.of("comparingByValue", Param.fixed(ClassDesc.of("java.util.Comparator"))), Signature.of("copyOf", Param.fixed(ClassDesc.of("java.util.Map$Entry")))), Set.of(), Set.of()), List.of(), false, List.of(), List.of());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.util.Map_Entry_"), "9a7fbc99d6dea14cf214993c0afe2685283daecce1ccd5661ea5da2ba7a13ca5", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("java.util.Map$Entry"), List.of(new TypeParam("K", List.of()), new TypeParam("V", List.of())), List.of(), List.of(), new Supertypes(List.of(Types.typeVar("K"), Types.typeVar("V")), List.of()), new MethodTableTemplate(Set.of(Signature.of("getKey"), Signature.of("getValue"), Signature.of("setValue", Param.var(1))), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("comparingByKey"), Signature.of("comparingByKey", Param.fixed(ClassDesc.of("java.util.Comparator"))), Signature.of("comparingByValue"), Signature.of("comparingByValue", Param.fixed(ClassDesc.of("java.util.Comparator"))), Signature.of("copyOf", Param.fixed(ClassDesc.of("java.util.Map$Entry")))), Set.of(), Set.of(), Map.ofEntries(Map.entry(Signature.of("wait"), List.of(new Thrown(ClassDesc.of("java.lang.InterruptedException"), List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))), Map.entry(Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), List.of(new Thrown(ClassDesc.of("java.lang.InterruptedException"), List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))), Map.entry(Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), List.of(new Thrown(ClassDesc.of("java.lang.InterruptedException"), List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))))), List.of(), false, List.of(), List.of());
 
         private Data() {
         }

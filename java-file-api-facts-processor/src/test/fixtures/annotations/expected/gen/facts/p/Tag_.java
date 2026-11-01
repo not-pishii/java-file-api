@@ -10,6 +10,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import javax.annotation.processing.Generated;
@@ -40,6 +41,7 @@ import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
+import me.supcheg.javafile.facts.Thrown;
 import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
@@ -59,7 +61,7 @@ import p.Tag;
 ///
 /// A generated class extends or implements [Tag] by the proof its metamodel starts, with the stages of `Tag_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Tag.class, fingerprint = "28e472b18af0d90ff9c4dde39c8d3cd2b5572d7149c1875a97fca6f9a5167de4", complete = true, format = 18)
+@GeneratedMetamodel(of = Tag.class, fingerprint = "28e472b18af0d90ff9c4dde39c8d3cd2b5572d7149c1875a97fca6f9a5167de4", complete = true, format = 19)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -70,7 +72,7 @@ public final class Tag_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Tag] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Tag_"), "28e472b18af0d90ff9c4dde39c8d3cd2b5572d7149c1875a97fca6f9a5167de4", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Tag"), List.of(), List.of(), List.of(ClassDesc.of("java.lang.annotation.Annotation")), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("annotationType"), Signature.of("array"), Signature.of("big"), Signature.of("decimal"), Signature.of("flag"), Signature.of("letter"), Signature.of("levels"), Signature.of("medium"), Signature.of("primitive"), Signature.of("rank"), Signature.of("ratio"), Signature.of("small"), Signature.of("type"), Signature.of("value")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), false, List.of(), List.of(new AnnotationUse(ClassDesc.of("java.lang.annotation.Retention"), List.of(new AnnotationMember("value", AnnotationValues.enumValue(ClassDesc.of("java.lang.annotation.RetentionPolicy"), "RUNTIME")))), new AnnotationUse(ClassDesc.of("java.lang.annotation.Target"), List.of(new AnnotationMember("value", AnnotationValues.array(AnnotationValues.enumValue(ClassDesc.of("java.lang.annotation.ElementType"), "TYPE"), AnnotationValues.enumValue(ClassDesc.of("java.lang.annotation.ElementType"), "FIELD"), AnnotationValues.enumValue(ClassDesc.of("java.lang.annotation.ElementType"), "METHOD"), AnnotationValues.enumValue(ClassDesc.of("java.lang.annotation.ElementType"), "PARAMETER"), AnnotationValues.enumValue(ClassDesc.of("java.lang.annotation.ElementType"), "TYPE_USE")))))), new Tag_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Tag_"), "28e472b18af0d90ff9c4dde39c8d3cd2b5572d7149c1875a97fca6f9a5167de4", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Tag"), List.of(), List.of(), List.of(ClassDesc.of("java.lang.annotation.Annotation")), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("annotationType"), Signature.of("array"), Signature.of("big"), Signature.of("decimal"), Signature.of("flag"), Signature.of("letter"), Signature.of("levels"), Signature.of("medium"), Signature.of("primitive"), Signature.of("rank"), Signature.of("ratio"), Signature.of("small"), Signature.of("type"), Signature.of("value")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of(), Map.ofEntries(Map.entry(Signature.of("wait"), List.of(new Thrown(ClassDesc.of("java.lang.InterruptedException"), List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))), Map.entry(Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), List.of(new Thrown(ClassDesc.of("java.lang.InterruptedException"), List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))), Map.entry(Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), List.of(new Thrown(ClassDesc.of("java.lang.InterruptedException"), List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))))), false, List.of(), List.of(new AnnotationUse(ClassDesc.of("java.lang.annotation.Retention"), List.of(new AnnotationMember("value", AnnotationValues.enumValue(ClassDesc.of("java.lang.annotation.RetentionPolicy"), "RUNTIME")))), new AnnotationUse(ClassDesc.of("java.lang.annotation.Target"), List.of(new AnnotationMember("value", AnnotationValues.array(AnnotationValues.enumValue(ClassDesc.of("java.lang.annotation.ElementType"), "TYPE"), AnnotationValues.enumValue(ClassDesc.of("java.lang.annotation.ElementType"), "FIELD"), AnnotationValues.enumValue(ClassDesc.of("java.lang.annotation.ElementType"), "METHOD"), AnnotationValues.enumValue(ClassDesc.of("java.lang.annotation.ElementType"), "PARAMETER"), AnnotationValues.enumValue(ClassDesc.of("java.lang.annotation.ElementType"), "TYPE_USE")))))), new Tag_Heritage());
 
         private Data() {
         }

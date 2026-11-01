@@ -36,6 +36,7 @@ public final class Resources {
         requireOpen();
         Tokens.requireAutoCloseable(type, "resource_");
         Tokens.requireNoBoxing(init.type(), type, "resource_");
+        Exceptions.requireCloseCovered(type, body);
         Var<T> var = new Var<>(type, Var.Role.Fixed.RESOURCE, body);
         ScopeCheck.check(new Instr.Let(var, init.node()), body);
         Exceptions.check(new Instr.Let(var, init.node()), body);
@@ -64,6 +65,7 @@ public final class Resources {
                     + var + " is mutable: declare it with let, not letVar");
         }
         Tokens.requireAutoCloseable(var.type(), "resource_");
+        Exceptions.requireCloseCovered(var.type(), body);
         ScopeCheck.check(new Instr.Exec(var.node()), body);
         resources.add(new Instr.Resource(var, Optional.empty()));
         existing = true;

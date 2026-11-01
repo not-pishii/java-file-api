@@ -6,6 +6,8 @@ import gen.facts.out.SealedInterface_Heritage.Implement;
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import javax.annotation.processing.Generated;
 import me.supcheg.javafile.facts.DeclaredKind;
@@ -21,6 +23,7 @@ import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.RefToken;
 import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
+import me.supcheg.javafile.facts.Thrown;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.UnsafeInvocables;
@@ -35,7 +38,7 @@ import out.SealedInterface;
 ///
 /// A generated class extends or implements [SealedInterface] by the proof its metamodel starts, with the stages of `SealedInterface_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = SealedInterface.class, fingerprint = "5b55085a7d1efa4715d09b601f6649e11c9f877b8f6a662f5ef5a8c388adeb17", complete = true, format = 18)
+@GeneratedMetamodel(of = SealedInterface.class, fingerprint = "5b55085a7d1efa4715d09b601f6649e11c9f877b8f6a662f5ef5a8c388adeb17", complete = true, format = 19)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -46,7 +49,7 @@ public final class SealedInterface_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [SealedInterface] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.out.SealedInterface_"), "5b55085a7d1efa4715d09b601f6649e11c9f877b8f6a662f5ef5a8c388adeb17", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("out.SealedInterface"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("sides")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of()), true, List.of(ClassDesc.of("out.Out")), List.of(), new SealedInterface_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.out.SealedInterface_"), "5b55085a7d1efa4715d09b601f6649e11c9f877b8f6a662f5ef5a8c388adeb17", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("out.SealedInterface"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("sides")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of(), Map.ofEntries(Map.entry(Signature.of("wait"), List.of(new Thrown(ClassDesc.of("java.lang.InterruptedException"), List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))), Map.entry(Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), List.of(new Thrown(ClassDesc.of("java.lang.InterruptedException"), List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))), Map.entry(Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), List.of(new Thrown(ClassDesc.of("java.lang.InterruptedException"), List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))))), true, List.of(ClassDesc.of("out.Out")), List.of(), new SealedInterface_Heritage());
 
         private Data() {
         }

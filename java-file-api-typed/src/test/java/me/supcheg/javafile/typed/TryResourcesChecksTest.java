@@ -3,11 +3,13 @@ package me.supcheg.javafile.typed;
 import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.facts.Prim;
 import me.supcheg.javafile.facts.PrimitiveToken;
+import me.supcheg.javafile.facts.Thrown;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.typed.fixtures.Closing;
 import me.supcheg.javafile.typed.testfacts.java.io.FileNotFoundException_;
 import me.supcheg.javafile.typed.testfacts.java.lang.String_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Closing_;
+import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.PickyClose_;
 import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;
@@ -99,6 +101,49 @@ class TryResourcesChecksTest {
                             });
                 })
                 .doesNotThrowAnyException();
+    }
+
+    @Test
+    void aCloseThatThrowsACheckedExceptionMustBeCaughtOrDeclared() {
+        JavacVerdict.classAsJavac(
+                IllegalStateException.class,
+                () -> TypedJavaFile.class_(
+                        UnsafeFacts.unverifiedClasspath(),
+                        ClassDesc.of("me.supcheg.example", "UncaughtClose"),
+                        new TypedJavaFile.TypedClassSpec() {
+                            @Override
+                            public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
+                                var method = cb.declareVoidStaticMethod("method");
+                                var bodies = cb.bodies();
+                                bodies.define(
+                                        method,
+                                        b -> b.tryWithResources((t, resources) -> resources.resource_(
+                                                        PickyClose_.TOKEN,
+                                                        new_(PickyClose_.new_boolean, literal(false))))
+                                                .end());
+                                return bodies;
+                            }
+                        }),
+                "close() of",
+                "",
+                "void method() { try (PickyClose r = new PickyClose(false)) { } }",
+                "unreported exception java.io.IOException");
+    }
+
+    @Test
+    void closeThrowsIsEmptyForATypeThatIsNoDeclaredTypeOrHasNoClose() {
+        assertThat(Tokens.closeThrows(PrimitiveToken.INT)).isEmpty();
+        assertThat(Tokens.closeThrows(String_.TOKEN)).isEmpty();
+    }
+
+    @Test
+    void aThrownTypeVariableIsAnExceptionTypeOfItsBound() {
+        Thrown variable = new Thrown(
+                java.lang.constant.ConstantDescs.CD_Throwable,
+                List.of(java.lang.constant.ConstantDescs.CD_Object),
+                java.util.Optional.of("X"));
+
+        assertThat(Tokens.exceptionType(variable)).isInstanceOf(ExceptionType.OfVariable.class);
     }
 
     @Test

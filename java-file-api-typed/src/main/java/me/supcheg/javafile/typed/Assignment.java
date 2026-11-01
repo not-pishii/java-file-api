@@ -19,6 +19,7 @@ public final class Assignment implements Effect {
             case Invocation<?> invocation -> invocation.node();
             case VoidInvocation invocation -> invocation.node();
             case Assignment assignment -> assignment.node();
+            case Increment<?> increment -> increment.node();
         };
     }
 }

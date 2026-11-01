@@ -561,12 +561,27 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
     /// @param body builds the body
     /// @return the proof that this block ended
     public final Terminated<R> loopForever(Consumer<? super B> body) {
+        return loopForever(Optional.empty(), body);
+    }
+
+    /// Appends `label: while (true) { body }`, which never completes normally
+    /// and so ends this block (JLS 14.22). The label lets a `break_` or a
+    /// `continue_` of a nested loop reach this loop by name.
+    ///
+    /// @param label the label of the loop
+    /// @param body builds the body
+    /// @return the proof that this block ended
+    public final Terminated<R> loopForever(Label label, Consumer<? super B> body) {
+        return loopForever(Optional.of(label), body);
+    }
+
+    private Terminated<R> loopForever(Optional<Label> label, Consumer<? super B> body) {
         requireOpen();
         B bodyBlock = child("body of loopForever");
+        label.ifPresent(l -> l.attach(bodyBlock, true));
         LoopCtl ctl = new LoopCtl(bodyBlock);
         fill(bodyBlock, body);
-        return appendFinal(
-                new Instr.While(ctl, Optional.empty(), Expressions.literal(true).node(), bodyBlock), "loopForever");
+        return appendFinal(new Instr.While(ctl, label, Expressions.literal(true).node(), bodyBlock), "loopForever");
     }
 
     /// Appends `do { body } while (condition);`.
@@ -576,12 +591,28 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
     /// @return this block
     /// @throws IllegalStateException if the loop never completes
     public final B doWhile(BiConsumer<? super B, LoopCtl> body, Expr<Prim.Bool> condition) {
+        return doWhile(Optional.empty(), body, condition);
+    }
+
+    /// Appends `label: do { body } while (condition);`.
+    ///
+    /// @param label the label of the loop
+    /// @param body builds the body, given the loop's `break`/`continue` capability
+    /// @param condition the condition
+    /// @return this block
+    /// @throws IllegalStateException if the loop never completes
+    public final B doWhile(Label label, BiConsumer<? super B, LoopCtl> body, Expr<Prim.Bool> condition) {
+        return doWhile(Optional.of(label), body, condition);
+    }
+
+    private B doWhile(Optional<Label> label, BiConsumer<? super B, LoopCtl> body, Expr<Prim.Bool> condition) {
         requireOpen();
         B bodyBlock = child("body of doWhile");
+        label.ifPresent(l -> l.attach(bodyBlock, true));
         LoopCtl ctl = new LoopCtl(bodyBlock);
         fill(bodyBlock, b -> body.accept(b, ctl));
         return continueWith(
-                new Instr.DoWhile(ctl, Optional.empty(), bodyBlock, condition.node()),
+                new Instr.DoWhile(ctl, label, bodyBlock, condition.node()),
                 "doWhile whose body ends without continue_, or whose condition is constant true, and no break_",
                 Instead.LOOP_FOREVER);
     }
@@ -659,7 +690,23 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
             TypeToken<T> element,
             Expr<? extends Iterable<? extends T>> iterable,
             LoopBody<? super B, ? super Var<T>> body) {
-        return forEachOf(element, new Instr.Iterated.OfIterable(iterable.node()), body);
+        return forEachOf(Optional.empty(), element, new Instr.Iterated.OfIterable(iterable.node()), body);
+    }
+
+    /// Appends `label: for (T v : iterable) { body }`.
+    ///
+    /// @param label the label of the loop
+    /// @param element the loop variable type
+    /// @param iterable the iterated expression
+    /// @param body builds the body, given the variable and the loop capability
+    /// @param <T> the loop variable type
+    /// @return this block
+    public final <T> B forEach(
+            Label label,
+            TypeToken<T> element,
+            Expr<? extends Iterable<? extends T>> iterable,
+            LoopBody<? super B, ? super Var<T>> body) {
+        return forEachOf(Optional.of(label), element, new Instr.Iterated.OfIterable(iterable.node()), body);
     }
 
     /// Appends `for (T v : array) { body }`, the loop over the elements of an array (JLS 14.14.2); the
@@ -673,16 +720,35 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
     /// @return this block
     public final <A, T> B forEach(
             ArrayToken<A, T> type, Expr<? extends A> array, LoopBody<? super B, ? super Var<T>> body) {
-        return forEachOf(type.component(), new Instr.Iterated.OfArray(array.node()), body);
+        return forEachOf(Optional.empty(), type.component(), new Instr.Iterated.OfArray(array.node()), body);
     }
 
-    private <T> B forEachOf(TypeToken<T> element, Instr.Iterated iterated, LoopBody<? super B, ? super Var<T>> body) {
+    /// Appends `label: for (T v : array) { body }`.
+    ///
+    /// @param label the label of the loop
+    /// @param type the array type
+    /// @param array the iterated array
+    /// @param body builds the body, given the variable and the loop capability
+    /// @param <A> the array type
+    /// @param <T> the component type, the loop variable type
+    /// @return this block
+    public final <A, T> B forEach(
+            Label label, ArrayToken<A, T> type, Expr<? extends A> array, LoopBody<? super B, ? super Var<T>> body) {
+        return forEachOf(Optional.of(label), type.component(), new Instr.Iterated.OfArray(array.node()), body);
+    }
+
+    private <T> B forEachOf(
+            Optional<Label> label,
+            TypeToken<T> element,
+            Instr.Iterated iterated,
+            LoopBody<? super B, ? super Var<T>> body) {
         requireOpen();
         B bodyBlock = child("body of forEach");
+        label.ifPresent(l -> l.attach(bodyBlock, true));
         LoopCtl ctl = new LoopCtl(bodyBlock);
         Var<T> var = new Var<>(element, Var.Role.Fixed.FOR_EACH_VARIABLE, bodyBlock);
         fill(bodyBlock, b -> body.accept(b, var, ctl));
-        return append(new Instr.ForEach(ctl, Optional.empty(), var, iterated, bodyBlock));
+        return append(new Instr.ForEach(ctl, label, var, iterated, bodyBlock));
     }
 
     /// Creates a label for a statement of this block, which [#labeled(Label, Consumer)] or a loop
@@ -886,6 +952,49 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
         TerminatedHandlers<R, B> collected = new TerminatedHandlers<>(self());
         handlers.accept(collected);
         TryClauses clauses = collected.close();
+        B bodyBlock = child("try block of tryWithResourcesTerminated", clauses.scope());
+        Resources resources = new Resources(bodyBlock);
+        Block.build(bodyBlock, b -> body.apply(b, resources));
+        List<Instr.Resource> made = resources.close();
+        return appendFinal(clauses.statement(bodyBlock, made), "tryWithResourcesTerminated");
+    }
+
+    /// Appends `try (resources) { body }` with neither a `catch` clause nor a
+    /// `finally` block (JLS 14.20.3), as a statement. It must complete
+    /// normally; if `body` ends, use
+    /// [#tryWithResourcesTerminated(BiFunction)].
+    ///
+    /// The resources close on every way out of the body, and a checked
+    /// exception a `close()` throws must be caught by an enclosing `try_` or
+    /// declared by the member the body belongs to, as javac requires it.
+    ///
+    /// @param body declares the resources, given the resource builder, and builds the try block
+    /// @return this block
+    /// @throws IllegalStateException if the statement cannot complete normally, or if `body`
+    ///     declares no resource
+    public final B tryWithResources(BiConsumer<? super B, ? super Resources> body) {
+        requireOpen();
+        TryClauses clauses = new TryClauses(List.of(), new Instr.Finally.None());
+        B bodyBlock = child("try block of tryWithResources", clauses.scope());
+        Resources resources = new Resources(bodyBlock);
+        fill(bodyBlock, b -> body.accept(b, resources));
+        List<Instr.Resource> made = resources.close();
+        return continueWith(
+                clauses.statement(bodyBlock, made), "tryWithResources whose try block ends", Instead.TRY_TERMINATED);
+    }
+
+    /// Appends `try (resources) { body }` with neither a `catch` clause nor a
+    /// `finally` block (JLS 14.20.3), whose try block ends and so ends this
+    /// block.
+    ///
+    /// @param body declares the resources, given the resource builder, and builds the try block, which
+    ///     must end
+    /// @return the proof that this block ended
+    /// @throws IllegalStateException if `body` declares no resource
+    public final Terminated<R> tryWithResourcesTerminated(
+            BiFunction<? super B, ? super Resources, Terminated<R>> body) {
+        requireOpen();
+        TryClauses clauses = new TryClauses(List.of(), new Instr.Finally.None());
         B bodyBlock = child("try block of tryWithResourcesTerminated", clauses.scope());
         Resources resources = new Resources(bodyBlock);
         Block.build(bodyBlock, b -> body.apply(b, resources));

@@ -5,10 +5,12 @@ import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.testing.CompiledClasses;
 import me.supcheg.javafile.typed.fixtures.Closing;
+import me.supcheg.javafile.typed.testfacts.java.io.IOException_;
 import me.supcheg.javafile.typed.testfacts.java.lang.IllegalStateException_;
 import me.supcheg.javafile.typed.testfacts.java.lang.String_;
 import me.supcheg.javafile.typed.testfacts.java.lang.Throwable_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Closing_;
+import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.PickyClose_;
 import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;
@@ -21,6 +23,7 @@ import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.new_;
 import static me.supcheg.javafile.typed.Expressions.staticCall;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 /// Try-with-resources (6.3): a declared and an existing resource are closed on every way out, and a
 /// close that throws while the body throws leaves the body's exception primary with the close's
@@ -122,5 +125,80 @@ class TryResourcesCompileTest {
         Closing.reset();
         compiled.invoke("statement", false);
         assertThat(Closing.closes()).isEqualTo(1);
+    }
+
+    @Test
+    void aTryWithResourcesAloneClosesAndLetsItsExceptionsThrough() throws Throwable {
+        CompiledClasses compiled = CompiledClasses.of(TypedJavaFile.class_(
+                UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedClassSpec() {
+                    @Override
+                    public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
+                        var only = cb.declareVoidStaticMethod("only", PrimitiveToken.BOOLEAN);
+                        var body = cb.declareVoidStaticMethod("body", PrimitiveToken.BOOLEAN);
+                        var checked = cb.throwing(IOException_.TOKEN)
+                                .declareVoidStaticMethod("checked", PrimitiveToken.BOOLEAN);
+                        var caught = cb.declareStaticMethod("caught", String_.TOKEN, PrimitiveToken.BOOLEAN);
+                        var bodies = cb.bodies();
+                        bodies.define(
+                                only,
+                                (b, failing) -> b.tryWithResources((t, resources) -> {
+                                            var resource = resources.resource_(
+                                                    Closing_.TOKEN, new_(Closing_.new_boolean, failing));
+                                            t.if_(eqRef(resource, resource), _ -> {});
+                                        })
+                                        .end());
+                        bodies.define(
+                                body,
+                                (b, failing) -> b.tryWithResourcesTerminated((t, resources) -> {
+                                    var resource =
+                                            resources.resource_(Closing_.TOKEN, new_(Closing_.new_boolean, failing));
+                                    return t.if_(eqRef(resource, resource), _ -> {})
+                                            .throw_(new_(IllegalStateException_.new_String, literal("body")));
+                                }));
+                        bodies.define(
+                                checked,
+                                (b, failing) -> b.tryWithResources((t, resources) -> {
+                                            var resource = resources.resource_(
+                                                    PickyClose_.TOKEN, new_(PickyClose_.new_boolean, failing));
+                                            t.if_(eqRef(resource, resource), _ -> {});
+                                        })
+                                        .end());
+                        bodies.define(
+                                caught,
+                                (b, failing) -> b.tryWithResourcesTerminated(
+                                        h -> h.catch_(IOException_.TOKEN, (c, _) -> c.return_(literal("caught"))),
+                                        (t, resources) -> {
+                                            var resource = resources.resource_(
+                                                    PickyClose_.TOKEN, new_(PickyClose_.new_boolean, failing));
+                                            return t.if_(eqRef(resource, resource), _ -> {})
+                                                    .return_(literal("ok"));
+                                        }));
+                        return bodies;
+                    }
+                }));
+
+        assertThat(compiled.source())
+                .contains("try (Closing v1 = new Closing(v0)) {")
+                .contains("try (PickyClose v1 = new PickyClose(v0)) {");
+
+        Closing.reset();
+        compiled.invoke("only", false);
+        assertThat(Closing.closes()).isEqualTo(1);
+        assertThat(catchThrowable(() -> compiled.invoke("only", true)))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("close");
+
+        Closing.reset();
+        Throwable bodyException = catchThrowable(() -> compiled.invoke("body", true));
+        assertThat(bodyException).isInstanceOf(IllegalStateException.class).hasMessage("body");
+        assertThat(bodyException.getSuppressed()).hasSize(1);
+        assertThat(Closing.closes()).isEqualTo(1);
+
+        assertThat(catchThrowable(() -> compiled.invoke("checked", true)))
+                .isInstanceOf(java.io.IOException.class)
+                .hasMessage("close");
+        compiled.invoke("checked", false);
+        assertThat(compiled.invoke("caught", true)).isEqualTo("caught");
+        assertThat(compiled.invoke("caught", false)).isEqualTo("ok");
     }
 }

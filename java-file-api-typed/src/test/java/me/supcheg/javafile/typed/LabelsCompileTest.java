@@ -1,21 +1,27 @@
 package me.supcheg.javafile.typed;
 
 import me.supcheg.javafile.JavaFile;
+import me.supcheg.javafile.facts.ArrayToken;
 import me.supcheg.javafile.facts.Prim;
 import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.testing.CompiledClasses;
+import me.supcheg.javafile.typed.testfacts.java.lang.String_;
+import me.supcheg.javafile.typed.testfacts.java.util.List_;
 import me.supcheg.javafile.typed.testfacts.java.util.function.IntUnaryOperator_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Signal_;
 import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;
+import java.util.List;
 import java.util.function.Consumer;
 
 import static me.supcheg.javafile.typed.Expressions.addInt;
 import static me.supcheg.javafile.typed.Expressions.assign;
+import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.enumConstant;
 import static me.supcheg.javafile.typed.Expressions.eqInt;
+import static me.supcheg.javafile.typed.Expressions.eqRef;
 import static me.supcheg.javafile.typed.Expressions.lambdaBlock;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.ltInt;
@@ -149,6 +155,85 @@ class LabelsCompileTest {
 
         assertThat(compiled.source()).contains("label0: while (true) {").contains("break label0;");
         assertThat(compiled.invoke("spin")).isEqualTo(0);
+    }
+
+    @Test
+    void everyLoopFormCarriesALabel() throws Throwable {
+        CompiledClasses compiled = CompiledClasses.of(TypedJavaFile.class_(
+                UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedClassSpec() {
+                    @Override
+                    public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
+                        ArrayToken<int[], Prim.Int> ints = PrimitiveToken.INT.array();
+                        var list = new List_<>(String_.TOKEN).token;
+                        var loop = cb.declareStaticMethod("loop", PrimitiveToken.INT);
+                        var array = cb.declareStaticMethod("array", PrimitiveToken.INT, ints);
+                        var iterable = cb.declareStaticMethod("iterable", PrimitiveToken.INT, list);
+                        var forever = cb.declareVoidStaticMethod("forever");
+                        var bodies = cb.bodies();
+                        bodies.define(
+                                loop,
+                                b -> b.letVar(PrimitiveToken.INT, literal(0), count -> {
+                                    Label label = b.label();
+                                    return b.doWhile(
+                                                    label,
+                                                    (body, _) -> body.exec(assign(count, addInt(count, literal(1))))
+                                                            .if_(eqInt(count, literal(2)), t -> t.break_(label)),
+                                                    literal(true))
+                                            .return_(count);
+                                }));
+                        bodies.define(
+                                array,
+                                (b, values) -> b.letVar(PrimitiveToken.INT, literal(0), count -> {
+                                    Label label = b.label();
+                                    return b.forEach(
+                                                    label,
+                                                    ints,
+                                                    values,
+                                                    (body, value, _) -> body.if_(
+                                                                    eqInt(value, literal(2)), t -> t.break_(label))
+                                                            .exec(assign(count, addInt(count, value))))
+                                            .return_(count);
+                                }));
+                        bodies.define(
+                                iterable,
+                                (b, values) -> b.letVar(PrimitiveToken.INT, literal(0), count -> {
+                                    Label label = b.label();
+                                    return b.forEach(
+                                                    label,
+                                                    String_.TOKEN,
+                                                    values,
+                                                    (body, value, _) -> body.if_(
+                                                                    eqRef(value, literal("skip")), t -> t.break_(label))
+                                                            .exec(assign(
+                                                                    count, addInt(count, call(value, String_.length)))))
+                                            .return_(count);
+                                }));
+                        bodies.define(forever, b -> {
+                            Label label = b.label();
+                            return b.loopForever(
+                                    label,
+                                    outer -> outer.for_(
+                                            PrimitiveToken.INT,
+                                            literal(0),
+                                            i -> eqInt(i, literal(0)),
+                                            i -> assign(i, addInt(i, literal(1))),
+                                            (inner, _, _) -> inner.break_(label)));
+                        });
+                        return bodies;
+                    }
+                }));
+
+        assertThat(compiled.source())
+                .contains("label0: do {")
+                .contains("label0: for (int v2 : v0) {")
+                .contains("label0: for (String v2 : v0) {")
+                .contains("label0: while (true) {")
+                .contains("break label0;");
+        assertThat(compiled.invoke("loop")).isEqualTo(2);
+        assertThat(compiled.invoke("array", (Object) new int[] {1, 2, 3})).isEqualTo(1);
+        assertThat(compiled.invoke("iterable", List.of("a", "bb", "skip", "cccc")))
+                .isEqualTo(3);
+        compiled.invoke("forever");
     }
 
     @Test

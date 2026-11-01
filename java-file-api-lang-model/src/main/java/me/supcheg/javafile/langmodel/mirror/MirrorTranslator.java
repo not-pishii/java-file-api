@@ -10,6 +10,7 @@ import me.supcheg.javafile.facts.Heritage;
 import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.Overridability;
 import me.supcheg.javafile.facts.Supertypes;
+import me.supcheg.javafile.facts.Thrown;
 import me.supcheg.javafile.langmodel.mirror.FieldModel.Mutability;
 import me.supcheg.javafile.type.ArrayTypeRef;
 import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
@@ -1054,12 +1055,51 @@ public final class MirrorTranslator {
                                 .map(constructor -> new MethodTableTemplate.Signature(
                                         desc(element).displayName(), declared(constructor, element, self))))
                 .collect(Collectors.toUnmodifiableSet());
+        Map<MethodTableTemplate.Signature, List<Thrown>> throwsTypes = new LinkedHashMap<>();
+        table.forEach((signature, methods) -> {
+            List<Thrown> thrown = methods.stream()
+                    .flatMap(method -> ((ExecutableType) types.asMemberOf(self, method)).getThrownTypes().stream())
+                    .map(type -> thrown(type))
+                    .distinct()
+                    .toList();
+            if (!thrown.isEmpty()) {
+                throwsTypes.put(signature, thrown);
+            }
+        });
+        ElementFilter.constructorsIn(element.getEnclosedElements()).stream()
+                .filter(constructor -> !constructor.getModifiers().contains(Modifier.PRIVATE))
+                .forEach(constructor -> {
+                    MethodTableTemplate.Signature signature = new MethodTableTemplate.Signature(
+                            desc(element).displayName(), declared(constructor, element, self));
+                    List<Thrown> thrown = ((ExecutableType) types.asMemberOf(self, constructor))
+                            .getThrownTypes().stream()
+                                    .map(type -> thrown(type))
+                                    .distinct()
+                                    .toList();
+                    if (!thrown.isEmpty()) {
+                        throwsTypes.put(signature, thrown);
+                    }
+                });
         return new MethodTableTemplate(
                 parts.getOrDefault(Category.ABSTRACT, Set.of()),
                 parts.getOrDefault(Category.CONCRETE, Set.of()),
                 parts.getOrDefault(Category.STATIC, Set.of()),
                 constructors,
-                variableArity);
+                variableArity,
+                throwsTypes);
+    }
+
+    /// A thrown type of a `throws` clause as the method table records it: its
+    /// erasure, that erasure's superclass chain, and the type variable where it
+    /// is one.
+    private Thrown thrown(TypeMirror type) {
+        TypeMirror erased = types.erasure(type);
+        ClassDesc erasure = erasure(erased);
+        List<ClassDesc> superclasses = superclasses((TypeElement) types.asElement(erased));
+        Optional<String> variable = type.getKind() == TypeKind.TYPEVAR
+                ? Optional.of(((TypeVariable) type).asElement().getSimpleName().toString())
+                : Optional.empty();
+        return new Thrown(erasure, superclasses, variable);
     }
 
     /// What a class that extends or implements a type inherits of it

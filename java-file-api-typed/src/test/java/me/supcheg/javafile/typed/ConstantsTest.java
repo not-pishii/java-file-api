@@ -3,6 +3,7 @@ package me.supcheg.javafile.typed;
 import com.google.testing.compile.Compilation;
 import com.google.testing.compile.JavaFileObjects;
 import me.supcheg.javafile.annotation.AnnotationUse;
+import me.supcheg.javafile.code.UnaryOp;
 import me.supcheg.javafile.facts.FinalClassToken;
 import me.supcheg.javafile.facts.MethodTable;
 import me.supcheg.javafile.facts.Prim;
@@ -43,6 +44,14 @@ import static me.supcheg.javafile.typed.Expressions.addInt;
 import static me.supcheg.javafile.typed.Expressions.addLong;
 import static me.supcheg.javafile.typed.Expressions.and;
 import static me.supcheg.javafile.typed.Expressions.at;
+import static me.supcheg.javafile.typed.Expressions.bitAndInt;
+import static me.supcheg.javafile.typed.Expressions.bitAndLong;
+import static me.supcheg.javafile.typed.Expressions.bitNotInt;
+import static me.supcheg.javafile.typed.Expressions.bitNotLong;
+import static me.supcheg.javafile.typed.Expressions.bitOrInt;
+import static me.supcheg.javafile.typed.Expressions.bitOrLong;
+import static me.supcheg.javafile.typed.Expressions.bitXorInt;
+import static me.supcheg.javafile.typed.Expressions.bitXorLong;
 import static me.supcheg.javafile.typed.Expressions.box;
 import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.castChecked;
@@ -67,17 +76,29 @@ import static me.supcheg.javafile.typed.Expressions.mulInt;
 import static me.supcheg.javafile.typed.Expressions.mulLong;
 import static me.supcheg.javafile.typed.Expressions.narrowTruncatingDoubleToInt;
 import static me.supcheg.javafile.typed.Expressions.narrowTruncatingLongToInt;
+import static me.supcheg.javafile.typed.Expressions.negDouble;
+import static me.supcheg.javafile.typed.Expressions.negInt;
+import static me.supcheg.javafile.typed.Expressions.negLong;
 import static me.supcheg.javafile.typed.Expressions.neqInt;
 import static me.supcheg.javafile.typed.Expressions.neqRef;
 import static me.supcheg.javafile.typed.Expressions.newArray;
 import static me.supcheg.javafile.typed.Expressions.new_;
 import static me.supcheg.javafile.typed.Expressions.not;
 import static me.supcheg.javafile.typed.Expressions.or;
+import static me.supcheg.javafile.typed.Expressions.shlInt;
+import static me.supcheg.javafile.typed.Expressions.shlLong;
+import static me.supcheg.javafile.typed.Expressions.shrInt;
+import static me.supcheg.javafile.typed.Expressions.shrLong;
 import static me.supcheg.javafile.typed.Expressions.staticCall;
 import static me.supcheg.javafile.typed.Expressions.staticField;
 import static me.supcheg.javafile.typed.Expressions.subInt;
 import static me.supcheg.javafile.typed.Expressions.switch_;
+import static me.supcheg.javafile.typed.Expressions.unaryPlusDouble;
+import static me.supcheg.javafile.typed.Expressions.unaryPlusInt;
+import static me.supcheg.javafile.typed.Expressions.unaryPlusLong;
 import static me.supcheg.javafile.typed.Expressions.unbox;
+import static me.supcheg.javafile.typed.Expressions.ushrInt;
+import static me.supcheg.javafile.typed.Expressions.ushrLong;
 import static me.supcheg.javafile.typed.Expressions.widenIntToDouble;
 import static me.supcheg.javafile.typed.Expressions.widenIntToLong;
 import static me.supcheg.javafile.typed.Expressions.widenLongToDouble;
@@ -220,7 +241,17 @@ class ConstantsTest {
                 of("n * 0 < 1", ltInt(mulInt(N, literal(0)), literal(1))),
                 of("0 / n <= 1", leInt(divInt(literal(0), N), literal(1))),
                 of("n % 1 > 1", gtInt(modInt(N, literal(1)), literal(1))),
-                of("n >= n", geInt(N, N)));
+                of("n >= n", geInt(N, N)),
+                of("-1 == -1", eqInt(negInt(literal(1)), literal(-1))),
+                of("+1 == 1", eqInt(unaryPlusInt(literal(1)), literal(1))),
+                of("~1 == -2", eqInt(bitNotInt(literal(1)), literal(-2))),
+                of("(1 & 3) == 1", eqInt(bitAndInt(literal(1), literal(3)), literal(1))),
+                of("(1 | 2) == 3", eqInt(bitOrInt(literal(1), literal(2)), literal(3))),
+                of("(1 ^ 3) == 2", eqInt(bitXorInt(literal(1), literal(3)), literal(2))),
+                of("(1 << 2) == 4", eqInt(shlInt(literal(1), literal(2)), literal(4))),
+                of("(1 << 33) == 2", eqInt(shlInt(literal(1), literal(33L)), literal(2))),
+                of("(8 >> 2) == 2", eqInt(shrInt(literal(8), literal(2)), literal(2))),
+                of("(-1 >>> 1) == 2147483647", eqInt(ushrInt(literal(-1), literal(1)), literal(Integer.MAX_VALUE))));
     }
 
     private static Stream<Arguments> longsAndDoubles() {
@@ -279,7 +310,33 @@ class ConstantsTest {
                                 narrowTruncatingDoubleToInt(mulDouble(literal(Double.POSITIVE_INFINITY), literal(0.0))),
                                 literal(1))),
                 of("(int) -1.5 == -1", eqInt(narrowTruncatingDoubleToInt(literal(-1.5)), literal(-1))),
-                of("-1 + 1 == 0", eqInt(addInt(literal(-1), literal(1)), literal(0))));
+                of("-1 + 1 == 0", eqInt(addInt(literal(-1), literal(1)), literal(0))),
+                of("(int) -2L == -2", eqInt(narrowTruncatingLongToInt(negLong(literal(2L))), literal(-2))),
+                of("(int) +2L == 2", eqInt(narrowTruncatingLongToInt(unaryPlusLong(literal(2L))), literal(2))),
+                of("(int) -1.5 == -1", eqInt(narrowTruncatingDoubleToInt(negDouble(literal(1.5))), literal(-1))),
+                of("(int) +1.5 == 1", eqInt(narrowTruncatingDoubleToInt(unaryPlusDouble(literal(1.5))), literal(1))),
+                of("(int) ~1L == -2", eqInt(narrowTruncatingLongToInt(bitNotLong(literal(1L))), literal(-2))),
+                of(
+                        "(int) (1L & 3L) == 1",
+                        eqInt(narrowTruncatingLongToInt(bitAndLong(literal(1L), literal(3L))), literal(1))),
+                of(
+                        "(int) (1L | 2L) == 3",
+                        eqInt(narrowTruncatingLongToInt(bitOrLong(literal(1L), literal(2L))), literal(3))),
+                of(
+                        "(int) (1L ^ 3L) == 2",
+                        eqInt(narrowTruncatingLongToInt(bitXorLong(literal(1L), literal(3L))), literal(2))),
+                of(
+                        "(int) (1L << 2) == 4",
+                        eqInt(narrowTruncatingLongToInt(shlLong(literal(1L), literal(2))), literal(4))),
+                of(
+                        "(int) (1L << 66) == 4",
+                        eqInt(narrowTruncatingLongToInt(shlLong(literal(1L), literal(66L))), literal(4))),
+                of(
+                        "(int) (8L >> 2) == 2",
+                        eqInt(narrowTruncatingLongToInt(shrLong(literal(8L), literal(2))), literal(2))),
+                of(
+                        "(int) (-1L >>> 1) == -1",
+                        eqInt(narrowTruncatingLongToInt(ushrLong(literal(-1L), literal(1))), literal(-1))));
     }
 
     private static Stream<Arguments> strings() {
@@ -411,6 +468,30 @@ class ConstantsTest {
         // `Character.MIN_VALUE` is a constant to javac; no operator of the typed layer takes a char
         var minValue = UnsafeFacts.constantField(Integer_.TOKEN, "MIN_VALUE", PrimitiveToken.CHAR, (char) 0);
         assertThat(Constants.fold(staticField(minValue).node())).isEqualTo(new Constants.Folded.None());
+    }
+
+    @Test
+    void aNewOperatorOverAnOperandItDoesNotTakeIsNoConstant() {
+        Constants.Folded none = new Constants.Folded.None();
+
+        assertThat(Constants.fold(new Node.Unary(UnaryOp.NOT, literal(true).node())))
+                .isEqualTo(none);
+        assertThat(Constants.fold(new Node.Unary(UnaryOp.NEG, literal(true).node())))
+                .isEqualTo(none);
+        assertThat(Constants.fold(new Node.Unary(UnaryOp.BIT_NOT, literal(1.5).node())))
+                .isEqualTo(none);
+        assertThat(Constants.fold(new Node.Binary(
+                        Node.Operator.SHL_INT, literal(1L).node(), literal(1).node())))
+                .isEqualTo(none);
+        assertThat(Constants.fold(new Node.Binary(
+                        Node.Operator.SHL_INT, literal(1).node(), literal(1.5).node())))
+                .isEqualTo(none);
+        assertThat(Constants.fold(new Node.Binary(
+                        Node.Operator.SHL_LONG, literal(1).node(), literal(1).node())))
+                .isEqualTo(none);
+        assertThat(Constants.fold(new Node.Binary(
+                        Node.Operator.SHL_LONG, literal(1L).node(), literal(1.5).node())))
+                .isEqualTo(none);
     }
 
     @Test

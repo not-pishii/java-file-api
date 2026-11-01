@@ -68,12 +68,15 @@ package me.supcheg.javafile.facts.meta;
 /// - 18: a sealed type has its facts and its entry, and the shape tells the
 ///   subtypes it permits, so a generator can prove that a subtype is one.
 ///   The canonical form tells them too.
+/// - 19: the method table tells the exceptions each method and constructor
+///   declares, by signature, with the erasure and superclass chain of each,
+///   so that a resource's `close()` is known as javac knows it.
 public final class MetamodelFormat {
 
     /// The current format version. A compile-time constant, so that the
     /// processor reads it from the class file with `getConstantValue()`
     /// without loading the class.
-    public static final int VERSION = 18;
+    public static final int VERSION = 19;
 
     private MetamodelFormat() {}
 }

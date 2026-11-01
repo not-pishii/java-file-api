@@ -2,6 +2,7 @@ package me.supcheg.javafile.typed;
 
 import me.supcheg.javafile.Invariants;
 import me.supcheg.javafile.facts.Invocable;
+import me.supcheg.javafile.facts.TypeToken;
 
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
@@ -172,6 +173,23 @@ final class Exceptions {
     static void check(Instr instr, Block<?, ?> block) {
         raised(instr, Rethrows.UNKNOWN).forEach(raise -> requireCovered(raise, block));
         nodes(instr).forEach(Exceptions::requireCoveredInLambdas);
+    }
+
+    /// Checks the `close()` of a resource declared in `block`: a
+    /// try-with-resources closes it on every way out of the body, so a
+    /// checked exception `close()` declares must be caught by the `catch`
+    /// clauses of the `try` or by an enclosing `try_`, or declared by the
+    /// member the body belongs to, exactly as javac requires it (JLS 14.20.3,
+    /// 11.2.3).
+    ///
+    /// @param resource the resource type
+    /// @param block the try block the resource is declared in
+    /// @throws IllegalStateException if `close()` throws a checked exception that is neither caught
+    ///     nor declared
+    static void requireCloseCovered(TypeToken<?> resource, Block<?, ?> block) {
+        Tokens.closeThrows(resource).stream()
+                .filter(ExceptionType::isChecked)
+                .forEach(type -> requireCovered(new Raise(type, "the close() of " + resource), block));
     }
 
     /// Checks the initializer of a field: it is in no body, so nothing
@@ -414,15 +432,20 @@ final class Exceptions {
                                         catches.get(i).var(), rethrown(types.get(i), types.subList(0, i), thrown)))));
     }
 
-    /// What the `try` block of `statement` throws with the initializers of its resources: a resource is
-    /// initialized before the block runs, and a `catch` clause covers it as it covers the block.
+    /// What the `try` block of `statement` throws with the initializers of its resources and the
+    /// `close()` of each: a resource is initialized before the block runs, and its close runs on
+    /// every way out, so a `catch` clause covers both as it covers the block.
     private static Stream<ExceptionType> thrownOf(Instr.Try statement, Rethrows rethrows) {
-        return Stream.concat(
-                statement.resources().stream()
-                        .flatMap(resource -> resource.init().stream())
-                        .flatMap(Exceptions::raised)
-                        .map(Raise::type),
-                thrown(statement.body(), rethrows));
+        return Stream.of(
+                        statement.resources().stream()
+                                .flatMap(resource -> resource.init().stream())
+                                .flatMap(Exceptions::raised)
+                                .map(Raise::type),
+                        statement.resources().stream()
+                                .flatMap(resource ->
+                                        Tokens.closeThrows(resource.var().type()).stream()),
+                        thrown(statement.body(), rethrows))
+                .flatMap(stream -> stream);
     }
 
     /// Whether the `try` statement throws an unknown exception, in its block or in the initializer of
@@ -520,6 +543,10 @@ final class Exceptions {
             case Node.Cond _ -> new Act.Computes();
             case Node.Binary _ -> new Act.Computes();
             case Node.Not _ -> new Act.Computes();
+            case Node.Unary _ -> new Act.Computes();
+            case Node.Increment _ -> new Act.Computes();
+            case Node.ClassLiteral _ -> new Act.Computes();
+            case Node.InstanceOf _ -> new Act.Computes();
             case Node.Convert _ -> new Act.Computes();
             case Node.Cast _ -> new Act.Computes();
             case Node.Upcast _ -> new Act.Computes();
@@ -610,6 +637,10 @@ final class Exceptions {
             case Node.Box(var _, var operand) -> Stream.of(operand);
             case Node.Unbox(var _, var operand) -> Stream.of(operand);
             case Node.Not(var operand) -> Stream.of(operand);
+            case Node.Unary(var _, var operand) -> Stream.of(operand);
+            case Node.Increment(var _, var target) -> children(target);
+            case Node.ClassLiteral _ -> Stream.empty();
+            case Node.InstanceOf(var operand, var _) -> Stream.of(operand.node());
             case Node.Convert(var _, var operand) -> Stream.of(operand);
             case Node.Cast(var _, var operand) -> Stream.of(operand.node());
             case Node.Upcast(var inner, var _, var _) -> Stream.of(inner);
@@ -636,7 +667,7 @@ final class Exceptions {
                             case Node.Arm.Value(var value) -> Stream.of(value);
                             case Node.Arm.Block _ -> Stream.empty();
                         }));
-            case Node.Assign(var target, var value) -> Stream.concat(children(target), Stream.of(value));
+            case Node.Assign(var target, var _, var value) -> Stream.concat(children(target), Stream.of(value));
         };
     }
 

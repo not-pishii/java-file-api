@@ -1,9 +1,12 @@
 package me.supcheg.javafile.typed;
 
+import me.supcheg.javafile.code.AssignOp;
 import me.supcheg.javafile.code.BinaryOp;
 import me.supcheg.javafile.code.ConstantLiteral;
 import me.supcheg.javafile.code.Expr;
+import me.supcheg.javafile.code.IncDecOp;
 import me.supcheg.javafile.code.NonEmptyList;
+import me.supcheg.javafile.code.UnaryOp;
 import me.supcheg.javafile.facts.ArrayToken;
 import me.supcheg.javafile.facts.DeclaredToken;
 import me.supcheg.javafile.facts.EnumConstant;
@@ -179,6 +182,18 @@ sealed interface Node {
         MUL_LONG(BinaryOp.MUL),
         ADD_DOUBLE(BinaryOp.ADD),
         MUL_DOUBLE(BinaryOp.MUL),
+        BIT_AND_INT(BinaryOp.BIT_AND),
+        BIT_OR_INT(BinaryOp.BIT_OR),
+        BIT_XOR_INT(BinaryOp.BIT_XOR),
+        BIT_AND_LONG(BinaryOp.BIT_AND),
+        BIT_OR_LONG(BinaryOp.BIT_OR),
+        BIT_XOR_LONG(BinaryOp.BIT_XOR),
+        SHL_INT(BinaryOp.SHL),
+        SHR_INT(BinaryOp.SHR),
+        USHR_INT(BinaryOp.USHR),
+        SHL_LONG(BinaryOp.SHL),
+        SHR_LONG(BinaryOp.SHR),
+        USHR_LONG(BinaryOp.USHR),
         /// `&&`.
         AND(BinaryOp.AND),
         /// `||`.
@@ -204,6 +219,34 @@ sealed interface Node {
 
     /// A logical complement, `!operand`.
     record Not(Node operand) implements Exact {}
+
+    /// A unary numeric operator, `operator operand`: arithmetic negation or
+    /// unary plus, which promote `byte`, `short` and `char` to `int`, or the
+    /// bitwise complement of an integral type.
+    ///
+    /// @param op the operator
+    /// @param operand the operand
+    record Unary(UnaryOp op, Node operand) implements Exact {}
+
+    /// A pre- or post-increment or decrement of a place, `++operand` or
+    /// `operand--`; its type is that of the operand.
+    ///
+    /// @param op the operator
+    /// @param target the place
+    record Increment(IncDecOp op, Target target) implements Exact {}
+
+    /// A class literal, `type.class`, of type `Class<T>`.
+    ///
+    /// @param type the type the literal is of
+    record ClassLiteral(TypeToken<?> type) implements Exact {}
+
+    /// A plain `instanceof` test, `operand instanceof type`, without a
+    /// pattern binding. It is `false` for a `null` operand and never throws
+    /// (JLS 15.20.2).
+    ///
+    /// @param operand the tested expression, with its static type
+    /// @param type the tested type
+    record InstanceOf(Operand operand, RefToken<?> type) implements Exact {}
 
     /// A conversion of a number to another primitive type, `(int) operand`.
     record Convert(Conversion conversion, Node operand) implements Exact {}
@@ -317,7 +360,11 @@ sealed interface Node {
     }
 
     /// An assignment, used as a statement.
-    record Assign(Target target, Node value) implements Exact {}
+    ///
+    /// @param target the place assigned to
+    /// @param op the assignment operator, `=` or a compound one
+    /// @param value the assigned expression
+    record Assign(Target target, AssignOp op, Node value) implements Exact {}
 
     /// An untyped core expression from `Unsafe`.
     record Raw(Expr expr) implements Exact {}

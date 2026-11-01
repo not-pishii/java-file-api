@@ -5,6 +5,7 @@ import me.supcheg.javafile.Identifiers;
 import java.lang.constant.ClassDesc;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -42,12 +43,15 @@ import java.util.stream.Stream;
 /// @param constructors the constructors that are not `private`
 /// @param variableArity the signatures whose last parameter is of variable arity, `m(T...)`;
 ///                       a signature absent from it is of fixed arity, `m(T[])`
+/// @param throwsTypes the exceptions each method or constructor declares, by signature; a signature
+///                    absent from it throws none
 public record MethodTableTemplate(
         Set<Signature> abstractMethods,
         Set<Signature> concreteMethods,
         Set<Signature> staticMethods,
         Set<Signature> constructors,
-        Set<Signature> variableArity) {
+        Set<Signature> variableArity,
+        Map<Signature, List<Thrown>> throwsTypes) {
 
     /// A template with no methods.
     public static final MethodTableTemplate EMPTY = new MethodTableTemplate(Set.of(), Set.of(), Set.of());
@@ -61,6 +65,8 @@ public record MethodTableTemplate(
         staticMethods = Set.copyOf(staticMethods);
         constructors = Set.copyOf(constructors);
         variableArity = Set.copyOf(variableArity);
+        throwsTypes = throwsTypes.entrySet().stream()
+                .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, entry -> List.copyOf(entry.getValue())));
         Set<Signature> both = new HashSet<>(abstractMethods);
         both.retainAll(concreteMethods);
         if (!both.isEmpty()) {
@@ -88,6 +94,24 @@ public record MethodTableTemplate(
                     throw new IllegalArgumentException(
                             "a signature of variable arity has a last parameter: " + signature);
                 });
+    }
+
+    /// A template whose members declare no `throws` clause.
+    ///
+    /// @param abstractMethods the instance methods without an implementation
+    /// @param concreteMethods the instance methods with an implementation
+    /// @param staticMethods the `static` methods
+    /// @param constructors the constructors that are not `private`
+    /// @param variableArity the signatures whose last parameter is of variable arity
+    /// @throws IllegalArgumentException if a method is both abstract and concrete, or
+    ///                                  both static and an instance method
+    public MethodTableTemplate(
+            Set<Signature> abstractMethods,
+            Set<Signature> concreteMethods,
+            Set<Signature> staticMethods,
+            Set<Signature> constructors,
+            Set<Signature> variableArity) {
+        this(abstractMethods, concreteMethods, staticMethods, constructors, variableArity, Map.of());
     }
 
     /// A template that lists no constructors and no signature of variable arity.

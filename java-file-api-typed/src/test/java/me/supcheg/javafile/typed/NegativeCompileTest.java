@@ -502,7 +502,7 @@ class NegativeCompileTest {
                         var x = cb.declareField("x", PrimitiveToken.INT);
                         cb.bodies().define(cb.declareConstructor(), (b, self) -> b.exec(assignField(self, x, literal(2))).end());
                         """),
-                "method assignField in class me.supcheg.javafile.typed.Expressions cannot be applied to given types",
+                "no suitable method found for assignField(",
                 "me.supcheg.javafile.facts.FieldRef<Self,me.supcheg.javafile.facts.Prim.Int> cannot be converted to"
                         + " me.supcheg.javafile.facts.MutableFieldRef<O,T>");
     }
@@ -521,6 +521,49 @@ class NegativeCompileTest {
                 "void use() { castChecked(PrimitiveToken.INT, literalNull(Object_.TOKEN)); }",
                 "method castChecked in class me.supcheg.javafile.typed.Expressions cannot be applied to given types",
                 "cannot be converted to me.supcheg.javafile.facts.RefToken<T>");
+    }
+
+    @Test
+    void anIncrementTakesAPlaceTheLayerCanAssignTo() {
+        assertRejected(
+                "IncrementOfAValue",
+                "void use() { postIncrement(literal(1)); }",
+                "no suitable method found for postIncrement(",
+                "me.supcheg.javafile.typed.Expr<me.supcheg.javafile.facts.Prim.Int> cannot be converted to"
+                        + " me.supcheg.javafile.typed.MutVar<T>");
+    }
+
+    @Test
+    void aCompoundAssignmentTakesAValueOfThePlaceType() {
+        assertRejected(
+                "CompoundOfAnotherType",
+                """
+                void use(MutVar<Prim.Int> x) {
+                    assign(x, me.supcheg.javafile.code.AssignOp.ADD_ASSIGN, literal(1L));
+                }
+                """,
+                "no suitable method found for assign(",
+                "inference variable T has incompatible bounds");
+    }
+
+    @Test
+    void aShiftDistanceIsIntegral() {
+        assertRejected(
+                "ShiftByADouble",
+                "void use() { shlInt(literal(1), literal(1.0)); }",
+                "incompatible types: me.supcheg.javafile.typed.Expr<me.supcheg.javafile.facts.Prim.Double>"
+                        + " cannot be converted to me.supcheg.javafile.typed.Expr<? extends"
+                        + " me.supcheg.javafile.facts.Prim.Integral>");
+    }
+
+    @Test
+    void aClassLiteralOfAPrimitiveIsNotAnExpressionOfTheLayer() {
+        assertRejected(
+                "ClassLiteralOfAPrimitive",
+                "void use() { classLiteral(PrimitiveToken.INT); }",
+                "method classLiteral in class me.supcheg.javafile.typed.Expressions cannot be applied to given types",
+                "me.supcheg.javafile.facts.PrimitiveToken<me.supcheg.javafile.facts.Prim.Int,java.lang.Integer,int[]>"
+                        + " cannot be converted to me.supcheg.javafile.facts.RefToken<T>");
     }
 
     @Test
@@ -1175,7 +1218,8 @@ class NegativeCompileTest {
                 "ArrayStoredAsOfASupertype",
                 "void use(Expr<String[]> a) { assignAt(ArrayToken.of(Object_.TOKEN), a, literal(0),"
                         + " literalNull(Object_.TOKEN)); }",
-                "method assignAt in class me.supcheg.javafile.typed.Expressions cannot be applied to given types");
+                "no suitable method found for assignAt(",
+                "inference variable E has incompatible bounds");
     }
 
     @Test

@@ -1,6 +1,9 @@
 package me.supcheg.javafile.typed;
 
+import me.supcheg.javafile.code.AssignOp;
+import me.supcheg.javafile.code.IncDecOp;
 import me.supcheg.javafile.code.NonEmptyList;
+import me.supcheg.javafile.code.UnaryOp;
 import me.supcheg.javafile.facts.Arity;
 import me.supcheg.javafile.facts.ArrayToken;
 import me.supcheg.javafile.facts.DeclaredToken;
@@ -497,6 +500,279 @@ public final class Expressions extends ExpressionArities {
         return divisor;
     }
 
+    /// The unary numeric promotion of `byte`, `short` and `char`: each
+    /// arithmetic or bitwise complement operator on one is of type `int`
+    /// (JLS 5.6).
+    private static <P> Expr<Prim.Int> promoted(UnaryOp op, Expr<P> operand) {
+        return Expr.of(new Node.Unary(op, operand.node()), PrimitiveToken.INT);
+    }
+
+    /// `-operand` of an `int`.
+    ///
+    /// @param operand the operand
+    /// @return the negation
+    public static Expr<Prim.Int> negInt(Expr<Prim.Int> operand) {
+        return Expr.of(new Node.Unary(UnaryOp.NEG, operand.node()), PrimitiveToken.INT);
+    }
+
+    /// `-operand` of a `long`.
+    ///
+    /// @param operand the operand
+    /// @return the negation
+    public static Expr<Prim.Long> negLong(Expr<Prim.Long> operand) {
+        return Expr.of(new Node.Unary(UnaryOp.NEG, operand.node()), PrimitiveToken.LONG);
+    }
+
+    /// `-operand` of a `float`.
+    ///
+    /// @param operand the operand
+    /// @return the negation
+    public static Expr<Prim.Float> negFloat(Expr<Prim.Float> operand) {
+        return Expr.of(new Node.Unary(UnaryOp.NEG, operand.node()), PrimitiveToken.FLOAT);
+    }
+
+    /// `-operand` of a `double`.
+    ///
+    /// @param operand the operand
+    /// @return the negation
+    public static Expr<Prim.Double> negDouble(Expr<Prim.Double> operand) {
+        return Expr.of(new Node.Unary(UnaryOp.NEG, operand.node()), PrimitiveToken.DOUBLE);
+    }
+
+    /// `-operand` of a `byte`, of type `int` (JLS 5.6).
+    ///
+    /// @param operand the operand
+    /// @return the negation, as an `int`
+    public static Expr<Prim.Int> negByte(Expr<Prim.Byte> operand) {
+        return promoted(UnaryOp.NEG, operand);
+    }
+
+    /// `-operand` of a `short`, of type `int` (JLS 5.6).
+    ///
+    /// @param operand the operand
+    /// @return the negation, as an `int`
+    public static Expr<Prim.Int> negShort(Expr<Prim.Short> operand) {
+        return promoted(UnaryOp.NEG, operand);
+    }
+
+    /// `-operand` of a `char`, of type `int` (JLS 5.6).
+    ///
+    /// @param operand the operand
+    /// @return the negation, as an `int`
+    public static Expr<Prim.Int> negChar(Expr<Prim.Char> operand) {
+        return promoted(UnaryOp.NEG, operand);
+    }
+
+    /// `+operand` of an `int`.
+    ///
+    /// @param operand the operand
+    /// @return the operand, as an `int`
+    public static Expr<Prim.Int> unaryPlusInt(Expr<Prim.Int> operand) {
+        return Expr.of(new Node.Unary(UnaryOp.UNARY_PLUS, operand.node()), PrimitiveToken.INT);
+    }
+
+    /// `+operand` of a `long`.
+    ///
+    /// @param operand the operand
+    /// @return the operand, as a `long`
+    public static Expr<Prim.Long> unaryPlusLong(Expr<Prim.Long> operand) {
+        return Expr.of(new Node.Unary(UnaryOp.UNARY_PLUS, operand.node()), PrimitiveToken.LONG);
+    }
+
+    /// `+operand` of a `float`.
+    ///
+    /// @param operand the operand
+    /// @return the operand, as a `float`
+    public static Expr<Prim.Float> unaryPlusFloat(Expr<Prim.Float> operand) {
+        return Expr.of(new Node.Unary(UnaryOp.UNARY_PLUS, operand.node()), PrimitiveToken.FLOAT);
+    }
+
+    /// `+operand` of a `double`.
+    ///
+    /// @param operand the operand
+    /// @return the operand, as a `double`
+    public static Expr<Prim.Double> unaryPlusDouble(Expr<Prim.Double> operand) {
+        return Expr.of(new Node.Unary(UnaryOp.UNARY_PLUS, operand.node()), PrimitiveToken.DOUBLE);
+    }
+
+    /// `+operand` of a `byte`, of type `int` (JLS 5.6).
+    ///
+    /// @param operand the operand
+    /// @return the operand, as an `int`
+    public static Expr<Prim.Int> unaryPlusByte(Expr<Prim.Byte> operand) {
+        return promoted(UnaryOp.UNARY_PLUS, operand);
+    }
+
+    /// `+operand` of a `short`, of type `int` (JLS 5.6).
+    ///
+    /// @param operand the operand
+    /// @return the operand, as an `int`
+    public static Expr<Prim.Int> unaryPlusShort(Expr<Prim.Short> operand) {
+        return promoted(UnaryOp.UNARY_PLUS, operand);
+    }
+
+    /// `+operand` of a `char`, of type `int` (JLS 5.6).
+    ///
+    /// @param operand the operand
+    /// @return the operand, as an `int`
+    public static Expr<Prim.Int> unaryPlusChar(Expr<Prim.Char> operand) {
+        return promoted(UnaryOp.UNARY_PLUS, operand);
+    }
+
+    /// `~operand` of an `int`.
+    ///
+    /// @param operand the operand
+    /// @return the complement
+    public static Expr<Prim.Int> bitNotInt(Expr<Prim.Int> operand) {
+        return Expr.of(new Node.Unary(UnaryOp.BIT_NOT, operand.node()), PrimitiveToken.INT);
+    }
+
+    /// `~operand` of a `long`.
+    ///
+    /// @param operand the operand
+    /// @return the complement
+    public static Expr<Prim.Long> bitNotLong(Expr<Prim.Long> operand) {
+        return Expr.of(new Node.Unary(UnaryOp.BIT_NOT, operand.node()), PrimitiveToken.LONG);
+    }
+
+    /// `~operand` of a `byte`, of type `int` (JLS 5.6).
+    ///
+    /// @param operand the operand
+    /// @return the complement, as an `int`
+    public static Expr<Prim.Int> bitNotByte(Expr<Prim.Byte> operand) {
+        return promoted(UnaryOp.BIT_NOT, operand);
+    }
+
+    /// `~operand` of a `short`, of type `int` (JLS 5.6).
+    ///
+    /// @param operand the operand
+    /// @return the complement, as an `int`
+    public static Expr<Prim.Int> bitNotShort(Expr<Prim.Short> operand) {
+        return promoted(UnaryOp.BIT_NOT, operand);
+    }
+
+    /// `~operand` of a `char`, of type `int` (JLS 5.6).
+    ///
+    /// @param operand the operand
+    /// @return the complement, as an `int`
+    public static Expr<Prim.Int> bitNotChar(Expr<Prim.Char> operand) {
+        return promoted(UnaryOp.BIT_NOT, operand);
+    }
+
+    /// `l & r` of two `int`s.
+    ///
+    /// @param l the left operand
+    /// @param r the right operand
+    /// @return the conjunction
+    public static Expr<Prim.Int> bitAndInt(Expr<Prim.Int> l, Expr<Prim.Int> r) {
+        return binary(Node.Operator.BIT_AND_INT, l, r, PrimitiveToken.INT);
+    }
+
+    /// `l | r` of two `int`s.
+    ///
+    /// @param l the left operand
+    /// @param r the right operand
+    /// @return the disjunction
+    public static Expr<Prim.Int> bitOrInt(Expr<Prim.Int> l, Expr<Prim.Int> r) {
+        return binary(Node.Operator.BIT_OR_INT, l, r, PrimitiveToken.INT);
+    }
+
+    /// `l ^ r` of two `int`s.
+    ///
+    /// @param l the left operand
+    /// @param r the right operand
+    /// @return the exclusive disjunction
+    public static Expr<Prim.Int> bitXorInt(Expr<Prim.Int> l, Expr<Prim.Int> r) {
+        return binary(Node.Operator.BIT_XOR_INT, l, r, PrimitiveToken.INT);
+    }
+
+    /// `l & r` of two `long`s.
+    ///
+    /// @param l the left operand
+    /// @param r the right operand
+    /// @return the conjunction
+    public static Expr<Prim.Long> bitAndLong(Expr<Prim.Long> l, Expr<Prim.Long> r) {
+        return binary(Node.Operator.BIT_AND_LONG, l, r, PrimitiveToken.LONG);
+    }
+
+    /// `l | r` of two `long`s.
+    ///
+    /// @param l the left operand
+    /// @param r the right operand
+    /// @return the disjunction
+    public static Expr<Prim.Long> bitOrLong(Expr<Prim.Long> l, Expr<Prim.Long> r) {
+        return binary(Node.Operator.BIT_OR_LONG, l, r, PrimitiveToken.LONG);
+    }
+
+    /// `l ^ r` of two `long`s.
+    ///
+    /// @param l the left operand
+    /// @param r the right operand
+    /// @return the exclusive disjunction
+    public static Expr<Prim.Long> bitXorLong(Expr<Prim.Long> l, Expr<Prim.Long> r) {
+        return binary(Node.Operator.BIT_XOR_LONG, l, r, PrimitiveToken.LONG);
+    }
+
+    /// `l << r`, of type `int`. The distance is `int` or `long`, and Java
+    /// masks it with `0x1f` (JLS 15.19): `1 << 32` is `1`.
+    ///
+    /// @param l the shifted value
+    /// @param r the distance
+    /// @return the shift
+    public static Expr<Prim.Int> shlInt(Expr<Prim.Int> l, Expr<? extends Prim.Integral> r) {
+        return binary(Node.Operator.SHL_INT, l, r, PrimitiveToken.INT);
+    }
+
+    /// `l >> r`, of type `int`, with the sign of `l` kept. The distance is
+    /// `int` or `long`, and Java masks it with `0x1f` (JLS 15.19).
+    ///
+    /// @param l the shifted value
+    /// @param r the distance
+    /// @return the shift
+    public static Expr<Prim.Int> shrInt(Expr<Prim.Int> l, Expr<? extends Prim.Integral> r) {
+        return binary(Node.Operator.SHR_INT, l, r, PrimitiveToken.INT);
+    }
+
+    /// `l >>> r`, of type `int`, with the vacated high bits zeroed. The
+    /// distance is `int` or `long`, and Java masks it with `0x1f` (JLS 15.19).
+    ///
+    /// @param l the shifted value
+    /// @param r the distance
+    /// @return the shift
+    public static Expr<Prim.Int> ushrInt(Expr<Prim.Int> l, Expr<? extends Prim.Integral> r) {
+        return binary(Node.Operator.USHR_INT, l, r, PrimitiveToken.INT);
+    }
+
+    /// `l << r`, of type `long`. The distance is `int` or `long`, and Java
+    /// masks it with `0x3f` (JLS 15.19).
+    ///
+    /// @param l the shifted value
+    /// @param r the distance
+    /// @return the shift
+    public static Expr<Prim.Long> shlLong(Expr<Prim.Long> l, Expr<? extends Prim.Integral> r) {
+        return binary(Node.Operator.SHL_LONG, l, r, PrimitiveToken.LONG);
+    }
+
+    /// `l >> r`, of type `long`, with the sign of `l` kept. The distance is
+    /// `int` or `long`, and Java masks it with `0x3f` (JLS 15.19).
+    ///
+    /// @param l the shifted value
+    /// @param r the distance
+    /// @return the shift
+    public static Expr<Prim.Long> shrLong(Expr<Prim.Long> l, Expr<? extends Prim.Integral> r) {
+        return binary(Node.Operator.SHR_LONG, l, r, PrimitiveToken.LONG);
+    }
+
+    /// `l >>> r`, of type `long`, with the vacated high bits zeroed. The
+    /// distance is `int` or `long`, and Java masks it with `0x3f` (JLS 15.19).
+    ///
+    /// @param l the shifted value
+    /// @param r the distance
+    /// @return the shift
+    public static Expr<Prim.Long> ushrLong(Expr<Prim.Long> l, Expr<? extends Prim.Integral> r) {
+        return binary(Node.Operator.USHR_LONG, l, r, PrimitiveToken.LONG);
+    }
+
     public static Expr<Prim.Bool> eqInt(Expr<Prim.Int> l, Expr<Prim.Int> r) {
         return binary(Node.Operator.EQ_INT, l, r, PrimitiveToken.BOOLEAN);
     }
@@ -657,6 +933,48 @@ public final class Expressions extends ExpressionArities {
             return Expr.of(operand.node(), type);
         }
         return Expr.of(new Node.Cast(type, operand(operand)), type);
+    }
+
+    // ------------------------------------------------------------------
+    // Class literals and plain `instanceof`
+    // ------------------------------------------------------------------
+
+    /// A class literal, `type.class`, of type `Class<T>`. A primitive type
+    /// has a class literal too, but of the box it has no expression of its
+    /// own; its token is not accepted here.
+    ///
+    /// @param type the type
+    /// @param <T> the type
+    /// @return the class literal
+    /// @throws IllegalStateException if `type` is written off the scope of its type parameters
+    public static <T> Expr<Class<T>> classLiteral(RefToken<T> type) {
+        return Expr.of(new Node.ClassLiteral(type), new Class_<>(type).token);
+    }
+
+    /// A plain `instanceof` test, `operand instanceof type`, without a
+    /// pattern binding. It is `false` for a `null` operand and never throws
+    /// (JLS 15.20.2).
+    ///
+    /// The test must be a checked cast (JLS 15.20.2, 5.1.6.2): `type` is
+    /// reifiable, or the operand's static type is a parameterized supertype
+    /// of it that determines its type arguments. `object instanceof
+    /// List<String>` is rejected, `listOfStrings instanceof ArrayList<String>`
+    /// accepted.
+    ///
+    /// @param operand the tested expression
+    /// @param type the tested type
+    /// @param <T> the tested type
+    /// @return the test
+    /// @throws IllegalArgumentException if the operand is of a primitive type, or the test would
+    ///     be unchecked
+    public static <T> Expr<Prim.Bool> instanceOf(Expr<?> operand, RefToken<T> type) {
+        if (operand.type() instanceof PrimitiveToken<?, ?, ?> primitive) {
+            throw new IllegalArgumentException("instanceOf tests a reference, and the operand is of the primitive"
+                    + " type " + primitive + "; box it first, e.g. box(PrimitiveToken."
+                    + primitive.typeRef().sourceName().toUpperCase(Locale.ROOT) + ", expr)");
+        }
+        Tokens.requireCheckedCast(operand.type(), type, "an instanceof test");
+        return Expr.of(new Node.InstanceOf(operand(operand), type), PrimitiveToken.BOOLEAN);
     }
 
     // ------------------------------------------------------------------
@@ -843,7 +1161,7 @@ public final class Expressions extends ExpressionArities {
     /// `var = value;`
     public static <T> Assignment assign(MutVar<T> var, Expr<? extends T> value) {
         Tokens.requireNoBoxing(value.type(), var.type(), "assign");
-        return new Assignment(new Node.Assign(new Node.Target.Local(var), value.node()));
+        return new Assignment(new Node.Assign(new Node.Target.Local(var), AssignOp.ASSIGN, value.node()));
     }
 
     /// `target.field = value;`
@@ -852,13 +1170,14 @@ public final class Expressions extends ExpressionArities {
     public static <O, T> Assignment assignField(
             Expr<? extends O> target, MutableFieldRef<O, T> field, Expr<? extends T> value) {
         Tokens.requireNoBoxing(value.type(), field.type(), "assignField");
-        return new Assignment(new Node.Assign(new Node.Target.Field(receiver(target, field), field), value.node()));
+        return new Assignment(
+                new Node.Assign(new Node.Target.Field(receiver(target, field), field), AssignOp.ASSIGN, value.node()));
     }
 
     /// `Owner.field = value;`
     public static <T> Assignment assignStaticField(MutableStaticFieldRef<T> field, Expr<? extends T> value) {
         Tokens.requireNoBoxing(value.type(), field.type(), "assignStaticField");
-        return new Assignment(new Node.Assign(new Node.Target.StaticField(field), value.node()));
+        return new Assignment(new Node.Assign(new Node.Target.StaticField(field), AssignOp.ASSIGN, value.node()));
     }
 
     /// `array[index] = value;`
@@ -879,7 +1198,223 @@ public final class Expressions extends ExpressionArities {
     public static <A, T> Assignment assignAt(
             ArrayToken<A, T> type, Expr<A> array, Expr<Prim.Int> index, Expr<? extends T> value) {
         Tokens.requireNoBoxing(value.type(), type.component(), "assignAt");
-        return new Assignment(new Node.Assign(new Node.Target.Element(array.node(), index.node()), value.node()));
+        return new Assignment(
+                new Node.Assign(new Node.Target.Element(array.node(), index.node()), AssignOp.ASSIGN, value.node()));
+    }
+
+    // ------------------------------------------------------------------
+    // Compound assignment (JLS 15.26.2): no implicit conversion
+    // ------------------------------------------------------------------
+
+    /// `var op= value;`, a compound assignment. Java would convert `value` to
+    /// the type of `var` and cast the result back implicitly; the typed layer
+    /// writes no implicit conversion, so `value` must be of exactly the type
+    /// of the place, and the operator must be one that type takes: `int +=
+    /// int`, `long &= long`, `String += String`.
+    ///
+    /// @param var the place
+    /// @param op the assignment operator, a compound one
+    /// @param value the assigned value, of the type of `var`
+    /// @param <T> the type of the place
+    /// @return the assignment
+    /// @throws IllegalArgumentException if `op` is plain `=`, the value is of another type, or
+    ///     the type has no such operator
+    public static <T> Assignment assign(MutVar<T> var, AssignOp op, Expr<? extends T> value) {
+        compound(op, var.type(), value, "assign");
+        return new Assignment(new Node.Assign(new Node.Target.Local(var), op, value.node()));
+    }
+
+    /// `target.field op= value;`, a compound assignment; see
+    /// [#assign(MutVar, AssignOp, Expr)].
+    ///
+    /// @param target the receiver
+    /// @param field the field
+    /// @param op the assignment operator, a compound one
+    /// @param value the assigned value, of the type of the field
+    /// @param <O> the owner type
+    /// @param <T> the field type
+    /// @return the assignment
+    /// @throws IllegalArgumentException if `op` is plain `=`, the value is of another type, or
+    ///     the type has no such operator
+    public static <O, T> Assignment assignField(
+            Expr<? extends O> target, MutableFieldRef<O, T> field, AssignOp op, Expr<? extends T> value) {
+        compound(op, field.type(), value, "assignField");
+        return new Assignment(new Node.Assign(new Node.Target.Field(receiver(target, field), field), op, value.node()));
+    }
+
+    /// `Owner.field op= value;`, a compound assignment; see
+    /// [#assign(MutVar, AssignOp, Expr)].
+    ///
+    /// @param field the static field
+    /// @param op the assignment operator, a compound one
+    /// @param value the assigned value, of the type of the field
+    /// @param <T> the field type
+    /// @return the assignment
+    /// @throws IllegalArgumentException if `op` is plain `=`, the value is of another type, or
+    ///     the type has no such operator
+    public static <T> Assignment assignStaticField(
+            MutableStaticFieldRef<T> field, AssignOp op, Expr<? extends T> value) {
+        compound(op, field.type(), value, "assignStaticField");
+        return new Assignment(new Node.Assign(new Node.Target.StaticField(field), op, value.node()));
+    }
+
+    /// `array[index] op= value;`, a compound assignment; see
+    /// [#assign(MutVar, AssignOp, Expr)].
+    ///
+    /// @param type the array type
+    /// @param array the array
+    /// @param index the index
+    /// @param op the assignment operator, a compound one
+    /// @param value the assigned value, of the element type
+    /// @param <A> the array type
+    /// @param <T> the element type
+    /// @return the assignment
+    /// @throws IllegalArgumentException if `op` is plain `=`, the value is of another type, or
+    ///     the type has no such operator
+    public static <A, T> Assignment assignAt(
+            ArrayToken<A, T> type, Expr<A> array, Expr<Prim.Int> index, AssignOp op, Expr<? extends T> value) {
+        compound(op, type.component(), value, "assignAt");
+        return new Assignment(new Node.Assign(new Node.Target.Element(array.node(), index.node()), op, value.node()));
+    }
+
+    /// Rejects a compound assignment the typed layer cannot write without an
+    /// implicit conversion.
+    private static void compound(AssignOp op, TypeToken<?> place, Expr<?> value, String where) {
+        boolean taken = takes(op, place);
+        if (op == AssignOp.ASSIGN) {
+            throw new IllegalArgumentException(
+                    where + " with `=` is the plain assignment; use the form without an AssignOp");
+        }
+        if (!taken) {
+            throw new IllegalArgumentException(where + " with " + op.symbol() + " on a place of " + place
+                    + ": the type has no such compound assignment (JLS 15.26.2)");
+        }
+    }
+
+    private static final java.util.Set<PrimitiveToken<?, ?, ?>> NUMERIC = java.util.Set.of(
+            PrimitiveToken.BYTE,
+            PrimitiveToken.SHORT,
+            PrimitiveToken.CHAR,
+            PrimitiveToken.INT,
+            PrimitiveToken.LONG,
+            PrimitiveToken.FLOAT,
+            PrimitiveToken.DOUBLE);
+    private static final java.util.Set<PrimitiveToken<?, ?, ?>> INTEGRAL = java.util.Set.of(
+            PrimitiveToken.BYTE, PrimitiveToken.SHORT, PrimitiveToken.CHAR, PrimitiveToken.INT, PrimitiveToken.LONG);
+    private static final java.util.Set<PrimitiveToken<?, ?, ?>> INTEGRAL_OR_BOOLEAN = java.util.Set.of(
+            PrimitiveToken.BYTE,
+            PrimitiveToken.SHORT,
+            PrimitiveToken.CHAR,
+            PrimitiveToken.INT,
+            PrimitiveToken.LONG,
+            PrimitiveToken.BOOLEAN);
+
+    /// Whether a type has the compound assignment `op`.
+    private static boolean takes(AssignOp op, TypeToken<?> type) {
+        if (type instanceof PrimitiveToken<?, ?, ?> primitive) {
+            return switch (op) {
+                case ASSIGN -> true;
+                case SHL_ASSIGN, SHR_ASSIGN, USHR_ASSIGN -> INTEGRAL.contains(primitive);
+                case AND_ASSIGN, OR_ASSIGN, XOR_ASSIGN -> INTEGRAL_OR_BOOLEAN.contains(primitive);
+                case ADD_ASSIGN, SUB_ASSIGN, MUL_ASSIGN, DIV_ASSIGN, MOD_ASSIGN -> NUMERIC.contains(primitive);
+            };
+        }
+        return op == AssignOp.ADD_ASSIGN && type.erasure().equals(java.lang.constant.ConstantDescs.CD_String);
+    }
+
+    // ------------------------------------------------------------------
+    // Increment and decrement (JLS 15.14.2, 15.15.1)
+    // ------------------------------------------------------------------
+
+    /// `++var`, of the type of `var`.
+    public static <T> Increment<T> preIncrement(MutVar<T> var) {
+        return increment(IncDecOp.PRE_INC, new Node.Target.Local(var), var.type());
+    }
+
+    /// `--var`, of the type of `var`.
+    public static <T> Increment<T> preDecrement(MutVar<T> var) {
+        return increment(IncDecOp.PRE_DEC, new Node.Target.Local(var), var.type());
+    }
+
+    /// `var++`, of the type of `var`.
+    public static <T> Increment<T> postIncrement(MutVar<T> var) {
+        return increment(IncDecOp.POST_INC, new Node.Target.Local(var), var.type());
+    }
+
+    /// `var--`, of the type of `var`.
+    public static <T> Increment<T> postDecrement(MutVar<T> var) {
+        return increment(IncDecOp.POST_DEC, new Node.Target.Local(var), var.type());
+    }
+
+    /// `++target.field`, of the type of the field.
+    public static <O, T> Increment<T> preIncrement(Expr<? extends O> target, MutableFieldRef<O, T> field) {
+        return increment(IncDecOp.PRE_INC, new Node.Target.Field(receiver(target, field), field), field.type());
+    }
+
+    /// `--target.field`, of the type of the field.
+    public static <O, T> Increment<T> preDecrement(Expr<? extends O> target, MutableFieldRef<O, T> field) {
+        return increment(IncDecOp.PRE_DEC, new Node.Target.Field(receiver(target, field), field), field.type());
+    }
+
+    /// `target.field++`, of the type of the field.
+    public static <O, T> Increment<T> postIncrement(Expr<? extends O> target, MutableFieldRef<O, T> field) {
+        return increment(IncDecOp.POST_INC, new Node.Target.Field(receiver(target, field), field), field.type());
+    }
+
+    /// `target.field--`, of the type of the field.
+    public static <O, T> Increment<T> postDecrement(Expr<? extends O> target, MutableFieldRef<O, T> field) {
+        return increment(IncDecOp.POST_DEC, new Node.Target.Field(receiver(target, field), field), field.type());
+    }
+
+    /// `++Owner.field`, of the type of the static field.
+    public static <T> Increment<T> preIncrement(MutableStaticFieldRef<T> field) {
+        return increment(IncDecOp.PRE_INC, new Node.Target.StaticField(field), field.type());
+    }
+
+    /// `--Owner.field`, of the type of the static field.
+    public static <T> Increment<T> preDecrement(MutableStaticFieldRef<T> field) {
+        return increment(IncDecOp.PRE_DEC, new Node.Target.StaticField(field), field.type());
+    }
+
+    /// `Owner.field++`, of the type of the static field.
+    public static <T> Increment<T> postIncrement(MutableStaticFieldRef<T> field) {
+        return increment(IncDecOp.POST_INC, new Node.Target.StaticField(field), field.type());
+    }
+
+    /// `Owner.field--`, of the type of the static field.
+    public static <T> Increment<T> postDecrement(MutableStaticFieldRef<T> field) {
+        return increment(IncDecOp.POST_DEC, new Node.Target.StaticField(field), field.type());
+    }
+
+    /// `++array[index]`, of the type of the element.
+    public static <A, T> Increment<T> preIncrement(ArrayToken<A, T> type, Expr<A> array, Expr<Prim.Int> index) {
+        return increment(IncDecOp.PRE_INC, new Node.Target.Element(array.node(), index.node()), type.component());
+    }
+
+    /// `--array[index]`, of the type of the element.
+    public static <A, T> Increment<T> preDecrement(ArrayToken<A, T> type, Expr<A> array, Expr<Prim.Int> index) {
+        return increment(IncDecOp.PRE_DEC, new Node.Target.Element(array.node(), index.node()), type.component());
+    }
+
+    /// `array[index]++`, of the type of the element.
+    public static <A, T> Increment<T> postIncrement(ArrayToken<A, T> type, Expr<A> array, Expr<Prim.Int> index) {
+        return increment(IncDecOp.POST_INC, new Node.Target.Element(array.node(), index.node()), type.component());
+    }
+
+    /// `array[index]--`, of the type of the element.
+    public static <A, T> Increment<T> postDecrement(ArrayToken<A, T> type, Expr<A> array, Expr<Prim.Int> index) {
+        return increment(IncDecOp.POST_DEC, new Node.Target.Element(array.node(), index.node()), type.component());
+    }
+
+    /// An increment or decrement of a place of a numeric primitive type: Java
+    /// has none of a boolean or of a reference, where it would unbox.
+    private static <T> Increment<T> increment(IncDecOp op, Node.Target target, TypeToken<T> type) {
+        if (!(type instanceof PrimitiveToken<?, ?, ?> primitive) || primitive == PrimitiveToken.BOOLEAN) {
+            throw new IllegalArgumentException("++ and -- are of a numeric primitive type, and the place is of "
+                    + type + ": Java would unbox a box, and the typed layer writes no implicit conversion;"
+                    + " unbox it explicitly, or use assign with addInt and friends");
+        }
+        return new Increment<>(new Node.Increment(op, target), type);
     }
 
     // ------------------------------------------------------------------

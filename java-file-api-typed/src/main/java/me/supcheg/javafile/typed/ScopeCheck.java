@@ -157,6 +157,10 @@ final class ScopeCheck {
                 node(right, use, where);
             }
             case Node.Not(var operand) -> node(operand, use, where);
+            case Node.Unary(var ignored, var operand) -> node(operand, use, where);
+            case Node.Increment(var ignored, var target) -> target(target, use, where);
+            case Node.ClassLiteral ignored -> {}
+            case Node.InstanceOf(var operand, var ignored) -> node(operand.node(), use, where);
             case Node.Convert(var ignored, var operand) -> node(operand, use, where);
             case Node.Cast(var ignored, var operand) -> node(operand.node(), use, where);
             case Node.Upcast(var inner, var ignoredInner, var ignored) -> node(inner, use, where);
@@ -167,7 +171,7 @@ final class ScopeCheck {
                 node(switch_.selector().node(), use, where);
                 switch_.arms().forEach(arm -> arm(arm, use, where));
             }
-            case Node.Assign(var target, var value) -> {
+            case Node.Assign(var target, var _, var value) -> {
                 target(target, use, where);
                 node(value, use, where);
             }

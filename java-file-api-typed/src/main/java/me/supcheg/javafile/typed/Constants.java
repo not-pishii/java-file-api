@@ -76,6 +76,7 @@ final class Constants {
                 field.constantValue().map(Constants::ofValue).orElse(NONE);
             case Node.Not(var operand) ->
                 fold(operand) instanceof Folded.OfBoolean value ? new Folded.OfBoolean(!value.value()) : NONE;
+            case Node.Unary(var op, var operand) -> unary(op, fold(operand));
             case Node.Binary(var op, var left, var right) -> binary(op, fold(left), fold(right));
             case Node.Cond(var condition, var whenTrue, var whenFalse) ->
                 cond(fold(condition), fold(whenTrue), fold(whenFalse));
@@ -110,7 +111,32 @@ final class Constants {
                     Node.MethodRef _,
                     Node.Switch _,
                     Node.Assign _,
+                    Node.Increment _,
+                    Node.ClassLiteral _,
+                    Node.InstanceOf _,
                     Node.Raw _ -> NONE;
+        };
+    }
+
+    /// A unary numeric operator over a constant operand of the type the operator is of.
+    private static Folded unary(me.supcheg.javafile.code.UnaryOp op, Folded operand) {
+        return switch (op) {
+            case NEG ->
+                switch (operand) {
+                    case Folded.OfInt value -> new Folded.OfInt(-value.value());
+                    case Folded.OfLong value -> new Folded.OfLong(-value.value());
+                    case Folded.OfDouble value -> new Folded.OfDouble(-value.value());
+                    default -> NONE;
+                };
+            case UNARY_PLUS -> operand;
+            case BIT_NOT ->
+                switch (operand) {
+                    case Folded.OfInt value -> new Folded.OfInt(~value.value());
+                    case Folded.OfLong value -> new Folded.OfLong(~value.value());
+                    default -> NONE;
+                };
+            // `!` is folded where the node is made, as Node.Not.
+            case NOT -> NONE;
         };
     }
 
@@ -166,6 +192,18 @@ final class Constants {
             case MUL_LONG -> longs(left, right, (l, r) -> new Folded.OfLong(l * r));
             case ADD_DOUBLE -> doubles(left, right, (l, r) -> new Folded.OfDouble(l + r));
             case MUL_DOUBLE -> doubles(left, right, (l, r) -> new Folded.OfDouble(l * r));
+            case BIT_AND_INT -> ints(left, right, (l, r) -> new Folded.OfInt(l & r));
+            case BIT_OR_INT -> ints(left, right, (l, r) -> new Folded.OfInt(l | r));
+            case BIT_XOR_INT -> ints(left, right, (l, r) -> new Folded.OfInt(l ^ r));
+            case BIT_AND_LONG -> longs(left, right, (l, r) -> new Folded.OfLong(l & r));
+            case BIT_OR_LONG -> longs(left, right, (l, r) -> new Folded.OfLong(l | r));
+            case BIT_XOR_LONG -> longs(left, right, (l, r) -> new Folded.OfLong(l ^ r));
+            case SHL_INT -> shiftInt(left, right, (l, distance) -> new Folded.OfInt(l << distance));
+            case SHR_INT -> shiftInt(left, right, (l, distance) -> new Folded.OfInt(l >> distance));
+            case USHR_INT -> shiftInt(left, right, (l, distance) -> new Folded.OfInt(l >>> distance));
+            case SHL_LONG -> shiftLong(left, right, (l, distance) -> new Folded.OfLong(l << distance));
+            case SHR_LONG -> shiftLong(left, right, (l, distance) -> new Folded.OfLong(l >> distance));
+            case USHR_LONG -> shiftLong(left, right, (l, distance) -> new Folded.OfLong(l >>> distance));
             case AND -> booleans(left, right, (l, r) -> new Folded.OfBoolean(l && r));
             case OR -> booleans(left, right, (l, r) -> new Folded.OfBoolean(l || r));
             // String constants are interned, so == compares their contents.
@@ -197,6 +235,36 @@ final class Constants {
         return left instanceof Folded.OfDouble l && right instanceof Folded.OfDouble r
                 ? operator.apply(l.value(), r.value())
                 : NONE;
+    }
+
+    /// An `int` shift: Java masks the distance with `0x1f`, whether it is an
+    /// `int` or a `long` (JLS 15.19).
+    private static Folded shiftInt(Folded left, Folded right, BiFunction<Integer, Integer, Folded> operator) {
+        if (!(left instanceof Folded.OfInt l)) {
+            return NONE;
+        }
+        Long distance =
+                switch (right) {
+                    case Folded.OfInt value -> (long) value.value();
+                    case Folded.OfLong value -> value.value();
+                    default -> null;
+                };
+        return distance == null ? NONE : operator.apply(l.value(), (int) (distance & 0x1f));
+    }
+
+    /// A `long` shift: Java masks the distance with `0x3f`, whether it is an
+    /// `int` or a `long` (JLS 15.19).
+    private static Folded shiftLong(Folded left, Folded right, BiFunction<Long, Integer, Folded> operator) {
+        if (!(left instanceof Folded.OfLong l)) {
+            return NONE;
+        }
+        Long distance =
+                switch (right) {
+                    case Folded.OfInt value -> (long) value.value();
+                    case Folded.OfLong value -> value.value();
+                    default -> null;
+                };
+        return distance == null ? NONE : operator.apply(l.value(), (int) (distance & 0x3f));
     }
 
     private static Folded booleans(Folded left, Folded right, BiFunction<Boolean, Boolean, Folded> operator) {

@@ -18,13 +18,18 @@ package me.supcheg.javafile.facts;
 public final class Prim {
     private Prim() {}
 
+    /// The markers of the integral primitive types, which a shift operator
+    /// accepts as its distance (JLS 15.19): `int`, `long`, `byte`, `short`
+    /// and `char`.
+    public sealed interface Integral permits Int, Long, Byte, Short, Char {}
+
     /// The marker of `int`.
-    public static final class Int {
+    public static final class Int implements Integral {
         private Int() {}
     }
 
     /// The marker of `long`.
-    public static final class Long {
+    public static final class Long implements Integral {
         private Long() {}
     }
 
@@ -44,17 +49,17 @@ public final class Prim {
     }
 
     /// The marker of `char`.
-    public static final class Char {
+    public static final class Char implements Integral {
         private Char() {}
     }
 
     /// The marker of `byte`.
-    public static final class Byte {
+    public static final class Byte implements Integral {
         private Byte() {}
     }
 
     /// The marker of `short`.
-    public static final class Short {
+    public static final class Short implements Integral {
         private Short() {}
     }
 }

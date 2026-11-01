@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import javax.annotation.processing.Generated;
 import me.supcheg.javafile.facts.Access;
@@ -32,6 +34,7 @@ import me.supcheg.javafile.facts.StaticFieldRef;
 import me.supcheg.javafile.facts.StaticMethodRef1;
 import me.supcheg.javafile.facts.SuperCtorRef1;
 import me.supcheg.javafile.facts.Supertypes;
+import me.supcheg.javafile.facts.Thrown;
 import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeShape;
 import me.supcheg.javafile.facts.UnsafeFacts;
@@ -56,7 +59,7 @@ import p.ProtG;
 ///
 /// @param <T> a type argument of [ProtG]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = ProtG.class, fingerprint = "0928ab4efdf1e7ab6b5788c749ffc248f7c910c2f27dfc7c427b70ce23bb5cc1", complete = true, format = 18)
+@GeneratedMetamodel(of = ProtG.class, fingerprint = "0928ab4efdf1e7ab6b5788c749ffc248f7c910c2f27dfc7c427b70ce23bb5cc1", complete = true, format = 19)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -67,7 +70,7 @@ public final class ProtG_<T> {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [ProtG] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.ProtG_"), "0928ab4efdf1e7ab6b5788c749ffc248f7c910c2f27dfc7c427b70ce23bb5cc1", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.ProtG"), List.of(new TypeParam("T", List.of())), List.of(ClassDesc.of("p.ProtBase"), ClassDesc.of("java.lang.Object")), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("adopted"), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("fixed"), Signature.of("get"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("pick", Param.fixed(ClassDesc.of("java.lang.Object")), Param.var(0)), Signature.of("pkg"), Signature.of("pub"), Signature.of("set", Param.var(0)), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("adoptedStatic"), Signature.of("reset"), Signature.of("spick", Param.fixed(ClassDesc.of("java.lang.Number")))), Set.of(Signature.of("ProtG", Param.var(0)), Signature.of("ProtG")), Set.of()), false, List.of(), List.of(), new ProtG_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.ProtG_"), "0928ab4efdf1e7ab6b5788c749ffc248f7c910c2f27dfc7c427b70ce23bb5cc1", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.ProtG"), List.of(new TypeParam("T", List.of())), List.of(ClassDesc.of("p.ProtBase"), ClassDesc.of("java.lang.Object")), List.of(), new Supertypes(List.of(Types.typeVar("T")), List.of()), new MethodTableTemplate(Set.of(), Set.of(Signature.of("adopted"), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("fixed"), Signature.of("get"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("pick", Param.fixed(ClassDesc.of("java.lang.Object")), Param.var(0)), Signature.of("pkg"), Signature.of("pub"), Signature.of("set", Param.var(0)), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("adoptedStatic"), Signature.of("reset"), Signature.of("spick", Param.fixed(ClassDesc.of("java.lang.Number")))), Set.of(Signature.of("ProtG", Param.var(0)), Signature.of("ProtG")), Set.of(), Map.ofEntries(Map.entry(Signature.of("ProtG", Param.var(0)), List.of(new Thrown(ClassDesc.of("java.io.IOException"), List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))), Map.entry(Signature.of("clone"), List.of(new Thrown(ClassDesc.of("java.lang.CloneNotSupportedException"), List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))), Map.entry(Signature.of("finalize"), List.of(new Thrown(ClassDesc.of("java.lang.Throwable"), List.of(ClassDesc.of("java.lang.Object")), Optional.empty()))), Map.entry(Signature.of("set", Param.var(0)), List.of(new Thrown(ClassDesc.of("java.io.IOException"), List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))), Map.entry(Signature.of("wait"), List.of(new Thrown(ClassDesc.of("java.lang.InterruptedException"), List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))), Map.entry(Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), List.of(new Thrown(ClassDesc.of("java.lang.InterruptedException"), List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))), Map.entry(Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), List.of(new Thrown(ClassDesc.of("java.lang.InterruptedException"), List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))))), false, List.of(), List.of(), new ProtG_Heritage());
 
         private Data() {
         }
