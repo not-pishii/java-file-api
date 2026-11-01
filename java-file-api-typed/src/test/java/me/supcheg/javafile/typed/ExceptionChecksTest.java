@@ -7,6 +7,7 @@ import me.supcheg.javafile.code.Exprs;
 import me.supcheg.javafile.code.ThrowStmt;
 import me.supcheg.javafile.facts.ClassToken;
 import me.supcheg.javafile.facts.MemberTraits;
+import me.supcheg.javafile.facts.MethodTable;
 import me.supcheg.javafile.facts.Prim;
 import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.TypeVarToken;
@@ -34,6 +35,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.lang.constant.ClassDesc;
+import java.lang.constant.ConstantDescs;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicReference;
@@ -695,6 +697,117 @@ class ExceptionChecksTest {
                                     c -> c.case_(Signal_.RED, read()).default_(literal(0)))))),
                     "static int m() { try { return switch (Signal.RED) { case RED -> " + READ + ";"
                             + " default -> 0; }; } catch (IOException e) { return 2; } }");
+        }
+    }
+
+    /// A multi-catch, `catch (A | B e)`: javac rejects alternatives related by subclassing, and the
+    /// typed layer computes the type of the binding — the least upper bound javac gives it, which the
+    /// source does not write — from the facts.
+    @Nested
+    class MultiCatch {
+
+        @Test
+        void aMultiCatchOfUncheckedExceptionsIsAccepted() {
+            asJavacAccepts(
+                    () -> intMethod(b -> b.try_(
+                                    h -> h.catch_(List.of(RuntimeException_.TOKEN, Error_.TOKEN), (_, _) -> {}),
+                                    t -> t.exec(call(literal("a"), String_.length)))
+                            .return_(literal(0))),
+                    "static int m() { try { \"a\".length(); }" + " catch (RuntimeException | Error e) { } return 0; }");
+        }
+
+        @Test
+        void alternativesRelatedBySubclassingAreRejectedThoughJavacRejectsThemToo() {
+            asJavac(
+                    IllegalArgumentException.class,
+                    () -> intMethod(b -> b.tryTerminated(
+                            h -> h.catch_(
+                                    List.of(IOException_.TOKEN, FileNotFoundException_.TOKEN),
+                                    (c, _) -> c.return_(literal(0))),
+                            t -> t.return_(read()))),
+                    "java.io.FileNotFoundException is a subclass of java.io.IOException",
+                    "static int m() { try { return " + READ + "; }"
+                            + " catch (IOException | FileNotFoundException e) { return 0; } }",
+                    "Alternatives in a multi-catch statement cannot be related by subclassing");
+        }
+
+        @Test
+        void aDuplicateAlternativeIsRelatedBySubclassingToo() {
+            asJavac(
+                    IllegalArgumentException.class,
+                    () -> intMethod(b -> b.tryTerminated(
+                            h -> h.catch_(
+                                    List.of(RuntimeException_.TOKEN, RuntimeException_.TOKEN),
+                                    (c, _) -> c.return_(literal(0))),
+                            t -> t.return_(literal(1)))),
+                    "java.lang.RuntimeException is a subclass of java.lang.RuntimeException",
+                    "static int m() { try { return 1; }"
+                            + " catch (RuntimeException | RuntimeException e) { return 0; } }",
+                    "Alternatives in a multi-catch statement cannot be related by subclassing");
+        }
+
+        @Test
+        void anAlternativeAPrecedingClauseCatchesIsRejected() {
+            asJavac(
+                    () -> intMethod(b -> b.tryTerminated(
+                            h -> h.catch_(IOException_.TOKEN, (c, _) -> c.return_(literal(0)))
+                                    .catch_(
+                                            List.of(FileNotFoundException_.TOKEN, InterruptedException_.TOKEN),
+                                            (c, _) -> c.return_(literal(1))),
+                            t -> t.return_(read()))),
+                    "which has already caught one of its alternatives",
+                    "static int m() { try { return " + READ + "; } catch (IOException e) { return 0; }"
+                            + " catch (FileNotFoundException | InterruptedException e) { return 1; } }",
+                    "exception java.io.FileNotFoundException has already been caught");
+        }
+
+        @Test
+        void anAlternativeTheTryBlockCannotThrowIsRejected() {
+            asJavac(
+                    () -> intMethod(b -> b.tryTerminated(
+                            h -> h.catch_(
+                                    List.of(IOException_.TOKEN, InterruptedException_.TOKEN),
+                                    (c, _) -> c.return_(literal(0))),
+                            t -> t.return_(read()))),
+                    "catch_ of java.lang.InterruptedException: the try block of tryTerminated in body of"
+                            + " static method m cannot throw this checked exception",
+                    "static int m() { try { return " + READ + "; }"
+                            + " catch (IOException | InterruptedException e) { return 0; } }",
+                    "exception java.lang.InterruptedException is never thrown in body of corresponding try"
+                            + " statement");
+        }
+
+        @Test
+        void aMultiCatchWithoutAnAlternativeIsRejected() {
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> intMethod(b -> b.tryTerminated(
+                            h -> h.catch_(List.of(), (c, _) -> c.return_(literal(0))), t -> t.return_(literal(1)))))
+                    .withMessageContaining("names no exception class");
+        }
+
+        @Test
+        void aMultiCatchWhoseAlternativesHaveNoCommonExceptionClassInTheFactsIsRejected() {
+            // these facts record only java.lang.Object above the alternatives, no exception class
+            ClassToken<IOException> io = UnsafeFacts.finalClassToken(
+                    Types.of(ClassDesc.of("java.io", "IOException")),
+                    List.of(ConstantDescs.CD_Object),
+                    MethodTable.EMPTY);
+            ClassToken<InterruptedException> interrupted = UnsafeFacts.finalClassToken(
+                    Types.of(ClassDesc.of("java.lang", "InterruptedException")),
+                    List.of(ConstantDescs.CD_Object),
+                    MethodTable.EMPTY);
+
+            assertThatIllegalArgumentException()
+                    .isThrownBy(() -> intMethod(b -> b.tryTerminated(
+                            h -> h.catch_(List.of(io, interrupted), (c, _) -> c.return_(literal(0))),
+                            t -> t.return_(literal(1)))))
+                    .withMessageContaining("binds no exception class")
+                    .withMessageContaining("java.io.IOException")
+                    .withMessageContaining("java.lang.InterruptedException")
+                    .withMessageContaining("the most specific class the facts name for the alternatives is"
+                            + " java.lang.Object, which is no Throwable")
+                    .withMessageContaining("found: java.io.IOException extends java.lang.Object")
+                    .withMessageContaining("java.lang.InterruptedException extends java.lang.Object");
         }
     }
 

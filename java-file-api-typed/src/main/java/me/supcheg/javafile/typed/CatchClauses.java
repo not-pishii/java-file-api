@@ -70,7 +70,45 @@ final class CatchClauses<B extends Block<?, B>> {
         Var<E> binding = new Var<>(type, Var.Role.Fixed.CAUGHT_EXCEPTION, block);
         fill.accept(block, binding);
         phase = new Phase.Open(new TryClauses(
-                Stream.concat(before.catches().stream(), Stream.of(new Instr.Catch(caught, binding, block)))
+                Stream.concat(
+                                before.catches().stream(),
+                                Stream.of(new Instr.Catch(List.of(caught), caught, binding, block)))
+                        .toList(),
+                before.finallyBlock()));
+    }
+
+    /// Adds a multi-catch clause, `catch (A | B v) { ... }`.
+    ///
+    /// The binding is typed by the least upper bound of `types`, which Java does not write in the
+    /// source and computes from the facts ([Exceptions#leastUpperBound]): the alternatives themselves
+    /// are what the clause names and what javac checks.
+    ///
+    /// @param types the alternatives, in the order they are written
+    /// @param fill builds the block of the clause, given the block and the binding
+    /// @throws IllegalArgumentException if `types` is empty; two alternatives are the same class or
+    ///     related by subclassing, which javac rejects (JLS 14.20); or the facts name no class common
+    ///     to the alternatives, so the binding has no type to check the body with
+    /// @throws IllegalStateException if a clause added before catches one of the alternatives, or if
+    ///     this is not the time to add a clause
+    void catch_(
+            List<? extends ClassToken<? extends Throwable>> types,
+            BiConsumer<? super B, ? super Var<? extends Throwable>> fill) {
+        List<ClassToken<? extends Throwable>> alternatives = List.copyOf(types);
+        if (alternatives.isEmpty()) {
+            throw new IllegalArgumentException("a catch_ of the " + statement()
+                    + " names no exception class: a catch clause catches at least one (JLS 14.20)");
+        }
+        String clause = "catch_ of " + Exceptions.alternatives(alternatives);
+        TryClauses before = open(clause);
+        Exceptions.requireUnrelated(alternatives, statement());
+        Exceptions.requireNotCaught(alternatives, before.types(), statement());
+        ClassToken<? extends Throwable> type = Exceptions.leastUpperBound(alternatives, statement());
+        phase = new Phase.Building(clause);
+        B block = enclosing.child("catch block of " + form);
+        Var<? extends Throwable> binding = new Var<>(type, Var.Role.Fixed.CAUGHT_EXCEPTION, block);
+        fill.accept(block, binding);
+        phase = new Phase.Open(new TryClauses(
+                Stream.concat(before.catches().stream(), Stream.of(new Instr.Catch(alternatives, type, binding, block)))
                         .toList(),
                 before.finallyBlock()));
     }

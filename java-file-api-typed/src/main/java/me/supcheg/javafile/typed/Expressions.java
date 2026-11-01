@@ -939,9 +939,7 @@ public final class Expressions extends ExpressionArities {
     // Class literals and plain `instanceof`
     // ------------------------------------------------------------------
 
-    /// A class literal, `type.class`, of type `Class<T>`. A primitive type
-    /// has a class literal too, but of the box it has no expression of its
-    /// own; its token is not accepted here.
+    /// A class literal, `type.class`, of type `Class<T>`.
     ///
     /// @param type the type
     /// @param <T> the type
@@ -949,6 +947,20 @@ public final class Expressions extends ExpressionArities {
     /// @throws IllegalStateException if `type` is written off the scope of its type parameters
     public static <T> Expr<Class<T>> classLiteral(RefToken<T> type) {
         return Expr.of(new Node.ClassLiteral(type), new Class_<>(type).token);
+    }
+
+    /// A class literal of a primitive type, `int.class`, of type
+    /// `Class<Integer>`: Java boxes the primitive for the type argument
+    /// (JLS 15.8.2), so the literal is of the token of its box, which the
+    /// primitive token holds ([PrimitiveToken#boxed()]).
+    ///
+    /// @param type the primitive type
+    /// @param <P> the marker of the primitive type
+    /// @param <B> the box of the primitive type
+    /// @param <A> the array type of the primitive type
+    /// @return the class literal
+    public static <P, B, A> Expr<Class<B>> classLiteral(PrimitiveToken<P, B, A> type) {
+        return Expr.of(new Node.ClassLiteral(type), new Class_<>(type.boxed()).token);
     }
 
     /// A plain `instanceof` test, `operand instanceof type`, without a

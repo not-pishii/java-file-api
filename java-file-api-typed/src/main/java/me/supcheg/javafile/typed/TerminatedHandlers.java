@@ -2,6 +2,7 @@ package me.supcheg.javafile.typed;
 
 import me.supcheg.javafile.facts.ClassToken;
 
+import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
@@ -36,6 +37,26 @@ public final class TerminatedHandlers<R, B extends Block<R, B>> {
     public <E extends Throwable> TerminatedHandlers<R, B> catch_(
             ClassToken<E> type, BiFunction<? super B, ? super Var<E>, Terminated<R>> body) {
         clauses.catch_(type, (block, binding) -> enclosing.fillEnding(block, b -> body.apply(b, binding)));
+        return this;
+    }
+
+    /// Adds a multi-catch clause, `catch (A | B v) { body }`, whose block ends. It catches `A`, `B`
+    /// and their subclasses, and the binding `v` is of their least upper bound, computed from the
+    /// facts: Java writes no type for it (JLS 14.20), and the body sees the binding as the
+    /// `Throwable` it is.
+    ///
+    /// @param types the exception classes, in the order they are written
+    /// @param body builds the `catch` block, given the binding; it must end
+    /// @return this
+    /// @throws IllegalArgumentException if `types` is empty; two alternatives are the same class or
+    ///     related by subclassing, which javac rejects; or the facts name no class common to them, so
+    ///     the binding has no type to check the body with
+    /// @throws IllegalStateException if a clause added before catches one of the alternatives; if
+    ///     called while another clause is being built, or after the `try` block was
+    public TerminatedHandlers<R, B> catch_(
+            List<? extends ClassToken<? extends Throwable>> types,
+            BiFunction<? super B, ? super Var<? extends Throwable>, Terminated<R>> body) {
+        clauses.catch_(types, (block, binding) -> enclosing.fillEnding(block, b -> body.apply(b, binding)));
         return this;
     }
 

@@ -1,8 +1,13 @@
 package me.supcheg.javafile.typed;
 
 import me.supcheg.javafile.Invariants;
+import me.supcheg.javafile.facts.ClassToken;
 import me.supcheg.javafile.facts.Invocable;
+import me.supcheg.javafile.facts.MethodTable;
+import me.supcheg.javafile.facts.TypeNames;
 import me.supcheg.javafile.facts.TypeToken;
+import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.type.Types;
 
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
@@ -291,6 +296,116 @@ final class Exceptions {
         }
     }
 
+    /// Rejects a multi-catch one of whose alternatives a preceding clause
+    /// already catches (JLS 11.2.3).
+    ///
+    /// @param types the alternatives of the clause
+    /// @param preceding the types of the clauses before it
+    /// @param statement the statement and where it is, for the message
+    /// @throws IllegalStateException if a preceding clause catches one of the alternatives
+    static void requireNotCaught(
+            List<? extends ClassToken<? extends Throwable>> types,
+            List<ExceptionType.OfClass> preceding,
+            String statement) {
+        for (ClassToken<? extends Throwable> type : types) {
+            ExceptionType.OfClass alternative = new ExceptionType.OfClass(type);
+            List<ExceptionType.OfClass> catching = preceding.stream()
+                    .filter(earlier -> earlier.covers(alternative))
+                    .toList();
+            if (!catching.isEmpty()) {
+                throw new IllegalStateException("catch_ of " + alternatives(types) + " of the " + statement
+                        + " comes after the catch_ of " + catching.getFirst() + ", which has already caught one"
+                        + " of its alternatives: a catch_ of a subclass goes before the one of its superclass"
+                        + " (JLS 11.2.3)");
+            }
+        }
+    }
+
+    /// Rejects a multi-catch whose alternatives are related by subclassing:
+    /// javac rejects `catch (A | B e)` when `A` and `B` are the same class, or
+    /// one is a subclass of the other (JLS 14.20), and a duplicate is the
+    /// degenerate case of that.
+    ///
+    /// @param types the alternatives of the clause
+    /// @param statement the statement and where it is, for the message
+    /// @throws IllegalArgumentException if two alternatives are related by subclassing
+    static void requireUnrelated(List<? extends ClassToken<? extends Throwable>> types, String statement) {
+        for (int i = 0; i < types.size(); i++) {
+            for (int j = i + 1; j < types.size(); j++) {
+                ClassToken<? extends Throwable> first = types.get(i);
+                ClassToken<? extends Throwable> second = types.get(j);
+                if (first.isSubclassOf(second.erasure())) {
+                    throw related(types, statement, first, second);
+                }
+                if (second.isSubclassOf(first.erasure())) {
+                    throw related(types, statement, second, first);
+                }
+            }
+        }
+    }
+
+    private static IllegalArgumentException related(
+            List<? extends ClassToken<? extends Throwable>> types,
+            String statement,
+            ClassToken<? extends Throwable> subclass,
+            ClassToken<? extends Throwable> superclass) {
+        return new IllegalArgumentException("catch_ of " + alternatives(types) + " of the " + statement + ": "
+                + subclass + " is a subclass of " + superclass
+                + " — alternatives in a multi-catch cannot be related by subclassing, as javac rejects them"
+                + " (JLS 14.20)");
+    }
+
+    /// The least upper bound of the alternatives of a multi-catch: the most
+    /// specific class on the superclass chain of every one of them. Java
+    /// does not write it in the source — the clause names the alternatives
+    /// alone — but the binding and the body are typed by it (JLS 14.20).
+    ///
+    /// The facts name classes through their superclass chains alone: when the
+    /// most specific common class is no `Throwable`, or no class is common to
+    /// them at all, the clause is refused rather than bound to a type that
+    /// could make the rendered body fail in javac.
+    ///
+    /// @param types the alternatives of the clause, at least one
+    /// @param statement the statement and where it is, for the message
+    /// @return the common class
+    /// @throws IllegalArgumentException if the class common to every alternative is no exception class,
+    ///     or there is none
+    static ClassToken<? extends Throwable> leastUpperBound(
+            List<? extends ClassToken<? extends Throwable>> types, String statement) {
+        List<ClassDesc> chain = chain(types.getFirst());
+        // Each chain ends in java.lang.Object, so a common class is always there to fall back on.
+        ClassDesc common = chain.stream()
+                .filter(candidate -> types.stream().allMatch(type -> chain(type).contains(candidate)))
+                .findFirst()
+                .orElse(chain.getLast());
+        ClassToken<Throwable> candidate = UnsafeFacts.finalClassToken(
+                Types.of(common), chain.subList(chain.indexOf(common) + 1, chain.size()), MethodTable.EMPTY);
+        if (candidate.isSubclassOf(ConstantDescs.CD_Throwable)) {
+            return candidate;
+        }
+        throw new IllegalArgumentException("catch_ of " + alternatives(types) + " of the " + statement
+                + " binds no exception class: the most specific class the facts name for the alternatives is "
+                + TypeNames.describe(common) + ", which is no Throwable (found: "
+                + types.stream()
+                        .map(type -> type + " extends " + describeChain(type))
+                        .collect(Collectors.joining("; "))
+                + "), so the body could not be checked against the type javac gives the binding (JLS 14.20)");
+    }
+
+    /// The alternatives, as they are written: `java.io.IOException | java.lang.InterruptedException`.
+    static String alternatives(List<? extends ClassToken<?>> types) {
+        return types.stream().map(Object::toString).collect(Collectors.joining(" | "));
+    }
+
+    private static List<ClassDesc> chain(ClassToken<?> type) {
+        return Stream.concat(Stream.of(type.erasure()), type.superclasses().stream())
+                .toList();
+    }
+
+    private static String describeChain(ClassToken<?> type) {
+        return type.superclasses().stream().map(TypeNames::describe).collect(Collectors.joining(", "));
+    }
+
     /// Rejects a `catch` clause of `statement`, or of a `try` nested in it,
     /// that can catch nothing: one of a checked exception class that its
     /// `try` block cannot throw — it throws neither a subclass nor a
@@ -322,7 +437,9 @@ final class Exceptions {
             Instr.Catch clause = catches.get(i);
             List<ExceptionType.OfClass> preceding = types(catches.subList(0, i));
             if (known) {
-                requireCatchable(clause(clause), preceding, thrown, body);
+                // javac checks every alternative of a multi-catch: each may be one the block cannot throw.
+                clause.types()
+                        .forEach(type -> requireCatchable(new ExceptionType.OfClass(type), preceding, thrown, body));
             }
             requireCatchableIn(
                     clause.body(),
@@ -380,12 +497,18 @@ final class Exceptions {
                 .toList();
     }
 
+    /// The type of the binding of `clause`: the clause itself for a single catch, the least upper
+    /// bound of the alternatives for a multi-catch.
     private static ExceptionType.OfClass clause(Instr.Catch clause) {
         return new ExceptionType.OfClass(clause.type());
     }
 
+    /// Every alternative of every clause, in order: what the clauses catch together.
     private static List<ExceptionType.OfClass> types(List<Instr.Catch> catches) {
-        return catches.stream().map(Exceptions::clause).toList();
+        return catches.stream()
+                .flatMap(clause -> clause.types().stream())
+                .<ExceptionType.OfClass>map(ExceptionType.OfClass::new)
+                .toList();
     }
 
     // ------------------------------------------------------------------
@@ -429,7 +552,8 @@ final class Exceptions {
                         .flatMap(i -> thrown(
                                 catches.get(i).body(),
                                 rethrows.with(
-                                        catches.get(i).var(), rethrown(types.get(i), types.subList(0, i), thrown)))));
+                                        catches.get(i).var(),
+                                        rethrown(clause(catches.get(i)), types(catches.subList(0, i)), thrown)))));
     }
 
     /// What the `try` block of `statement` throws with the initializers of its resources and the

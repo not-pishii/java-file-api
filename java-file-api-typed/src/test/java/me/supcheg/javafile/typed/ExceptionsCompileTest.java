@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.io.StringReader;
 import java.lang.constant.ClassDesc;
+import java.util.List;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
 import static me.supcheg.javafile.typed.Expressions.addInt;
@@ -119,6 +120,12 @@ class ExceptionsCompileTest {
         var either = cb.throwing(IOException_.TOKEN, InterruptedException_.TOKEN)
                 .declareVoidStaticMethod("either", PrimitiveToken.BOOLEAN);
 
+        // static int multi(boolean io) {
+        //     try { if (io) { throw new IOException("io"); } throw new InterruptedException("interrupted"); }
+        //     catch (IOException | InterruptedException e) { return e.getMessage().length(); }
+        // }
+        var multi = cb.declareStaticMethod("multi", PrimitiveToken.INT, PrimitiveToken.BOOLEAN);
+
         // static void closed(StringReader r) throws IOException { ((Reader) r).close(); }
         var closed = cb.throwing(IOException_.TOKEN).declareVoidStaticMethod("closed", StringReader_.TOKEN);
 
@@ -210,6 +217,14 @@ class ExceptionsCompileTest {
                 either,
                 (b, io) -> b.ifElse(
                         io, t -> t.throw_(new_(IOException_.new_)), e -> e.throw_(new_(InterruptedException_.new_))));
+        bodies.define(
+                multi,
+                (b, io) -> b.tryTerminated(
+                        h -> h.catch_(
+                                List.of(IOException_.TOKEN, InterruptedException_.TOKEN),
+                                (c, e) -> c.return_(call(call(e, Throwable_.getMessage), String_.length))),
+                        t -> t.if_(io, x -> x.throw_(new_(IOException_.new_String, literal("io"))))
+                                .throw_(new_(InterruptedException_.new_String, literal("interrupted")))));
         bodies.define(closed, (b, r) -> b.exec(voidCall(r, Reader_.close)).end());
         bodies.define(
                 closedAndCaught,
@@ -257,6 +272,15 @@ class ExceptionsCompileTest {
         assertThat(compiled.invoke("nested", false)).isEqualTo(2);
         assertThat(compiled.invoke("recovered", "a")).isEqualTo((int) 'a');
         assertThat(compiled.invoke("anything", "not a number")).isEqualTo(-1);
+    }
+
+    @Test
+    void aMultiCatchNamesItsAlternativesAndBindsTheirLeastUpperBound() throws Throwable {
+        assertThat(compiled.source())
+                .contains(" catch (IOException | InterruptedException v1) {")
+                .contains("return v1.getMessage().length();");
+        assertThat(compiled.invoke("multi", true)).isEqualTo("io".length());
+        assertThat(compiled.invoke("multi", false)).isEqualTo("interrupted".length());
     }
 
     @Test

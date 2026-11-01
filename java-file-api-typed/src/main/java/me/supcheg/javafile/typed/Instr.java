@@ -159,7 +159,22 @@ sealed interface Instr {
     }
 
     /// A `catch` clause of a [Try].
-    record Catch(ClassToken<? extends Throwable> type, Var<?> var, Block<?, ?> body) {}
+    ///
+    /// @param types the exception classes it names, in the order they are written: one for a single
+    ///     `catch`, several for a multi-catch
+    /// @param type the type of the binding: for several alternatives their least upper bound, which is
+    ///     not written in the source (JLS 14.20)
+    /// @param var the binding
+    /// @param body the block of the clause
+    record Catch(
+            List<ClassToken<? extends Throwable>> types,
+            ClassToken<? extends Throwable> type,
+            Var<?> var,
+            Block<?, ?> body) {
+        public Catch {
+            types = List.copyOf(types);
+        }
+    }
 
     /// An untyped core statement from `Unsafe`.
     record Raw(Stmt stmt) implements Plain {}

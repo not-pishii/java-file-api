@@ -557,16 +557,6 @@ class NegativeCompileTest {
     }
 
     @Test
-    void aClassLiteralOfAPrimitiveIsNotAnExpressionOfTheLayer() {
-        assertRejected(
-                "ClassLiteralOfAPrimitive",
-                "void use() { classLiteral(PrimitiveToken.INT); }",
-                "method classLiteral in class me.supcheg.javafile.typed.Expressions cannot be applied to given types",
-                "me.supcheg.javafile.facts.PrimitiveToken<me.supcheg.javafile.facts.Prim.Int,java.lang.Integer,int[]>"
-                        + " cannot be converted to me.supcheg.javafile.facts.RefToken<T>");
-    }
-
-    @Test
     void aPrimitiveCondWithReferenceBranchesDoesNotCompile() {
         // M2, the static half: a primitive conditional takes branches of exactly its type
         assertRejected(

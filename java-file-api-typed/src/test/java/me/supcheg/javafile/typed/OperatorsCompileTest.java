@@ -6,6 +6,7 @@ import me.supcheg.javafile.facts.Prim;
 import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.testing.CompiledClasses;
+import me.supcheg.javafile.typed.testfacts.java.lang.Class_;
 import me.supcheg.javafile.typed.testfacts.java.lang.Object_;
 import me.supcheg.javafile.typed.testfacts.java.lang.String_;
 import org.junit.jupiter.api.Test;
@@ -37,6 +38,7 @@ import static me.supcheg.javafile.typed.Expressions.preIncrement;
 import static me.supcheg.javafile.typed.Expressions.shlInt;
 import static me.supcheg.javafile.typed.Expressions.shlLong;
 import static me.supcheg.javafile.typed.Expressions.shrInt;
+import static me.supcheg.javafile.typed.Expressions.staticCall;
 import static me.supcheg.javafile.typed.Expressions.unaryPlusInt;
 import static me.supcheg.javafile.typed.Expressions.ushrInt;
 import static me.supcheg.javafile.typed.Expressions.ushrLong;
@@ -280,6 +282,65 @@ class OperatorsCompileTest {
 
         assertThat(compiled.source()).contains("return String.class;");
         assertThat(compiled.invoke("type")).isEqualTo(String.class);
+    }
+
+    @Test
+    void everyPrimitiveClassLiteralIsOfItsBoxAndRuns() throws Throwable {
+        CompiledClasses compiled = CompiledClasses.of(TypedJavaFile.class_(
+                UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedClassSpec() {
+                    @Override
+                    public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
+                        var intType = cb.declareStaticMethod("intType", new Class_<>(PrimitiveToken.INT.boxed()).token);
+                        var longType =
+                                cb.declareStaticMethod("longType", new Class_<>(PrimitiveToken.LONG.boxed()).token);
+                        var doubleType =
+                                cb.declareStaticMethod("doubleType", new Class_<>(PrimitiveToken.DOUBLE.boxed()).token);
+                        var floatType =
+                                cb.declareStaticMethod("floatType", new Class_<>(PrimitiveToken.FLOAT.boxed()).token);
+                        var booleanType = cb.declareStaticMethod(
+                                "booleanType", new Class_<>(PrimitiveToken.BOOLEAN.boxed()).token);
+                        var charType =
+                                cb.declareStaticMethod("charType", new Class_<>(PrimitiveToken.CHAR.boxed()).token);
+                        var byteType =
+                                cb.declareStaticMethod("byteType", new Class_<>(PrimitiveToken.BYTE.boxed()).token);
+                        var shortType =
+                                cb.declareStaticMethod("shortType", new Class_<>(PrimitiveToken.SHORT.boxed()).token);
+                        var accepts = cb.declareStaticMethod("accepts", Class_.ANY, Class_.ANY);
+                        var passed = cb.declareStaticMethod("passed", Class_.ANY);
+                        var bodies = cb.bodies();
+                        bodies.define(intType, b -> b.return_(classLiteral(PrimitiveToken.INT)));
+                        bodies.define(longType, b -> b.return_(classLiteral(PrimitiveToken.LONG)));
+                        bodies.define(doubleType, b -> b.return_(classLiteral(PrimitiveToken.DOUBLE)));
+                        bodies.define(floatType, b -> b.return_(classLiteral(PrimitiveToken.FLOAT)));
+                        bodies.define(booleanType, b -> b.return_(classLiteral(PrimitiveToken.BOOLEAN)));
+                        bodies.define(charType, b -> b.return_(classLiteral(PrimitiveToken.CHAR)));
+                        bodies.define(byteType, b -> b.return_(classLiteral(PrimitiveToken.BYTE)));
+                        bodies.define(shortType, b -> b.return_(classLiteral(PrimitiveToken.SHORT)));
+                        bodies.define(accepts, (b, type) -> b.return_(type));
+                        bodies.define(passed, b -> b.return_(staticCall(accepts, classLiteral(PrimitiveToken.INT))));
+                        return bodies;
+                    }
+                }));
+
+        assertThat(compiled.source())
+                .contains("return int.class;")
+                .contains("return long.class;")
+                .contains("return double.class;")
+                .contains("return float.class;")
+                .contains("return boolean.class;")
+                .contains("return char.class;")
+                .contains("return byte.class;")
+                .contains("return short.class;")
+                .contains("accepts((Class<?>) int.class)");
+        assertThat(compiled.invoke("intType")).isEqualTo(int.class);
+        assertThat(compiled.invoke("longType")).isEqualTo(long.class);
+        assertThat(compiled.invoke("doubleType")).isEqualTo(double.class);
+        assertThat(compiled.invoke("floatType")).isEqualTo(float.class);
+        assertThat(compiled.invoke("booleanType")).isEqualTo(boolean.class);
+        assertThat(compiled.invoke("charType")).isEqualTo(char.class);
+        assertThat(compiled.invoke("byteType")).isEqualTo(byte.class);
+        assertThat(compiled.invoke("shortType")).isEqualTo(short.class);
+        assertThat(compiled.invoke("passed")).isEqualTo(int.class);
     }
 
     @Test

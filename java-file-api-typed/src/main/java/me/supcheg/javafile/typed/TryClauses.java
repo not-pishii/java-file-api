@@ -13,9 +13,13 @@ record TryClauses(List<Instr.Catch> catches, Instr.Finally finallyBlock) {
         catches = List.copyOf(catches);
     }
 
-    /// The types of the `catch` clauses, in order.
+    /// The types of the `catch` clauses, in order: every alternative of a multi-catch, since each of
+    /// them is caught.
     List<ExceptionType.OfClass> types() {
-        return catches.stream().map(c -> new ExceptionType.OfClass(c.type())).toList();
+        return catches.stream()
+                .flatMap(clause -> clause.types().stream())
+                .<ExceptionType.OfClass>map(ExceptionType.OfClass::new)
+                .toList();
     }
 
     /// What the `try` block does with a checked exception thrown in it: a

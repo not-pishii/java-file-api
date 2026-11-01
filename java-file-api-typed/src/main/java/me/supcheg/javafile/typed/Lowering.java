@@ -609,11 +609,15 @@ final class Lowering {
     private CatchClause catchClause(Instr.Catch clause) {
         names.push();
         try {
-            mentions(clause.type());
+            clause.types().forEach(this::mentions);
             String name = declare(clause.var());
             CodeBody catchBody = lowerBlock(clause.body().instrs());
             return new CatchClause(
-                    NonEmptyList.copyOf(List.of(written(clause.type()).typeRef())), name, catchBody);
+                    NonEmptyList.copyOf(clause.types().stream()
+                            .map(type -> written(type).typeRef())
+                            .toList()),
+                    name,
+                    catchBody);
         } finally {
             names.pop();
         }
