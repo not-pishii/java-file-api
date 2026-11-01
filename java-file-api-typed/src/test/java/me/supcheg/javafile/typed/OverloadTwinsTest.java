@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
-import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.literalNull;
 import static me.supcheg.javafile.typed.Expressions.new_;
@@ -157,13 +156,13 @@ class OverloadTwinsTest {
         OpenClassToken<TwinP<String>> strings = twin(String_.TOKEN);
 
         assertThatExceptionOfType(FactLookupException.class)
-                .isThrownBy(() -> render(strings, t -> call(t, mOfT(strings, String_.TOKEN), literal("x"))))
+                .isThrownBy(() -> render(strings, t -> t.call(mOfT(strings, String_.TOKEN), literal("x"))))
                 .withMessageContaining("declared m(#0) and is m(java.lang.String) here")
                 .withMessageContaining("as the overload declared m(java.lang.String) is")
                 .withMessageContaining("in fixtures.Twin<java.lang.String>")
                 .satisfies(e -> assertThat(e.similar()).containsExactly("m(java.lang.String)"));
         assertThatExceptionOfType(FactLookupException.class)
-                .isThrownBy(() -> render(strings, t -> call(t, mOfString(strings), literal("x"))))
+                .isThrownBy(() -> render(strings, t -> t.call(mOfString(strings), literal("x"))))
                 .withMessageContaining("declared m(java.lang.String) and is m(java.lang.String) here")
                 .withMessageContaining("as the overload declared m(#0) is");
     }
@@ -173,12 +172,12 @@ class OverloadTwinsTest {
         OpenClassToken<TwinP<Integer>> integers = twin(Integer_.TOKEN);
         OpenClassToken<TwinP<CharSequence>> sequences = twin(CharSequence_.TOKEN);
 
-        assertThat(render(integers, t -> call(t, mOfT(integers, Integer_.TOKEN), literalNull(Integer_.TOKEN))))
+        assertThat(render(integers, t -> t.call(mOfT(integers, Integer_.TOKEN), literalNull(Integer_.TOKEN))))
                 .contains("v0.m((Integer) null)");
-        assertThat(render(integers, t -> call(t, mOfString(integers), literal("x"))))
+        assertThat(render(integers, t -> t.call(mOfString(integers), literal("x"))))
                 .contains("v0.m(\"x\")");
         // m(String) is more specific for a String: the argument is cast to what m(T) takes
-        assertThat(render(sequences, t -> call(t, mOfT(sequences, CharSequence_.TOKEN), literal("x"))))
+        assertThat(render(sequences, t -> t.call(mOfT(sequences, CharSequence_.TOKEN), literal("x"))))
                 .contains("v0.m((CharSequence) \"x\")");
     }
 
@@ -189,13 +188,12 @@ class OverloadTwinsTest {
         OpenClassToken<TwinP<CharSequence>> sequences =
                 UnsafeFacts.openClassToken(lone, TokenArg.exact(CharSequence_.TOKEN));
 
-        assertThat(render(sequences, t -> call(t, mOfT(sequences, CharSequence_.TOKEN), literal("x"))))
+        assertThat(render(sequences, t -> t.call(mOfT(sequences, CharSequence_.TOKEN), literal("x"))))
                 .contains("v0.m(\"x\")");
         // a fact that does not say it is declared by the type parameter is not the method of the table
         assertThat(render(
                         sequences,
-                        t -> call(
-                                t,
+                        t -> t.call(
                                 UnsafeInvocables.method(
                                         sequences, "m", String_.TOKEN, CharSequence_.TOKEN, MemberTraits.DEFAULT),
                                 literal("x"))))
@@ -238,10 +236,10 @@ class OverloadTwinsTest {
 
         assertThatExceptionOfType(FactLookupException.class)
                 .isThrownBy(() ->
-                        render(integers, t -> call(t, nOfTs(integers, Integer_.TOKEN), noneOf(Integer_.TOKEN))))
+                        render(integers, t -> t.call(nOfTs(integers, Integer_.TOKEN), noneOf(Integer_.TOKEN))))
                 .withMessageContaining("declared n(#0[]) and is n(java.lang.Integer[]) here")
                 .withMessageContaining("as the overload declared n(java.lang.Integer[]) is");
-        assertThat(render(strings, t -> call(t, nOfTs(strings, String_.TOKEN), noneOf(String_.TOKEN))))
+        assertThat(render(strings, t -> t.call(nOfTs(strings, String_.TOKEN), noneOf(String_.TOKEN))))
                 .contains("v0.n((String[]) null)");
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> UnsafeInvocables.method(
@@ -278,21 +276,19 @@ class OverloadTwinsTest {
     @Test
     void aGenericMethodGivenTheTypeOfItsOverloadIsRejected() {
         assertThatExceptionOfType(FactLookupException.class)
-                .isThrownBy(() -> render(PLAIN_TOKEN, p -> call(p, genericG(PLAIN_TOKEN, String_.TOKEN), literal("x"))))
+                .isThrownBy(() -> render(PLAIN_TOKEN, p -> p.call(genericG(PLAIN_TOKEN, String_.TOKEN), literal("x"))))
                 .withMessageContaining("declared g(java.lang.Object) and is g(java.lang.String) here")
                 .withMessageContaining("as the overload declared g(java.lang.String) is in fixtures.Plain");
     }
 
     @Test
     void aGenericMethodGivenAnotherTypeAndItsOverloadAreCalled() {
-        assertThat(render(
-                        PLAIN_TOKEN, p -> call(p, genericG(PLAIN_TOKEN, Integer_.TOKEN), literalNull(Integer_.TOKEN))))
+        assertThat(render(PLAIN_TOKEN, p -> p.call(genericG(PLAIN_TOKEN, Integer_.TOKEN), literalNull(Integer_.TOKEN))))
                 .contains("v0.<Integer>g((Integer) null)");
         // javac prefers g(String) to <T> g(T) for a String: the fact of g(String) is what it resolves
         assertThat(render(
                         PLAIN_TOKEN,
-                        p -> call(
-                                p,
+                        p -> p.call(
                                 UnsafeInvocables.method(
                                         PLAIN_TOKEN, "g", String_.TOKEN, String_.TOKEN, MemberTraits.DEFAULT),
                                 literal("x"))))
@@ -336,7 +332,7 @@ class OverloadTwinsTest {
                             UnsafeInvocables.ctor(
                                     strings, UnsafeFacts.param(String_.TOKEN, Param.var(0)), MemberTraits.DEFAULT),
                             literal("x"));
-                    return call(made, mOfString(strings), s);
+                    return made.call(mOfString(strings), s);
                 }))
                 .withMessageContaining("declared Twin(#0) and is Twin(java.lang.String) here")
                 .withMessageContaining("as the overload declared Twin(java.lang.String) is");
@@ -345,7 +341,7 @@ class OverloadTwinsTest {
                             UnsafeInvocables.ctor(
                                     integers, UnsafeFacts.param(Integer_.TOKEN, Param.var(0)), MemberTraits.DEFAULT),
                             literalNull(Integer_.TOKEN));
-                    return call(made, mOfString(integers), s);
+                    return made.call(mOfString(integers), s);
                 }))
                 .contains("new Twin<Integer>((Integer) null).m(v0)");
     }
@@ -366,9 +362,9 @@ class OverloadTwinsTest {
                 UnsafeFacts.openClassToken(sub, TokenArg.exact(Integer_.TOKEN));
 
         // SubTwin<String> has m(T) and m(String), both m(String): only Twin<String> has one
-        assertThat(render(subOfString, s -> call(s, mOfT(baseOfString, String_.TOKEN), literal("x"))))
+        assertThat(render(subOfString, s -> s.call(mOfT(baseOfString, String_.TOKEN), literal("x"))))
                 .contains("((Twin<String>) v0).m(\"x\")");
-        assertThat(render(subOfInteger, s -> call(s, mOfT(baseOfInteger, Integer_.TOKEN), literalNull(Integer_.TOKEN))))
+        assertThat(render(subOfInteger, s -> s.call(mOfT(baseOfInteger, Integer_.TOKEN), literalNull(Integer_.TOKEN))))
                 .contains("v0.m((Integer) null)");
     }
 
@@ -379,9 +375,9 @@ class OverloadTwinsTest {
         OpenClassToken<SubPlainP> sub =
                 UnsafeFacts.openClassToken(shape(SUB_PLAIN, List.of(), instanceMethods(GENERIC_G_AND_G_OF_STRING)));
 
-        assertThat(render(sub, s -> call(s, genericG(base, String_.TOKEN), literal("x"))))
+        assertThat(render(sub, s -> s.call(genericG(base, String_.TOKEN), literal("x"))))
                 .contains("((Plain) v0).<String>g(\"x\")");
-        assertThat(render(sub, s -> call(s, genericG(base, Integer_.TOKEN), literalNull(Integer_.TOKEN))))
+        assertThat(render(sub, s -> s.call(genericG(base, Integer_.TOKEN), literalNull(Integer_.TOKEN))))
                 .contains("v0.<Integer>g((Integer) null)");
     }
 
@@ -392,10 +388,10 @@ class OverloadTwinsTest {
                 UnsafeFacts.openClassToken(shape(PLAIN, List.of(), instanceMethods(Set.of(Signature.of("g", OBJECT)))));
         TypeVarToken<PlainP> x = UnsafeFacts.typeVarToken(Types.typeVar("X"), PLAIN);
 
-        assertThat(render(x, v -> call(v, genericG(base, String_.TOKEN), literal("x"))))
+        assertThat(render(x, v -> v.call(genericG(base, String_.TOKEN), literal("x"))))
                 .contains("((Plain) v0).<String>g(\"x\")");
         // no arguments, no overload to tell from
-        assertThat(render(x, v -> call(v, UnsafeInvocables.method(base, "name", String_.TOKEN, MemberTraits.DEFAULT))))
+        assertThat(render(x, v -> v.call(UnsafeInvocables.method(base, "name", String_.TOKEN, MemberTraits.DEFAULT))))
                 .contains("return v0.name();");
     }
 }

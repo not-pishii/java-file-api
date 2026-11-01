@@ -16,7 +16,6 @@ import java.util.List;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
 import static me.supcheg.javafile.typed.Expressions.addInt;
-import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -39,7 +38,7 @@ class TypedRecordCompileTest {
                 var bodies = rb.bodies();
                 bodies.define(compact, (b, self, x0, y0) -> b.end());
                 bodies.defineDelegating(empty, List.of(literal(0), literal(0)), (b, self) -> b.end());
-                bodies.define(sum, (b, self) -> b.return_(addInt(call(self, x.accessor()), call(self, y.accessor()))));
+                bodies.define(sum, (b, self) -> b.return_(addInt(self.call(x.accessor()), self.call(y.accessor()))));
                 return bodies;
             }
         });

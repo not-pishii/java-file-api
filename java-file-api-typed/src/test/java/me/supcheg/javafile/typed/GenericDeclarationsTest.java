@@ -21,7 +21,6 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;
 
-import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.TypedJavaFile.typeParam;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -86,10 +85,8 @@ class GenericDeclarationsTest {
                         var bodies = rb.bodies();
                         bodies.define(
                                 same,
-                                (b, self) -> b.return_(call(
-                                        call(self, first.accessor()),
-                                        Object_.equals_Object,
-                                        call(self, second.accessor()))));
+                                (b, self) -> b.return_(self.call(first.accessor())
+                                        .call(Object_.equals_Object, self.call(second.accessor()))));
                         bodies.define(compareTo, (b, self, other) -> b.return_(literal(0)));
                         return bodies;
                     }

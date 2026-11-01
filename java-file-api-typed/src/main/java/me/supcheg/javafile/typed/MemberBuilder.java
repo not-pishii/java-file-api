@@ -539,8 +539,8 @@ public abstract sealed class MemberBuilder<Self, S> extends MemberBuilderArities
     /// var read = cb.throwing(IOException_.TOKEN).declareMethod("read", PrimitiveToken.INT);
     /// var twice = cb.throwing(IOException_.TOKEN).declareMethod("twice", PrimitiveToken.INT);
     /// var bodies = cb.bodies();
-    /// bodies.define(read, (b, self) -> b.return_(call(field(self, in), InputStream_.read)));
-    /// bodies.define(twice, (b, self) -> b.return_(call(self, read)));
+    /// bodies.define(read, (b, self) -> b.return_(self.field(in).call(InputStream_.read)));
+    /// bodies.define(twice, (b, self) -> b.return_(self.call(read)));
     /// ```
     ///
     /// The clause is part of the fact the declaration returns: a call of

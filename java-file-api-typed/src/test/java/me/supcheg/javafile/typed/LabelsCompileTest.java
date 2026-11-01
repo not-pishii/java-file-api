@@ -18,7 +18,6 @@ import java.util.function.Consumer;
 
 import static me.supcheg.javafile.typed.Expressions.addInt;
 import static me.supcheg.javafile.typed.Expressions.assign;
-import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.enumConstant;
 import static me.supcheg.javafile.typed.Expressions.eqInt;
 import static me.supcheg.javafile.typed.Expressions.eqRef;
@@ -205,7 +204,7 @@ class LabelsCompileTest {
                                                     (body, value, _) -> body.if_(
                                                                     eqRef(value, literal("skip")), t -> t.break_(label))
                                                             .exec(assign(
-                                                                    count, addInt(count, call(value, String_.length)))))
+                                                                    count, addInt(count, value.call(String_.length)))))
                                             .return_(count);
                                 }));
                         bodies.define(forever, b -> {

@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;
 
-import static me.supcheg.javafile.typed.Expressions.field;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.literalNull;
 import static me.supcheg.javafile.typed.TypedJavaFile.typeParam;
@@ -801,7 +800,10 @@ class NestedTypesTest {
                                 var read = members.declareMethod("read", String_.TOKEN);
                                 var bodies = members.bodies();
                                 bodies.define(created, (b, self) -> b.end());
-                                bodies.define(read, (b, self) -> b.return_(field(handle.outerThis(), label)));
+                                bodies.define(
+                                        read,
+                                        (b, self) ->
+                                                b.return_(handle.outerThis().field(label)));
                                 ctor[0] = created;
                                 return bodies;
                             }

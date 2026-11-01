@@ -8,8 +8,6 @@ import gen.facts.p.T2_;
 import me.supcheg.javafile.facts.FactLookupException;
 import me.supcheg.javafile.facts.processor.harness.Typed;
 
-import static me.supcheg.javafile.typed.Expressions.call;
-import static me.supcheg.javafile.typed.Expressions.field;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.new_;
 import static me.supcheg.javafile.typed.Expressions.staticCall;
@@ -25,7 +23,7 @@ public final class Rejected {
     public static void aGenericMethodGivenTheTypeOfItsOverloadIsRejected(Typed typed) {
         assertThatExceptionOfType(FactLookupException.class)
                 .isThrownBy(() -> typed.render(
-                        String_.TOKEN, Ov_.TOKEN, o -> call(o, Ov_.m_T(String_.TOKEN), literal("x"))))
+                        String_.TOKEN, Ov_.TOKEN, o -> o.call(Ov_.m_T(String_.TOKEN), literal("x"))))
                 .withMessageContaining("declared m(java.lang.Object) and is m(java.lang.String) here")
                 .withMessageContaining("as the overload declared m(java.lang.String) is in p.Ov");
     }
@@ -33,7 +31,7 @@ public final class Rejected {
     public static void aBoundedGenericMethodGivenTheTypeOfItsOverloadIsRejected(Typed typed) {
         assertThatExceptionOfType(FactLookupException.class)
                 .isThrownBy(() -> typed.render(
-                        String_.TOKEN, Ov_.TOKEN, o -> call(o, Ov_.c_T(String_.TOKEN), literal("x"))))
+                        String_.TOKEN, Ov_.TOKEN, o -> o.call(Ov_.c_T(String_.TOKEN), literal("x"))))
                 .withMessageContaining("declared c(java.lang.Comparable) and is c(java.lang.String) here");
     }
 
@@ -54,12 +52,12 @@ public final class Rejected {
     public static void aMethodOfATypeParameterAndTheOverloadOfItsArgumentAreRejectedBothWays(Typed typed) {
         assertThatExceptionOfType(FactLookupException.class)
                 .isThrownBy(() -> typed.render(
-                        String_.TOKEN, STRINGS.token, t -> call(t, STRINGS.m_T, literal("x"))))
+                        String_.TOKEN, STRINGS.token, t -> t.call(STRINGS.m_T, literal("x"))))
                 .withMessageContaining("declared m(#0) and is m(java.lang.String) here")
                 .withMessageContaining("as the overload declared m(java.lang.String) is in p.T2<java.lang.String>");
         assertThatExceptionOfType(FactLookupException.class)
                 .isThrownBy(() -> typed.render(
-                        String_.TOKEN, STRINGS.token, t -> call(t, STRINGS.m_String, literal("x"))))
+                        String_.TOKEN, STRINGS.token, t -> t.call(STRINGS.m_String, literal("x"))))
                 .withMessageContaining("as the overload declared m(#0) is in p.T2<java.lang.String>");
     }
 
@@ -69,19 +67,19 @@ public final class Rejected {
 
         assertThatExceptionOfType(FactLookupException.class)
                 .isThrownBy(() -> typed.render(
-                        String_.TOKEN, strings.token, t -> call(t, strings.m_T, literal("x"))))
+                        String_.TOKEN, strings.token, t -> t.call(strings.m_T, literal("x"))))
                 .withMessageContaining("declared m(#0) and is m(java.lang.String) here");
     }
 
     public static void aConstructorOfATypeParameterAndTheOverloadOfItsArgumentAreRejectedBothWays(Typed typed) {
         assertThatExceptionOfType(FactLookupException.class)
                 .isThrownBy(() -> typed.render(
-                        String_.TOKEN, String_.TOKEN, s -> field(new_(STRINGS.new_T, s), STRINGS.made)))
+                        String_.TOKEN, String_.TOKEN, s -> new_(STRINGS.new_T, s).field(STRINGS.made)))
                 .withMessageContaining("declared T2(#0) and is T2(java.lang.String) here")
                 .withMessageContaining("as the overload declared T2(java.lang.String) is in p.T2<java.lang.String>");
         assertThatExceptionOfType(FactLookupException.class)
                 .isThrownBy(() -> typed.render(
-                        String_.TOKEN, String_.TOKEN, s -> field(new_(STRINGS.new_String, s), STRINGS.made)))
+                        String_.TOKEN, String_.TOKEN, s -> new_(STRINGS.new_String, s).field(STRINGS.made)))
                 .withMessageContaining("as the overload declared T2(#0) is");
     }
 }

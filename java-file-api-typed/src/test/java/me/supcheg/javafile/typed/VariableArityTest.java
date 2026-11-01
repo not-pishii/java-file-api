@@ -24,7 +24,6 @@ import org.junit.jupiter.api.Test;
 import java.lang.constant.ClassDesc;
 import java.util.List;
 
-import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.newArray;
 import static me.supcheg.javafile.typed.Expressions.new_;
@@ -90,7 +89,7 @@ class VariableArityTest {
                 bodies.define(
                         go,
                         (b, self) -> b.return_(
-                                call(self, spread.method(), newArray(ArrayToken.of(String_.TOKEN), literal(2)))));
+                                self.call(spread.method(), newArray(ArrayToken.of(String_.TOKEN), literal(2)))));
                 return bodies;
             }
         }));
@@ -194,10 +193,10 @@ class VariableArityTest {
                 var bodies = cb.bodies();
                 bodies.define(
                         m,
-                        b -> b.return_(call(
-                                new_(Gathered_.new_),
-                                Gathered_.count_ObjectArray,
-                                newArray(ArrayToken.of(String_.TOKEN), literal(1)))));
+                        b -> b.return_(new_(Gathered_.new_)
+                                .call(
+                                        Gathered_.count_ObjectArray,
+                                        newArray(ArrayToken.of(String_.TOKEN), literal(1)))));
                 return bodies;
             }
         }));

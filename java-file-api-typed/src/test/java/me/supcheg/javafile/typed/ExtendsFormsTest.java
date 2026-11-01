@@ -33,13 +33,10 @@ import java.util.concurrent.Callable;
 import static me.supcheg.javafile.typed.Expressions.addInt;
 import static me.supcheg.javafile.typed.Expressions.assignField;
 import static me.supcheg.javafile.typed.Expressions.assignStaticField;
-import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.concat;
-import static me.supcheg.javafile.typed.Expressions.field;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.new_;
 import static me.supcheg.javafile.typed.Expressions.staticField;
-import static me.supcheg.javafile.typed.Expressions.voidCall;
 import static me.supcheg.javafile.typed.JavacVerdict.classAsJavac;
 import static me.supcheg.javafile.typed.JavacVerdict.classUnlikeJavac;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -151,8 +148,8 @@ class ExtendsFormsTest {
                                 literal("none"),
                                 ignored -> b.try_(
                                                 handlers -> handlers.catch_(asException, cb.self(), (c, e) -> {}),
-                                                t -> t.exec(call(self, call.method())))
-                                        .return_(call(asException.apply(self), Throwable_.getMessage))));
+                                                t -> t.exec(self.call(call.method())))
+                                        .return_(asException.apply(self).call(Throwable_.getMessage))));
                 return bodies;
             }
         }));
@@ -180,8 +177,8 @@ class ExtendsFormsTest {
                 bodies.initialize(ran, literal("no"));
                 bodies.define(
                         run,
-                        (b, self) -> b.exec(
-                                        assignField(self, ran, call(cb.asSuper().apply(self), Thread_.getName)))
+                        (b, self) -> b.exec(assignField(
+                                        self, ran, cb.asSuper().apply(self).call(Thread_.getName)))
                                 .end());
                 return bodies;
             }
@@ -217,18 +214,16 @@ class ExtendsFormsTest {
                         joined,
                         (b, self) -> b.exec(bodies.superCall(self, Mid_.put_String, literal("k")))
                                 .exec(bodies.superCall(self, Mid_.put_String_String, literal("k"), literal("v")))
-                                .exec(voidCall(asJoining.apply(self), Joining_.put_String, literal("k")))
+                                .exec(asJoining.apply(self).voidCall(Joining_.put_String, literal("k")))
                                 .return_(concat(
                                         bodies.superCall(self, Mid_.join_String_String, literal("a"), literal("b")),
-                                        call(
-                                                asJoining.apply(self),
-                                                Joining_.join_String_String,
-                                                literal("c"),
-                                                literal("d")))));
+                                        asJoining
+                                                .apply(self)
+                                                .call(Joining_.join_String_String, literal("c"), literal("d")))));
                 bodies.define(
                         runs,
                         (b, self) -> b.exec(bodies.superCall(self, Mid_.put_String_String, literal("k"), literal("v")))
-                                .return_(field(cb.asSuper().apply(self), Mid_.runs)));
+                                .return_(cb.asSuper().apply(self).field(Mid_.runs)));
                 bodies.define(risk.method(), (b, self) -> b.end());
                 return bodies;
             }

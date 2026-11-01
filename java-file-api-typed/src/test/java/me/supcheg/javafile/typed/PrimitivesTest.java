@@ -23,12 +23,8 @@ import static com.google.testing.compile.CompilationSubject.assertThat;
 import static me.supcheg.javafile.typed.Expressions.addInt;
 import static me.supcheg.javafile.typed.Expressions.assignAt;
 import static me.supcheg.javafile.typed.Expressions.assignField;
-import static me.supcheg.javafile.typed.Expressions.at;
 import static me.supcheg.javafile.typed.Expressions.box;
-import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.eqRef;
-import static me.supcheg.javafile.typed.Expressions.field;
-import static me.supcheg.javafile.typed.Expressions.length;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.literalNull;
 import static me.supcheg.javafile.typed.Expressions.narrowCheckedLongToInt;
@@ -37,7 +33,6 @@ import static me.supcheg.javafile.typed.Expressions.neqRef;
 import static me.supcheg.javafile.typed.Expressions.newArray;
 import static me.supcheg.javafile.typed.Expressions.staticCall;
 import static me.supcheg.javafile.typed.Expressions.unbox;
-import static me.supcheg.javafile.typed.Expressions.voidCall;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
@@ -51,7 +46,7 @@ class PrimitivesTest {
     @Test
     void primitiveReceiverOfACallIsRejectedWithABoxHint() {
         assertThatIllegalArgumentException()
-                .isThrownBy(() -> call(literal(1), Object_.toString))
+                .isThrownBy(() -> literal(1).call(Object_.toString))
                 .withMessageContaining("primitive type int")
                 .withMessageContaining(BOX_HINT);
     }
@@ -61,7 +56,7 @@ class PrimitivesTest {
         VoidMethodRef0<Object> notify = UnsafeInvocables.voidMethod(Object_.TOKEN, "notify", MemberTraits.DEFAULT);
 
         assertThatIllegalArgumentException()
-                .isThrownBy(() -> voidCall(literal(true), notify))
+                .isThrownBy(() -> literal(true).voidCall(notify))
                 .withMessageContaining("primitive type boolean");
     }
 
@@ -71,7 +66,7 @@ class PrimitivesTest {
         MutableFieldRef<Object, String> write = UnsafeFacts.mutableField(Object_.TOKEN, "name", String_.TOKEN);
 
         assertThatIllegalArgumentException()
-                .isThrownBy(() -> field(literal(1L), read))
+                .isThrownBy(() -> literal(1L).field(read))
                 .withMessageContaining("primitive type long");
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> assignField(literal(1.0), write, literal("x")))
@@ -80,7 +75,7 @@ class PrimitivesTest {
 
     @Test
     void boxedReceiverIsAccepted() {
-        call(box(PrimitiveToken.INT, literal(1)), Object_.toString);
+        box(PrimitiveToken.INT, literal(1)).call(Object_.toString);
     }
 
     @Test
@@ -126,14 +121,16 @@ class PrimitivesTest {
                                         ints,
                                         newArray(ints, literal(3)),
                                         array -> b.exec(assignAt(ints, array, literal(0), literal(7)))
-                                                .return_(addInt(at(ints, array, literal(0)), length(ints, array)))));
+                                                .return_(addInt(
+                                                        array.arrayAccess(ints, literal(0)), array.length(ints)))));
                         bodies.define(
                                 stringArray,
                                 b -> b.let(
                                         strings,
                                         newArray(strings, literal(2)),
                                         array -> b.exec(assignAt(strings, array, literal(1), literal("abc")))
-                                                .return_(call(at(strings, array, literal(1)), String_.length))));
+                                                .return_(array.arrayAccess(strings, literal(1))
+                                                        .call(String_.length))));
                         bodies.define(checked, b -> b.return_(narrowCheckedLongToInt(literal(5L))));
                         bodies.define(truncated, b -> b.return_(narrowTruncatingLongToInt(literal(5L))));
                         return bodies;

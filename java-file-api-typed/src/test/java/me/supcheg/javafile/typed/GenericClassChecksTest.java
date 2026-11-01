@@ -21,8 +21,6 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;
 
-import static me.supcheg.javafile.typed.Expressions.call;
-import static me.supcheg.javafile.typed.Expressions.castChecked;
 import static me.supcheg.javafile.typed.Expressions.lambda;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.literalNull;
@@ -206,7 +204,7 @@ class GenericClassChecksTest {
                             // the receiver of a call is cast to the owner of the method, a type of T
                             return b.let(
                                     PrimitiveToken.INT,
-                                    call(literalNull(comparable.token), comparable.compareTo_T, literalNull(t)),
+                                    literalNull(comparable.token).call(comparable.compareTo_T, literalNull(t)),
                                     v -> b.end());
                         }
                     }),
@@ -653,7 +651,7 @@ class GenericClassChecksTest {
                     .isThrownBy(() -> probe(new TypedJavaFile.TypedGenericClassSpec1<>() {
                         @Override
                         public <Self, T> MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<T> t) {
-                            castChecked(t, literalNull(Object_.TOKEN));
+                            literalNull(Object_.TOKEN).cast(t);
                             return Unreached.here();
                         }
                     }))
@@ -662,7 +660,7 @@ class GenericClassChecksTest {
                     .isThrownBy(() -> probe(new TypedJavaFile.TypedGenericClassSpec1<>() {
                         @Override
                         public <Self, T> MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<T> t) {
-                            castChecked(h.self(), literalNull(Object_.TOKEN));
+                            literalNull(Object_.TOKEN).cast(h.self());
                             return Unreached.here();
                         }
                     }))

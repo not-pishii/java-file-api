@@ -20,7 +20,7 @@ import java.util.function.Function;
 ///
 /// ```java
 /// public static void anAdoptedMethodIsCalled(Typed typed) {
-///     assertThat(typed.apply(String_.TOKEN, Pub_.TOKEN, pub -> call(pub, Pub_.near), new Pub()))
+///     assertThat(typed.apply(String_.TOKEN, Pub_.TOKEN, pub -> pub.call(Pub_.near), new Pub()))
 ///             .isEqualTo("near");
 /// }
 /// ```

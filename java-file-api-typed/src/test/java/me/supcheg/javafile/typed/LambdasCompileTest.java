@@ -48,13 +48,10 @@ import static me.supcheg.javafile.typed.Expressions.addInt;
 import static me.supcheg.javafile.typed.Expressions.assign;
 import static me.supcheg.javafile.typed.Expressions.assignAt;
 import static me.supcheg.javafile.typed.Expressions.assignField;
-import static me.supcheg.javafile.typed.Expressions.at;
 import static me.supcheg.javafile.typed.Expressions.box;
-import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.concat;
 import static me.supcheg.javafile.typed.Expressions.cond;
 import static me.supcheg.javafile.typed.Expressions.eqRef;
-import static me.supcheg.javafile.typed.Expressions.field;
 import static me.supcheg.javafile.typed.Expressions.gtInt;
 import static me.supcheg.javafile.typed.Expressions.lambda;
 import static me.supcheg.javafile.typed.Expressions.lambdaBlock;
@@ -63,7 +60,6 @@ import static me.supcheg.javafile.typed.Expressions.newArray;
 import static me.supcheg.javafile.typed.Expressions.new_;
 import static me.supcheg.javafile.typed.Expressions.staticCall;
 import static me.supcheg.javafile.typed.Expressions.unbox;
-import static me.supcheg.javafile.typed.Expressions.voidCall;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /// Positive end-to-end tests of lambdas (§6.4): a lambda typed by the `sam`
@@ -163,8 +159,8 @@ class LambdasCompileTest {
                     length,
                     (b, s) -> b.let(
                             LENGTH_FN.token,
-                            lambda(LENGTH_FN.sam, v -> box(PrimitiveToken.INT, call(v, String_.length))),
-                            f -> b.return_(unbox(PrimitiveToken.INT, call(f, LENGTH_FN.apply_T, s)))));
+                            lambda(LENGTH_FN.sam, v -> box(PrimitiveToken.INT, v.call(String_.length))),
+                            f -> b.return_(unbox(PrimitiveToken.INT, f.call(LENGTH_FN.apply_T, s)))));
             bodies.define(
                     blockLength,
                     (b, s) -> b.let(
@@ -173,41 +169,40 @@ class LambdasCompileTest {
                                     LENGTH_FN.sam,
                                     (lb, v) -> lb.let(
                                             PrimitiveToken.INT,
-                                            call(v, String_.length),
+                                            v.call(String_.length),
                                             n -> lb.return_(box(PrimitiveToken.INT, n)))),
-                            f -> b.return_(unbox(PrimitiveToken.INT, call(f, LENGTH_FN.apply_T, s)))));
+                            f -> b.return_(unbox(PrimitiveToken.INT, f.call(LENGTH_FN.apply_T, s)))));
             bodies.define(constant, (b, s) -> b.return_(lambda(STRINGS.sam, () -> s)));
             bodies.define(blockConstant, (b, s) -> b.return_(lambdaBlock(STRINGS.sam, lb -> lb.return_(s))));
             bodies.define(
                     twice,
                     (b, sb) -> b.let(
                             Runnable_.TOKEN,
-                            lambda(Runnable_.sam, () -> call(sb, StringBuilder_.append_String, literal("x"))),
-                            r -> b.exec(voidCall(r, Runnable_.run))
-                                    .exec(voidCall(r, Runnable_.run))
-                                    .return_(call(sb, StringBuilder_.toString))));
+                            lambda(Runnable_.sam, () -> sb.call(StringBuilder_.append_String, literal("x"))),
+                            r -> b.exec(r.voidCall(Runnable_.run))
+                                    .exec(r.voidCall(Runnable_.run))
+                                    .return_(sb.call(StringBuilder_.toString))));
             bodies.define(
                     blockTwice,
                     (b, sb) -> b.let(
                             Runnable_.TOKEN,
                             lambdaBlock(
                                     Runnable_.sam,
-                                    lb -> lb.exec(call(sb, StringBuilder_.append_String, literal("x")))
-                                            .exec(call(sb, StringBuilder_.append_String, literal("y")))
+                                    lb -> lb.exec(sb.call(StringBuilder_.append_String, literal("x")))
+                                            .exec(sb.call(StringBuilder_.append_String, literal("y")))
                                             .end()),
-                            r -> b.exec(voidCall(r, Runnable_.run))
-                                    .exec(voidCall(r, Runnable_.run))
-                                    .return_(call(sb, StringBuilder_.toString))));
+                            r -> b.exec(r.voidCall(Runnable_.run))
+                                    .exec(r.voidCall(Runnable_.run))
+                                    .return_(sb.call(StringBuilder_.toString))));
             bodies.define(
-                    sink,
-                    (b, sb) -> b.return_(lambda(STRING_SINK.sam, v -> call(sb, StringBuilder_.append_String, v))));
+                    sink, (b, sb) -> b.return_(lambda(STRING_SINK.sam, v -> sb.call(StringBuilder_.append_String, v))));
             bodies.define(
                     nonEmptySink,
                     (b, sb) -> b.return_(lambdaBlock(
                             STRING_SINK.sam,
                             (lb, v) -> lb.if_(
-                                            gtInt(call(v, String_.length), literal(0)),
-                                            t -> t.exec(call(sb, StringBuilder_.append_String, v)))
+                                            gtInt(v.call(String_.length), literal(0)),
+                                            t -> t.exec(sb.call(StringBuilder_.append_String, v)))
                                     .end())));
             bodies.define(sum, b -> b.return_(lambda(IntBinaryOperator_.sam, (x, y) -> addInt(x, y))));
             bodies.define(
@@ -215,12 +210,12 @@ class LambdasCompileTest {
                     b -> b.return_(lambdaBlock(IntBinaryOperator_.sam, (lb, x, y) -> lb.return_(addInt(x, y)))));
             bodies.define(
                     appender,
-                    b -> b.return_(lambda(APPENDER.sam, (sb, v) -> call(sb, StringBuilder_.append_String, v))));
+                    b -> b.return_(lambda(APPENDER.sam, (sb, v) -> sb.call(StringBuilder_.append_String, v))));
             bodies.define(
                     blockAppender,
                     b -> b.return_(lambdaBlock(
                             APPENDER.sam,
-                            (lb, sb, v) -> lb.exec(call(sb, StringBuilder_.append_String, v))
+                            (lb, sb, v) -> lb.exec(sb.call(StringBuilder_.append_String, v))
                                     .return_())));
             bodies.define(join, b -> b.return_(lambda(JOIN3.sam, (x, y, z) -> concat(concat(x, y), z))));
             bodies.define(
@@ -229,13 +224,13 @@ class LambdasCompileTest {
             bodies.define(
                     append2,
                     b -> b.return_(
-                            lambda(APPEND2.sam, (sb, x, y) -> call(sb, StringBuilder_.append_String, concat(x, y)))));
+                            lambda(APPEND2.sam, (sb, x, y) -> sb.call(StringBuilder_.append_String, concat(x, y)))));
             bodies.define(
                     blockAppend2,
                     b -> b.return_(lambdaBlock(
                             APPEND2.sam,
-                            (lb, sb, x, y) -> lb.exec(call(sb, StringBuilder_.append_String, x))
-                                    .exec(call(sb, StringBuilder_.append_String, y))
+                            (lb, sb, x, y) -> lb.exec(sb.call(StringBuilder_.append_String, x))
+                                    .exec(sb.call(StringBuilder_.append_String, y))
                                     .end())));
         };
     }
@@ -270,63 +265,60 @@ class LambdasCompileTest {
         var upper = cb.declareField("upper", STRING_OP.token);
         var shout = cb.declareMethod("shout", String_.TOKEN, String_.TOKEN);
         return bodies -> {
-            bodies.initialize(upper, lambda(STRING_OP.sam, v -> call(v, String_.toUpperCase)));
+            bodies.initialize(upper, lambda(STRING_OP.sam, v -> v.call(String_.toUpperCase)));
             bodies.define(
                     all,
                     (b, list) -> b.let(
                             StringBuilder_.TOKEN,
                             new_(StringBuilder_.new_),
-                            sb -> b.exec(voidCall(
-                                            list,
+                            sb -> b.exec(list.voidCall(
                                             STRING_ITERABLE.forEach_Consumer,
-                                            lambda(STRING_SINK.sam, v -> call(sb, StringBuilder_.append_String, v))))
-                                    .return_(call(sb, StringBuilder_.toString))));
+                                            lambda(STRING_SINK.sam, v -> sb.call(StringBuilder_.append_String, v))))
+                                    .return_(sb.call(StringBuilder_.toString))));
             bodies.define(
                     descending,
-                    (b, list) -> b.exec(voidCall(
-                                    list,
+                    (b, list) -> b.exec(list.voidCall(
                                     STRING_LIST.sort_Comparator,
-                                    lambda(STRING_ORDER.sam, (x, y) -> call(y, String_.compareTo_String, x))))
+                                    lambda(STRING_ORDER.sam, (x, y) -> y.call(String_.compareTo_String, x))))
                             .end());
             bodies.define(
                     received,
-                    (b, s) -> b.return_(call(
-                            lambda(LENGTH_FN.sam, v -> box(PrimitiveToken.INT, call(v, String_.length))),
-                            LENGTH_FN.apply_T,
-                            s)));
+                    (b, s) -> b.return_(lambda(LENGTH_FN.sam, v -> box(PrimitiveToken.INT, v.call(String_.length)))
+                            .call(LENGTH_FN.apply_T, s)));
             bodies.define(
                     asObject,
                     (b, s) -> b.let(
                             Object_.TOKEN,
-                            lambda(Runnable_.sam, () -> call(s, String_.trim)),
+                            lambda(Runnable_.sam, () -> s.call(String_.trim)),
                             o -> b.return_(Expressions.and(
                                     staticCall(Tasks_.isRunnable_Object, o),
                                     staticCall(
                                             Tasks_.isRunnable_Object,
-                                            lambda(Runnable_.sam, () -> call(s, String_.trim)))))));
+                                            lambda(Runnable_.sam, () -> s.call(String_.trim)))))));
             bodies.define(
                     whichRunnable,
-                    (b, s) -> b.return_(staticCall(
-                            Tasks_.which_Runnable, lambda(Runnable_.sam, () -> call(s, String_.trim)))));
+                    (b, s) -> b.return_(
+                            staticCall(Tasks_.which_Runnable, lambda(Runnable_.sam, () -> s.call(String_.trim)))));
             bodies.define(
                     whichSupplier,
-                    (b, s) -> b.return_(staticCall(
-                            Tasks_.which_Supplier, lambda(STRINGS.sam, () -> call(s, String_.trim)))));
+                    (b, s) -> b.return_(
+                            staticCall(Tasks_.which_Supplier, lambda(STRINGS.sam, () -> s.call(String_.trim)))));
             bodies.define(
                     whichCallable,
                     (b, s) -> b.return_(staticCall(
                             Tasks_.which_Callable,
-                            lambda(new Callable_<>(String_.TOKEN).sam, () -> call(s, String_.trim)))));
+                            lambda(new Callable_<>(String_.TOKEN).sam, () -> s.call(String_.trim)))));
             bodies.define(
                     sameTwice,
                     (b, flag) -> b.let(
                             Runnable_.TOKEN,
                             cond(
                                     flag,
-                                    lambda(Runnable_.sam, () -> call(literal("a"), String_.trim)),
-                                    lambda(Runnable_.sam, () -> call(literal("b"), String_.trim)),
+                                    lambda(Runnable_.sam, () -> literal("a").call(String_.trim)),
+                                    lambda(Runnable_.sam, () -> literal("b").call(String_.trim)),
                                     Runnable_.TOKEN),
-                            r -> b.return_(eqRef(r, lambda(Runnable_.sam, () -> call(literal("c"), String_.trim))))));
+                            r -> b.return_(eqRef(
+                                    r, lambda(Runnable_.sam, () -> literal("c").call(String_.trim))))));
             bodies.define(curried, b -> b.return_(lambda(CURRIED.sam, v -> lambda(STRINGS.sam, () -> v))));
             bodies.define(
                     nested,
@@ -336,7 +328,7 @@ class LambdasCompileTest {
                                     String_.TOKEN,
                                     concat(s, literal("!")),
                                     t -> lb.return_(lambdaBlock(STRINGS.sam, inner -> inner.return_(concat(t, s))))))));
-            bodies.define(shout, (b, self, s) -> b.return_(call(field(self, upper), STRING_FN.apply_T, s)));
+            bodies.define(shout, (b, self, s) -> b.return_(self.field(upper).call(STRING_FN.apply_T, s)));
         };
     }
 
@@ -354,7 +346,7 @@ class LambdasCompileTest {
         var suppliers = cb.declareStaticMethod("suppliers", new List_<>(STRINGS.token).token, STRING_LIST.token);
         return bodies -> {
             bodies.initialize(name, literal("none"));
-            bodies.define(named, (b, self) -> b.return_(lambda(STRINGS.sam, () -> field(self, name))));
+            bodies.define(named, (b, self) -> b.return_(lambda(STRINGS.sam, () -> self.field(name))));
             bodies.define(renamer, (b, self) -> b.return_(lambda(STRING_SINK.sam, v -> assignField(self, name, v))));
             bodies.define(
                     suppliers,
@@ -364,8 +356,7 @@ class LambdasCompileTest {
                             out -> b.forEach(
                                             String_.TOKEN,
                                             list,
-                                            (loop, v, _) -> loop.exec(call(
-                                                    out,
+                                            (loop, v, _) -> loop.exec(out.call(
                                                     new List_<>(STRINGS.token).add_E,
                                                     lambdaBlock(
                                                             STRINGS.sam,
@@ -398,10 +389,10 @@ class LambdasCompileTest {
                                     INT_CALL.sam,
                                     () -> box(
                                             PrimitiveToken.INT,
-                                            call(new_(StringReader_.new_String, s), StringReader_.read))),
+                                            new_(StringReader_.new_String, s).call(StringReader_.read))),
                             c -> b.tryTerminated(
                                     h -> h.catch_(Exception_.TOKEN, (handler, _) -> handler.return_(literal(-1))),
-                                    t -> t.return_(unbox(PrimitiveToken.INT, call(c, INT_CALL.call))))));
+                                    t -> t.return_(unbox(PrimitiveToken.INT, c.call(INT_CALL.call))))));
             bodies.define(
                     readOrDefault,
                     (b, s) -> b.return_(lambdaBlock(
@@ -412,7 +403,7 @@ class LambdasCompileTest {
                                             (handler, _) -> handler.return_(box(PrimitiveToken.INT, literal(-1)))),
                                     t -> t.return_(box(
                                             PrimitiveToken.INT,
-                                            call(new_(StringReader_.new_String, s), StringReader_.read)))))));
+                                            new_(StringReader_.new_String, s).call(StringReader_.read)))))));
         };
     }
 
@@ -432,7 +423,8 @@ class LambdasCompileTest {
         return bodies -> {
             bodies.define(
                     held,
-                    (b, s) -> b.return_(call(new_(Holder_.new_Supplier, lambda(STRINGS.sam, () -> s)), Holder_.get)));
+                    (b, s) -> b.return_(new_(Holder_.new_Supplier, lambda(STRINGS.sam, () -> s))
+                            .call(Holder_.get)));
             bodies.define(
                     element,
                     (b, sb) -> b.let(
@@ -444,9 +436,9 @@ class LambdasCompileTest {
                                             literal(0),
                                             lambda(
                                                     Runnable_.sam,
-                                                    () -> call(sb, StringBuilder_.append_String, literal("x")))))
-                                    .exec(voidCall(at(runnables, a, literal(0)), Runnable_.run))
-                                    .return_(call(sb, StringBuilder_.toString))));
+                                                    () -> sb.call(StringBuilder_.append_String, literal("x")))))
+                                    .exec(a.arrayAccess(runnables, literal(0)).voidCall(Runnable_.run))
+                                    .return_(sb.call(StringBuilder_.toString))));
             bodies.define(
                     thrown,
                     (b, s) -> b.let(
@@ -455,8 +447,8 @@ class LambdasCompileTest {
                             t -> b.tryTerminated(
                                     h -> h.catch_(
                                             IOException_.TOKEN,
-                                            (handler, e) -> handler.return_(call(e, Throwable_.getMessage))),
-                                    body -> body.exec(voidCall(t, IO_THROWER.run))
+                                            (handler, e) -> handler.return_(e.call(Throwable_.getMessage))),
+                                    body -> body.exec(t.voidCall(IO_THROWER.run))
                                             .return_(literal("ran")))));
         };
     }

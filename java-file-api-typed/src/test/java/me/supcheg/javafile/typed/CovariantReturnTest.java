@@ -34,7 +34,6 @@ import java.lang.constant.ClassDesc;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
 import static me.supcheg.javafile.typed.Expressions.assignAt;
-import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.eqRef;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.newArray;
@@ -79,12 +78,14 @@ class CovariantReturnTest {
                     var origin = cb.declareMethod("origin", Object_.TOKEN);
                     var bodies = cb.bodies();
                     bodies.define(get.method(), (b, self) -> b.return_(literal("mine")));
-                    bodies.define(own, (b, self) -> b.return_(call(call(self, get.method()), String_.length)));
+                    bodies.define(
+                            own, (b, self) -> b.return_(self.call(get.method()).call(String_.length)));
                     bodies.define(
                             worded,
-                            (b, self) ->
-                                    b.return_(call(call(asWorded.apply(self), Worded_.get), CharSequence_.length)));
-                    bodies.define(origin, (b, self) -> b.return_(call(asOrigin.apply(self), Origin_.get)));
+                            (b, self) -> b.return_(
+                                    asWorded.apply(self).call(Worded_.get).call(CharSequence_.length)));
+                    bodies.define(
+                            origin, (b, self) -> b.return_(asOrigin.apply(self).call(Origin_.get)));
                     return bodies;
                 }
             }));
@@ -111,7 +112,7 @@ class CovariantReturnTest {
                     var twice = cb.declareMethod("twice", cb.self());
                     var bodies = cb.bodies();
                     bodies.define(clone, (b, self) -> b.return_(self));
-                    bodies.define(twice, (b, self) -> b.return_(call(call(self, clone), clone)));
+                    bodies.define(twice, (b, self) -> b.return_(self.call(clone).call(clone)));
                     return bodies;
                 }
             }));
@@ -144,7 +145,7 @@ class CovariantReturnTest {
                     bodies.define(make, (b, self) -> b.return_(literal("mine")));
                     bodies.define(words, (b, self) -> b.return_(new_(strings.new_)));
                     bodies.define(asSuper, (b, self) -> b.return_(literalNullList()));
-                    bodies.define(made, (b, self) -> b.return_(call(call(self, make), String_.length)));
+                    bodies.define(made, (b, self) -> b.return_(self.call(make).call(String_.length)));
                     return bodies;
                 }
 
@@ -214,16 +215,20 @@ class CovariantReturnTest {
                     bodies.define(whichString, (b, self, v) -> b.return_(literal("string")));
                     bodies.define(
                             byWitness,
-                            (b, self) -> b.return_(call(self, whichObject, call(asOrigin.apply(self), Origin_.get))));
-                    bodies.define(byOwn, (b, self) -> b.return_(call(self, whichString, call(self, get.method()))));
-                    bodies.define(same, (b, self, n) -> b.return_(eqRef(call(asOrigin.apply(self), Origin_.get), n)));
+                            (b, self) -> b.return_(
+                                    self.call(whichObject, asOrigin.apply(self).call(Origin_.get))));
+                    bodies.define(byOwn, (b, self) -> b.return_(self.call(whichString, self.call(get.method()))));
+                    bodies.define(
+                            same,
+                            (b, self, n) -> b.return_(eqRef(asOrigin.apply(self).call(Origin_.get), n)));
                     bodies.define(
                             equal,
-                            (b, self, o) ->
-                                    b.return_(call(call(asOrigin.apply(self), Origin_.get), Object_.equals_Object, o)));
+                            (b, self, o) -> b.return_(
+                                    asOrigin.apply(self).call(Origin_.get).call(Object_.equals_Object, o)));
                     bodies.define(
                             text,
-                            (b, self) -> b.return_(call(call(asOrigin.apply(self), Origin_.get), Object_.toString)));
+                            (b, self) -> b.return_(
+                                    asOrigin.apply(self).call(Origin_.get).call(Object_.toString)));
                     return bodies;
                 }
             }));
@@ -268,14 +273,14 @@ class CovariantReturnTest {
                     bodies.define(
                             store,
                             (b, self, value) -> b.exec(assignAt(
-                                            objects, call(asOrigin.apply(self), Origin_.all), literal(0), value))
+                                            objects, asOrigin.apply(self).call(Origin_.all), literal(0), value))
                                     .end());
                     bodies.define(
                             caught,
                             (b, self) -> b.tryTerminated(
                                     handlers -> handlers.catch_(IOException_.TOKEN, (c, _) -> c.return_(literal("io")))
                                             .catch_(Exception_.TOKEN, (c, _) -> c.return_(literal("caught"))),
-                                    t -> t.throw_(call(asOrigin.apply(self), Origin_.failure))));
+                                    t -> t.throw_(asOrigin.apply(self).call(Origin_.failure))));
                     return bodies;
                 }
             }));

@@ -728,7 +728,13 @@ constants are `Signal_.RED`.
 ### Typed examples
 
 The examples below assume `import static me.supcheg.javafile.typed.Expressions.*;` and the metamodels above imported
-(`String_`, `List_`, ...). The first argument of a declaration is the `TargetClasspath` the generated code is compiled
+(`String_`, `List_`, ...). An expression starts with a static method of `Expressions` and continues with the methods of
+`Expr`, as in the core: `self.field(greeting)`, `items.arrayAccess(strings, literal(0))`,
+`value.call(String_.length)`, `receiver.voidCall(Runnable_.run)`, `object.instanceOf(String_.TOKEN)`,
+`value.cast(String_.TOKEN)` and `receiver.methodRef(String_.trim, supplier.token, supplier.sam.method())`. The
+operators stay static, since Java cannot expose members by the type parameter alone.
+
+The first argument of a declaration is the `TargetClasspath` the generated code is compiled
 against, which every fact the class uses is checked against. The examples pass `UnsafeFacts.unverifiedClasspath()`,
 which checks nothing and is for where there is no compilation to check against; in an annotation processor it is
 `TargetClasspaths.of(processingEnv)` from `java-file-api-lang-model`. Parameters are named `v0`, `v1`, ... in the
@@ -757,7 +763,7 @@ JavaFile file = TypedJavaFile.class_(
                 bodies.define(
                         greet,
                         (b, self, name) -> b.return_(concat(
-                                concat(concat(field(self, greeting), literal(", ")), name), literal("!"))));
+                                concat(concat(self.field(greeting), literal(", ")), name), literal("!"))));
                 return bodies;
             }
         });
@@ -894,11 +900,11 @@ JavaFile file = TypedJavaFile.declareClass(
                 bodies.define(
                         area,
                         (b, self) -> b.return_(mulDouble(
-                                mulDouble(staticField(Math_.PI), field(self, radius)), field(self, radius))));
+                                mulDouble(staticField(Math_.PI), self.field(radius)), self.field(radius))));
                 bodies.define(
                         compareTo.method(),
-                        (b, self, other) -> b.return_(staticCall(
-                                Double_.compare_double_double, call(self, area), call(other, area))));
+                        (b, self, other) -> b.return_(
+                                staticCall(Double_.compare_double_double, self.call(area), other.call(area))));
                 return bodies;
             }
         });
@@ -947,16 +953,15 @@ JavaFile file = TypedJavaFile.declareClass(
                         max,
                         (b, self, items) -> b.letVar(
                                 t,
-                                call(items, list.getFirst),
+                                items.call(list.getFirst),
                                 best -> b.forEach(
                                                 t,
                                                 items,
                                                 (loop, item, _) -> loop.if_(
                                                         gtInt(
-                                                                call(
-                                                                        asComparable.apply(item),
-                                                                        comparable.compareTo_T,
-                                                                        best),
+                                                                asComparable
+                                                                        .apply(item)
+                                                                        .call(comparable.compareTo_T, best),
                                                                 literal(0)),
                                                         then -> then.exec(assign(best, item))))
                                         .return_(best)));
@@ -1034,12 +1039,12 @@ JavaFile file = TypedJavaFile.class_(
                                         String_.TOKEN,
                                         (then, s) -> then.return_(concat(
                                                 literal("string of "),
-                                                staticCall(String_.valueOf_int, call(s, String_.length)))),
+                                                staticCall(String_.valueOf_int, s.call(String_.length)))),
                                         other -> other.return_(literal("something else"))));
                 bodies.define(
                         startingWith,
                         (b, prefix) -> b.return_(
-                                lambda(strings.sam, text -> call(text, String_.startsWith_String, prefix))));
+                                lambda(strings.sam, text -> text.call(String_.startsWith_String, prefix))));
                 return bodies;
             }
         });
@@ -1096,7 +1101,7 @@ a text block splits on, with an escaped string literal. A method reference is a 
 than leaving that to javac. `assert_` has the bare and the message form, and is checked by the JVM as any `assert` is.
 
 ```java
-Expr<Supplier<String>> trim = methodRef(s, String_.trim, supplier.token, supplier.sam.method());
+Expr<Supplier<String>> trim = s.methodRef(String_.trim, supplier.token, supplier.sam.method());
 b.assert_(gtInt(value, literal(0)), literal("value must be positive"));
 ```
 
@@ -1112,7 +1117,7 @@ declared by the member, exactly as javac asks it.
 
 ```java
 b.tryWithResourcesTerminated(
-        h -> h.catch_(IllegalStateException_.TOKEN, (c, e) -> c.return_(call(e, Throwable_.getMessage))),
+        h -> h.catch_(IllegalStateException_.TOKEN, (c, e) -> c.return_(e.call(Throwable_.getMessage))),
         (t, resources) -> {
             var resource = resources.resource_(Closing_.TOKEN, new_(Closing_.new_boolean, failing));
             return t.if_(eqRef(resource, resource), _ -> {}).return_(literal("ok"));
@@ -1157,7 +1162,7 @@ Java would convert `value` to the place's type and cast the result back implicit
 writes no implicit conversion, so `value` must be of exactly the place's type and the type must take the operator:
 `int += int` and `String += String` are accepted, `int += long` and `String -= String` are refused at the call.
 
-`classLiteral(type)` is `type.class` as an `Expr<Class<T>>`, and `instanceOf(operand, type)` is a plain `instanceof`
+`classLiteral(type)` is `type.class` as an `Expr<Class<T>>`, and `operand.instanceOf(type)` is a plain `instanceof`
 without a pattern, a `boolean` expression that is checked as the pattern form is.
 
 ### Varargs and arrays
@@ -1187,7 +1192,7 @@ JavaFile file = TypedJavaFile.class_(
                 var second = cb.declareStaticMethod("second", String_.TOKEN);
 
                 var bodies = cb.bodies();
-                bodies.define(countAll, (b, parts) -> b.return_(length(strings, parts)));
+                bodies.define(countAll, (b, parts) -> b.return_(parts.length(strings)));
                 bodies.define(countTwo, (b, first, last) -> b.return_(literal(0)));
                 bodies.define(
                         csv,
@@ -1204,7 +1209,7 @@ JavaFile file = TypedJavaFile.class_(
                         b -> b.let(
                                 strings,
                                 newArrayOf(strings, literal("a"), literal("b")),
-                                names -> b.return_(at(strings, names, literal(1)))));
+                                names -> b.return_(names.arrayAccess(strings, literal(1)))));
                 return bodies;
             }
         });
@@ -1366,7 +1371,7 @@ JavaFile file = TypedJavaFile.record(
                 var bodies = rb.bodies();
                 bodies.define(compact, (b, self, x0, y0) -> b.end());
                 bodies.defineDelegating(empty, List.of(literal(0), literal(0)), (b, self) -> b.end());
-                bodies.define(sum, (b, self) -> b.return_(addInt(call(self, x.accessor()), call(self, y.accessor()))));
+                bodies.define(sum, (b, self) -> b.return_(addInt(self.call(x.accessor()), self.call(y.accessor()))));
                 return bodies;
             }
         });
@@ -1455,8 +1460,8 @@ eb.constant("TWICE", List.of(literal(2)), cb -> {
     var base = cb.declareField("base", PrimitiveToken.INT);
     var helper = cb.declareMethod("helper", PrimitiveToken.INT, PrimitiveToken.INT);
     cb.initialize(base, literal(10));
-    cb.define(helper, (b, self, x) -> b.return_(addInt(mulInt(x, literal(2)), field(self, base))));
-    cb.override(apply, (b, self, x) -> b.return_(call(self, helper, x)));
+    cb.define(helper, (b, self, x) -> b.return_(addInt(mulInt(x, literal(2)), self.field(base))));
+    cb.override(apply, (b, self, x) -> b.return_(self.call(helper, x)));
 });
 ```
 
@@ -1607,7 +1612,7 @@ var inner = cb.declareInnerClass("Inner", new TypedJavaFile.TypedInnerClassSpec<
         var read = members.declareMethod("read", String_.TOKEN);
         var bodies = members.bodies();
         bodies.define(ctor, (b, self) -> b.end());
-        bodies.define(read, (b, self) -> b.return_(field(handle.outerThis(), label)));
+        bodies.define(read, (b, self) -> b.return_(handle.outerThis().field(label)));
         return bodies;
     }
 });

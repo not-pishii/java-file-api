@@ -53,7 +53,6 @@ class GeneratorAgainstAnotherVersionTest {
             import me.supcheg.javafile.typed.TypedJavaFile;
             import p.Svc;
 
-            import static me.supcheg.javafile.typed.Expressions.call;
             import static me.supcheg.javafile.typed.Expressions.new_;
 
             /// Generates `app.Generated` with `static String only(String s) { return new Svc().only(s); }`.
@@ -91,7 +90,7 @@ class GeneratorAgainstAnotherVersionTest {
                                     public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
                                         var only = cb.declareStaticMethod("only", String_.TOKEN, String_.TOKEN);
                                         var bodies = cb.bodies();
-                                        bodies.define(only, (b, s) -> b.return_(call(new_(Svc_.new_), Svc_.only_Object, s)));
+                                        bodies.define(only, (b, s) -> b.return_(new_(Svc_.new_).call(Svc_.only_Object, s)));
                                         return bodies;
                                     }
                                 });

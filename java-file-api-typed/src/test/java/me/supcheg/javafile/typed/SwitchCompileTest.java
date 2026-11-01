@@ -33,9 +33,7 @@ import java.util.function.Supplier;
 import static me.supcheg.javafile.typed.Expressions.addInt;
 import static me.supcheg.javafile.typed.Expressions.assign;
 import static me.supcheg.javafile.typed.Expressions.assignAt;
-import static me.supcheg.javafile.typed.Expressions.at;
 import static me.supcheg.javafile.typed.Expressions.box;
-import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.concat;
 import static me.supcheg.javafile.typed.Expressions.enumConstant;
 import static me.supcheg.javafile.typed.Expressions.eqRef;
@@ -192,14 +190,13 @@ class SwitchCompileTest {
             bodies.define(
                     lengthPlusRank,
                     (b, s) -> b.return_(addInt(
-                            call(
-                                    switch_(
+                            switch_(
                                             Signal_.TOKEN,
                                             s,
                                             String_.TOKEN,
                                             c -> c.case_(Signal_.RED, literal("stop"))
-                                                    .default_(literal("go"))),
-                                    String_.length),
+                                                    .default_(literal("go")))
+                                    .call(String_.length),
                             switch_(
                                     Signal_.TOKEN,
                                     s,
@@ -243,7 +240,7 @@ class SwitchCompileTest {
                             STRINGS.token,
                             c -> c.case_(Signal_.RED, lambda(STRINGS.sam, () -> literal("stop")))
                                     .default_(y -> y.yield_(lambda(STRINGS.sam, () -> literal("go")))))));
-            bodies.define(initialMethod, (b, self) -> b.return_(Expressions.field(self, initial)));
+            bodies.define(initialMethod, (b, self) -> b.return_(self.field(initial)));
         };
     }
 
@@ -279,7 +276,8 @@ class SwitchCompileTest {
                                                                     .yield_(literal("r")))
                                                     .default_(y -> y.exec(assign(n, literal(2)))
                                                             .yield_(literal("x")))),
-                                    r -> b.return_(concat(r, call(box(PrimitiveToken.INT, n), Integer_.toString))))));
+                                    r -> b.return_(
+                                            concat(r, box(PrimitiveToken.INT, n).call(Integer_.toString))))));
             bodies.define(
                     looped,
                     (b, s) -> b.return_(switch_(
@@ -310,13 +308,13 @@ class SwitchCompileTest {
                             PrimitiveToken.INT,
                             c -> c.case_(
                                             Signal_.RED,
-                                            y -> y.yield_(call(
-                                                    new_(StringReader_.new_String, literal("")), StringReader_.read)))
+                                            y -> y.yield_(new_(StringReader_.new_String, literal(""))
+                                                    .call(StringReader_.read)))
                                     .case_(
                                             Signal_.AMBER,
                                             y -> y.throw_(new_(IOException_.new_String, literal("amber"))))
-                                    .default_(
-                                            call(new_(StringReader_.new_String, literal("g")), StringReader_.read)))));
+                                    .default_(new_(StringReader_.new_String, literal("g"))
+                                            .call(StringReader_.read)))));
             bodies.define(
                     caught,
                     (b, s) -> b.tryTerminated(
@@ -410,24 +408,25 @@ class SwitchCompileTest {
                             Signal_.TOKEN,
                             s,
                             PrimitiveToken.INT,
-                            c -> c.default_(y -> y.yield_(call(concat(literal("a"), literal("b")), String_.length))))));
+                            c -> c.default_(y ->
+                                    y.yield_(concat(literal("a"), literal("b")).call(String_.length))))));
             bodies.define(
                     yieldsOfSwitch,
                     (b, s) -> b.return_(switch_(
                             Signal_.TOKEN,
                             s,
                             String_.TOKEN,
-                            c -> c.default_(y -> y.yield_(call(
-                                    switch_(Signal_.TOKEN, s, String_.TOKEN, inner -> inner.default_(literal(" in "))),
-                                    String_.trim))))));
+                            c -> c.default_(y -> y.yield_(
+                                    switch_(Signal_.TOKEN, s, String_.TOKEN, inner -> inner.default_(literal(" in ")))
+                                            .call(String_.trim))))));
             bodies.define(
                     yieldsOfLambda,
                     (b, s) -> b.return_(switch_(
                             Signal_.TOKEN,
                             s,
                             String_.TOKEN,
-                            c -> c.default_(y ->
-                                    y.yield_(call(lambda(STRINGS.sam, () -> literal("l")), STRINGS.get))))));
+                            c -> c.default_(y -> y.yield_(
+                                    lambda(STRINGS.sam, () -> literal("l")).call(STRINGS.get))))));
             bodies.define(
                     indexed,
                     (b, s) -> b.let(
@@ -440,11 +439,9 @@ class SwitchCompileTest {
                                             literal(0),
                                             literal(5)))
                                     .return_(addInt(
-                                            at(ints, a, rank(s)),
-                                            at(
-                                                    ints,
-                                                    switch_(Signal_.TOKEN, s, ints, c -> c.default_(a)),
-                                                    literal(0))))));
+                                            a.arrayAccess(ints, rank(s)),
+                                            switch_(Signal_.TOKEN, s, ints, c -> c.default_(a))
+                                                    .arrayAccess(ints, literal(0))))));
             bodies.define(
                     notRed,
                     (b, s) -> b.return_(not(switch_(

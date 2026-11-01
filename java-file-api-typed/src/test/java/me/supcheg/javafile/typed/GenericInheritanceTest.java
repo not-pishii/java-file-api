@@ -22,8 +22,6 @@ import java.lang.constant.ClassDesc;
 import java.util.function.Consumer;
 
 import static me.supcheg.javafile.typed.Expressions.assignField;
-import static me.supcheg.javafile.typed.Expressions.call;
-import static me.supcheg.javafile.typed.Expressions.field;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.literalNull;
 import static me.supcheg.javafile.typed.Expressions.switch_;
@@ -54,7 +52,9 @@ class GenericInheritanceTest {
                         var first = cb.declareConstructor(t);
                         var go = cb.declareMethod("go", t);
                         var bodies = cb.bodies(first, (ctor, v) -> ctor.super_(carrier.new_T, v, (b, self) -> b.end()));
-                        bodies.define(go, (b, self) -> b.return_(call(asCarrying.apply(self), carrying.carried)));
+                        bodies.define(
+                                go,
+                                (b, self) -> b.return_(asCarrying.apply(self).call(carrying.carried)));
                         return bodies;
                     }
                 }));
@@ -83,9 +83,13 @@ class GenericInheritanceTest {
                         var pub = cb.declareMethod("pub", String_.TOKEN, t);
                         var bodies = cb.bodies(first, ctor -> ctor.super_(base.new_, (b, self) -> b.end()));
                         bodies.define(
-                                go, (b, self, v) -> b.return_(call(cb.asSuper().apply(self), p, v)));
+                                go,
+                                (b, self, v) ->
+                                        b.return_(cb.asSuper().apply(self).call(p, v)));
                         bodies.define(
-                                pub, (b, self, v) -> b.return_(call(cb.asSuper().apply(self), base.m_T, v)));
+                                pub,
+                                (b, self, v) ->
+                                        b.return_(cb.asSuper().apply(self).call(base.m_T, v)));
                         return bodies;
                     }
                 }));
@@ -153,7 +157,7 @@ class GenericInheritanceTest {
                         var constructor = cb.declareConstructor(t);
                         var bodies = cb.bodies();
                         bodies.initialize(held, literalNull(t));
-                        bodies.define(label.method(), (b, self) -> b.return_(field(self, held)));
+                        bodies.define(label.method(), (b, self) -> b.return_(self.field(held)));
                         bodies.define(
                                 constructor,
                                 (b, self, v) ->
@@ -191,7 +195,7 @@ class GenericInheritanceTest {
                         bodies.initialize(seen, literal(0));
                         bodies.define(
                                 accept.method(),
-                                (b, self, v) -> b.exec(assignField(self, seen, call(v, Number_.intValue)))
+                                (b, self, v) -> b.exec(assignField(self, seen, v.call(Number_.intValue)))
                                         .end());
                         bodies.define(constructor, (b, self) -> b.end());
                         return bodies;

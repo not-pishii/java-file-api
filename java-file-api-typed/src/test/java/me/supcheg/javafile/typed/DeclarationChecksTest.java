@@ -12,7 +12,6 @@ import java.lang.constant.ClassDesc;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
-import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -305,7 +304,7 @@ class DeclarationChecksTest {
                             stash.set(self);
                             return b.end();
                         });
-                        bodies.define(methodB, (b, _) -> b.return_(call(stash.get(), Object_.toString)));
+                        bodies.define(methodB, (b, _) -> b.return_(stash.get().call(Object_.toString)));
                         return bodies;
                     }))
                     .withMessageContaining("the this of the body of method a is used in the body of method b, which is"
@@ -336,7 +335,9 @@ class DeclarationChecksTest {
                                 public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
                                     var methodB = cb.declareMethod("b", String_.TOKEN);
                                     var bodies = cb.bodies();
-                                    bodies.define(methodB, (b, _) -> b.return_(call(stash.get(), Object_.toString)));
+                                    bodies.define(
+                                            methodB,
+                                            (b, _) -> b.return_(stash.get().call(Object_.toString)));
                                     return bodies;
                                 }
                             }))
@@ -356,7 +357,7 @@ class DeclarationChecksTest {
                             stash.set(self);
                             return b.end();
                         });
-                        bodies.initialize(f, call(stash.get(), Object_.toString));
+                        bodies.initialize(f, stash.get().call(Object_.toString));
                         return bodies;
                     }))
                     .withMessageContaining("the this of the body of constructor is used in the initializer of field f");

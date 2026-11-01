@@ -41,7 +41,6 @@ import java.util.function.Function;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
 import static com.google.testing.compile.Compiler.javac;
-import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.switch_;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -130,7 +129,7 @@ class TargetClasspathLoweringTest {
     }
 
     private static Expr<String> callM(Expr<SvcP> svc) {
-        return call(svc, M, literal("a"));
+        return svc.call(M, literal("a"));
     }
 
     @Test
@@ -228,7 +227,8 @@ import me.supcheg.javafile.facts.UnsafeInvocables;
                         assertThatExceptionOfType(TargetClasspathMismatchException.class)
                                 .isThrownBy(() -> bodies.define(
                                         go,
-                                        (b, s) -> b.return_(call(Expressions.literalNull(SVC_TOKEN), M, literal("a")))))
+                                        (b, s) -> b.return_(Expressions.literalNull(SVC_TOKEN)
+                                                .call(M, literal("a")))))
                                 .withMessageStartingWith("metamodel gen.facts.fixtures.Svc_ does not match fixtures.Svc"
                                         + " on the target classpath:");
                         // the member has no body yet, and gets one that uses nothing of the type
@@ -273,7 +273,7 @@ import me.supcheg.javafile.facts.UnsafeInvocables;
     @Test
     void anOverloadTheTargetAddsKeepsTheCastOfTheArgument() {
         // generated against a Svc whose only m is m(Object): the one candidate, so no cast
-        Function<Expr<SvcP>, Expr<String>> ofAString = svc -> call(svc, objectTaking(), literal("a"));
+        Function<Expr<SvcP>, Expr<String>> ofAString = svc -> svc.call(objectTaking(), literal("a"));
         assertThat(render(UnsafeFacts.targetClasspath(new Asked(Map.of())), OBJECT_TAKING.owner(), ofAString))
                 .contains("return v0.m(\"a\");");
 
@@ -352,7 +352,7 @@ import me.supcheg.javafile.facts.UnsafeInvocables;
         OpenClassToken<BoxP<String>> boxOfString = UnsafeFacts.openClassToken(box, TokenArg.exact(String_.TOKEN));
         MethodRef1<BoxP<String>, String, String> m = UnsafeInvocables.method(
                 boxOfString, "m", String_.TOKEN, UnsafeFacts.param(String_.TOKEN, Param.var(0)), MemberTraits.DEFAULT);
-        Function<Expr<BoxP<String>>, Expr<String>> body = b -> call(b, m, literal("a"));
+        Function<Expr<BoxP<String>>, Expr<String>> body = b -> b.call(m, literal("a"));
 
         assertThat(render(UnsafeFacts.targetClasspath(new Asked(Map.of())), boxOfString, body))
                 .contains("return v0.m(\"a\");");

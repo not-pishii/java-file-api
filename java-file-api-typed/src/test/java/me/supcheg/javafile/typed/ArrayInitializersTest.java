@@ -22,14 +22,10 @@ import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
 import java.util.List;
 
-import static me.supcheg.javafile.typed.Expressions.at;
-import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.lambda;
-import static me.supcheg.javafile.typed.Expressions.length;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.newArrayOf;
 import static me.supcheg.javafile.typed.Expressions.new_;
-import static me.supcheg.javafile.typed.Expressions.voidCall;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /// An array created with its elements, `new E[] {e1, e2}`, is written `{e1, e2}` where it initializes a
@@ -63,26 +59,24 @@ class ArrayInitializersTest {
                 var bodies = cb.bodies();
                 bodies.define(
                         argument,
-                        b -> b.return_(call(
-                                new_(Gathered_.new_),
-                                Gathered_.join_StringArray,
-                                newArrayOf(STRINGS, literal("a"), literal("b")))));
+                        b -> b.return_(new_(Gathered_.new_)
+                                .call(Gathered_.join_StringArray, newArrayOf(STRINGS, literal("a"), literal("b")))));
                 bodies.define(
                         local,
                         b -> b.let(
                                 STRINGS,
                                 newArrayOf(STRINGS, literal("x"), literal("y")),
-                                v -> b.return_(at(STRINGS, v, literal(1)))));
+                                v -> b.return_(v.arrayAccess(STRINGS, literal(1)))));
                 bodies.define(
                         widened,
-                        b -> b.let(OBJECTS, newArrayOf(STRINGS, literal("x")), v -> b.return_(length(OBJECTS, v))));
+                        b -> b.let(OBJECTS, newArrayOf(STRINGS, literal("x")), v -> b.return_(v.length(OBJECTS))));
                 bodies.define(
                         nested,
                         b -> b.let(
                                 INTS_2,
                                 newArrayOf(INTS_2, newArrayOf(INTS, literal(1)), newArrayOf(INTS)),
-                                v -> b.return_(length(INTS, at(INTS_2, v, literal(0))))));
-                bodies.define(empty, b -> b.let(INTS, newArrayOf(INTS), v -> b.return_(length(INTS, v))));
+                                v -> b.return_(v.arrayAccess(INTS_2, literal(0)).length(INTS))));
+                bodies.define(empty, b -> b.let(INTS, newArrayOf(INTS), v -> b.return_(v.length(INTS))));
                 bodies.define(
                         lambdas,
                         (b, sb) -> b.let(
@@ -91,16 +85,17 @@ class ArrayInitializersTest {
                                         RUNNABLES,
                                         lambda(
                                                 Runnable_.sam,
-                                                () -> call(sb, StringBuilder_.append_String, literal("x")))),
-                                rs -> b.exec(voidCall(at(RUNNABLES, rs, literal(0)), Runnable_.run))
-                                        .return_(call(sb, StringBuilder_.toString))));
+                                                () -> sb.call(StringBuilder_.append_String, literal("x")))),
+                                rs -> b.exec(rs.arrayAccess(RUNNABLES, literal(0))
+                                                .voidCall(Runnable_.run))
+                                        .return_(sb.call(StringBuilder_.toString))));
                 bodies.define(returned, b -> b.return_(newArrayOf(STRINGS, literal("r"))));
                 bodies.define(
                         element,
                         b -> b.let(
                                 OBJECTS,
                                 newArrayOf(OBJECTS, newArrayOf(STRINGS, literal("in"))),
-                                v -> b.return_(length(OBJECTS, v))));
+                                v -> b.return_(v.length(OBJECTS))));
                 return bodies;
             }
         }));
@@ -137,7 +132,9 @@ class ArrayInitializersTest {
                 bodies.initialize(wider, newArrayOf(STRINGS, literal("w")));
                 bodies.define(
                         width,
-                        (b, self) -> b.return_(length(INTS, at(INTS_2, Expressions.field(self, exact), literal(0)))));
+                        (b, self) -> b.return_(self.field(exact)
+                                .arrayAccess(INTS_2, literal(0))
+                                .length(INTS)));
                 return bodies;
             }
         }));
@@ -179,7 +176,7 @@ class ArrayInitializersTest {
                     public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
                         var made = cb.declareStaticMethod("made", PrimitiveToken.INT);
                         var bodies = cb.bodies();
-                        bodies.define(made, b -> b.return_(length(lists, newArrayOf(lists))));
+                        bodies.define(made, b -> b.return_(newArrayOf(lists).length(lists)));
                         return bodies;
                     }
                 }),

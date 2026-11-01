@@ -3,7 +3,6 @@ import gen.facts.p.PubOver_;
 import me.supcheg.javafile.facts.processor.harness.Typed;
 import p.PubOver;
 
-import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -15,12 +14,12 @@ public final class Overload {
 
     public static void theAdoptedOverloadIsCalledWithACast(Typed typed) {
         assertThat(typed.render(
-                        String_.TOKEN, PubOver_.TOKEN, over -> call(over, PubOver_.take_Object, literal("x"))))
+                        String_.TOKEN, PubOver_.TOKEN, over -> over.call(PubOver_.take_Object, literal("x"))))
                 .contains("v0.take((Object) \"x\")");
         assertThat(typed.apply(
                         String_.TOKEN,
                         PubOver_.TOKEN,
-                        over -> call(over, PubOver_.take_Object, literal("x")),
+                        over -> over.call(PubOver_.take_Object, literal("x")),
                         new PubOver()))
                 .isEqualTo("object");
     }
@@ -29,7 +28,7 @@ public final class Overload {
         assertThat(typed.apply(
                         String_.TOKEN,
                         PubOver_.TOKEN,
-                        over -> call(over, PubOver_.take_String, literal("x")),
+                        over -> over.call(PubOver_.take_String, literal("x")),
                         new PubOver()))
                 .isEqualTo("string");
     }

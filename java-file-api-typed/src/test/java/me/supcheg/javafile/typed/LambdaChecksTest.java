@@ -26,7 +26,6 @@ import java.util.function.Supplier;
 import static me.supcheg.javafile.typed.Expressions.addInt;
 import static me.supcheg.javafile.typed.Expressions.assign;
 import static me.supcheg.javafile.typed.Expressions.box;
-import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.lambda;
 import static me.supcheg.javafile.typed.Expressions.lambdaBlock;
 import static me.supcheg.javafile.typed.Expressions.literal;
@@ -73,7 +72,8 @@ class LambdaChecksTest {
 
     /// `Integer.valueOf(new StringReader("a").read())`, which throws `IOException`.
     private static Expr<Integer> read() {
-        return box(PrimitiveToken.INT, call(new_(StringReader_.new_String, literal("a")), StringReader_.read));
+        return box(
+                PrimitiveToken.INT, new_(StringReader_.new_String, literal("a")).call(StringReader_.read));
     }
 
     @Nested
@@ -289,7 +289,7 @@ class LambdaChecksTest {
                     .isThrownBy(() -> voidMethod(b -> b.let(
                             Runnable_.TOKEN,
                             lambdaBlock(Runnable_.sam, lb -> {
-                                b.exec(call(literal("a"), String_.length));
+                                b.exec(literal("a").call(String_.length));
                                 return lb.end();
                             }),
                             _ -> b.end())))
@@ -298,7 +298,7 @@ class LambdaChecksTest {
                     .isThrownBy(() -> voidMethod(b -> b.let(
                             INTS.token,
                             lambda(INTS.sam, () -> {
-                                b.exec(call(literal("a"), String_.length));
+                                b.exec(literal("a").call(String_.length));
                                 return box(PrimitiveToken.INT, literal(1));
                             }),
                             _ -> b.end())))

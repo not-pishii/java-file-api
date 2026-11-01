@@ -15,7 +15,6 @@ import org.junit.jupiter.api.Test;
 import java.lang.constant.ClassDesc;
 
 import static me.supcheg.javafile.typed.Expressions.box;
-import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.new_;
 import static me.supcheg.javafile.typed.Expressions.staticCall;
@@ -117,10 +116,8 @@ class VarargsRivalsTest {
                 bodies.define(ctor, (b, self) -> b.end());
                 bodies.define(
                         m,
-                        (b, self) -> b.return_(call(
-                                new_(VarargsArray_.new_),
-                                base.join_TArray,
-                                varargs(STRINGS, literal("a"), literal("b")))));
+                        (b, self) -> b.return_(new_(VarargsArray_.new_)
+                                .call(base.join_TArray, varargs(STRINGS, literal("a"), literal("b")))));
                 return bodies;
             }
         }));

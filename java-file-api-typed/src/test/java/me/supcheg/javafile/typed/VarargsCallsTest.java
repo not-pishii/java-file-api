@@ -35,14 +35,11 @@ import java.lang.constant.ClassDesc;
 import java.util.List;
 
 import static me.supcheg.javafile.typed.Expressions.box;
-import static me.supcheg.javafile.typed.Expressions.call;
-import static me.supcheg.javafile.typed.Expressions.field;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.literalNull;
 import static me.supcheg.javafile.typed.Expressions.new_;
 import static me.supcheg.javafile.typed.Expressions.staticCall;
 import static me.supcheg.javafile.typed.Expressions.varargs;
-import static me.supcheg.javafile.typed.Expressions.voidCall;
 import static me.supcheg.javafile.typed.Expressions.voidStaticCall;
 import static me.supcheg.javafile.typed.TypedJavaFile.typeParam;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -87,45 +84,40 @@ class VarargsCallsTest {
                 var b2 = literal("b");
                 bodies.define(
                         j1,
-                        b -> b.return_(call(new_(Spreads_.new_), Spreads_.join1_StringArray, varargs(STRINGS, a, b2))));
+                        b -> b.return_(new_(Spreads_.new_).call(Spreads_.join1_StringArray, varargs(STRINGS, a, b2))));
                 bodies.define(
                         j2,
-                        b -> b.return_(call(
-                                new_(Spreads_.new_), Spreads_.join2_int_StringArray, literal(1), varargs(STRINGS, a))));
+                        b -> b.return_(new_(Spreads_.new_)
+                                .call(Spreads_.join2_int_StringArray, literal(1), varargs(STRINGS, a))));
                 bodies.define(
                         j3,
-                        b -> b.return_(call(
-                                new_(Spreads_.new_),
-                                Spreads_.join3_int_int_StringArray,
-                                literal(1),
-                                literal(2),
-                                varargs(STRINGS))));
+                        b -> b.return_(new_(Spreads_.new_)
+                                .call(Spreads_.join3_int_int_StringArray, literal(1), literal(2), varargs(STRINGS))));
                 bodies.define(
                         p1,
                         b -> b.let(
                                 Spreads_.TOKEN,
                                 new_(Spreads_.new_),
-                                s -> b.exec(voidCall(s, Spreads_.put1_StringArray, varargs(STRINGS, a, b2)))
-                                        .return_(field(s, Spreads_.told))));
+                                s -> b.exec(s.voidCall(Spreads_.put1_StringArray, varargs(STRINGS, a, b2)))
+                                        .return_(s.field(Spreads_.told))));
                 bodies.define(
                         p2,
                         b -> b.let(
                                 Spreads_.TOKEN,
                                 new_(Spreads_.new_),
-                                s -> b.exec(voidCall(s, Spreads_.put2_int_StringArray, literal(1), varargs(STRINGS, a)))
-                                        .return_(field(s, Spreads_.told))));
+                                s -> b.exec(s.voidCall(Spreads_.put2_int_StringArray, literal(1), varargs(STRINGS, a)))
+                                        .return_(s.field(Spreads_.told))));
                 bodies.define(
                         p3,
                         b -> b.let(
                                 Spreads_.TOKEN,
                                 new_(Spreads_.new_),
-                                s -> b.exec(voidCall(
-                                                s,
+                                s -> b.exec(s.voidCall(
                                                 Spreads_.put3_int_int_StringArray,
                                                 literal(1),
                                                 literal(2),
                                                 varargs(STRINGS, a)))
-                                        .return_(field(s, Spreads_.told))));
+                                        .return_(s.field(Spreads_.told))));
                 bodies.define(s1, b -> b.return_(staticCall(Spreads_.sjoin1_StringArray, varargs(STRINGS, a, b2))));
                 bodies.define(
                         s2,
@@ -188,23 +180,20 @@ class VarargsCallsTest {
                 var bodies = cb.bodies();
                 bodies.define(
                         one,
-                        b -> b.return_(field(
-                                new_(Lined_.new_StringArray, varargs(STRINGS, literal("a"), literal("b"))),
-                                Lined_.told)));
+                        b -> b.return_(new_(Lined_.new_StringArray, varargs(STRINGS, literal("a"), literal("b")))
+                                .field(Lined_.told)));
                 bodies.define(
                         two,
-                        b -> b.return_(field(
-                                new_(Pairing_.new_int_StringArray, literal(1), varargs(STRINGS, literal("a"))),
-                                Pairing_.told)));
+                        b -> b.return_(new_(Pairing_.new_int_StringArray, literal(1), varargs(STRINGS, literal("a")))
+                                .field(Pairing_.told)));
                 bodies.define(
                         three,
-                        b -> b.return_(field(
-                                new_(
+                        b -> b.return_(new_(
                                         Tripling_.new_int_int_StringArray,
                                         literal(1),
                                         literal(2),
-                                        varargs(STRINGS, literal("a"))),
-                                Tripling_.told)));
+                                        varargs(STRINGS, literal("a")))
+                                .field(Tripling_.told)));
                 return bodies;
             }
         }));
@@ -302,7 +291,7 @@ class VarargsCallsTest {
                         p1,
                         (b, self) -> b.exec(bodies.superCall(
                                         self, Spreads_.put1_StringArray, varargs(STRINGS, literal("a"), literal("b"))))
-                                .return_(field(asSpreads.apply(self), Spreads_.told)));
+                                .return_(asSpreads.apply(self).field(Spreads_.told)));
                 bodies.define(
                         p2,
                         (b, self) -> b.exec(bodies.superCall(
@@ -310,11 +299,12 @@ class VarargsCallsTest {
                                         Spreads_.put2_int_StringArray,
                                         literal(5),
                                         varargs(STRINGS, literal("a"))))
-                                .return_(field(asSpreads.apply(self), Spreads_.told)));
+                                .return_(asSpreads.apply(self).field(Spreads_.told)));
                 bodies.define(
                         own,
-                        (b, self) -> b.return_(call(
-                                asSpreads.apply(self), Spreads_.join1_StringArray, varargs(STRINGS, literal("q")))));
+                        (b, self) -> b.return_(asSpreads
+                                .apply(self)
+                                .call(Spreads_.join1_StringArray, varargs(STRINGS, literal("q")))));
                 return bodies;
             }
         }));
@@ -348,37 +338,38 @@ class VarargsCallsTest {
                 // List.of(E, E) is a choice for javac
                 bodies.define(
                         listed,
-                        b -> b.return_(call(
-                                staticCall(
-                                        List_.of_EArray(String_.TOKEN), varargs(STRINGS, literal("a"), literal("b"))),
-                                strings.size)));
+                        b -> b.return_(
+                                staticCall(List_.of_EArray(String_.TOKEN), varargs(STRINGS, literal("a"), literal("b")))
+                                        .call(strings.size)));
                 // IntStream.of(int) is a choice for one int, and none for three
                 bodies.define(
                         single,
-                        b -> b.return_(
-                                call(staticCall(IntStream_.of_intArray, varargs(INTS, literal(4))), IntStream_.sum)));
+                        b -> b.return_(staticCall(IntStream_.of_intArray, varargs(INTS, literal(4)))
+                                .call(IntStream_.sum)));
                 bodies.define(
                         triple,
-                        b -> b.return_(call(
-                                staticCall(IntStream_.of_intArray, varargs(INTS, literal(1), literal(2), literal(3))),
-                                IntStream_.sum)));
+                        b -> b.return_(
+                                staticCall(IntStream_.of_intArray, varargs(INTS, literal(1), literal(2), literal(3)))
+                                        .call(IntStream_.sum)));
                 bodies.define(
-                        none, b -> b.return_(call(staticCall(IntStream_.of_intArray, varargs(INTS)), IntStream_.sum)));
+                        none,
+                        b -> b.return_(staticCall(IntStream_.of_intArray, varargs(INTS))
+                                .call(IntStream_.sum)));
                 bodies.define(
                         hashed,
                         b -> b.return_(
                                 staticCall(Objects_.hash_ObjectArray, varargs(OBJECTS, literal("a"), literal("b")))));
                 bodies.define(
                         counted,
-                        b -> b.return_(call(new_(Gathered_.new_), Gathered_.count_ObjectArray, varargs(OBJECTS))));
+                        b -> b.return_(new_(Gathered_.new_).call(Gathered_.count_ObjectArray, varargs(OBJECTS))));
                 // one element that is an array: the array of the parameter to javac, so it is cast
                 bodies.define(
                         lone,
                         b -> b.let(
                                 STRINGS,
                                 Expressions.newArrayOf(STRINGS, literal("x"), literal("y")),
-                                arr -> b.return_(call(
-                                        new_(Gathered_.new_), Gathered_.count_ObjectArray, varargs(OBJECTS, arr)))));
+                                arr -> b.return_(new_(Gathered_.new_)
+                                        .call(Gathered_.count_ObjectArray, varargs(OBJECTS, arr)))));
                 return bodies;
             }
         }));
@@ -453,11 +444,10 @@ class VarargsCallsTest {
                         var bodies = cb.bodies();
                         bodies.define(
                                 m,
-                                b -> b.return_(call(
-                                        staticCall(
+                                b -> b.return_(staticCall(
                                                 List_.of_EArray(strings.token),
-                                                varargs(listArray, a, a, a, a, a, a, a, a, a, a, a)),
-                                        lists.size)));
+                                                varargs(listArray, a, a, a, a, a, a, a, a, a, a, a))
+                                        .call(lists.size)));
                         return bodies;
                     }
                 }),
@@ -480,9 +470,8 @@ class VarargsCallsTest {
                         var bodies = cb.bodies();
                         bodies.define(
                                 m,
-                                b -> b.return_(call(
-                                        staticCall(List_.of_EArray(strings.token), varargs(listArray, a, a)),
-                                        new List_<>(strings.token).size)));
+                                b -> b.return_(staticCall(List_.of_EArray(strings.token), varargs(listArray, a, a))
+                                        .call(new List_<>(strings.token).size)));
                         return bodies;
                     }
                 }),
@@ -508,8 +497,8 @@ class VarargsCallsTest {
                         bodies.define(constructor, (b, self) -> b.end());
                         bodies.define(
                                 go,
-                                (b, self, v) -> b.return_(call(
-                                        v, Gathered_.count_ObjectArray, varargs(OBJECTS, literal("a"), literal("b")))));
+                                (b, self, v) -> b.return_(v.call(
+                                        Gathered_.count_ObjectArray, varargs(OBJECTS, literal("a"), literal("b")))));
                         return bodies;
                     }
                 }));
@@ -526,14 +515,12 @@ class VarargsCallsTest {
                 var bodies = cb.bodies();
                 bodies.define(
                         m,
-                        b -> b.return_(call(
-                                new_(Gathered_.new_), Gathered_.count_ObjectArray, varargs(OBJECTS, literal("a")))));
+                        b -> b.return_(new_(Gathered_.new_)
+                                .call(Gathered_.count_ObjectArray, varargs(OBJECTS, literal("a")))));
                 bodies.define(
                         n,
-                        b -> b.return_(call(
-                                literalNull(unlisted),
-                                Gathered_.count_ObjectArray,
-                                varargs(OBJECTS, literal("a"), literal("b")))));
+                        b -> b.return_(literalNull(unlisted)
+                                .call(Gathered_.count_ObjectArray, varargs(OBJECTS, literal("a"), literal("b")))));
                 return bodies;
             }
         }));
@@ -544,7 +531,7 @@ class VarargsCallsTest {
     void aMemberOfFixedArityTakesNoArgumentsOfAParameterOfVariableArity() {
         JavacVerdict.asJavac(
                 IllegalArgumentException.class,
-                () -> call(new_(Gathered_.new_), Gathered_.join_StringArray, varargs(STRINGS, literal("a"))),
+                () -> new_(Gathered_.new_).call(Gathered_.join_StringArray, varargs(STRINGS, literal("a"))),
                 "varargs gives the arguments of a parameter of variable arity, and the last parameter of",
                 "String m(" + FIXTURES + "Gathered g) { return g.join(\"a\"); }",
                 "incompatible types");
@@ -559,7 +546,7 @@ class VarargsCallsTest {
 
         JavacVerdict.asJavacWarns(
                 IllegalArgumentException.class,
-                () -> call(literalNull(scattering.token), scattering.scatter_TArray, varargs(listArray, a, a)),
+                () -> literalNull(scattering.token).call(scattering.scatter_TArray, varargs(listArray, a, a)),
                 "is of variable arity and not @SafeVarargs, and the arguments of its last parameter are of",
                 "int m(" + FIXTURES + "Scattering<List<String>> s, List<String> a) { return s.scatter(a, a); }",
                 "unchecked generic array creation");
@@ -595,10 +582,10 @@ class VarargsCallsTest {
                         (b, self) -> b.return_(Expressions.newArrayOf(STRINGS, literal("mine"), literal("yours"))));
                 bodies.define(
                         m,
-                        (b, self) -> b.return_(call(
-                                new_(Gathered_.new_),
-                                Gathered_.count_ObjectArray,
-                                varargs(OBJECTS, call(asOrigin.apply(self), Origin_.get)))));
+                        (b, self) -> b.return_(new_(Gathered_.new_)
+                                .call(
+                                        Gathered_.count_ObjectArray,
+                                        varargs(OBJECTS, asOrigin.apply(self).call(Origin_.get)))));
                 return bodies;
             }
         }));
@@ -628,7 +615,8 @@ class VarargsCallsTest {
 
     @Test
     void anElementThatThrowsACheckedExceptionIsThatOfTheStatement() {
-        var read = box(PrimitiveToken.INT, call(new_(StringReader_.new_String, literal("a")), StringReader_.read));
+        var read = box(
+                PrimitiveToken.INT, new_(StringReader_.new_String, literal("a")).call(StringReader_.read));
 
         JavacVerdict.asJavac(
                 () -> file("Throws", new TypedJavaFile.TypedClassSpec() {
@@ -638,8 +626,8 @@ class VarargsCallsTest {
                         var bodies = cb.bodies();
                         bodies.define(
                                 m,
-                                b -> b.return_(call(
-                                        new_(Gathered_.new_), Gathered_.count_ObjectArray, varargs(OBJECTS, read))));
+                                b -> b.return_(new_(Gathered_.new_)
+                                        .call(Gathered_.count_ObjectArray, varargs(OBJECTS, read))));
                         return bodies;
                     }
                 }),

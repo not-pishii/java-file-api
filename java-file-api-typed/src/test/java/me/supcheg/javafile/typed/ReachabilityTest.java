@@ -36,7 +36,6 @@ import static me.supcheg.javafile.typed.Expressions.ltInt;
 import static me.supcheg.javafile.typed.Expressions.new_;
 import static me.supcheg.javafile.typed.Expressions.staticField;
 import static me.supcheg.javafile.typed.Expressions.switch_;
-import static me.supcheg.javafile.typed.Expressions.voidCall;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
@@ -105,7 +104,7 @@ class ReachabilityTest {
     }
 
     private static Effect print() {
-        return voidCall(staticField(System_.out), PrintStream_.println_int, literal(1));
+        return staticField(System_.out).voidCall(PrintStream_.println_int, literal(1));
     }
 
     private static final String PRINT = "System.out.println(1);";

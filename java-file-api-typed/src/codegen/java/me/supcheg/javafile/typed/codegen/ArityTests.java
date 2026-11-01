@@ -253,10 +253,9 @@ final class ArityTests {
         return callAll(method, Stream.concat(Stream.of(fact), args.stream()).toList());
     }
 
-    /// `Expressions.<method>(target, fact, args...)`.
+    /// `target.<method>(fact, args...)`, which continues the expression.
     private static Expr callingOn(String method, Expr target, Expr fact, List<Expr> args) {
-        return callAll(
-                method, Stream.concat(Stream.of(target, fact), args.stream()).toList());
+        return target.call(method, Stream.concat(Stream.of(fact), args.stream()).toArray(Expr[]::new));
     }
 
     // ------------------------------------------------------------------
@@ -507,7 +506,7 @@ final class ArityTests {
     private static Expr apply(int n) {
         List<Expr> p = ps("p", 1, n);
         Expr w = field("w");
-        Expr told = x("field", w, fact("Wide", n, "told"));
+        Expr told = w.call("field", fact("Wide", n, "told"));
         Expr result = slash(
                 slash(
                         callingOn("call", w, fact("Wide", n, methodFact("pick", n)), p),
@@ -522,7 +521,7 @@ final class ArityTests {
     private static Expr applyAll(int n) {
         List<Expr> lead = ps("p", 1, n - 1);
         Expr w = field("w");
-        Expr told = x("field", w, fact("Wide", n, "told"));
+        Expr told = w.call("field", fact("Wide", n, "told"));
         Expr result = slash(
                 slash(
                         callingOn(

@@ -42,14 +42,11 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import static me.supcheg.javafile.typed.Expressions.call;
-import static me.supcheg.javafile.typed.Expressions.castChecked;
 import static me.supcheg.javafile.typed.Expressions.enumConstant;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.new_;
 import static me.supcheg.javafile.typed.Expressions.staticCall;
 import static me.supcheg.javafile.typed.Expressions.switch_;
-import static me.supcheg.javafile.typed.Expressions.voidCall;
 import static me.supcheg.javafile.typed.Expressions.voidStaticCall;
 import static me.supcheg.javafile.typed.JavacVerdict.asJavac;
 import static me.supcheg.javafile.typed.JavacVerdict.asJavacAccepts;
@@ -94,7 +91,7 @@ class ExceptionChecksTest {
 
     /// `new StringReader("a").read()`.
     private static Invocation<Prim.Int> read() {
-        return call(new_(StringReader_.new_String, literal("a")), StringReader_.read);
+        return new_(StringReader_.new_String, literal("a")).call(StringReader_.read);
     }
 
     @Nested
@@ -119,7 +116,7 @@ class ExceptionChecksTest {
 
             assertThatIllegalStateException()
                     .isThrownBy(() -> intMethod(b -> {
-                        b.exec(call(literal("a"), String_.length));
+                        b.exec(literal("a").call(String_.length));
                         reached.set("the statement before");
                         b.exec(read());
                         reached.set("the statement after");
@@ -133,8 +130,8 @@ class ExceptionChecksTest {
         @Test
         void aCallNestedInAnExpressionIsFound() {
             asJavac(
-                    () -> intMethod(
-                            b -> b.return_(call(call(literal("a"), String_.repeat_int, read()), String_.length))),
+                    () -> intMethod(b -> b.return_(
+                            literal("a").call(String_.repeat_int, read()).call(String_.length))),
                     "the checked exception java.io.IOException",
                     "static int m() { return \"a\".repeat(" + READ + ").length(); }",
                     "unreported exception java.io.IOException");
@@ -298,7 +295,7 @@ class ExceptionChecksTest {
                         var m = cb.declareVoidStaticMethod("m", StringReader_.TOKEN);
                         var bodies = cb.bodies();
                         bodies.define(
-                                m, (b, r) -> b.exec(voidCall(r, Reader_.close)).end());
+                                m, (b, r) -> b.exec(r.voidCall(Reader_.close)).end());
                         return bodies;
                     }),
                     "void java.io.Reader.close() in the body of static method m can throw the checked exception"
@@ -389,7 +386,7 @@ class ExceptionChecksTest {
                                     t -> t.if_(
                                             literal(true),
                                             x -> x.while_(
-                                                    call(literal("a"), String_.isEmpty),
+                                                    literal("a").call(String_.isEmpty),
                                                     (loop, _) -> loop.exec(read()))))
                             .return_(literal(0))),
                     "static int m() { try { if (true) { while (\"a\".isEmpty()) { " + READ
@@ -467,7 +464,7 @@ class ExceptionChecksTest {
             assertThatIllegalStateException()
                     .isThrownBy(() -> intMethod(b -> b.try_(
                                     h -> h.finally_(_ -> h.catch_(RuntimeException_.TOKEN, (_, _) -> {})),
-                                    t -> t.exec(call(literal("a"), String_.length)))
+                                    t -> t.exec(literal("a").call(String_.length)))
                             .return_(literal(0))))
                     .withMessageContaining("while its finally_ is being built");
         }
@@ -592,7 +589,7 @@ class ExceptionChecksTest {
                             h -> h.catch_(IOException_.TOKEN, (c, _) -> c.return_(literal(2))),
                             outer -> outer.try_(
                                             h -> h.catch_(RuntimeException_.TOKEN, (c, _) -> c.exec(read())),
-                                            t -> t.exec(call(literal("a"), String_.length)))
+                                            t -> t.exec(literal("a").call(String_.length)))
                                     .return_(literal(1)))),
                     "static int m() { try { try { \"a\".length(); } catch (RuntimeException e) { " + READ
                             + "; } return 1; } catch (IOException e) { return 2; } }");
@@ -711,7 +708,7 @@ class ExceptionChecksTest {
             asJavacAccepts(
                     () -> intMethod(b -> b.try_(
                                     h -> h.catch_(List.of(RuntimeException_.TOKEN, Error_.TOKEN), (_, _) -> {}),
-                                    t -> t.exec(call(literal("a"), String_.length)))
+                                    t -> t.exec(literal("a").call(String_.length)))
                             .return_(literal(0))),
                     "static int m() { try { \"a\".length(); }" + " catch (RuntimeException | Error e) { } return 0; }");
         }
@@ -940,8 +937,8 @@ class ExceptionChecksTest {
                                                 o -> o.tryTerminated(
                                                         h -> h.catch_(
                                                                 IOException_.TOKEN,
-                                                                (c, e) -> c.throw_(
-                                                                        castChecked(FileNotFoundException_.TOKEN, e))),
+                                                                (c, e) ->
+                                                                        c.throw_(e.cast(FileNotFoundException_.TOKEN))),
                                                         t -> t.throw_(new_(UnsupportedEncodingException_.new_))))
                                         .end());
                         return bodies;

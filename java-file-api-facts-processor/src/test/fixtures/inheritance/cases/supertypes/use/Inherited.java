@@ -6,7 +6,6 @@ import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.processor.harness.Typed;
 import p.Derived;
 
-import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.staticCall;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -17,7 +16,7 @@ public final class Inherited {
     private Inherited() {}
 
     public static void aMethodOfTheSuperclass(Typed typed) {
-        assertThat(typed.apply(PrimitiveToken.INT, Derived_.TOKEN, derived -> call(derived, Base_.f), new Derived()))
+        assertThat(typed.apply(PrimitiveToken.INT, Derived_.TOKEN, derived -> derived.call(Base_.f), new Derived()))
                 .isEqualTo(0);
     }
 
@@ -28,13 +27,13 @@ public final class Inherited {
 
     public static void aMethodOfObject(Typed typed) {
         assertThat(typed.apply(
-                        PrimitiveToken.INT, Derived_.TOKEN, derived -> call(derived, Object_.hashCode), new Derived()))
+                        PrimitiveToken.INT, Derived_.TOKEN, derived -> derived.call(Object_.hashCode), new Derived()))
                 .isInstanceOf(Integer.class);
     }
 
     public static void aMethodOfObjectThatNothingOverrides(Typed typed) {
         assertThat(typed.apply(
-                        String_.TOKEN, Derived_.TOKEN, derived -> call(derived, Object_.toString), new Derived()))
+                        String_.TOKEN, Derived_.TOKEN, derived -> derived.call(Object_.toString), new Derived()))
                 .asString()
                 .startsWith("p.Derived@");
     }

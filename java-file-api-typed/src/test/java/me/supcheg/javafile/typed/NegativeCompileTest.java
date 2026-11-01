@@ -83,17 +83,17 @@ class NegativeCompileTest {
         String body = inClass("""
                 cb.bodies().define(cb.declareMethod("length", PrimitiveToken.INT, PrimitiveToken.INT.boxed()), (b, self, boxed) -> b.let(
                         PrimitiveToken.INT, unbox(PrimitiveToken.INT, boxed), i -> b.if_(
-                                ltInt(i, call(literal("abc"), String_.length)),
-                                t -> t.exec(call(literal("abc"), String_.charAt_int, i)))
+                                ltInt(i, literal("abc").call(String_.length)),
+                                t -> t.exec(literal("abc").call(String_.charAt_int, i)))
                         .return_(addInt(i, literal(1)))));
                 cb.bodies().define(cb.declareMethod("boxed", Integer_.TOKEN), (b, self) -> b.return_(box(PrimitiveToken.INT, literal(1))));
                 cb.bodies().define(cb.declareMethod("empty", String_.TOKEN), (b, self) -> b.return_(literalNull(String_.TOKEN)));
                 cb.bodies().define(cb.declareMethod("same", PrimitiveToken.BOOLEAN), (b, self) -> b.return_(eqRef(literal("a"), literal("b"))));
                 new_(Object_.new_);
                 cb.bodies().define(cb.declareMethod("lazy", new Supplier_<>(String_.TOKEN).token, String_.TOKEN), (b, self, s) -> b.return_(
-                        lambda(new Supplier_<>(String_.TOKEN).sam, () -> call(s, String_.trim))));
+                        lambda(new Supplier_<>(String_.TOKEN).sam, () -> s.call(String_.trim))));
                 cb.bodies().define(cb.declareMethod("later", Runnable_.TOKEN, String_.TOKEN), (b, self, s) -> b.return_(
-                        lambdaBlock(Runnable_.sam, lb -> lb.exec(call(s, String_.trim)).end())));
+                        lambdaBlock(Runnable_.sam, lb -> lb.exec(s.call(String_.trim)).end())));
                 cb.bodies().define(cb.declareMethod("advice", String_.TOKEN, Signal_.TOKEN), (b, self, s) -> b.return_(
                         switch_(Signal_.TOKEN, s, String_.TOKEN, c -> c
                                 .case_(Signal_.RED, literal("stop"))
@@ -107,8 +107,10 @@ class NegativeCompileTest {
     void wrongArgumentTypePassedToCall() {
         assertRejected(
                 "WrongArgumentType",
-                "void use() { call(literal(\"hi\"), String_.charAt_int, literal(\"not an int\")); }",
-                "no suitable method found for call");
+                "void use() { literal(\"hi\").call(String_.charAt_int, literal(\"not an int\")); }",
+                "no suitable method found for call(",
+                "me.supcheg.javafile.facts.MethodRef1<java.lang.String,me.supcheg.javafile.facts.Prim.Char,"
+                        + "me.supcheg.javafile.facts.Prim.Int>,me.supcheg.javafile.typed.Expr<java.lang.String>");
     }
 
     @Test
@@ -143,8 +145,10 @@ class NegativeCompileTest {
     void implicitUnboxingOfAnArgumentDoesNotCompile() {
         assertRejected(
                 "ImplicitUnboxingArgument",
-                "void use() { call(literal(\"hi\"), String_.charAt_int, box(PrimitiveToken.INT, literal(0))); }",
-                "no suitable method found for call");
+                "void use() { literal(\"hi\").call(String_.charAt_int, box(PrimitiveToken.INT, literal(0))); }",
+                "no suitable method found for call(",
+                "inference variable A1 has incompatible bounds",
+                "lower bounds: B,java.lang.Integer");
     }
 
     @Test
@@ -183,14 +187,11 @@ class NegativeCompileTest {
         // The fact of a protected member is held back in a Protected, which only the declaration of a
         // subclass opens: no expression is built of it, nor is it defined as a member of the class.
         assertRejected(
-                "ProtectedCall",
-                """
+                "ProtectedCall", """
                 void use(Expr<Object> target) {
-                    call(target, Object_.clone);
+                    target.call(Object_.clone);
                 }
-                """,
-                "no suitable method found for call(me.supcheg.javafile.typed.Expr<java.lang.Object>,"
-                        + "me.supcheg.javafile.facts.Protected<");
+                """, "no suitable method found for call(", "me.supcheg.javafile.facts.Protected<");
         assertRejected(
                 "ProtectedDefine",
                 inClass("cb.bodies().define(Object_.clone, (b, self) -> b.return_(self));"),
@@ -340,7 +341,7 @@ class NegativeCompileTest {
                 "TryBlockNotEnding",
                 inClass("cb.bodies().define(cb.declareMethod(\"m\", PrimitiveToken.INT), (b, self) -> b.tryTerminated("
                         + "h -> h.catch_(RuntimeException_.TOKEN, (c, e) -> c.return_(literal(1))),"
-                        + " t -> t.exec(call(literal(\"x\"), String_.length))));"),
+                        + " t -> t.exec(literal(\"x\").call(String_.length))));"),
                 "bad return type in lambda expression");
     }
 
@@ -349,8 +350,8 @@ class NegativeCompileTest {
         assertRejected(
                 "CatchNotEnding",
                 inClass("cb.bodies().define(cb.declareMethod(\"m\", PrimitiveToken.INT), (b, self) -> b.tryTerminated("
-                        + "h -> h.catch_(RuntimeException_.TOKEN, (c, e) -> c.exec(call(literal(\"x\"),"
-                        + " String_.length))),"
+                        + "h -> h.catch_(RuntimeException_.TOKEN, (c, e) -> c.exec(literal(\"x\")"
+                        + " .call(String_.length))),"
                         + " t -> t.return_(literal(1))));"),
                 "bad return type in lambda expression");
     }
@@ -362,7 +363,7 @@ class NegativeCompileTest {
         assertRejected(
                 "ThisFromToken",
                 inClass("cb.bodies().define(cb.declareStaticMethod(\"m\", String_.TOKEN),"
-                        + " b -> b.return_(call(this_(String_.TOKEN), Object_.toString)));"),
+                        + " b -> b.return_(this_(String_.TOKEN).call(Object_.toString)));"),
                 "cannot find symbol",
                 "method this_(me.supcheg.javafile.facts.FinalClassToken<java.lang.String>)");
     }
@@ -387,17 +388,16 @@ class NegativeCompileTest {
                             var x = a.declareField("x", PrimitiveToken.INT);
                             TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), ClassDesc.of("fixtures", "B"), new TypedJavaFile.TypedClassSpec() {
                                 public <B> TypedClassBodies<B> build(TypedClassBuilder<B> b) {
-                                    b.bodies().define(b.declareMethod("m", PrimitiveToken.INT), (body, self) -> body.return_(field(self, x)));
+                                    b.bodies().define(b.declareMethod("m", PrimitiveToken.INT), (body, self) -> body.return_(self.field(x)));
                                 }
                             });
                         }
                     });
                 }
                 """,
-                "method field in class me.supcheg.javafile.typed.Expressions cannot be applied to given types",
-                "inference variable O has incompatible bounds",
-                "equality constraints: A",
-                "lower bounds: B");
+                "method field in class me.supcheg.javafile.typed.Expr<T> cannot be applied to given types;",
+                "required: me.supcheg.javafile.facts.FieldRef<? super B,F>",
+                "found:    me.supcheg.javafile.facts.FieldRef<A,me.supcheg.javafile.facts.Prim.Int>");
     }
 
     /// A specification of a class `fixtures.Generated` that extends `Object`, whole: `%s` is the
@@ -515,12 +515,14 @@ class NegativeCompileTest {
 
     @Test
     void aCastToAPrimitiveTypeDoesNotCompile() {
-        // B13, the static half: a cast or pattern type is a reference type
+        // B13: a cast or pattern type is a reference type
         assertRejected(
                 "CastToPrimitive",
-                "void use() { castChecked(PrimitiveToken.INT, literalNull(Object_.TOKEN)); }",
-                "method castChecked in class me.supcheg.javafile.typed.Expressions cannot be applied to given types",
-                "cannot be converted to me.supcheg.javafile.facts.RefToken<T>");
+                "void use() { literalNull(Object_.TOKEN).cast(PrimitiveToken.INT); }",
+                "method cast in class me.supcheg.javafile.typed.Expr<T> cannot be applied to given types;",
+                "required: me.supcheg.javafile.facts.RefToken<U>",
+                "found:    me.supcheg.javafile.facts.PrimitiveToken<me.supcheg.javafile.facts.Prim.Int,"
+                        + "java.lang.Integer,int[]>");
     }
 
     @Test
@@ -628,9 +630,9 @@ class NegativeCompileTest {
                 "MethodOfAnUnrelatedType",
                 inGenericHeader(
                         "var cb = h.extendsObject().members();"
-                                + " cb.bodies().define(cb.declareMethod(\"m\", PrimitiveToken.INT, n), (b, self, v) -> b.return_(call(v, String_.length)));"),
-                "no suitable method found for call(me.supcheg.javafile.typed.Var<N>,"
-                        + "me.supcheg.javafile.facts.MethodRef0<java.lang.String,me.supcheg.javafile.facts.Prim.Int>)");
+                                + " cb.bodies().define(cb.declareMethod(\"m\", PrimitiveToken.INT, n), (b, self, v) -> b.return_(v.call(String_.length)));"),
+                "no suitable method found for call(",
+                "me.supcheg.javafile.facts.MethodRef0<java.lang.String,me.supcheg.javafile.facts.Prim.Int>");
     }
 
     @Test
@@ -651,9 +653,9 @@ class NegativeCompileTest {
                 inGenericHeader(
                         "var cb = h.extendsObject().members();"
                                 + " var m = cb.declareMethod(\"m\", PrimitiveToken.INT);"
-                                + " cb.bodies().define(cb.declareMethod(\"k\", PrimitiveToken.INT, n), (b, self, v) -> b.return_(call(v, m)));"),
-                "no suitable method found for call(me.supcheg.javafile.typed.Var<N>,"
-                        + "me.supcheg.javafile.facts.MethodRef0<Self,me.supcheg.javafile.facts.Prim.Int>)");
+                                + " cb.bodies().define(cb.declareMethod(\"k\", PrimitiveToken.INT, n), (b, self, v) -> b.return_(v.call(m)));"),
+                "no suitable method found for call(",
+                "me.supcheg.javafile.facts.MethodRef0<Self,me.supcheg.javafile.facts.Prim.Int>");
     }
 
     /// The header of a generated class, for fixtures of a class with a superclass: `%s` is the
@@ -815,8 +817,9 @@ class NegativeCompileTest {
                 "cannot find symbol");
         assertRejected(
                 "ProtectedUsedHeldBack",
-                "void use() { call(literal(\"x\"), Base_.hook_String, literal(\"y\")); }",
-                "no suitable method found for call");
+                "void use() { literal(\"x\").call(Base_.hook_String, literal(\"y\")); }",
+                "no suitable method found for call(",
+                "me.supcheg.javafile.facts.Protected<");
     }
 
     @Test
@@ -889,9 +892,10 @@ class NegativeCompileTest {
                 "CaughtType",
                 inClass("cb.bodies().define(cb.declareMethod(\"m\", PrimitiveToken.INT), (b, self) -> b.tryTerminated("
                         + "h -> h.catch_(RuntimeException_.TOKEN, (c, e) -> c.return_("
-                        + "call(e, Integer_.intValue))),"
+                        + "e.call(Integer_.intValue))),"
                         + " t -> t.return_(literal(1))));"),
-                "no suitable method found for call(me.supcheg.javafile.typed.Var<java.lang.RuntimeException>");
+                "no suitable method found for call(",
+                "me.supcheg.javafile.facts.MethodRef0<java.lang.Integer,me.supcheg.javafile.facts.Prim.Int>");
     }
 
     @Test
@@ -984,8 +988,9 @@ class NegativeCompileTest {
     void aParameterOfALambdaIsOfTheTypeOfItsFunctionalInterface() {
         assertRejected(
                 "LambdaParameterType",
-                "void use() { lambda(" + STRING_TO_INTEGER + ", s -> call(s, Integer_.intValue)); }",
-                "no suitable method found for call(me.supcheg.javafile.typed.Var<java.lang.String>,");
+                "void use() { lambda(" + STRING_TO_INTEGER + ", s -> s.call(Integer_.intValue)); }",
+                "no suitable method found for call(",
+                "me.supcheg.javafile.facts.MethodRef0<java.lang.Integer,me.supcheg.javafile.facts.Prim.Int>");
     }
 
     @Test
@@ -997,7 +1002,7 @@ class NegativeCompileTest {
                 "lower bounds: java.lang.String");
         assertRejected(
                 "LambdaUnboxedResult",
-                "void use() { lambda(" + STRING_TO_INTEGER + ", s -> call(s, String_.length)); }",
+                "void use() { lambda(" + STRING_TO_INTEGER + ", s -> s.call(String_.length)); }",
                 "incompatible bounds",
                 "equality constraints: java.lang.Integer");
     }
@@ -1033,7 +1038,7 @@ class NegativeCompileTest {
         assertRejected(
                 "LambdaOfVoidCall",
                 "void use(Expr<Runnable> r) { lambda(new Supplier_<>(String_.TOKEN).sam,"
-                        + " () -> voidCall(r, Runnable_.run)); }",
+                        + " () -> r.voidCall(Runnable_.run)); }",
                 "no suitable method found for lambda(me.supcheg.javafile.facts.Sam0<");
     }
 
@@ -1202,8 +1207,9 @@ class NegativeCompileTest {
         // an element of a String[] read or stored as one of an Object[]: javac types the element as a String
         assertRejected(
                 "ArrayReadAsOfASupertype",
-                "void use(Expr<String[]> a) { at(ArrayToken.of(Object_.TOKEN), a, literal(0)); }",
-                "method at in class me.supcheg.javafile.typed.Expressions cannot be applied to given types");
+                "void use(Expr<String[]> a) { a.arrayAccess(ArrayToken.of(Object_.TOKEN), literal(0)); }",
+                "method arrayAccess in class me.supcheg.javafile.typed.Expr<T> cannot be applied to given types;",
+                "inference variable E has incompatible equality constraints java.lang.Object,java.lang.String");
         assertRejected(
                 "ArrayStoredAsOfASupertype",
                 "void use(Expr<String[]> a) { assignAt(ArrayToken.of(Object_.TOKEN), a, literal(0),"

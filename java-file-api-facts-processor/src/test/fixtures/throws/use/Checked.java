@@ -15,9 +15,7 @@ import me.supcheg.javafile.typed.TypedJavaFile;
 import me.supcheg.javafile.typed.VoidBody;
 import p.Io;
 
-import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.new_;
-import static me.supcheg.javafile.typed.Expressions.voidCall;
 import static me.supcheg.javafile.typed.Expressions.voidStaticCall;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -53,7 +51,7 @@ public final class Checked {
     }
 
     public static void anUncheckedExceptionOfAFactIsNotTracked(Typed typed) {
-        assertThat(typed.apply(PrimitiveToken.INT, Io_.TOKEN, io -> call(io, Io_.unchecked), new Io(0)))
+        assertThat(typed.apply(PrimitiveToken.INT, Io_.TOKEN, io -> io.call(Io_.unchecked), new Io(0)))
                 .isEqualTo(0);
     }
 
@@ -86,7 +84,7 @@ public final class Checked {
                 var custom = cb.throwing(Failure_.TOKEN).declareVoidStaticMethod("custom", Io_.TOKEN);
                 var made = cb.throwing(IOException_.TOKEN).declareStaticMethod("made", Io_.TOKEN);
                 var bodies = cb.bodies();
-                bodies.define(custom, (b, io) -> b.exec(voidCall(io, Io_.custom))
+                bodies.define(custom, (b, io) -> b.exec(io.voidCall(Io_.custom))
                                 .end());
                 bodies.define(made, b -> b.return_(new_(Io_.new_)));
                 return bodies;
@@ -108,7 +106,7 @@ public final class Checked {
                 bodies.define(multi, (b, io) -> b.try_(
                                 h -> h.catch_(IOException_.TOKEN, (_, _) -> {})
                                         .catch_(InterruptedException_.TOKEN, (_, _) -> {}),
-                                t -> t.exec(voidCall(io, Io_.multi)))
+                                t -> t.exec(io.voidCall(Io_.multi)))
                         .end());
                 return bodies;
             }
@@ -123,7 +121,7 @@ public final class Checked {
                         var bodies = cb.bodies();
                         bodies.define(multi, (b, io) -> b.try_(
                                         h -> h.catch_(IOException_.TOKEN, (_, _) -> {}),
-                                        t -> t.exec(voidCall(io, Io_.multi)))
+                                        t -> t.exec(io.voidCall(Io_.multi)))
                                 .end());
                         return bodies;
                     }
@@ -158,7 +156,7 @@ public final class Checked {
                     public <Self> TypedClassBodies<Self> declare(TypedClassBuilder<Self> cb) {
                         var generic = cb.declareVoidStaticMethod("generic", Io_.TOKEN);
                         var bodies = cb.bodies();
-                        bodies.define(generic, (b, io) -> b.exec(voidCall(io, Io_.generic(Failure_.TOKEN)))
+                        bodies.define(generic, (b, io) -> b.exec(io.voidCall(Io_.generic(Failure_.TOKEN)))
                                         .end());
                         return bodies;
                     }
@@ -170,7 +168,7 @@ public final class Checked {
             public <Self> TypedClassBodies<Self> declare(TypedClassBuilder<Self> cb) {
                 var generic = cb.declareVoidStaticMethod("generic", Io_.TOKEN);
                 var bodies = cb.bodies();
-                bodies.define(generic, (b, io) -> b.exec(voidCall(io, Io_.generic(IllegalStateException_.TOKEN)))
+                bodies.define(generic, (b, io) -> b.exec(io.voidCall(Io_.generic(IllegalStateException_.TOKEN)))
                                 .end());
                 return bodies;
             }

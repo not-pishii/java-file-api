@@ -21,10 +21,7 @@ import java.lang.constant.ClassDesc;
 
 import static me.supcheg.javafile.typed.Expressions.addInt;
 import static me.supcheg.javafile.typed.Expressions.assign;
-import static me.supcheg.javafile.typed.Expressions.call;
-import static me.supcheg.javafile.typed.Expressions.castChecked;
 import static me.supcheg.javafile.typed.Expressions.cond;
-import static me.supcheg.javafile.typed.Expressions.field;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.literalNull;
 import static me.supcheg.javafile.typed.Expressions.new_;
@@ -77,28 +74,29 @@ class NarrowedCallTest {
                 bodies.define(which, (b, self, v) -> b.return_(literal("string")));
                 bodies.define(
                         cast,
-                        (b, self) -> b.return_(castChecked(Integer_.TOKEN, call(asOrigin.apply(self), Origin_.get))));
+                        (b, self) ->
+                                b.return_(asOrigin.apply(self).call(Origin_.get).cast(Integer_.TOKEN)));
                 bodies.define(
                         tested,
                         (b, self) -> b.ifInstanceOfElse(
-                                call(asOrigin.apply(self), Origin_.get),
+                                asOrigin.apply(self).call(Origin_.get),
                                 Integer_.TOKEN,
                                 (t, _) -> t.return_(literal("integer")),
                                 e -> e.return_(literal("other"))));
                 bodies.define(
                         chosen,
-                        (b, self, flag) -> b.return_(call(
-                                self,
+                        (b, self, flag) -> b.return_(self.call(
                                 whichObject,
                                 cond(
                                         flag,
-                                        call(asOrigin.apply(self), Origin_.get),
-                                        call(asOrigin.apply(self), Origin_.get),
+                                        asOrigin.apply(self).call(Origin_.get),
+                                        asOrigin.apply(self).call(Origin_.get),
                                         Object_.TOKEN))));
                 bodies.define(
                         made,
-                        (b, self) -> b.return_(field(
-                                new_(Picked_.new_Object, call(asOrigin.apply(self), Origin_.get)), Picked_.which)));
+                        (b, self) -> b.return_(
+                                new_(Picked_.new_Object, asOrigin.apply(self).call(Origin_.get))
+                                        .field(Picked_.which)));
                 bodies.define(
                         counted,
                         (b, self) -> b.letVar(
@@ -106,7 +104,7 @@ class NarrowedCallTest {
                                 literal(0),
                                 n -> b.forEach(
                                                 Object_.TOKEN,
-                                                call(asOrigin.apply(self), Origin_.each),
+                                                asOrigin.apply(self).call(Origin_.each),
                                                 (loop, _, _) -> loop.exec(assign(n, addInt(n, literal(1)))))
                                         .return_(n)));
                 return bodies;
@@ -140,7 +138,9 @@ class NarrowedCallTest {
                         var fault = cb.protected_(Maker_.fault);
                         var f = cb.declareMethod("f", String_.TOKEN);
                         var bodies = cb.bodies(constructor, ctor -> ctor.super_(Maker_.new_, (b, self) -> b.end()));
-                        bodies.define(f, (b, self) -> b.throw_(call(cb.asSuper().apply(self), fault)));
+                        bodies.define(
+                                f,
+                                (b, self) -> b.throw_(cb.asSuper().apply(self).call(fault)));
                         return bodies;
                     }
                 }),
@@ -160,7 +160,9 @@ class NarrowedCallTest {
                 bodies.define(
                         f,
                         (b, self) -> b.let(
-                                RuntimeException_.TOKEN, call(cb.asSuper().apply(self), fault), e -> b.throw_(e)));
+                                RuntimeException_.TOKEN,
+                                cb.asSuper().apply(self).call(fault),
+                                e -> b.throw_(e)));
                 return bodies;
             }
         }));

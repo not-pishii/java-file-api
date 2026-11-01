@@ -25,7 +25,6 @@ import java.util.Set;
 
 import static me.supcheg.javafile.typed.Expressions.addInt;
 import static me.supcheg.javafile.typed.Expressions.assignField;
-import static me.supcheg.javafile.typed.Expressions.field;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -74,8 +73,7 @@ class TypedModifierTest {
                         bodies.initialize(stamp, literal(0));
                         bodies.define(
                                 bump,
-                                (b, self) -> b.exec(
-                                                assignField(self, counter, addInt(field(self, counter), literal(1))))
+                                (b, self) -> b.exec(assignField(self, counter, addInt(self.field(counter), literal(1))))
                                         .end());
                         bodies.define(read, b -> b.return_(literal(3)));
                         return bodies;

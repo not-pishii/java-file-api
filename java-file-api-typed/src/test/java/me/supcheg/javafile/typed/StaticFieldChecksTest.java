@@ -15,7 +15,6 @@ import java.util.Set;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
 import static me.supcheg.javafile.typed.Expressions.addInt;
-import static me.supcheg.javafile.typed.Expressions.castChecked;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.literalNull;
 import static me.supcheg.javafile.typed.Expressions.staticField;
@@ -67,7 +66,7 @@ class StaticFieldChecksTest {
                         var cb = h.extendsObject().members();
                         var value = cb.declareStaticField("value", Object_.TOKEN);
                         var bodies = cb.bodies();
-                        bodies.initialize(value, castChecked(t, literalNull(t)));
+                        bodies.initialize(value, literalNull(t).cast(t));
                         return bodies;
                     }
                 }),

@@ -237,6 +237,7 @@ public final class TypedCodegen {
     public static List<JavaFile> generate() {
         return Stream.of(
                         Stream.of(
+                                exprArities(),
                                 expressionArities(),
                                 declarationArities(),
                                 variableArityDeclarationArities(),
@@ -1108,9 +1109,25 @@ public final class TypedCodegen {
         }
     }
 
+    /// The calls that continue an expression: `target.call(method, a1, ..., an)`, or with the arguments of the
+    /// last parameter one by one, as methods of [me.supcheg.javafile.typed.Expr].
+    private static JavaFile exprArities() {
+        return arities("ExprArities", List.of("T"), EXPR, cb -> {
+            hook(cb, List.of(), appliedTo(EXPR, "T"), "self");
+            for (Call call : List.of(Call.CALL, Call.VOID_CALL)) {
+                for (int n = 0; n <= REACH.calls(); n++) {
+                    instanceCallForm(cb, call, n, false);
+                    if (n >= 1) {
+                        instanceCallForm(cb, call, n, true);
+                    }
+                }
+            }
+        });
+    }
+
     private static JavaFile expressionArities() {
         return arities("ExpressionArities", List.of(), EXPRESSIONS, cb -> {
-            for (Call call : Call.values()) {
+            for (Call call : List.of(Call.STATIC_CALL, Call.VOID_STATIC_CALL, Call.NEW)) {
                 for (int n = 0; n <= REACH.calls(); n++) {
                     callForm(cb, call, n, false);
                     if (n >= 1) {
@@ -1129,7 +1146,73 @@ public final class TypedCodegen {
         });
     }
 
-    /// `call(target, method, a1, ..., an)`, or with the arguments of the last parameter one by one.
+    /// `target.call(method, a1, ..., an)`, or with the arguments of the last parameter one by one: the fact's
+    /// owner is a supertype of the type of `this`, so a call the type does not have does not compile.
+    private static void instanceCallForm(ClassBuilder cb, Call call, int n, boolean spread) {
+        List<String> as = as(n);
+        int each = spread ? n - 1 : n;
+        List<TypeArg> factArgs = Stream.concat(
+                        Stream.of(supering("T")),
+                        Stream.concat(Stream.of(exact("R")).filter(_ -> call.hasResult), exacts(as).stream()))
+                .toList();
+        TypeRef fact = applied(facts(call.prefix + n), factArgs);
+        List<Param> params = listOf(
+                List.of(param(call.fact, fact)),
+                IntStream.rangeClosed(1, each)
+                        .mapToObj(i -> param("a" + i, expr("A" + i)))
+                        .toList(),
+                spread ? List.of(param("rest", appliedTo(VARARGS, "A" + n))) : List.<Param>of());
+        Expr node = spread ? instanceSpreadNode(call, each) : instanceEachNode(call, n);
+        Expr value =
+                switch (call) {
+                    case CALL -> newDiamond(INVOCATION, node, field(call.fact).call("result"));
+                    case VOID_CALL -> new_(VOID_INVOCATION, node);
+                    default -> throw new IllegalStateException("no instance form of " + call);
+                };
+        Doc doc = Doc.of("Calls " + call.what + " of " + plural(n, "parameter")
+                        + (spread
+                                ? ", the arguments of its last parameter, which is of variable arity, one by one"
+                                        + " (see [#varargs])."
+                                : "."))
+                .param(call.fact, "the fact of the method")
+                .arguments(each, "argument");
+        Doc described = (spread ? doc.param("rest", "the arguments of the last parameter") : doc)
+                .typeParams(n, "type")
+                .returns("the call");
+        method(
+                cb,
+                PUBLIC,
+                typeVars(concat(call.hasResult ? List.of("R") : List.of(), as)),
+                call.returned(),
+                call.name,
+                params,
+                described,
+                b -> b.return_(value));
+    }
+
+    private static Expr instanceEachNode(Call call, int n) {
+        return switch (call) {
+            case CALL, VOID_CALL ->
+                new_(
+                        NODE_CALL,
+                        staticCall(EXPRESSIONS, "receiver", call("self"), field("method")),
+                        field("method"),
+                        arguments(n),
+                        each());
+            default -> throw new IllegalStateException("no instance form of " + call);
+        };
+    }
+
+    private static Expr instanceSpreadNode(Call call, int leading) {
+        return switch (call) {
+            case CALL, VOID_CALL ->
+                staticCall(EXPRESSIONS, "callNode", call("self"), field("method"), field("rest"), arguments(leading));
+            default -> throw new IllegalStateException("no instance form of " + call);
+        };
+    }
+
+    /// `staticCall(method, a1, ..., an)`, `voidStaticCall`, `new_`, or with the arguments of the last parameter
+    /// one by one.
     private static void callForm(ClassBuilder cb, Call call, int n, boolean spread) {
         List<String> as = as(n);
         int each = spread ? n - 1 : n;

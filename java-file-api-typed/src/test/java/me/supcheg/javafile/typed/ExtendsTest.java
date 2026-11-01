@@ -35,14 +35,11 @@ import java.util.List;
 
 import static me.supcheg.javafile.typed.Expressions.addInt;
 import static me.supcheg.javafile.typed.Expressions.assignField;
-import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.concat;
-import static me.supcheg.javafile.typed.Expressions.field;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.new_;
 import static me.supcheg.javafile.typed.Expressions.staticCall;
 import static me.supcheg.javafile.typed.Expressions.subInt;
-import static me.supcheg.javafile.typed.Expressions.voidCall;
 import static me.supcheg.javafile.typed.JavacVerdict.classAsJavac;
 import static me.supcheg.javafile.typed.JavacVerdict.classUnlikeJavac;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -93,16 +90,16 @@ class ExtendsTest {
                     bodies.define(size.method(), (b, self) -> b.return_(literal(2)));
                     bodies.define(
                             compareTo.method(),
-                            (b, self, other) ->
-                                    b.return_(subInt(call(self, size.method()), call(other, size.method()))));
+                            (b, self, other) -> b.return_(subInt(self.call(size.method()), other.call(size.method()))));
                     bodies.define(
                             toString,
                             (b, self) -> b.return_(concat(literal("names"), bodies.superCall(self, coll.toString))));
-                    bodies.define(empty, (b, self) -> b.return_(call(asList.apply(self), coll.isEmpty)));
+                    bodies.define(
+                            empty, (b, self) -> b.return_(asList.apply(self).call(coll.isEmpty)));
                     bodies.define(
                             joined,
                             (b, self) -> b.forEach(String_.TOKEN, asList.apply(self), (body, item, loop) -> {})
-                                    .return_(call(asComparable.apply(self), Object_.toString)));
+                                    .return_(asComparable.apply(self).call(Object_.toString)));
                     return bodies;
                 }
             }));
@@ -154,7 +151,8 @@ class ExtendsTest {
                                     handlers -> handlers.catch_(
                                             asException,
                                             cb.self(),
-                                            (c, e) -> c.return_(call(asException.apply(e), Throwable_.getMessage))),
+                                            (c, e) -> c.return_(
+                                                    asException.apply(e).call(Throwable_.getMessage))),
                                     t -> t.return_(staticCall(raise, literal("mine")))));
                     bodies.define(rethrow, (b, self) -> b.throw_(asException.apply(self)));
                     return bodies;
@@ -189,7 +187,7 @@ class ExtendsTest {
                     var bodies = cb.bodies(constructor, ctor -> ctor.super_(Thread_.new_, (b, self) -> b.end()));
                     bodies.define(
                             ranAsRunnable,
-                            (b, self) -> b.exec(voidCall(asRunnable.apply(self), Runnable_.run))
+                            (b, self) -> b.exec(asRunnable.apply(self).voidCall(Runnable_.run))
                                     .end());
                     return bodies;
                 }
@@ -230,15 +228,16 @@ class ExtendsTest {
                             constructor,
                             (ctor, name) ->
                                     ctor.super_(Base_.super_String, concat(name, literal("!")), (b, self) -> b.end()));
-                    bodies.define(viaBase, (b, self) -> b.return_(call(asBase.apply(self), hook, literal("x"))));
-                    bodies.define(viaOwn, (b, self) -> b.return_(call(self, own, literal("y"))));
+                    bodies.define(
+                            viaBase, (b, self) -> b.return_(asBase.apply(self).call(hook, literal("x"))));
+                    bodies.define(viaOwn, (b, self) -> b.return_(self.call(own, literal("y"))));
                     bodies.define(
                             counted,
                             (b, self) -> b.exec(assignField(
                                             asBase.apply(self),
                                             hits,
-                                            addInt(field(asBase.apply(self), hits), literal(5))))
-                                    .return_(field(asBase.apply(self), hits)));
+                                            addInt(asBase.apply(self).field(hits), literal(5))))
+                                    .return_(asBase.apply(self).field(hits)));
                     bodies.define(saying, (b, self) -> b.return_(staticCall(motto)));
                     return bodies;
                 }
@@ -335,11 +334,12 @@ class ExtendsTest {
                     var bodies = cb.bodies(constructor, ctor -> ctor.super_(Mid_.new_, (b, self) -> b.end()));
                     bodies.define(
                             hooked,
-                            (b, self) -> b.return_(bodies.superCall(self, hook, call(asMid.apply(self), Base_.greet))));
+                            (b, self) -> b.return_(bodies.superCall(
+                                    self, hook, asMid.apply(self).call(Base_.greet))));
                     bodies.define(
                             ran,
-                            (b, self) -> b.exec(voidCall(asRunnable.apply(self), Runnable_.run))
-                                    .return_(field(asMid.apply(self), Mid_.runs)));
+                            (b, self) -> b.exec(asRunnable.apply(self).voidCall(Runnable_.run))
+                                    .return_(asMid.apply(self).field(Mid_.runs)));
                     return bodies;
                 }
             }));
@@ -524,7 +524,7 @@ class ExtendsTest {
                     var constructor = cb.declareConstructor();
                     var go = cb.declareMethod("go", String_.TOKEN);
                     var bodies = cb.bodies(constructor, ctor -> ctor.super_(Mid_.new_, (b, self) -> b.end()));
-                    bodies.define(go, (b, self) -> b.return_(call(asNamed.apply(self), Named_.label)));
+                    bodies.define(go, (b, self) -> b.return_(asNamed.apply(self).call(Named_.label)));
                     return bodies;
                 }
             }));
@@ -711,7 +711,7 @@ class ExtendsTest {
                             var hook = cb.protected_(Base_.hook_String);
                             var other = cb.declareMethod("other", String_.TOKEN, Base_.TOKEN);
                             var bodies = cb.bodies(constructor, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
-                            bodies.define(other, (b, self, base) -> b.return_(call(base, hook, literal("x"))));
+                            bodies.define(other, (b, self, base) -> b.return_(base.call(hook, literal("x"))));
                             return bodies;
                         }
                     }),
@@ -738,10 +738,10 @@ class ExtendsTest {
                             var bodies = cb.bodies(constructor, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
                             bodies.define(
                                     picked,
-                                    (b, self) -> b.return_(call(
-                                            asBase.apply(self),
-                                            Base_.pick_String,
-                                            call(asBase.apply(self), hook, literal("x")))));
+                                    (b, self) -> b.return_(asBase.apply(self)
+                                            .call(
+                                                    Base_.pick_String,
+                                                    asBase.apply(self).call(hook, literal("x")))));
                             return bodies;
                         }
                     }))
@@ -760,8 +760,8 @@ class ExtendsTest {
                             picked,
                             (b, self) -> b.let(
                                     String_.TOKEN,
-                                    call(asBase.apply(self), hook, literal("x")),
-                                    hooked -> b.return_(call(asBase.apply(self), Base_.pick_String, hooked))));
+                                    asBase.apply(self).call(hook, literal("x")),
+                                    hooked -> b.return_(asBase.apply(self).call(Base_.pick_String, hooked))));
                     return bodies;
                 }
             }));
@@ -786,7 +786,7 @@ class ExtendsTest {
                             bodies.define(
                                     peek,
                                     (b, self, other) ->
-                                            b.return_(field(cb.asSuper().apply(other), hits)));
+                                            b.return_(cb.asSuper().apply(other).field(hits)));
                             return bodies;
                         }
                     }),
@@ -811,7 +811,8 @@ class ExtendsTest {
                             var bodies = cb.bodies(constructor, ctor -> ctor.super_(Mid_.new_, (b, self) -> b.end()));
                             bodies.define(
                                     peek,
-                                    (b, self) -> b.return_(field(cb.asSuper().apply(self), hits)));
+                                    (b, self) ->
+                                            b.return_(cb.asSuper().apply(self).field(hits)));
                             return bodies;
                         }
                     }),
@@ -905,7 +906,7 @@ class ExtendsTest {
                             bodies.define(describe.method(), (b, self, p) -> b.return_(p));
                             bodies.define(
                                     checked,
-                                    (b, self) -> b.exec(voidCall(cb.asSuper().apply(self), check))
+                                    (b, self) -> b.exec(cb.asSuper().apply(self).voidCall(check))
                                             .end());
                             return bodies;
                         }

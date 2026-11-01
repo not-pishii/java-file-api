@@ -25,7 +25,6 @@ import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.ltInt;
 import static me.supcheg.javafile.typed.Expressions.staticCall;
 import static me.supcheg.javafile.typed.Expressions.staticField;
-import static me.supcheg.javafile.typed.Expressions.voidCall;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /// Positive end-to-end compile tests (§11) of the terminating forms
@@ -38,7 +37,7 @@ class ControlFlowCompileTest {
     private static final ClassDesc DESC = ClassDesc.of("me.supcheg.example", "ControlFlow");
 
     private static Effect print(Expr<Prim.Int> value) {
-        return voidCall(staticField(System_.out), PrintStream_.println_int, value);
+        return staticField(System_.out).voidCall(PrintStream_.println_int, value);
     }
 
     private static Compilation compile(JavaFile file) {
@@ -81,7 +80,7 @@ class ControlFlowCompileTest {
                                 (b, s) -> b.tryTerminated(
                                         h -> h.catch_(NumberFormatException_.TOKEN, (c, _) -> c.return_(literal(-1)))
                                                 .finally_(f -> f.exec(
-                                                        voidCall(staticField(System_.out), PrintStream_.println))),
+                                                        staticField(System_.out).voidCall(PrintStream_.println))),
                                         t -> t.return_(staticCall(Integer_.parseInt_String, s))));
                         bodies.define(maybe, (b, flag) -> b.ifElse(flag, VoidBody::end, VoidBody::return_));
                         bodies.define(

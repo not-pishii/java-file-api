@@ -15,10 +15,8 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;
 
-import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.concat;
 import static me.supcheg.javafile.typed.Expressions.eqRef;
-import static me.supcheg.javafile.typed.Expressions.length;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.new_;
 import static me.supcheg.javafile.typed.Expressions.staticCall;
@@ -48,7 +46,7 @@ class TryResourcesCompileTest {
                                 (b, failing) -> b.tryWithResourcesTerminated(
                                         h -> h.catch_(
                                                 IllegalStateException_.TOKEN,
-                                                (c, e) -> c.return_(call(e, Throwable_.getMessage))),
+                                                (c, e) -> c.return_(e.call(Throwable_.getMessage))),
                                         (t, resources) -> {
                                             var resource = resources.resource_(
                                                     Closing_.TOKEN, new_(Closing_.new_boolean, failing));
@@ -61,12 +59,11 @@ class TryResourcesCompileTest {
                                         h -> h.catch_(
                                                 IllegalStateException_.TOKEN,
                                                 (c, e) -> c.return_(concat(
-                                                        concat(call(e, Throwable_.getMessage), literal(":")),
+                                                        concat(e.call(Throwable_.getMessage), literal(":")),
                                                         staticCall(
                                                                 String_.valueOf_int,
-                                                                length(
-                                                                        ArrayToken.of(Throwable_.TOKEN),
-                                                                        call(e, Throwable_.getSuppressed)))))),
+                                                                e.call(Throwable_.getSuppressed)
+                                                                        .length(ArrayToken.of(Throwable_.TOKEN)))))),
                                         (t, resources) -> {
                                             var resource = resources.resource_(
                                                     Closing_.TOKEN, new_(Closing_.new_boolean, failing));

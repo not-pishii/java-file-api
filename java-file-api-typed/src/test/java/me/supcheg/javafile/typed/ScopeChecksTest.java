@@ -24,7 +24,6 @@ import static me.supcheg.javafile.typed.Expressions.gtInt;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.not;
 import static me.supcheg.javafile.typed.Expressions.staticField;
-import static me.supcheg.javafile.typed.Expressions.voidCall;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
@@ -53,7 +52,7 @@ class ScopeChecksTest {
     }
 
     private static Effect print(Expr<Prim.Int> value) {
-        return voidCall(staticField(System_.out), PrintStream_.println_int, value);
+        return staticField(System_.out).voidCall(PrintStream_.println_int, value);
     }
 
     @Nested

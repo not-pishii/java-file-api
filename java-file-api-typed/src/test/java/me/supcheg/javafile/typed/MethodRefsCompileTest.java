@@ -40,7 +40,7 @@ class MethodRefsCompileTest {
                         var bodies = cb.bodies();
                         bodies.define(
                                 bound,
-                                (b, s) -> b.return_(methodRef(s, String_.trim, SUPPLIER.token, SUPPLIER.sam.method())));
+                                (b, s) -> b.return_(s.methodRef(String_.trim, SUPPLIER.token, SUPPLIER.sam.method())));
                         bodies.define(
                                 unbound,
                                 b -> b.return_(
@@ -80,8 +80,8 @@ class MethodRefsCompileTest {
                         bodies.define(
                                 same,
                                 (b, s) -> b.return_(eqRef(
-                                        methodRef(s, String_.trim, SUPPLIER.token, SUPPLIER.sam.method()),
-                                        methodRef(s, String_.trim, SUPPLIER.token, SUPPLIER.sam.method()))));
+                                        s.methodRef(String_.trim, SUPPLIER.token, SUPPLIER.sam.method()),
+                                        s.methodRef(String_.trim, SUPPLIER.token, SUPPLIER.sam.method()))));
                         return bodies;
                     }
                 }));

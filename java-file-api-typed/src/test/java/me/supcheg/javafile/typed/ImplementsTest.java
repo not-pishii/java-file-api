@@ -28,9 +28,7 @@ import java.util.function.Consumer;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
 import static me.supcheg.javafile.typed.Expressions.assignField;
-import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.concat;
-import static me.supcheg.javafile.typed.Expressions.field;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.subInt;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -80,19 +78,20 @@ class ImplementsTest {
                     bodies.initialize(rank, literal(1));
                     bodies.define(
                             compareTo.method(),
-                            (b, self, other) -> b.return_(subInt(field(self, rank), field(other, rank))));
+                            (b, self, other) -> b.return_(subInt(self.field(rank), other.field(rank))));
                     bodies.define(
                             run.method(),
                             (b, self) ->
                                     b.exec(assignField(self, rank, literal(7))).end());
                     bodies.define(toString, (b, self) -> b.return_(literal("ranked")));
-                    bodies.define(own, (b, self, other) -> b.return_(call(self, compareTo.method(), other)));
+                    bodies.define(own, (b, self, other) -> b.return_(self.call(compareTo.method(), other)));
                     bodies.define(
                             witnessed,
-                            (b, self, other) -> b.return_(call(asComparable.apply(self), cmp.compareTo_T, other)));
+                            (b, self, other) ->
+                                    b.return_(asComparable.apply(self).call(cmp.compareTo_T, other)));
                     bodies.define(
                             ranked,
-                            (b, self) -> b.exec(Expressions.voidCall(asRunnable.apply(self), Runnable_.run))
+                            (b, self) -> b.exec(asRunnable.apply(self).voidCall(Runnable_.run))
                                     .end());
                     return bodies;
                 }
@@ -129,8 +128,9 @@ class ImplementsTest {
                     var wide = cb.throwing(Exception_.TOKEN).declareMethod("wide", String_.TOKEN);
                     var bodies = cb.bodies();
                     bodies.define(call.method(), (b, self) -> b.return_(literal("called")));
-                    bodies.define(narrow, (b, self) -> b.return_(call(self, call.method())));
-                    bodies.define(wide, (b, self) -> b.return_(call(asCallable.apply(self), CALLABLE.call)));
+                    bodies.define(narrow, (b, self) -> b.return_(self.call(call.method())));
+                    bodies.define(
+                            wide, (b, self) -> b.return_(asCallable.apply(self).call(CALLABLE.call)));
                     return bodies;
                 }
             }));

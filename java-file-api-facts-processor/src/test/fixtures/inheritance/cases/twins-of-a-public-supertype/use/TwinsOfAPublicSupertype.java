@@ -15,7 +15,6 @@ import p.PubFn2;
 import p.PubFn3;
 import p.PubImpl;
 
-import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.staticCall;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -51,7 +50,7 @@ public final class TwinsOfAPublicSupertype {
         assertThat(typed.apply(
                         String_.TOKEN,
                         PubAbs_.TOKEN,
-                        abs -> staticCall(Sink_.take_String, call(abs, PStr_.get)),
+                        abs -> staticCall(Sink_.take_String, abs.call(PStr_.get)),
                         new PubImpl()))
                 .isEqualTo("string");
     }
@@ -60,7 +59,7 @@ public final class TwinsOfAPublicSupertype {
         assertThat(typed.apply(
                         String_.TOKEN,
                         PubAbs_.TOKEN,
-                        abs -> staticCall(Sink_.take_Object, call(abs, PStr_.get)),
+                        abs -> staticCall(Sink_.take_Object, abs.call(PStr_.get)),
                         new PubImpl()))
                 .isEqualTo("object");
     }

@@ -18,12 +18,9 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;
 
-import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.cond;
-import static me.supcheg.javafile.typed.Expressions.field;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.literalNull;
-import static me.supcheg.javafile.typed.Expressions.voidCall;
 import static me.supcheg.javafile.typed.TypedJavaFile.typeParam;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -50,10 +47,10 @@ class MultipleBoundsTest {
                         var rank = cb.declareMethod("rank", PrimitiveToken.INT, String_.TOKEN, t);
                         var go = cb.declareVoidMethod("go", t);
                         var bodies = cb.bodies();
-                        bodies.define(rank, (b, self, x, y) -> b.return_(call(y, COMPARABLE.compareTo_T, x)));
+                        bodies.define(rank, (b, self, x, y) -> b.return_(y.call(COMPARABLE.compareTo_T, x)));
                         bodies.define(
                                 go,
-                                (b, self, y) -> b.exec(voidCall(asRunnable.apply(y), Runnable_.run))
+                                (b, self, y) -> b.exec(asRunnable.apply(y).voidCall(Runnable_.run))
                                         .end());
                         return bodies;
                     }
@@ -83,7 +80,7 @@ class MultipleBoundsTest {
                         var bodies = cb.bodies();
                         bodies.define(
                                 go,
-                                (b, self, x, y) -> b.exec(voidCall(asRunnable.apply(x), Runnable_.run))
+                                (b, self, x, y) -> b.exec(asRunnable.apply(x).voidCall(Runnable_.run))
                                         .end());
                         return bodies;
                     }
@@ -109,7 +106,7 @@ class MultipleBoundsTest {
                         var cb = h.extendsObject().members();
                         var rank = cb.declareMethod("rank", PrimitiveToken.INT, String_.TOKEN, t);
                         var bodies = cb.bodies();
-                        bodies.define(rank, (b, self, x, y) -> b.return_(call(y, COMPARABLE.compareTo_T, x)));
+                        bodies.define(rank, (b, self, x, y) -> b.return_(y.call(COMPARABLE.compareTo_T, x)));
                         return bodies;
                     }
                 }));
@@ -135,7 +132,7 @@ class MultipleBoundsTest {
                                 var cb = h.extendsObject().members();
                                 var rank = cb.declareMethod("rank", PrimitiveToken.INT, String_.TOKEN, t);
                                 var bodies = cb.bodies();
-                                bodies.define(rank, (b, self, x, y) -> b.return_(call(y, COMPARABLE.compareTo_T, x)));
+                                bodies.define(rank, (b, self, x, y) -> b.return_(y.call(COMPARABLE.compareTo_T, x)));
                                 return bodies;
                             }
                         }),
@@ -168,7 +165,7 @@ class MultipleBoundsTest {
                                 var cb = h.extendsObject().members();
                                 var tag = cb.declareMethod("tag", String_.TOKEN, t);
                                 var bodies = cb.bodies();
-                                bodies.define(tag, (b, self, y) -> b.return_(field(y, tagged.tag)));
+                                bodies.define(tag, (b, self, y) -> b.return_(y.field(tagged.tag)));
                                 return bodies;
                             }
                         }),
@@ -196,12 +193,12 @@ class MultipleBoundsTest {
                         var picked = cb.declareMethod("picked", String_.TOKEN, t);
                         var go = cb.declareVoidMethod("go", t);
                         var bodies = cb.bodies();
-                        bodies.define(picked, (b, self, y) -> b.return_(call(y, Base_.pick_Object, literal("x"))));
+                        bodies.define(picked, (b, self, y) -> b.return_(y.call(Base_.pick_Object, literal("x"))));
                         // run() of Runnable, which Mid implements
                         bodies.define(
                                 go,
                                 (b, self, y) ->
-                                        b.exec(voidCall(y, Runnable_.run)).end());
+                                        b.exec(y.voidCall(Runnable_.run)).end());
                         return bodies;
                     }
                 }));
@@ -228,7 +225,7 @@ class MultipleBoundsTest {
                         var cb = h.extendsObject().members();
                         var tag = cb.declareMethod("tag", String_.TOKEN, t);
                         var bodies = cb.bodies();
-                        bodies.define(tag, (b, self, y) -> b.return_(field(y, tagged.tag)));
+                        bodies.define(tag, (b, self, y) -> b.return_(y.field(tagged.tag)));
                         return bodies;
                     }
                 }));

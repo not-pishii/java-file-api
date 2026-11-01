@@ -17,7 +17,6 @@ import java.lang.constant.ClassDesc;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
 import static com.google.testing.compile.Compiler.javac;
-import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.concat;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.subInt;
@@ -70,12 +69,12 @@ class TypedExtendsImplementsCompileTest {
                         bodies.define(
                                 compareTo.method(),
                                 (b, self, other) ->
-                                        b.return_(subInt(call(self, size.method()), call(other, size.method()))));
+                                        b.return_(subInt(self.call(size.method()), other.call(size.method()))));
                         bodies.define(
                                 toString,
                                 (b, self) -> b.return_(
                                         concat(literal("names"), bodies.superCall(self, collection.toString))));
-                        bodies.define(first, (b, self) -> b.return_(call(self, get.method(), literal(0))));
+                        bodies.define(first, (b, self) -> b.return_(self.call(get.method(), literal(0))));
                         return bodies;
                     }
                 });

@@ -15,7 +15,6 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;
 
-import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.JavacVerdict.classAsJavac;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -50,7 +49,8 @@ class SelfResultTest {
                 var twice = cb.declareMethod("twice", cb.self());
                 var bodies = cb.bodies();
                 bodies.define(next.method(), (b, self) -> b.return_(self));
-                bodies.define(twice, (b, self) -> b.return_(call(call(self, next.method()), next.method())));
+                bodies.define(
+                        twice, (b, self) -> b.return_(self.call(next.method()).call(next.method())));
                 return bodies;
             }
         }));
@@ -82,7 +82,8 @@ class SelfResultTest {
                 bodies.define(copy.method(), (b, self) -> b.return_(self));
                 bodies.define(same, (b, self) -> b.return_(self));
                 bodies.define(asSuper, (b, self, label) -> b.return_(self));
-                bodies.define(chain, (b, self) -> b.return_(call(call(self, copy.method()), same)));
+                bodies.define(
+                        chain, (b, self) -> b.return_(self.call(copy.method()).call(same)));
                 return bodies;
             }
         }));

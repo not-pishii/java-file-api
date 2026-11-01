@@ -16,11 +16,8 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;
 
-import static me.supcheg.javafile.typed.Expressions.call;
-import static me.supcheg.javafile.typed.Expressions.castChecked;
 import static me.supcheg.javafile.typed.Expressions.cond;
 import static me.supcheg.javafile.typed.Expressions.eqRef;
-import static me.supcheg.javafile.typed.Expressions.field;
 import static me.supcheg.javafile.typed.Expressions.lambda;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.staticCall;
@@ -63,7 +60,7 @@ class UpcastLoweringTest {
                 var bodies = cb.bodies();
                 bodies.define(equals, (b, self, s) -> b.return_(literal(true)));
                 bodies.define(
-                        viaWitness, (b, self) -> b.return_(call(up.apply(self), Object_.equals_Object, literal("x"))));
+                        viaWitness, (b, self) -> b.return_(up.apply(self).call(Object_.equals_Object, literal("x"))));
                 bodies.define(
                         inLambda,
                         (b, self) -> b.let(
@@ -71,11 +68,11 @@ class UpcastLoweringTest {
                                 lambda(
                                         STRINGS.sam,
                                         () -> cond(
-                                                call(up.apply(self), Object_.equals_Object, literal("x")),
+                                                up.apply(self).call(Object_.equals_Object, literal("x")),
                                                 literal("class"),
                                                 literal("object"),
                                                 String_.TOKEN)),
-                                f -> b.return_(call(f, STRINGS.get))));
+                                f -> b.return_(f.call(STRINGS.get))));
                 return bodies;
             }
         }));
@@ -118,10 +115,11 @@ class UpcastLoweringTest {
                     Expr<Object> witnessed = up.apply(self);
                     // javac types `this` by the class, and a call through it by the class too
                     assertThat(Node.isExact(witnessed.node())).isFalse();
-                    assertThat(Node.isExact(call(witnessed, Object_.equals_Object, literal("x"))
+                    assertThat(Node.isExact(witnessed
+                                    .call(Object_.equals_Object, literal("x"))
                                     .node()))
                             .isFalse();
-                    return b.return_(castChecked(Object_.TOKEN, witnessed));
+                    return b.return_(witnessed.cast(Object_.TOKEN));
                 });
                 return bodies;
             }
@@ -145,7 +143,7 @@ class UpcastLoweringTest {
                 var either = cb.declareMethod("either", PrimitiveToken.BOOLEAN);
                 var equals = cb.declareMethod("equals", PrimitiveToken.BOOLEAN, String_.TOKEN);
                 var bodies = cb.bodies();
-                bodies.define(cast, (b, self) -> b.return_(castChecked(String_.TOKEN, up.apply(self))));
+                bodies.define(cast, (b, self) -> b.return_(up.apply(self).cast(String_.TOKEN)));
                 bodies.define(same, (b, self) -> b.return_(eqRef(up.apply(self), literal("x"))));
                 bodies.define(
                         test,
@@ -156,10 +154,8 @@ class UpcastLoweringTest {
                                 e -> e.return_(literal(false))));
                 bodies.define(
                         either,
-                        (b, self) -> b.return_(call(
-                                cond(literal(true), up.apply(self), up.apply(self), Object_.TOKEN),
-                                Object_.equals_Object,
-                                literal("x"))));
+                        (b, self) -> b.return_(cond(literal(true), up.apply(self), up.apply(self), Object_.TOKEN)
+                                .call(Object_.equals_Object, literal("x"))));
                 bodies.define(equals, (b, self, s) -> b.return_(literal(true)));
                 return bodies;
             }
@@ -190,12 +186,14 @@ class UpcastLoweringTest {
                         var op = cb.declareMethod("op", String_.TOKEN);
                         var bodies = cb.bodies(constructor, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
                         bodies.initialize(name, literal("own"));
-                        bodies.define(nameOfBase, (b, self) -> b.return_(field(asBase.apply(self), Base_.name)));
+                        bodies.define(
+                                nameOfBase,
+                                (b, self) -> b.return_(asBase.apply(self).field(Base_.name)));
                         bodies.define(
                                 op,
                                 (b, self) -> b.return_(switch_(
                                         Op_.TOKEN,
-                                        field(asBase.apply(self), Base_.op),
+                                        asBase.apply(self).field(Base_.op),
                                         String_.TOKEN,
                                         c -> c.case_(Op_.SUB, literal("sub")).default_(literal("other")))));
                         return bodies;
@@ -231,7 +229,7 @@ class UpcastLoweringTest {
                         bodies.define(pickMethod, (b, self, s) -> b.return_(literal("overload")));
                         bodies.define(
                                 picked,
-                                (b, self) -> b.return_(call(asBase.apply(self), Base_.pick_Object, literal("x"))));
+                                (b, self) -> b.return_(asBase.apply(self).call(Base_.pick_Object, literal("x"))));
                         bodies.define(
                                 pickedBySuper,
                                 (b, self) -> b.return_(bodies.superCall(self, Base_.pick_Object, literal("x"))));
@@ -282,7 +280,7 @@ class UpcastLoweringTest {
                 var text = cb.declareMethod("text", String_.TOKEN);
                 var bodies = cb.bodies();
                 bodies.define(me, (b, self) -> b.return_(up.apply(self)));
-                bodies.define(text, (b, self) -> b.return_(call(up.apply(self), Object_.toString)));
+                bodies.define(text, (b, self) -> b.return_(up.apply(self).call(Object_.toString)));
                 return bodies;
             }
         }));

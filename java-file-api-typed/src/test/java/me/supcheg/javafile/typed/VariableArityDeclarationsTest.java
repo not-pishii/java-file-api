@@ -25,12 +25,9 @@ import java.util.List;
 import static me.supcheg.javafile.typed.Expressions.addInt;
 import static me.supcheg.javafile.typed.Expressions.assign;
 import static me.supcheg.javafile.typed.Expressions.assignAt;
-import static me.supcheg.javafile.typed.Expressions.at;
-import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.cloneArray;
 import static me.supcheg.javafile.typed.Expressions.eqRef;
 import static me.supcheg.javafile.typed.Expressions.lambda;
-import static me.supcheg.javafile.typed.Expressions.length;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.literalNull;
 import static me.supcheg.javafile.typed.Expressions.newArrayOf;
@@ -94,12 +91,12 @@ class VariableArityDeclarationsTest {
                         .declareStaticMethod("risky", PrimitiveToken.INT, STRINGS);
                 var bodies = cb.bodies();
                 bodies.define(constructor, (b, self) -> b.end());
-                bodies.define(size, (b, lists) -> b.return_(length(LISTS, lists)));
-                bodies.define(first, (b, self, lists) -> b.return_(length(LISTS, lists)));
+                bodies.define(size, (b, lists) -> b.return_(lists.length(LISTS)));
+                bodies.define(first, (b, self, lists) -> b.return_(lists.length(LISTS)));
                 bodies.define(
                         swap,
-                        (b, lists) -> b.exec(assignAt(LISTS, lists, literal(0), at(LISTS, lists, literal(1))))
-                                .return_(length(LISTS, lists)));
+                        (b, lists) -> b.exec(assignAt(LISTS, lists, literal(0), lists.arrayAccess(LISTS, literal(1))))
+                                .return_(lists.length(LISTS)));
                 bodies.define(
                         total,
                         (b, lists) -> b.letVar(
@@ -109,16 +106,16 @@ class VariableArityDeclarationsTest {
                                                 LISTS,
                                                 lists,
                                                 (loop, each, _) ->
-                                                        loop.exec(assign(n, addInt(n, call(each, STRINGS_LIST.size)))))
+                                                        loop.exec(assign(n, addInt(n, each.call(STRINGS_LIST.size)))))
                                         .return_(n)));
                 bodies.define(
                         supplied,
                         (b, lists) -> b.let(
                                 IntSupplier_.TOKEN,
-                                lambda(IntSupplier_.sam, () -> length(LISTS, lists)),
-                                f -> b.return_(call(f, IntSupplier_.getAsInt))));
-                bodies.define(head, (b, parts) -> b.return_(at(STRINGS, parts, literal(0))));
-                bodies.define(tail, (b, self, count, parts) -> b.return_(at(STRINGS, parts, count)));
+                                lambda(IntSupplier_.sam, () -> lists.length(LISTS)),
+                                f -> b.return_(f.call(IntSupplier_.getAsInt))));
+                bodies.define(head, (b, parts) -> b.return_(parts.arrayAccess(STRINGS, literal(0))));
+                bodies.define(tail, (b, self, count, parts) -> b.return_(parts.arrayAccess(STRINGS, count)));
                 bodies.define(note, (b, parts) -> b.end());
                 bodies.define(noteOn, (b, self, parts) -> b.end());
                 bodies.define(noted, (b, self, count, parts) -> b.end());
@@ -131,8 +128,8 @@ class VariableArityDeclarationsTest {
                         viaArray, b -> b.return_(staticCall(head, newArrayOf(STRINGS, literal("x"), literal("y")))));
                 bodies.define(
                         risky,
-                        (b, parts) ->
-                                b.return_(call(new_(StringReader_.new_String, literal("a")), StringReader_.read)));
+                        (b, parts) -> b.return_(
+                                new_(StringReader_.new_String, literal("a")).call(StringReader_.read)));
                 return bodies;
             }
         }));
@@ -288,7 +285,7 @@ class VariableArityDeclarationsTest {
                 "Varargs method could cause heap pollution");
         // List<String>[] copy = xs;
         JavacVerdict.asJavacWarns(
-                () -> staticOf(PrimitiveToken.INT, (b, xs) -> b.let(LISTS, xs, copy -> b.return_(length(LISTS, copy)))),
+                () -> staticOf(PrimitiveToken.INT, (b, xs) -> b.let(LISTS, xs, copy -> b.return_(copy.length(LISTS)))),
                 HEAP_POLLUTION,
                 "@SafeVarargs static int m(List<String>... xs) { List<String>[] copy = xs; return copy.length; }",
                 "Varargs method could cause heap pollution");
@@ -320,7 +317,7 @@ class VariableArityDeclarationsTest {
                 HEAP_POLLUTION,
                 "@SafeVarargs static boolean m(List<String>... xs) { return xs == null; }");
         JavacVerdict.unlikeJavac(
-                () -> staticOf(PrimitiveToken.INT, (b, xs) -> b.return_(call(xs, Object_.hashCode))),
+                () -> staticOf(PrimitiveToken.INT, (b, xs) -> b.return_(xs.call(Object_.hashCode))),
                 HEAP_POLLUTION,
                 "@SafeVarargs static int m(List<String>... xs) { return xs.hashCode(); }");
     }

@@ -19,7 +19,6 @@ import java.util.function.Function;
 
 import static me.supcheg.javafile.typed.Expressions.addInt;
 import static me.supcheg.javafile.typed.Expressions.assign;
-import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.enumConstant;
 import static me.supcheg.javafile.typed.Expressions.eqRef;
 import static me.supcheg.javafile.typed.Expressions.geInt;
@@ -152,7 +151,7 @@ class FinallyChecksTest {
                     () -> intMethod((b, s) -> b.try_(
                                     h -> h.finally_(f -> f.if_(
                                             isRed(s), t -> t.throw_(new_(IOException_.new_String, literal("red"))))),
-                                    t -> t.exec(call(literal("a"), String_.length)))
+                                    t -> t.exec(literal("a").call(String_.length)))
                             .return_(literal(1))),
                     """
                     static int m(Signal s) throws IOException {
@@ -179,7 +178,7 @@ class FinallyChecksTest {
                                                                             .exec(assign(n, addInt(n, literal(1))))
                                                                             .continue_(ctl))
                                                             .if_(geInt(n, literal(9)), t -> t.break_(outerCtl))),
-                                                    t -> t.exec(call(literal("a"), String_.length))))
+                                                    t -> t.exec(literal("a").call(String_.length))))
                                     .return_(n))),
                     """
                     static int m(Signal s) {

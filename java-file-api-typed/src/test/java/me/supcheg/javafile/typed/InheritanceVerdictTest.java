@@ -37,7 +37,6 @@ import org.junit.jupiter.api.Test;
 import java.lang.constant.ClassDesc;
 
 import static com.google.testing.compile.Compiler.javac;
-import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.JavacVerdict.classAsJavac;
 import static me.supcheg.javafile.typed.JavacVerdict.classUnlikeJavac;
@@ -490,7 +489,8 @@ class InheritanceVerdictTest {
                     var constructor = cb.declareConstructor();
                     var go = cb.declareMethod("go", String_.TOKEN);
                     var bodies = cb.bodies(constructor, ctor -> ctor.super_(Base_.new_, (b, self) -> b.end()));
-                    bodies.define(go, (b, self) -> b.return_(call(asSealing.apply(self), Sealing_.sealed)));
+                    bodies.define(
+                            go, (b, self) -> b.return_(asSealing.apply(self).call(Sealing_.sealed)));
                     return bodies;
                 }
             }));

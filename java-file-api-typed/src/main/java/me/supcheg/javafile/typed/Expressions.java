@@ -9,7 +9,6 @@ import me.supcheg.javafile.facts.ArrayToken;
 import me.supcheg.javafile.facts.DeclaredToken;
 import me.supcheg.javafile.facts.EnumConstant;
 import me.supcheg.javafile.facts.EnumToken;
-import me.supcheg.javafile.facts.FieldRef;
 import me.supcheg.javafile.facts.InterfaceToken;
 import me.supcheg.javafile.facts.Invocable;
 import me.supcheg.javafile.facts.MutableFieldRef;
@@ -42,11 +41,11 @@ import java.util.stream.Stream;
 /// `Object`, so where a reference is taken a primitive value is refused at
 /// run time, with a hint to box it — Java would box it implicitly:
 ///
-/// - a primitive receiver — `call(literal(1), Object_.toString)` — when the
+/// - a primitive receiver — `literal(1).call(Object_.toString)` — when the
 ///   call is built;
 /// - the initializer of a variable or a field, an assigned value, the value
 ///   of an expression lambda, when it is built;
-/// - an argument — `call(list, remove_Object, literal(1))` — and a returned
+/// - an argument — `list.call(remove_Object, literal(1))` — and a returned
 ///   value, where the body is defined.
 ///
 /// **The fact chosen is the member called** (§6.1, §10). A fact names one
@@ -67,10 +66,10 @@ import java.util.stream.Stream;
 ///   where the declared type of the variable, field or returned value is
 ///   exactly the constructed type — `ArrayList<String> v = new ArrayList<>()`.
 ///
-/// **Arities.** `call`, `voidCall`, `staticCall`, `voidStaticCall`, `new_`, `lambda` and `lambdaBlock` take the fact
-/// of a member of any number of parameters, 0 to 12: one overload for each `MethodRefN`, `CtorRefN`, `SamN` of the
-/// facts. They are generated (`TypedCodegen`) into the superclass of this class, and inherited as static methods, so
-/// that an `import static` of them finds them.
+/// **Arities.** `call` and `voidCall` are methods of [Expr] of any number of arguments, 0 to 12: one overload for
+/// each `MethodRefN` of the facts. `staticCall`, `voidStaticCall`, `new_`, `lambda` and `lambdaBlock` take the fact
+/// of a member likewise. They are generated (`TypedCodegen`) into the superclasses of [Expr] and of this class, and
+/// inherited, so that an `import static` of them finds them.
 ///
 /// **Variable arity.** The last parameter of a member of variable arity is given an array the code has, as an
 /// argument of its array type, or its elements one by one, `varargs(type, e1, e2)` as the last argument of a call.
@@ -78,8 +77,8 @@ import java.util.stream.Stream;
 ///
 /// **Arrays.** `newArrayOf(type, e1, e2)` creates an array with its elements, `{e1, e2}` where a declaration of
 /// exactly its type tells the type; `newArray(type, length, ...)` one by its lengths, `cloneArray` copies an array
-/// without a cast, `at`, `length` and `assignAt` read, measure and store into one, and `forEach` of a block loops
-/// over its elements.
+/// without a cast, `array.arrayAccess(type, index)`, `array.length(type)` and `assignAt` read, measure and store
+/// into one, and `forEach` of a block loops over its elements.
 ///
 /// Import the methods statically.
 public final class Expressions extends ExpressionArities {
@@ -183,18 +182,6 @@ public final class Expressions extends ExpressionArities {
     // Member access
     // ------------------------------------------------------------------
 
-    /// Reads an instance field, `target.field`.
-    ///
-    /// @param target the receiver
-    /// @param field the field
-    /// @param <O> the owner type
-    /// @param <T> the field type
-    /// @return the field read
-    /// @throws IllegalArgumentException if `target` is of a primitive type
-    public static <O, T> Expr<T> field(Expr<? extends O> target, FieldRef<O, T> field) {
-        return Expr.of(new Node.FieldGet(receiver(target, field), field), field.type());
-    }
-
     /// Reads a static field, `Owner.field`.
     ///
     /// @param field the field
@@ -205,13 +192,12 @@ public final class Expressions extends ExpressionArities {
     }
 
     // ------------------------------------------------------------------
-    // Calls and instance creation: `call`, `voidCall`, `staticCall`, `voidStaticCall` and `new_`, of the fact of
-    // a member of any number of parameters, and the same with the arguments of a last parameter of variable
-    // arity one by one ([#varargs]). They are the same code at every arity, generated into the superclass of this
-    // class (ExpressionArities, see TypedCodegen), and inherited as static methods: `Expressions.call` and an
-    // `import static` of it find them.
+    // Calls and instance creation: `staticCall`, `voidStaticCall` and `new_`, of the fact of a member of any
+    // number of parameters, and the same with the arguments of a last parameter of variable arity one by one
+    // ([#varargs]). They are the same code at every arity, generated into the superclass of this class
+    // (ExpressionArities, see TypedCodegen), and inherited as static methods. The instance `call` and `voidCall`
+    // continue a [Expr], whose generated superclass (ExprArities) holds them.
     //
-    // - `call` and `voidCall` throw IllegalArgumentException for a receiver of a primitive type;
     // - `new_` takes a `CtorRefN` only, the constructor of an instantiable class: the constructor of an abstract
     //   class is a `SuperCtorRefN`, which `new_` does not take (§3.1). The type arguments are always those of the
     //   fact: lowering renders the diamond itself where the target type is exactly the constructed one. It throws
@@ -226,9 +212,9 @@ public final class Expressions extends ExpressionArities {
     // ------------------------------------------------------------------
 
     /// The arguments of a parameter of variable arity, `m(a, e1, e2)`: the elements of the array that the last
-    /// parameter of a member of variable arity takes. Pass it as the last argument of [#call], [#voidCall],
-    /// [#staticCall], [#voidStaticCall] or [#new_] (and of `superCall` and `super_`); to pass an array the code
-    /// has, pass it as an expression.
+    /// parameter of a member of variable arity takes. Pass it as the last argument of [Expr#call],
+    /// [Expr#voidCall], [#staticCall], [#voidStaticCall] or [#new_] (and of `superCall` and `super_`); to pass
+    /// an array the code has, pass it as an expression.
     ///
     /// No element is boxed implicitly, as no argument of any call is. Where another method of the name could
     /// apply to the arguments, javac would choose it (JLS 15.12.2: a method applicable without variable arity
@@ -307,33 +293,6 @@ public final class Expressions extends ExpressionArities {
     // what its element type is — `ArrayToken.of(String_.TOKEN)` for
     // `String[]`, `PrimitiveToken.INT.array()` for `int[]`
     // ------------------------------------------------------------------
-
-    /// Reads an array element, `array[index]`.
-    ///
-    /// The array is of exactly the type `type` names: an array of a subtype of its component is no
-    /// array of the component here, as it is to Java (JLS 10.10), for javac types the element by the
-    /// array it reads — a `String` of a `String[]`, whatever supertype the generator took it for. Bind
-    /// the array to a variable of the wider array type first to read it as one.
-    ///
-    /// @param type the array type
-    /// @param array the array
-    /// @param index the index
-    /// @param <A> the array type
-    /// @param <T> the element type
-    /// @return the element read
-    public static <A, T> Expr<T> at(ArrayToken<A, T> type, Expr<A> array, Expr<Prim.Int> index) {
-        return Expr.of(new Node.ArrayAt(array.node(), index.node()), type.component());
-    }
-
-    /// Reads `array.length`.
-    ///
-    /// @param type the array type
-    /// @param array the array
-    /// @param <A> the array type
-    /// @return the length
-    public static <A> Expr<Prim.Int> length(ArrayToken<A, ?> type, Expr<? extends A> array) {
-        return Expr.of(new Node.ArrayLength(array.node()), PrimitiveToken.INT);
-    }
 
     /// Creates an array, `new T[length]`, or one of arrays with the lengths of its outer dimensions,
     /// `new T[l1][l2]`; a dimension without a length is left out, `new T[l1][]`. The element type must be
@@ -908,35 +867,7 @@ public final class Expressions extends ExpressionArities {
     }
 
     // ------------------------------------------------------------------
-    // Checked reference cast (§6.1)
-    // ------------------------------------------------------------------
-
-    /// A checked cast, `(T) operand`. Only representable when `T` and the
-    /// operand's static type are in a subtype relation one way or the other —
-    /// enforced by `? super T`, so an unrelated cast does not compile — and
-    /// when the cast is checked (JLS 5.1.6.2), so the run-time check covers
-    /// all of `T`: either `T` is reifiable, or the operand's type is a
-    /// parameterized supertype of `T` that determines its type arguments.
-    /// `(List<?>) o` and `(ArrayList<String>) listOfStrings` are accepted,
-    /// `(List<String>) o` and `(ArrayList<Integer>) listOfStrings` are not.
-    ///
-    /// @param type the target type
-    /// @param operand the operand
-    /// @param <T> the target type
-    /// @return the cast, or `operand` itself if its type is already `T`
-    /// @throws IllegalArgumentException if the cast would be unchecked
-    public static <T> Expr<T> castChecked(RefToken<T> type, Expr<? super T> operand) {
-        Tokens.requireCheckedCast(operand.type(), type, "castChecked");
-        if (Tokens.sameType(operand.type(), type)) {
-            // `(T) operand` would be a redundant cast (javac -Xlint:cast); lowering pins the operand
-            // where the type javac gives it matters.
-            return Expr.of(operand.node(), type);
-        }
-        return Expr.of(new Node.Cast(type, operand(operand)), type);
-    }
-
-    // ------------------------------------------------------------------
-    // Class literals and plain `instanceof`
+    // Class literals
     // ------------------------------------------------------------------
 
     /// A class literal, `type.class`, of type `Class<T>`.
@@ -961,32 +892,6 @@ public final class Expressions extends ExpressionArities {
     /// @return the class literal
     public static <P, B, A> Expr<Class<B>> classLiteral(PrimitiveToken<P, B, A> type) {
         return Expr.of(new Node.ClassLiteral(type), new Class_<>(type.boxed()).token);
-    }
-
-    /// A plain `instanceof` test, `operand instanceof type`, without a
-    /// pattern binding. It is `false` for a `null` operand and never throws
-    /// (JLS 15.20.2).
-    ///
-    /// The test must be a checked cast (JLS 15.20.2, 5.1.6.2): `type` is
-    /// reifiable, or the operand's static type is a parameterized supertype
-    /// of it that determines its type arguments. `object instanceof
-    /// List<String>` is rejected, `listOfStrings instanceof ArrayList<String>`
-    /// accepted.
-    ///
-    /// @param operand the tested expression
-    /// @param type the tested type
-    /// @param <T> the tested type
-    /// @return the test
-    /// @throws IllegalArgumentException if the operand is of a primitive type, or the test would
-    ///     be unchecked
-    public static <T> Expr<Prim.Bool> instanceOf(Expr<?> operand, RefToken<T> type) {
-        if (operand.type() instanceof PrimitiveToken<?, ?, ?> primitive) {
-            throw new IllegalArgumentException("instanceOf tests a reference, and the operand is of the primitive"
-                    + " type " + primitive + "; box it first, e.g. box(PrimitiveToken."
-                    + primitive.typeRef().sourceName().toUpperCase(Locale.ROOT) + ", expr)");
-        }
-        Tokens.requireCheckedCast(operand.type(), type, "an instanceof test");
-        return Expr.of(new Node.InstanceOf(operand(operand), type), PrimitiveToken.BOOLEAN);
     }
 
     // ------------------------------------------------------------------
@@ -1106,25 +1011,6 @@ public final class Expressions extends ExpressionArities {
         return new Var<>(type, Var.Role.Fixed.LAMBDA_PARAMETER, scope);
     }
 
-    /// A method reference bound to a receiver, `receiver::method`, of the functional interface `samType`
-    /// whose method `sam` has the parameters and result of `method`.
-    ///
-    /// @param receiver the bound receiver
-    /// @param method the fact of the referenced method, an instance method of the receiver's type
-    /// @param samType the functional interface the reference implements
-    /// @param sam the single abstract method of `samType`
-    /// @param <O> the receiver type
-    /// @param <F> the functional interface
-    /// @return the method reference
-    /// @throws IllegalArgumentException if `method` is not an instance method of the receiver's type, or its
-    ///     parameters or result are not those of `sam`
-    public static <O, F> Expr<F> methodRef(
-            Expr<? extends O> receiver, Invocable method, InterfaceToken<F> samType, Invocable sam) {
-        Node.Operand target = receiver(receiver, method);
-        MethodReferences.bound(target.type(), method, samType, sam);
-        return Expr.of(new Node.MethodRef(Optional.of(target), method.owner(), method, sam), samType);
-    }
-
     /// A method reference qualified by a type, `Type::method`, of the functional interface `samType`
     /// whose method `sam` has the parameters and result of `method`: the unbound instance reference
     /// `Type::instanceMethod`, whose first parameter the receiver is, or the static `Type::staticMethod`.
@@ -1194,7 +1080,7 @@ public final class Expressions extends ExpressionArities {
 
     /// `array[index] = value;`
     ///
-    /// The array is of exactly the type `type` names, as that of [#at(ArrayToken, Expr, Expr)] is:
+    /// The array is of exactly the type `type` names, as that of [Expr#arrayAccess(ArrayToken, Expr)] is:
     /// javac takes a store into a `String[]` for one of a `String`, whatever supertype of it the
     /// generator took the array for (JLS 15.26.1). An array a variable of a wider array type holds is
     /// one of that type, and storing a value its array does not take through it throws

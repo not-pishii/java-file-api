@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.newArray;
 import static me.supcheg.javafile.typed.Expressions.staticCall;
@@ -230,8 +229,8 @@ class LoweringChecksTest {
                         var bodies = cb.bodies();
                         bodies.define(
                                 m,
-                                b -> b.return_(
-                                        call(newArray(ArrayToken.of(String_.TOKEN), literal(1)), Object_.hashCode)));
+                                b -> b.return_(newArray(ArrayToken.of(String_.TOKEN), literal(1))
+                                        .call(Object_.hashCode)));
                         return bodies;
                     }
                 }));
@@ -251,7 +250,7 @@ class LoweringChecksTest {
         Comparable_<String> comparable = new Comparable_<>(String_.TOKEN);
 
         assertThat(lowering.lowerExpr(
-                        call(value, comparable.compareTo_T, literal("x")).node()))
+                        value.call(comparable.compareTo_T, literal("x")).node()))
                 .isEqualTo(Exprs.cast(comparable.token.typeRef(), new FieldAccessExpr(Optional.empty(), "v0"))
                         .call("compareTo", Exprs.literal("x")));
     }

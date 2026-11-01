@@ -7,7 +7,6 @@ import me.supcheg.javafile.facts.StaticMethodRef1;
 import me.supcheg.javafile.facts.processor.harness.Typed;
 import p.PubSame;
 
-import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.staticCall;
 import static me.supcheg.javafile.typed.Expressions.staticField;
@@ -25,7 +24,7 @@ public final class SameName {
         assertThat(typed.apply(
                         String_.TOKEN, PubSame_.TOKEN, same -> staticCall(ofTheClass, literal(1)), new PubSame()))
                 .isEqualTo("static");
-        assertThat(typed.apply(String_.TOKEN, PubSame_.TOKEN, same -> call(same, ofAnInstance), new PubSame()))
+        assertThat(typed.apply(String_.TOKEN, PubSame_.TOKEN, same -> same.call(ofAnInstance), new PubSame()))
                 .isEqualTo("instance");
     }
 

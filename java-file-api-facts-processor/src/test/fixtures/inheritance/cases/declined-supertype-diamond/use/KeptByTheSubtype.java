@@ -5,7 +5,6 @@ import me.supcheg.javafile.facts.StaticFieldRef;
 import me.supcheg.javafile.facts.processor.harness.Typed;
 import p.Kept;
 
-import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.staticField;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -19,7 +18,7 @@ public final class KeptByTheSubtype {
     public static void aMethodOfTheHiddenInterface(Typed typed) {
         MethodRef0<Kept, String> run = Kept_.run;
 
-        assertThat(typed.apply(String_.TOKEN, Kept_.TOKEN, kept -> call(kept, run), new Kept()))
+        assertThat(typed.apply(String_.TOKEN, Kept_.TOKEN, kept -> kept.call(run), new Kept()))
                 .isEqualTo("run");
     }
 

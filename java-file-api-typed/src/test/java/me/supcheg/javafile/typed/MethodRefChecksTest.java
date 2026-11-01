@@ -33,23 +33,23 @@ class MethodRefChecksTest {
     @Test
     void aBoundReferenceToAStaticMethodOrOfAPrimitiveReceiverIsRefused() {
         refused(
-                () -> methodRef(literal(1), Math_.abs_int, IntUnaryOperator_.TOKEN, IntUnaryOperator_.sam.method()),
+                () -> literal(1).methodRef(Math_.abs_int, IntUnaryOperator_.TOKEN, IntUnaryOperator_.sam.method()),
                 "primitive type");
         refused(
-                () -> methodRef(literal("x"), Math_.abs_int, IntUnaryOperator_.TOKEN, IntUnaryOperator_.sam.method()),
+                () -> literal("x").methodRef(Math_.abs_int, IntUnaryOperator_.TOKEN, IntUnaryOperator_.sam.method()),
                 "calls an instance method");
     }
 
     @Test
     void aBoundReferenceOfAnotherTypeOrWithOtherParametersOrResultIsRefused() {
         refused(
-                () -> methodRef(literal("x"), StringBuilder_.append_String, FUNCTION.token, FUNCTION.sam.method()),
+                () -> literal("x").methodRef(StringBuilder_.append_String, FUNCTION.token, FUNCTION.sam.method()),
                 "no subtype of its owner");
         refused(
-                () -> methodRef(
-                        literal("x"), String_.replace_CharSequence_CharSequence, FUNCTION.token, FUNCTION.sam.method()),
+                () -> literal("x")
+                        .methodRef(String_.replace_CharSequence_CharSequence, FUNCTION.token, FUNCTION.sam.method()),
                 "passes");
-        refused(() -> methodRef(literal("x"), String_.length, SUPPLIER.token, SUPPLIER.sam.method()), "has the result");
+        refused(() -> literal("x").methodRef(String_.length, SUPPLIER.token, SUPPLIER.sam.method()), "has the result");
     }
 
     @Test
@@ -99,7 +99,7 @@ class MethodRefChecksTest {
     void aResultWhereTheInterfaceTakesNoneOrTheReverseIsRefused() {
         Consumer_<String> consumer = new Consumer_<>(String_.TOKEN);
         refused(
-                () -> methodRef(literal("x"), String_.concat_String, consumer.token, consumer.sam.method()),
+                () -> literal("x").methodRef(String_.concat_String, consumer.token, consumer.sam.method()),
                 "has the result");
         Function_<StringBuilder, Integer> builderFunction = new Function_<>(StringBuilder_.TOKEN, Integer_.TOKEN);
         refused(

@@ -4,7 +4,6 @@ import gen.facts.p.X_;
 import me.supcheg.javafile.facts.processor.harness.Typed;
 import p.X;
 
-import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.staticField;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -14,7 +13,7 @@ public final class ThroughTheSupertype {
     private ThroughTheSupertype() {}
 
     public static void aMethodOfTheHiddenInterface(Typed typed) {
-        assertThat(typed.apply(String_.TOKEN, X_.TOKEN, x -> call(x, Mid_.run), new X()))
+        assertThat(typed.apply(String_.TOKEN, X_.TOKEN, x -> x.call(Mid_.run), new X()))
                 .isEqualTo("run");
     }
 
@@ -24,7 +23,7 @@ public final class ThroughTheSupertype {
     }
 
     public static void aMethodTheSubtypeOverrides(Typed typed) {
-        assertThat(typed.apply(String_.TOKEN, X_.TOKEN, x -> call(x, X_.more), new X()))
+        assertThat(typed.apply(String_.TOKEN, X_.TOKEN, x -> x.call(X_.more), new X()))
                 .isEqualTo("x");
     }
 }

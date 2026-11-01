@@ -27,9 +27,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static me.supcheg.javafile.typed.Expressions.at;
 import static me.supcheg.javafile.typed.Expressions.box;
-import static me.supcheg.javafile.typed.Expressions.castChecked;
 import static me.supcheg.javafile.typed.Expressions.cond;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.literalNull;
@@ -56,24 +54,23 @@ class FactPinningChecksTest {
     private final TypeVarToken<Object> x = UnsafeFacts.typeVarToken(Types.typeVar("X"), ConstantDescs.CD_Object);
 
     @Test
-    void castCheckedRejectsAnUncheckedCast() {
+    void castRejectsAnUncheckedCast() {
         Expr<Object> o = literalNull(Object_.TOKEN);
 
         assertThatIllegalArgumentException()
-                .isThrownBy(() -> castChecked(strings.token, o))
-                .withMessageContaining(
-                        "castChecked from java.lang.Object to java.util.List<java.lang.String> " + UNCHECKED)
+                .isThrownBy(() -> o.cast(strings.token))
+                .withMessageContaining("cast from java.lang.Object to java.util.List<java.lang.String> " + UNCHECKED)
                 .withMessageContaining("the operand's type java.lang.Object is not a parameterization");
     }
 
     @Test
-    void castCheckedAcceptsACastToASubtypeWhoseTypeArgumentsTheOperandDetermines() {
+    void castAcceptsACastToASubtypeWhoseTypeArgumentsTheOperandDetermines() {
         Expr<List<String>> list = literalNull(strings.token);
         Expr<Collection<String>> collection = literalNull(collectionOfStrings);
 
-        assertThat(castChecked(arrayOfStrings.token, list).node()).isInstanceOf(Node.Cast.class);
-        assertThat(castChecked(strings.token, collection).node()).isInstanceOf(Node.Cast.class);
-        assertThat(castChecked(strings.token, list).node()).isSameAs(list.node());
+        assertThat(list.cast(arrayOfStrings.token).node()).isInstanceOf(Node.Cast.class);
+        assertThat(collection.cast(strings.token).node()).isInstanceOf(Node.Cast.class);
+        assertThat(list.cast(strings.token).node()).isSameAs(list.node());
     }
 
     @Test
@@ -163,9 +160,9 @@ class FactPinningChecksTest {
     void anElementOfAnArrayCastToItsTypeIsTheElement() {
         // (String) strings[0] would be a redundant cast
         var strings = ArrayToken.of(String_.TOKEN);
-        var element = at(strings, newArray(strings, literal(1)), literal(0));
+        var element = newArray(strings, literal(1)).arrayAccess(strings, literal(0));
 
-        assertThat(castChecked(String_.TOKEN, element).node()).isSameAs(element.node());
+        assertThat(element.cast(String_.TOKEN).node()).isSameAs(element.node());
     }
 
     private static void assertCheckedCast(TypeToken<?> from, TypeToken<?> to) {
@@ -249,29 +246,29 @@ class FactPinningChecksTest {
     void anExpressionIsTypedByItsTokenAsLongAsEveryCallInItIsThroughTheOwnerOfTheMethod() {
         Expr<String> text = literal("s");
         // length() is String's own; toString() is Object's, and a String may narrow its result
-        var own = Expressions.call(text, String_.length);
-        var inherited = Expressions.call(text, Object_.toString);
-        var onInherited = Expressions.call(inherited, String_.length);
+        var own = text.call(String_.length);
+        var inherited = text.call(Object_.toString);
+        var onInherited = inherited.call(String_.length);
         var strings = ArrayToken.of(String_.TOKEN);
 
         assertThat(Node.isExact(text.node())).isTrue();
         assertThat(Node.isExact(own.node())).isTrue();
         assertThat(Node.isExact(inherited.node())).isFalse();
         assertThat(Node.isExact(onInherited.node())).isFalse();
-        assertThat(Node.isExact(
-                        at(strings, newArray(strings, literal(1)), literal(0)).node()))
+        assertThat(Node.isExact(newArray(strings, literal(1))
+                        .arrayAccess(strings, literal(0))
+                        .node()))
                 .isTrue();
         assertThat(Node.isExact(new Node.ArrayAt(inherited.node(), literal(0).node())))
                 .isFalse();
     }
 
     @Test
-    void castCheckedToTheOperandsOwnTypeCastsNothing() {
+    void castToTheOperandsOwnTypeCastsNothing() {
         Expr<String> s = literal("s");
 
-        assertThat(castChecked(String_.TOKEN, s).node()).isSameAs(s.node());
-        assertThat(castChecked(String_.TOKEN, literalNull(Object_.TOKEN)).node())
-                .isInstanceOf(Node.Cast.class);
+        assertThat(s.cast(String_.TOKEN).node()).isSameAs(s.node());
+        assertThat(literalNull(Object_.TOKEN).cast(String_.TOKEN).node()).isInstanceOf(Node.Cast.class);
     }
 
     @Test

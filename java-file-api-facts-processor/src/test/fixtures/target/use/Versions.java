@@ -22,7 +22,6 @@ import me.supcheg.javafile.typed.MemberBodies;
 import me.supcheg.javafile.typed.TypedClassBodies;
 import me.supcheg.javafile.typed.TypedClassBuilder;
 
-import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.new_;
 import static me.supcheg.javafile.typed.Expressions.staticCall;
@@ -42,12 +41,12 @@ public final class Versions {
 
     /// `new Svc().m(s)`.
     private static Expr<String> m(Expr<String> s) {
-        return call(new_(Svc_.new_), Svc_.m_String, s);
+        return new_(Svc_.new_).call(Svc_.m_String, s);
     }
 
     /// `new Svc().only(s)`: a `String` for the `Object` of `only(Object)`.
     private static Expr<String> only(Expr<String> s) {
-        return call(new_(Svc_.new_), Svc_.only_Object, s);
+        return new_(Svc_.new_).call(Svc_.only_Object, s);
     }
 
     private static String rendered(Typed typed, Function<Expr<String>, Expr<String>> body) {
@@ -143,7 +142,7 @@ public final class Versions {
     }
 
     public static void aFunctionalInterfaceWithAnotherAbstractMethodHasNoSuchSam(Typed typed) {
-        Function<Expr<p.Fn>, Expr<String>> applied = fn -> call(fn, Fn_.apply_String, literal("a"));
+        Function<Expr<p.Fn>, Expr<String>> applied = fn -> fn.call(Fn_.apply_String, literal("a"));
 
         assertThat(typed.render(String_.TOKEN, Fn_.TOKEN, applied)).contains("v0.apply(\"a\")");
         assertThatExceptionOfType(TargetClasspathMismatchException.class)
@@ -248,7 +247,7 @@ public final class Versions {
     }
 
     public static void aSuperclassThatIsNoLongerOneFailsTheCallOfWhatWasInherited(Typed typed) {
-        Function<Expr<String>, Expr<String>> inherited = s -> call(new_(Svc_.new_), Base_.inherited);
+        Function<Expr<String>, Expr<String>> inherited = s -> new_(Svc_.new_).call(Base_.inherited);
 
         assertThat(applied(typed, inherited)).isEqualTo("inherited");
         assertThatExceptionOfType(TargetClasspathMismatchException.class)
@@ -317,7 +316,7 @@ public final class Versions {
 
     public static void anOverloadAddedThatErasesAsTheFactDoesIsRejectedByTheTableOfTheVersion(Typed typed) {
         Box_<String> box = new Box_<>(String_.TOKEN);
-        Function<Expr<String>, Expr<String>> put = s -> call(new_(box.new_), box.put_T, s);
+        Function<Expr<String>, Expr<String>> put = s -> new_(box.new_).call(box.put_T, s);
         Typed added = typed.against("added-twin");
 
         assertThat(applied(typed, put)).isEqualTo("put(T) a");
@@ -330,7 +329,7 @@ public final class Versions {
 
     public static void aMismatchAndARejectedFactAreCaughtAsOneAndToldApart(Typed typed) {
         Box_<String> box = new Box_<>(String_.TOKEN);
-        Function<Expr<String>, Expr<String>> put = s -> call(new_(box.new_), box.put_T, s);
+        Function<Expr<String>, Expr<String>> put = s -> new_(box.new_).call(box.put_T, s);
 
         assertThat(caught(() -> rendered(typed.against("removed-method"), Versions::m)))
                 .isEqualTo("mismatch of Svc: 1");

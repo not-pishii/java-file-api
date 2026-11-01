@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;
 
-import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.concat;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.JavacVerdict.classAsJavac;
@@ -141,8 +140,8 @@ class SuperTwinsTest {
                 var f = cb.declareMethod("f", String_.TOKEN);
                 var g = cb.declareMethod("g", String_.TOKEN);
                 var bodies = twins.bodies();
-                bodies.define(f, (b, self) -> b.return_(call(cb.asSuper().apply(self), p, literal("x"))));
-                bodies.define(g, (b, self) -> b.return_(call(cb.asSuper().apply(self), BASE.m_T, literal("x"))));
+                bodies.define(f, (b, self) -> b.return_(cb.asSuper().apply(self).call(p, literal("x"))));
+                bodies.define(g, (b, self) -> b.return_(cb.asSuper().apply(self).call(BASE.m_T, literal("x"))));
                 return bodies;
             }
         }));
@@ -189,7 +188,8 @@ class SuperTwinsTest {
                         var bodies = twins.bodies();
                         bodies.define(methodG, (b, self, v) -> b.return_(literal("own")));
                         bodies.define(
-                                f, (b, self) -> b.return_(call(cb.asSuper().apply(self), g, literal("x"))));
+                                f,
+                                (b, self) -> b.return_(cb.asSuper().apply(self).call(g, literal("x"))));
                         return bodies;
                     }
                 }),
@@ -208,7 +208,7 @@ class SuperTwinsTest {
                 var g = cb.protected_(BASE.g_U(String_.TOKEN));
                 var f = cb.declareMethod("f", String_.TOKEN);
                 var bodies = twins.bodies();
-                bodies.define(f, (b, self) -> b.return_(call(cb.asSuper().apply(self), g, literal("x"))));
+                bodies.define(f, (b, self) -> b.return_(cb.asSuper().apply(self).call(g, literal("x"))));
                 return bodies;
             }
         }));

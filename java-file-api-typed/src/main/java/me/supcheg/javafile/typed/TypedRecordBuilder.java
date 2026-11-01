@@ -37,7 +37,7 @@ import java.util.List;
 ///         var y = rb.component("y", PrimitiveToken.INT);
 ///         var sum = rb.declareMethod("sum", PrimitiveToken.INT);
 ///         var bodies = rb.bodies();
-///         bodies.define(sum, (b, self) -> b.return_(addInt(call(self, x.accessor()), call(self, y.accessor()))));
+///         bodies.define(sum, (b, self) -> b.return_(addInt(self.call(x.accessor()), self.call(y.accessor()))));
 ///         return bodies;
 ///     }
 /// });

@@ -162,8 +162,7 @@ class StaticFieldCompileTest {
                         bodies.define(
                                 sum,
                                 (b, self) -> b.return_(addInt(
-                                        addInt(Expressions.field(self, x.field()), Expressions.field(self, y.field())),
-                                        staticField(zero))));
+                                        addInt(self.field(x.field()), self.field(y.field())), staticField(zero))));
                         return bodies;
                     }
                 }));

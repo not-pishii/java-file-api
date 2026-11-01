@@ -264,7 +264,6 @@ class JdkTypesTest {
                 import me.supcheg.javafile.typed.TypedClassBuilder;
                 import me.supcheg.javafile.typed.TypedJavaFile;
 
-                import static me.supcheg.javafile.typed.Expressions.call;
                 import static me.supcheg.javafile.typed.Expressions.literal;
 
                 public final class Run {
@@ -274,8 +273,7 @@ class JdkTypesTest {
                                     public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
                                         var go = cb.declareStaticMethod("go", PrimitiveToken.INT, String_.TOKEN);
                                         var bodies = cb.bodies();
-                                        bodies.define(go, (b, s) -> b.return_(call(
-                                                        s,
+                                        bodies.define(go, (b, s) -> b.return_(s.call(
                                                         String_.indexOf_int_int_int,
                                                         literal(1),
                                                         literal(2),
@@ -411,7 +409,6 @@ class JdkTypesTest {
                 import me.supcheg.javafile.typed.TypedClassBuilder;
                 import me.supcheg.javafile.typed.TypedJavaFile;
 
-                import static me.supcheg.javafile.typed.Expressions.call;
                 import static me.supcheg.javafile.typed.Expressions.staticField;
 
                 public final class Run {
@@ -423,7 +420,7 @@ class JdkTypesTest {
                                         var capacity = cb.declareStaticMethod("capacity", PrimitiveToken.INT, StringBuilder_.TOKEN);
                                         var locsig = cb.declareStaticMethod("locsig", PrimitiveToken.LONG, StringBuilder_.TOKEN);
                                         var bodies = cb.bodies();
-                                        bodies.define(capacity, (b, builder) -> b.return_(call(builder, StringBuilder_.capacity)));
+                                        bodies.define(capacity, (b, builder) -> b.return_(builder.call(StringBuilder_.capacity)));
                                         bodies.define(locsig, (b, builder) -> b.return_(staticField(ZipFile_.LOCSIG)));
                                         return bodies;
                                     }

@@ -26,7 +26,6 @@ import static me.supcheg.javafile.typed.Expressions.bitOrInt;
 import static me.supcheg.javafile.typed.Expressions.bitOrLong;
 import static me.supcheg.javafile.typed.Expressions.bitXorInt;
 import static me.supcheg.javafile.typed.Expressions.classLiteral;
-import static me.supcheg.javafile.typed.Expressions.instanceOf;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.mulLong;
 import static me.supcheg.javafile.typed.Expressions.negInt;
@@ -132,14 +131,14 @@ class OperatorsCompileTest {
                                 (b, self, seed) -> b.exec(assignField(self, total, seed))
                                         .let(
                                                 PrimitiveToken.INT,
-                                                Expressions.field(self, total),
+                                                self.field(total),
                                                 _ -> sequence(
                                                         b,
                                                         preIncrement(self, total),
                                                         postIncrement(self, total),
                                                         preDecrement(self, total),
                                                         postDecrement(self, total),
-                                                        Expressions.field(self, total))));
+                                                        self.field(total))));
                         bodies.define(
                                 shared,
                                 (b, seed) -> b.exec(assignStaticField(count, seed))
@@ -160,14 +159,14 @@ class OperatorsCompileTest {
                                         newArrayOf(INTS, seed),
                                         array -> b.let(
                                                 PrimitiveToken.INT,
-                                                Expressions.at(INTS, array, literal(0)),
+                                                array.arrayAccess(INTS, literal(0)),
                                                 _ -> sequence(
                                                         b,
                                                         preIncrement(INTS, array, literal(0)),
                                                         postIncrement(INTS, array, literal(0)),
                                                         preDecrement(INTS, array, literal(0)),
                                                         postDecrement(INTS, array, literal(0)),
-                                                        Expressions.at(INTS, array, literal(0))))));
+                                                        array.arrayAccess(INTS, literal(0))))));
                         return bodies;
                     }
                 }));
@@ -250,10 +249,10 @@ class OperatorsCompileTest {
                                                                 AssignOp.ADD_ASSIGN,
                                                                 literal(4)))
                                                         .return_(addInt(
-                                                                addInt(local, Expressions.field(self, total)),
+                                                                addInt(local, self.field(total)),
                                                                 addInt(
                                                                         Expressions.staticField(count),
-                                                                        Expressions.at(INTS, array, literal(0))))))));
+                                                                        array.arrayAccess(INTS, literal(0))))))));
                         return bodies;
                     }
                 }));
@@ -351,7 +350,7 @@ class OperatorsCompileTest {
                     public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
                         var text = cb.declareStaticMethod("isText", PrimitiveToken.BOOLEAN, Object_.TOKEN);
                         var bodies = cb.bodies();
-                        bodies.define(text, (b, value) -> b.return_(instanceOf(value, String_.TOKEN)));
+                        bodies.define(text, (b, value) -> b.return_(value.instanceOf(String_.TOKEN)));
                         return bodies;
                     }
                 }));

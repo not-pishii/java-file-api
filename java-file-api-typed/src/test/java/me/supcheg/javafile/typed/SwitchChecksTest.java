@@ -27,7 +27,6 @@ import java.util.function.Function;
 
 import static me.supcheg.javafile.typed.Expressions.addInt;
 import static me.supcheg.javafile.typed.Expressions.assign;
-import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.lambda;
 import static me.supcheg.javafile.typed.Expressions.lambdaBlock;
 import static me.supcheg.javafile.typed.Expressions.literal;
@@ -102,7 +101,7 @@ class SwitchChecksTest {
 
     /// `new StringReader("a").read()`, which throws `IOException`.
     private static Invocation<Prim.Int> read() {
-        return call(new_(StringReader_.new_String, literal("a")), StringReader_.read);
+        return new_(StringReader_.new_String, literal("a")).call(StringReader_.read);
     }
 
     @Nested

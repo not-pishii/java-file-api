@@ -12,8 +12,6 @@ import p.T2;
 
 import java.util.Optional;
 
-import static me.supcheg.javafile.typed.Expressions.call;
-import static me.supcheg.javafile.typed.Expressions.field;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.literalNull;
 import static me.supcheg.javafile.typed.Expressions.new_;
@@ -36,13 +34,13 @@ public final class Resolved {
         assertThat(typed.apply(
                         String_.TOKEN,
                         Ov_.TOKEN,
-                        o -> call(o, Ov_.m_T(Integer_.TOKEN), literalNull(Integer_.TOKEN)),
+                        o -> o.call(Ov_.m_T(Integer_.TOKEN), literalNull(Integer_.TOKEN)),
                         new Ov()))
                 .isEqualTo("generic");
     }
 
     public static void theOverloadOfATypeIsTheOverloadJavacResolves(Typed typed) {
-        assertThat(typed.apply(String_.TOKEN, Ov_.TOKEN, o -> call(o, Ov_.m_String, literal("x")), new Ov()))
+        assertThat(typed.apply(String_.TOKEN, Ov_.TOKEN, o -> o.call(Ov_.m_String, literal("x")), new Ov()))
                 .isEqualTo("string");
     }
 
@@ -50,25 +48,25 @@ public final class Resolved {
         assertThat(typed.apply(
                         String_.TOKEN,
                         Ov_.TOKEN,
-                        o -> call(o, Ov_.c_T(Integer_.TOKEN), literalNull(Integer_.TOKEN)),
+                        o -> o.call(Ov_.c_T(Integer_.TOKEN), literalNull(Integer_.TOKEN)),
                         new Ov()))
                 .isEqualTo("generic");
     }
 
     public static void aGenericMethodWithoutAnOverloadTakesAnyTypeArgument(Typed typed) {
-        assertThat(typed.apply(String_.TOKEN, Ov_.TOKEN, o -> call(o, Ov_.solo_T(String_.TOKEN), literal("x")), new Ov()))
+        assertThat(typed.apply(String_.TOKEN, Ov_.TOKEN, o -> o.call(Ov_.solo_T(String_.TOKEN), literal("x")), new Ov()))
                 .isEqualTo("solo");
-        assertThat(typed.render(String_.TOKEN, Ov_.TOKEN, o -> call(o, Ov_.solo_T(String_.TOKEN), literal("x"))))
+        assertThat(typed.render(String_.TOKEN, Ov_.TOKEN, o -> o.call(Ov_.solo_T(String_.TOKEN), literal("x"))))
                 .contains(".<String>solo(\"x\")");
     }
 
     /// `SubOv` adds `solo(String)`, which javac would prefer for a `String`: the call is made through the owner.
     public static void anOverloadTheReceiversTypeAddsIsLeftOutByCallingThroughTheOwner(Typed typed) {
         assertThat(typed.render(
-                        String_.TOKEN, SubOv_.TOKEN, o -> call(o, Ov_.solo_T(String_.TOKEN), literal("x"))))
+                        String_.TOKEN, SubOv_.TOKEN, o -> o.call(Ov_.solo_T(String_.TOKEN), literal("x"))))
                 .contains("((Ov) v0).<String>solo(\"x\")");
         assertThat(typed.apply(
-                        String_.TOKEN, SubOv_.TOKEN, o -> call(o, Ov_.solo_T(String_.TOKEN), literal("x")), new SubOv()))
+                        String_.TOKEN, SubOv_.TOKEN, o -> o.call(Ov_.solo_T(String_.TOKEN), literal("x")), new SubOv()))
                 .isEqualTo("solo");
     }
 
@@ -96,32 +94,32 @@ public final class Resolved {
         assertThat(typed.apply(
                         String_.TOKEN,
                         INTEGERS.token,
-                        t -> call(t, INTEGERS.m_T, literalNull(Integer_.TOKEN)),
+                        t -> t.call(INTEGERS.m_T, literalNull(Integer_.TOKEN)),
                         new T2<Integer>()))
                 .isEqualTo("t");
-        assertThat(typed.apply(String_.TOKEN, INTEGERS.token, t -> call(t, INTEGERS.m_String, literal("x")), new T2<Integer>()))
+        assertThat(typed.apply(String_.TOKEN, INTEGERS.token, t -> t.call(INTEGERS.m_String, literal("x")), new T2<Integer>()))
                 .isEqualTo("string");
     }
 
     /// The only method of its name is found in the table: no cast.
     public static void theOnlyMethodOfItsNameNeedsNoCast(Typed typed) {
-        assertThat(typed.apply(String_.TOKEN, STRINGS.token, t -> call(t, STRINGS.one_T, literal("x")), new T2<String>()))
+        assertThat(typed.apply(String_.TOKEN, STRINGS.token, t -> t.call(STRINGS.one_T, literal("x")), new T2<String>()))
                 .isEqualTo("one");
-        assertThat(typed.render(String_.TOKEN, STRINGS.token, t -> call(t, STRINGS.one_T, literal("x"))))
+        assertThat(typed.render(String_.TOKEN, STRINGS.token, t -> t.call(STRINGS.one_T, literal("x"))))
                 .contains("v0.one(\"x\")");
     }
 
     // constructors
 
     public static void aConstructorUnderAnotherTypeArgumentIsTheOneJavacResolves(Typed typed) {
-        assertThat(typed.apply(String_.TOKEN, Integer_.TOKEN, i -> field(new_(INTEGERS.new_T, i), INTEGERS.made), 1))
+        assertThat(typed.apply(String_.TOKEN, Integer_.TOKEN, i -> new_(INTEGERS.new_T, i).field(INTEGERS.made), 1))
                 .isEqualTo("t");
-        assertThat(typed.apply(String_.TOKEN, String_.TOKEN, s -> field(new_(INTEGERS.new_String, s), INTEGERS.made), "x"))
+        assertThat(typed.apply(String_.TOKEN, String_.TOKEN, s -> new_(INTEGERS.new_String, s).field(INTEGERS.made), "x"))
                 .isEqualTo("string");
     }
 
     public static void aConstructorWithoutParametersIsTheOneJavacResolves(Typed typed) {
-        assertThat(typed.apply(String_.TOKEN, String_.TOKEN, s -> field(new_(STRINGS.new_), STRINGS.made), "x"))
+        assertThat(typed.apply(String_.TOKEN, String_.TOKEN, s -> new_(STRINGS.new_).field(STRINGS.made), "x"))
                 .isEqualTo("none");
     }
 }

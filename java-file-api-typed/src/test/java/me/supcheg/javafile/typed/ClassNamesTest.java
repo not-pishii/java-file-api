@@ -17,7 +17,6 @@ import java.lang.constant.ClassDesc;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
 import static com.google.testing.compile.Compiler.javac;
-import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.enumConstant;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.staticCall;
@@ -137,12 +136,12 @@ class ClassNamesTest {
                         var red = cb.declareStaticMethod("red", String_.TOKEN);
                         var length = cb.declareStaticMethod("length", PrimitiveToken.INT);
                         var bodies = cb.bodies();
-                        bodies.define(red, b -> b.return_(call(enumConstant(Signal_.RED), Object_.toString)));
+                        bodies.define(
+                                red, b -> b.return_(enumConstant(Signal_.RED).call(Object_.toString)));
                         bodies.define(
                                 length,
-                                b -> b.return_(call(
-                                        staticCall(Objects_.requireNonNull_T(String_.TOKEN), literal("abc")),
-                                        String_.length)));
+                                b -> b.return_(staticCall(Objects_.requireNonNull_T(String_.TOKEN), literal("abc"))
+                                        .call(String_.length)));
                         return bodies;
                     }
                 }));

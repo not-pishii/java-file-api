@@ -16,7 +16,6 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;
 
-import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.JavacVerdict.classAsJavac;
 import static me.supcheg.javafile.typed.JavacVerdict.classUnlikeJavac;
@@ -47,7 +46,7 @@ class InheritedStaticsTest {
                 var go = cb.declareMethod("go", String_.TOKEN);
                 var bodies = cb.bodies(constructor, ctor -> ctor.super_(StaticPick_.new_, (b, self) -> b.end()));
                 bodies.define(pick, (b, self, v) -> b.return_(literal("own")));
-                bodies.define(go, (b, self) -> b.return_(call(self, pick, literal("s"))));
+                bodies.define(go, (b, self) -> b.return_(self.call(pick, literal("s"))));
                 return bodies;
             }
         }));
@@ -68,7 +67,7 @@ class InheritedStaticsTest {
                 var go = cb.declareMethod("go", String_.TOKEN);
                 var bodies = cb.bodies(constructor, ctor -> ctor.super_(StaticTwin_.new_, (b, self) -> b.end()));
                 bodies.define(
-                        go, (b, self) -> b.return_(call(cb.asSuper().apply(self), StaticTwin_.m_Object, literal("s"))));
+                        go, (b, self) -> b.return_(cb.asSuper().apply(self).call(StaticTwin_.m_Object, literal("s"))));
                 return bodies;
             }
         }));
@@ -115,7 +114,7 @@ class InheritedStaticsTest {
                 var go = cb.declareMethod("go", String_.TOKEN);
                 var bodies = cb.bodies();
                 bodies.define(constructor, (b, self) -> b.end());
-                bodies.define(go, (b, self) -> b.return_(call(asNamed.apply(self), Named_.label)));
+                bodies.define(go, (b, self) -> b.return_(asNamed.apply(self).call(Named_.label)));
                 return bodies;
             }
         }));

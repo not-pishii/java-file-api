@@ -19,7 +19,7 @@ package me.supcheg.javafile.typed;
 /// var bodies = cb.bodies();
 /// bodies.define(isEven, (b, self, n) -> b.ifElse(eqInt(n, literal(0)),
 ///         t -> t.return_(literal(true)),
-///         e -> e.return_(call(self, isOdd, subInt(n, literal(1))))));
+///         e -> e.return_(self.call(isOdd, subInt(n, literal(1))))));
 /// bodies.define(isOdd, (b, self, n) -> ...);
 /// ```
 ///

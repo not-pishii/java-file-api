@@ -177,7 +177,7 @@ public final class ClassHeader<Self> extends Header<Self> {
     /// var comparable = new Comparable_<>(t);
     /// Upcast<T, Comparable<T>> asComparable = h.bound(t, comparable.token);
     /// ...
-    /// call(asComparable.apply(mine), comparable.compareTo_T, other)
+    /// asComparable.apply(mine).call(comparable.compareTo_T, other)
     /// ```
     ///
     /// A bound may mention the type parameter itself and the others of the class, which a

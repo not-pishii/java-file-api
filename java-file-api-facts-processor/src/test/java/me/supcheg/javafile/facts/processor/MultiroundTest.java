@@ -324,8 +324,6 @@ class MultiroundTest {
                 import me.supcheg.javafile.typed.TypedClassBuilder;
                 import me.supcheg.javafile.typed.TypedJavaFile;
 
-                import static me.supcheg.javafile.typed.Expressions.call;
-
                 public final class Run {
                     public static String inherited() {
                         return TypedJavaFile.class_(
@@ -334,7 +332,7 @@ class MultiroundTest {
                                     public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
                                         var go = cb.declareStaticMethod("go", PrimitiveToken.INT, Late_.TOKEN);
                                         var bodies = cb.bodies();
-                                        bodies.define(go, (b, late) -> b.return_(call(late, Base_.inherited)));
+                                        bodies.define(go, (b, late) -> b.return_(late.call(Base_.inherited)));
                                         return bodies;
                                     }
                                 })

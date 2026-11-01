@@ -440,7 +440,6 @@ class FixtureRunTest {
                 import me.supcheg.javafile.typed.Expr;
                 import p.Dep;
 
-                import static me.supcheg.javafile.typed.Expressions.call;
                 import static me.supcheg.javafile.typed.Expressions.new_;
                 import static org.assertj.core.api.Assertions.assertThat;
                 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -449,7 +448,7 @@ class FixtureRunTest {
 
                 public final class Checks {
                     private static Expr<Prim.Int> x(Expr<Dep> dep) {
-                        return call(dep, Dep_.x);
+                        return dep.call(Dep_.x);
                     }
 
                     public static void theLibraryIsTheTargetClasspath(Typed typed) {

@@ -20,7 +20,6 @@ import java.lang.constant.ClassDesc;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.newArray;
 import static me.supcheg.javafile.typed.Expressions.newArrayOf;
@@ -60,10 +59,12 @@ class ListFormsTest {
                 var bodies = cb.bodies();
                 bodies.define(
                         spread,
-                        b -> b.return_(call(
-                                new_(Gathered_.new_),
-                                Gathered_.count_ObjectArray,
-                                listed ? varargs(OBJECTS, parts) : varargs(OBJECTS, literal("a"), literal("b")))));
+                        b -> b.return_(new_(Gathered_.new_)
+                                .call(
+                                        Gathered_.count_ObjectArray,
+                                        listed
+                                                ? varargs(OBJECTS, parts)
+                                                : varargs(OBJECTS, literal("a"), literal("b")))));
                 bodies.define(
                         arrayed,
                         b -> b.return_(
@@ -120,10 +121,10 @@ class ListFormsTest {
                 var bodies = cb.bodies();
                 bodies.define(
                         spread,
-                        b -> b.return_(call(
-                                new_(Gathered_.new_),
-                                Gathered_.count_ObjectArray,
-                                listed ? varargs(OBJECTS, List.of()) : varargs(OBJECTS))));
+                        b -> b.return_(new_(Gathered_.new_)
+                                .call(
+                                        Gathered_.count_ObjectArray,
+                                        listed ? varargs(OBJECTS, List.of()) : varargs(OBJECTS))));
                 bodies.define(arrayed, b -> b.return_(listed ? newArrayOf(STRINGS, List.of()) : newArrayOf(STRINGS)));
                 bodies.define(
                         placed,
@@ -178,7 +179,7 @@ class ListFormsTest {
                 bodies.define(
                         spread,
                         b -> b.return_(
-                                call(new_(Gathered_.new_), Gathered_.count_ObjectArray, varargs(OBJECTS, parts))));
+                                new_(Gathered_.new_).call(Gathered_.count_ObjectArray, varargs(OBJECTS, parts))));
                 return bodies;
             }
         }));

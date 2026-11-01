@@ -16,7 +16,6 @@ import java.util.List;
 
 import static me.supcheg.javafile.typed.Expressions.addInt;
 import static me.supcheg.javafile.typed.Expressions.assign;
-import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.concat;
 import static me.supcheg.javafile.typed.Expressions.eqRef;
 import static me.supcheg.javafile.typed.Expressions.literal;
@@ -32,7 +31,7 @@ class FinallyCompileTest {
     private static final ClassDesc DESC = ClassDesc.of("me.supcheg.example", "Probe");
 
     private static Effect told(Expr<StringBuilder> out, Expr<String> what) {
-        return call(out, StringBuilder_.append_String, what);
+        return out.call(StringBuilder_.append_String, what);
     }
 
     @Test

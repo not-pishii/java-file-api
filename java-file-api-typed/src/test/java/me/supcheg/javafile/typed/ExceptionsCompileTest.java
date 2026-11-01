@@ -24,11 +24,9 @@ import java.util.List;
 import static com.google.testing.compile.CompilationSubject.assertThat;
 import static me.supcheg.javafile.typed.Expressions.addInt;
 import static me.supcheg.javafile.typed.Expressions.assign;
-import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.new_;
 import static me.supcheg.javafile.typed.Expressions.staticCall;
-import static me.supcheg.javafile.typed.Expressions.voidCall;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -146,10 +144,11 @@ class ExceptionsCompileTest {
         // static void declaresUnchecked() throws RuntimeException { unchecked(); }
         var declaresUnchecked = cb.throwing(RuntimeException_.TOKEN).declareVoidStaticMethod("declaresUnchecked");
         var bodies = cb.bodies();
-        bodies.define(declared, (b, s) -> b.return_(call(new_(StringReader_.new_String, s), StringReader_.read)));
+        bodies.define(
+                declared, (b, s) -> b.return_(new_(StringReader_.new_String, s).call(StringReader_.read)));
         bodies.define(
                 ctor,
-                (b, _) -> b.exec(call(new_(StringReader_.new_String, literal("a")), StringReader_.read))
+                (b, _) -> b.exec(new_(StringReader_.new_String, literal("a")).call(StringReader_.read))
                         .end());
         bodies.define(
                 made,
@@ -162,14 +161,14 @@ class ExceptionsCompileTest {
                 (b, s) -> b.let(
                         StringReader_.TOKEN,
                         new_(StringReader_.new_String, s),
-                        r -> b.exec(voidCall(r, StringReader_.close))
+                        r -> b.exec(r.voidCall(StringReader_.close))
                                 .tryTerminated(
                                         h -> h.catch_(IOException_.TOKEN, (c, _) -> c.return_(literal(-1))),
-                                        t -> t.return_(call(r, StringReader_.read)))));
+                                        t -> t.return_(r.call(StringReader_.read)))));
         bodies.define(
                 bySuperclass,
                 (b, s) -> b.tryTerminated(
-                        h -> h.catch_(IOException_.TOKEN, (c, e) -> c.return_(call(e, Throwable_.getMessage))),
+                        h -> h.catch_(IOException_.TOKEN, (c, e) -> c.return_(e.call(Throwable_.getMessage))),
                         t -> t.throw_(new_(FileNotFoundException_.new_String, s))));
         bodies.define(
                 ordered,
@@ -190,13 +189,13 @@ class ExceptionsCompileTest {
                 rethrownMethod,
                 (b, s) -> b.tryTerminated(
                         h -> h.catch_(IOException_.TOKEN, (c, e) -> c.throw_(e))
-                                .finally_(f -> f.exec(call(s, String_.length))),
-                        t -> t.return_(call(new_(StringReader_.new_String, s), StringReader_.read))));
+                                .finally_(f -> f.exec(s.call(String_.length))),
+                        t -> t.return_(new_(StringReader_.new_String, s).call(StringReader_.read))));
         bodies.define(
                 wrapped,
                 (b, s) -> b.tryTerminated(
                         h -> h.catch_(IOException_.TOKEN, (c, e) -> c.throw_(new_(Exception_.new_Throwable, e))),
-                        t -> t.return_(call(new_(StringReader_.new_String, s), StringReader_.read))));
+                        t -> t.return_(new_(StringReader_.new_String, s).call(StringReader_.read))));
         bodies.define(
                 recovered,
                 (b, s) -> b.letVar(
@@ -206,7 +205,9 @@ class ExceptionsCompileTest {
                                         h -> h.catch_(
                                                 IOException_.TOKEN, (c, _) -> c.exec(assign(result, literal(-1)))),
                                         t -> t.exec(assign(
-                                                result, call(new_(StringReader_.new_String, s), StringReader_.read))))
+                                                result,
+                                                new_(StringReader_.new_String, s)
+                                                        .call(StringReader_.read))))
                                 .return_(result)));
         bodies.define(
                 anything,
@@ -222,15 +223,16 @@ class ExceptionsCompileTest {
                 (b, io) -> b.tryTerminated(
                         h -> h.catch_(
                                 List.of(IOException_.TOKEN, InterruptedException_.TOKEN),
-                                (c, e) -> c.return_(call(call(e, Throwable_.getMessage), String_.length))),
+                                (c, e) ->
+                                        c.return_(e.call(Throwable_.getMessage).call(String_.length))),
                         t -> t.if_(io, x -> x.throw_(new_(IOException_.new_String, literal("io"))))
                                 .throw_(new_(InterruptedException_.new_String, literal("interrupted")))));
-        bodies.define(closed, (b, r) -> b.exec(voidCall(r, Reader_.close)).end());
+        bodies.define(closed, (b, r) -> b.exec(r.voidCall(Reader_.close)).end());
         bodies.define(
                 closedAndCaught,
                 (b, r) -> b.tryTerminated(
                         h -> h.catch_(IOException_.TOKEN, (c, _) -> c.return_(literal(0))),
-                        t -> t.exec(voidCall(r, Reader_.close)).return_(literal(1))));
+                        t -> t.exec(r.voidCall(Reader_.close)).return_(literal(1))));
         bodies.define(
                 precise,
                 b -> b.tryTerminated(

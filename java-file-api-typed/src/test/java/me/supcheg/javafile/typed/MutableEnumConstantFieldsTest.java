@@ -18,10 +18,8 @@ import java.lang.reflect.Field;
 import static me.supcheg.javafile.typed.Expressions.addInt;
 import static me.supcheg.javafile.typed.Expressions.assignField;
 import static me.supcheg.javafile.typed.Expressions.assignStaticField;
-import static me.supcheg.javafile.typed.Expressions.field;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.staticField;
-import static me.supcheg.javafile.typed.Expressions.voidCall;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /// The mutable fields of a constant body: an instance field and a static one, declared in every form
@@ -76,11 +74,11 @@ class MutableEnumConstantFieldsTest {
                     body.initialize(documentedTotal, literal(0));
                     body.override(
                             apply,
-                            (b, self) -> b.exec(voidCall(self, bump))
-                                    .return_(addInt(field(self, value), staticField(total))));
+                            (b, self) ->
+                                    b.exec(self.voidCall(bump)).return_(addInt(self.field(value), staticField(total))));
                     body.define(
                             bump,
-                            (b, self) -> b.exec(assignField(self, value, addInt(field(self, value), literal(1))))
+                            (b, self) -> b.exec(assignField(self, value, addInt(self.field(value), literal(1))))
                                     .exec(assignStaticField(total, addInt(staticField(total), literal(10))))
                                     .end());
                 });

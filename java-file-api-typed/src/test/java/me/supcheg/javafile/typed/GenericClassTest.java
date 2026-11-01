@@ -19,13 +19,10 @@ import java.lang.constant.ClassDesc;
 import java.util.function.Supplier;
 
 import static me.supcheg.javafile.typed.Expressions.assignField;
-import static me.supcheg.javafile.typed.Expressions.call;
-import static me.supcheg.javafile.typed.Expressions.field;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.literalNull;
 import static me.supcheg.javafile.typed.Expressions.ltInt;
 import static me.supcheg.javafile.typed.Expressions.new_;
-import static me.supcheg.javafile.typed.Expressions.voidCall;
 import static me.supcheg.javafile.typed.TypedJavaFile.typeParam;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -60,13 +57,13 @@ class GenericClassTest {
                         put,
                         (b, self, value) ->
                                 b.exec(assignField(self, item, value)).end());
-                bodies.define(get, (b, self) -> b.return_(field(self, item)));
+                bodies.define(get, (b, self) -> b.return_(self.field(item)));
                 bodies.define(
                         copyMethod,
                         (b, self) -> b.let(
                                 cb.self(),
                                 new_(ctor),
-                                copy -> b.exec(voidCall(copy, put, call(self, get)))
+                                copy -> b.exec(copy.voidCall(put, self.call(get)))
                                         .return_(copy)));
                 return bodies;
             }
@@ -103,7 +100,9 @@ class GenericClassTest {
                         var bodies = cb.bodies();
                         bodies.define(item, (b, self, value) -> b.return_(value));
                         bodies.define(
-                                asInt, (b, self, value) -> b.return_(call(call(self, item, value), Number_.intValue)));
+                                asInt,
+                                (b, self, value) ->
+                                        b.return_(self.call(item, value).call(Number_.intValue)));
                         return bodies;
                     }
                 }));
@@ -138,8 +137,10 @@ class GenericClassTest {
                 bodies.define(compareTo.method(), (b, self, other) -> b.return_(literal(7)));
                 bodies.define(
                         described, (b, self, other) -> b.return_(bodies.superCall(self, carrier.described_T, other)));
-                bodies.define(mine, (b, self) -> b.return_(call(sh.asSuper().apply(self), carrier.carried)));
-                bodies.define(same, (b, self) -> b.return_(call(asComparable.apply(self), cmp.compareTo_T, self)));
+                bodies.define(
+                        mine, (b, self) -> b.return_(sh.asSuper().apply(self).call(carrier.carried)));
+                bodies.define(
+                        same, (b, self) -> b.return_(asComparable.apply(self).call(cmp.compareTo_T, self)));
                 return bodies;
             }
         }));
@@ -179,8 +180,8 @@ class GenericClassTest {
                         bodies.define(
                                 less,
                                 (b, self, one, other) -> b.return_(ltInt(
-                                        call(asComparable.apply(one), comparable.compareTo_T, other), literal(0))));
-                        bodies.define(asInt, (b, self, one) -> b.return_(call(one, Number_.intValue)));
+                                        asComparable.apply(one).call(comparable.compareTo_T, other), literal(0))));
+                        bodies.define(asInt, (b, self, one) -> b.return_(one.call(Number_.intValue)));
                         return bodies;
                     }
                 }));
@@ -215,7 +216,7 @@ class GenericClassTest {
                 bodies.define(
                         compare,
                         (b, self, one, other) ->
-                                b.return_(call(asComparable.apply(one), comparable.compareTo_T, other)));
+                                b.return_(asComparable.apply(one).call(comparable.compareTo_T, other)));
                 bodies.define(show, (b, self, one) -> b.return_(literal("T")));
                 bodies.define(showMethod, (b, self, one) -> b.return_(literal("Comparable")));
                 return bodies;
@@ -279,11 +280,11 @@ class GenericClassTest {
                         var third = cb.declareMethod("third", PrimitiveToken.INT, c);
                         var bodies = cb.bodies();
                         bodies.define(first, (body, self, one, two) -> body.return_(one));
-                        bodies.define(second, (body, self, two, three) -> body.return_(call(two, Number_.intValue)));
+                        bodies.define(second, (body, self, two, three) -> body.return_(two.call(Number_.intValue)));
                         bodies.define(
                                 third,
                                 (body, self, three) -> body.return_(
-                                        call(three, new Comparable_<>(String_.TOKEN).compareTo_T, literal("b"))));
+                                        three.call(new Comparable_<>(String_.TOKEN).compareTo_T, literal("b"))));
                         return bodies;
                     }
                 }));

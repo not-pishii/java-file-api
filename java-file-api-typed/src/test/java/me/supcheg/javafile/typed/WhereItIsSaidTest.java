@@ -23,7 +23,6 @@ import org.junit.jupiter.api.Test;
 import java.lang.constant.ClassDesc;
 import java.util.Arrays;
 
-import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.concat;
 import static me.supcheg.javafile.typed.Expressions.enumConstant;
 import static me.supcheg.javafile.typed.Expressions.literal;
@@ -118,13 +117,14 @@ class WhereItIsSaidTest {
                     var bodies = cb.bodies(ctor, c -> c.super_(Base_.new_, (b, self) -> b.end()));
 
                     assertThat(catchThrowable(() ->
-                                    bodies.define(other, (b, self, base) -> b.return_(call(base, hook, literal("x"))))))
+                                    bodies.define(other, (b, self, base) -> b.return_(base.call(hook, literal("x"))))))
                             .isInstanceOf(IllegalStateException.class)
                             .hasMessageContaining("is protected, and is called on an expression of"
                                     + " me.supcheg.javafile.typed.fixtures.Base");
                     bodies.define(
                             other,
-                            (b, self, base) -> b.return_(call(bodies.asSuper().apply(self), hook, literal("x"))));
+                            (b, self, base) ->
+                                    b.return_(bodies.asSuper().apply(self).call(hook, literal("x"))));
                     return bodies;
                 }
             });
@@ -157,7 +157,7 @@ class WhereItIsSaidTest {
                                     f, (b, self) -> b.return_(bodies.superCall(self, base.m_T, literal("x"))))))
                             .isInstanceOf(IllegalStateException.class)
                             .hasMessageContaining("super.m(...) cannot name");
-                    bodies.define(f, (b, self) -> b.return_(call(self, m, literal("x"))));
+                    bodies.define(f, (b, self) -> b.return_(self.call(m, literal("x"))));
                     return bodies;
                 }
             });
@@ -250,7 +250,7 @@ class WhereItIsSaidTest {
                     var ofObject = cb.declareMethod("pick", String_.TOKEN, Object_.TOKEN);
                     var ofString = cb.declareMethod("pick", String_.TOKEN, String_.TOKEN);
                     var bodies = cb.bodies();
-                    bodies.define(picked, (b, self) -> b.return_(call(self, ofObject, literal("x"))));
+                    bodies.define(picked, (b, self) -> b.return_(self.call(ofObject, literal("x"))));
                     bodies.define(ofObject, (b, self, o) -> b.return_(literal("Object")));
                     bodies.define(ofString, (b, self, s) -> b.return_(literal("String")));
                     return bodies;

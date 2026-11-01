@@ -8,7 +8,6 @@ import me.supcheg.javafile.facts.processor.harness.Typed;
 import p.Impl;
 import p.Sub;
 
-import static me.supcheg.javafile.typed.Expressions.field;
 import static me.supcheg.javafile.typed.Expressions.new_;
 import static me.supcheg.javafile.typed.Expressions.staticField;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,11 +21,11 @@ public final class Fields {
 
     public static void anInstanceFieldAmbiguousInTheTypeOfTheReceiverIsReadThroughItsOwner(Typed typed) {
         // impl.k does not compile: k is a field of PubA and of PubB
-        assertThat(typed.render(String_.TOKEN, Impl_.TOKEN, impl -> field(impl, PubA_.k)))
+        assertThat(typed.render(String_.TOKEN, Impl_.TOKEN, impl -> impl.field(PubA_.k)))
                 .contains("return ((PubA) v0).k;");
-        assertThat(typed.apply(String_.TOKEN, Impl_.TOKEN, impl -> field(impl, PubA_.k), new Impl()))
+        assertThat(typed.apply(String_.TOKEN, Impl_.TOKEN, impl -> impl.field(PubA_.k), new Impl()))
                 .isEqualTo("PubA.k");
-        assertThat(typed.apply(String_.TOKEN, String_.TOKEN, s -> field(new_(Impl_.new_), PubA_.k), "a"))
+        assertThat(typed.apply(String_.TOKEN, String_.TOKEN, s -> new_(Impl_.new_).field(PubA_.k), "a"))
                 .isEqualTo("PubA.k");
     }
 
@@ -44,13 +43,13 @@ public final class Fields {
 
     public static void anInstanceFieldHiddenInTheTypeOfTheReceiverIsReadThroughItsOwner(Typed typed) {
         // sub.f is the field of Sub
-        assertThat(typed.render(String_.TOKEN, Sub_.TOKEN, sub -> field(sub, Super_.f)))
+        assertThat(typed.render(String_.TOKEN, Sub_.TOKEN, sub -> sub.field(Super_.f)))
                 .contains("return ((Super) v0).f;");
-        assertThat(typed.apply(String_.TOKEN, Sub_.TOKEN, sub -> field(sub, Super_.f), new Sub()))
+        assertThat(typed.apply(String_.TOKEN, Sub_.TOKEN, sub -> sub.field(Super_.f), new Sub()))
                 .isEqualTo("Super.f");
-        assertThat(typed.apply(String_.TOKEN, Sub_.TOKEN, sub -> field(sub, Sub_.f), new Sub()))
+        assertThat(typed.apply(String_.TOKEN, Sub_.TOKEN, sub -> sub.field(Sub_.f), new Sub()))
                 .isEqualTo("Sub.f");
-        assertThat(typed.render(String_.TOKEN, Sub_.TOKEN, sub -> field(sub, Sub_.f)))
+        assertThat(typed.render(String_.TOKEN, Sub_.TOKEN, sub -> sub.field(Sub_.f)))
                 .contains("return v0.f;");
     }
 

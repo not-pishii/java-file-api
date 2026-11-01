@@ -7,7 +7,6 @@ import p.PubRaw;
 
 import java.util.List;
 
-import static me.supcheg.javafile.typed.Expressions.call;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
@@ -34,7 +33,7 @@ public final class Raw {
     }
 
     public static void aMethodOfTheRawSupertypeIsCalled(Typed typed) {
-        assertThat(typed.apply(Object_.TOKEN, PubRaw_.TOKEN, raw -> call(raw, PubRaw_.get), new PubRaw()))
+        assertThat(typed.apply(Object_.TOKEN, PubRaw_.TOKEN, raw -> raw.call(PubRaw_.get), new PubRaw()))
                 .isNull();
     }
 
@@ -44,7 +43,7 @@ public final class Raw {
         var all = PubRaw_.all;
 
         assertThatIllegalStateException()
-                .isThrownBy(() -> typed.render(all.result(), PubRaw_.TOKEN, raw -> call(raw, all)))
+                .isThrownBy(() -> typed.render(all.result(), PubRaw_.TOKEN, raw -> raw.call(all)))
                 .withMessageContaining("is the raw type java.util.List");
     }
 }

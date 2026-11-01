@@ -14,9 +14,6 @@ import org.junit.jupiter.api.Test;
 import java.lang.constant.ClassDesc;
 
 import static me.supcheg.javafile.typed.Expressions.assignAt;
-import static me.supcheg.javafile.typed.Expressions.at;
-import static me.supcheg.javafile.typed.Expressions.field;
-import static me.supcheg.javafile.typed.Expressions.length;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.newArray;
 import static me.supcheg.javafile.typed.Expressions.new_;
@@ -53,16 +50,14 @@ class ArraysTest {
                                 INTS_2,
                                 newArray(INTS_2, literal(2)),
                                 rows -> b.exec(assignAt(INTS_2, rows, literal(1), newArray(INTS, literal(3))))
-                                        .return_(length(INTS, at(INTS_2, rows, literal(1))))));
+                                        .return_(rows.arrayAccess(INTS_2, literal(1))
+                                                .length(INTS))));
                 bodies.define(
                         strings,
                         b -> b.let(
-                                STRINGS_2,
-                                newArray(STRINGS_2, literal(4)),
-                                rows -> b.return_(length(STRINGS_2, rows))));
+                                STRINGS_2, newArray(STRINGS_2, literal(4)), rows -> b.return_(rows.length(STRINGS_2))));
                 bodies.define(
-                        deep,
-                        b -> b.let(INTS_3, newArray(INTS_3, literal(5)), cube -> b.return_(length(INTS_3, cube))));
+                        deep, b -> b.let(INTS_3, newArray(INTS_3, literal(5)), cube -> b.return_(cube.length(INTS_3))));
                 return bodies;
             }
         }));
@@ -91,9 +86,8 @@ class ArraysTest {
                                 STRINGS,
                                 newArray(STRINGS, literal(1)),
                                 array -> b.exec(assignAt(STRINGS, array, literal(0), literal("x")))
-                                        .return_(field(
-                                                new_(Picked_.new_Object, at(STRINGS, array, literal(0))),
-                                                Picked_.which))));
+                                        .return_(new_(Picked_.new_Object, array.arrayAccess(STRINGS, literal(0)))
+                                                .field(Picked_.which))));
                 return bodies;
             }
         }));
@@ -116,7 +110,7 @@ class ArraysTest {
                                 objects,
                                 newArray(objects, literal(1)),
                                 array -> b.exec(assignAt(objects, array, literal(0), literal("x")))
-                                        .return_(at(objects, array, literal(0)))));
+                                        .return_(array.arrayAccess(objects, literal(0)))));
                 return bodies;
             }
         }));

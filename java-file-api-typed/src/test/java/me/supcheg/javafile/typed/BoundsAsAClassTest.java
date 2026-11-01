@@ -25,7 +25,6 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;
 
-import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.JavacVerdict.classAsJavac;
 import static me.supcheg.javafile.typed.JavacVerdict.classUnlikeJavac;
 import static me.supcheg.javafile.typed.TypedJavaFile.typeParam;
@@ -145,7 +144,8 @@ class BoundsAsAClassTest {
                         var go = cb.declareMethod("go", String_.TOKEN, t);
                         var bodies = cb.bodies();
                         bodies.define(constructor, (b, self) -> b.end());
-                        bodies.define(go, (b, self, v) -> b.return_(call(asSealing.apply(v), Sealing_.sealed)));
+                        bodies.define(
+                                go, (b, self, v) -> b.return_(asSealing.apply(v).call(Sealing_.sealed)));
                         return bodies;
                     }
                 }));

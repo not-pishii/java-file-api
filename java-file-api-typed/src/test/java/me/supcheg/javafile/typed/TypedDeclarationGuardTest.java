@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Set;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
-import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -526,7 +525,7 @@ class TypedDeclarationGuardTest {
                                         MemberTraits.DEFAULT.with(Access.PROTECTED));
                                 var peek = ib.declareDefaultMethod("peek", PrimitiveToken.INT);
                                 var bodies = ib.bodies();
-                                bodies.define(peek, (b, self) -> b.return_(call(self, secret)));
+                                bodies.define(peek, (b, self) -> b.return_(self.call(secret)));
                                 return bodies;
                             }
                         }))
@@ -751,7 +750,7 @@ class TypedDeclarationGuardTest {
                             public <Self> TypedInterfaceBodies<Self> build(TypedInterfaceBuilder<Self> ib) {
                                 var constant = ib.declareConstant("C", PrimitiveToken.INT);
                                 var bodies = ib.bodies();
-                                bodies.initialize(constant, call(literal("x"), String_.length));
+                                bodies.initialize(constant, literal("x").call(String_.length));
                                 return bodies;
                             }
                         }))

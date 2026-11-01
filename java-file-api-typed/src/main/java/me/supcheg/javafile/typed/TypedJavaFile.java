@@ -52,7 +52,7 @@ public final class TypedJavaFile extends GenericDeclarationArities {
     ///         var x2 = cb.declareMethod("x2", PrimitiveToken.INT);
     ///         var bodies = cb.bodies();
     ///         bodies.initialize(x, literal(1));
-    ///         bodies.define(x2, (b, self) -> b.return_(addInt(field(self, x), field(self, x))));
+    ///         bodies.define(x2, (b, self) -> b.return_(addInt(self.field(x), self.field(x))));
     ///         return bodies;
     ///     }
     /// });

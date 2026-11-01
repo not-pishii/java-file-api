@@ -21,9 +21,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
 import static me.supcheg.javafile.typed.Expressions.assignField;
-import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.eqInt;
-import static me.supcheg.javafile.typed.Expressions.field;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.new_;
 import static me.supcheg.javafile.typed.Expressions.subInt;
@@ -71,13 +69,13 @@ class DeclarationsCompileTest {
                                 (b, self, n) -> b.ifElse(
                                         eqInt(n, literal(0)),
                                         t -> t.return_(literal(true)),
-                                        e -> e.return_(call(self, isOdd, subInt(n, literal(1))))));
+                                        e -> e.return_(self.call(isOdd, subInt(n, literal(1))))));
                         bodies.define(
                                 isOdd,
                                 (b, self, n) -> b.ifElse(
                                         eqInt(n, literal(0)),
                                         t -> t.return_(literal(false)),
-                                        e -> e.return_(call(self, isEven, subInt(n, literal(1))))));
+                                        e -> e.return_(self.call(isEven, subInt(n, literal(1))))));
                         bodies.define(constructor, (b, _) -> b.end());
                         return bodies;
                     }
@@ -124,8 +122,7 @@ class DeclarationsCompileTest {
                                         b.exec(assignField(self, count, start)).end());
                         bodies.define(toString, (b, _) -> b.return_(literal("Counter")));
                         bodies.define(create, b -> b.return_(new_(ctor, literal(4))));
-                        bodies.define(
-                                remaining, (b, self) -> b.return_(subInt(field(self, limit), field(self, count))));
+                        bodies.define(remaining, (b, self) -> b.return_(subInt(self.field(limit), self.field(count))));
                         return bodies;
                     }
                 });

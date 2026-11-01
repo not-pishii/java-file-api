@@ -43,7 +43,6 @@ import static me.supcheg.javafile.typed.Expressions.addDouble;
 import static me.supcheg.javafile.typed.Expressions.addInt;
 import static me.supcheg.javafile.typed.Expressions.addLong;
 import static me.supcheg.javafile.typed.Expressions.and;
-import static me.supcheg.javafile.typed.Expressions.at;
 import static me.supcheg.javafile.typed.Expressions.bitAndInt;
 import static me.supcheg.javafile.typed.Expressions.bitAndLong;
 import static me.supcheg.javafile.typed.Expressions.bitNotInt;
@@ -53,20 +52,16 @@ import static me.supcheg.javafile.typed.Expressions.bitOrLong;
 import static me.supcheg.javafile.typed.Expressions.bitXorInt;
 import static me.supcheg.javafile.typed.Expressions.bitXorLong;
 import static me.supcheg.javafile.typed.Expressions.box;
-import static me.supcheg.javafile.typed.Expressions.call;
-import static me.supcheg.javafile.typed.Expressions.castChecked;
 import static me.supcheg.javafile.typed.Expressions.concat;
 import static me.supcheg.javafile.typed.Expressions.cond;
 import static me.supcheg.javafile.typed.Expressions.divInt;
 import static me.supcheg.javafile.typed.Expressions.enumConstant;
 import static me.supcheg.javafile.typed.Expressions.eqInt;
 import static me.supcheg.javafile.typed.Expressions.eqRef;
-import static me.supcheg.javafile.typed.Expressions.field;
 import static me.supcheg.javafile.typed.Expressions.geInt;
 import static me.supcheg.javafile.typed.Expressions.gtInt;
 import static me.supcheg.javafile.typed.Expressions.lambda;
 import static me.supcheg.javafile.typed.Expressions.leInt;
-import static me.supcheg.javafile.typed.Expressions.length;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.literalNull;
 import static me.supcheg.javafile.typed.Expressions.ltInt;
@@ -356,10 +351,10 @@ class ConstantsTest {
                 // a cast to `String` is one of a constant expression
                 of(
                         "(@org.jspecify.annotations.Nullable String) \"a\" == \"a\"",
-                        eqRef(castChecked(ANNOTATED_STRING, literal("a")), literal("a"))),
+                        eqRef(literal("a").cast(ANNOTATED_STRING), literal("a"))),
                 of(
                         "(@org.jspecify.annotations.Nullable String) text == \"a\"",
-                        eqRef(castChecked(ANNOTATED_STRING, TEXT), literal("a"))));
+                        eqRef(TEXT.cast(ANNOTATED_STRING), literal("a"))));
     }
 
     private static Stream<Arguments> conditionals() {
@@ -409,7 +404,7 @@ class ConstantsTest {
         String signal = Signal.class.getCanonicalName();
         String supplied = "((java.util.function.Supplier<String>) () -> \"a\")";
         return Stream.of(
-                of("text.length() == 1", eqInt(call(TEXT, String_.length), literal(1))),
+                of("text.length() == 1", eqInt(TEXT.call(String_.length), literal(1))),
                 of("Integer.parseInt(text) == 1", eqInt(staticCall(Integer_.parseInt_String, TEXT), literal(1))),
                 of("new Object() == new Object()", eqRef(new_(Object_.new_), new_(Object_.new_))),
                 of(
@@ -421,9 +416,9 @@ class ConstantsTest {
                 of(signal + ".RED == " + signal + ".RED", eqRef(enumConstant(Signal_.RED), enumConstant(Signal_.RED))),
                 of(
                         "new " + Wide.class.getCanonicalName() + "().told == \"\"",
-                        eqRef(field(new_(Wide_.new_), Wide_.told), literal(""))),
-                of("new int[1].length == 1", eqInt(length(ints, newArray(ints, literal(1))), literal(1))),
-                of("(new int[1])[0] == 0", eqInt(at(ints, newArray(ints, literal(1)), literal(0)), literal(0))),
+                        eqRef(new_(Wide_.new_).field(Wide_.told), literal(""))),
+                of("new int[1].length == 1", eqInt(newArray(ints, literal(1)).length(ints), literal(1))),
+                of("(new int[1])[0] == 0", eqInt(newArray(ints, literal(1)).arrayAccess(ints, literal(0)), literal(0))),
                 of(
                         supplied + " == " + supplied,
                         eqRef(lambda(supplier.sam, () -> literal("a")), lambda(supplier.sam, () -> literal("a")))),

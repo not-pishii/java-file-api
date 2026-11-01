@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;
 
-import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.TypedJavaFile.typeParam;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -50,14 +49,13 @@ class EnumConstantBodiesTest {
                                     .build());
                     var helper = cb.declareMethod("helper", PrimitiveToken.INT, PrimitiveToken.INT);
                     var unitMethod = cb.declareStaticMethod("unit", PrimitiveToken.INT);
-                    cb.override(apply, (b, self, x) -> b.return_(call(self, helper, x)));
+                    cb.override(apply, (b, self, x) -> b.return_(self.call(helper, x)));
                     cb.initialize(base, literal(10));
                     cb.initialize(unit, literal(1));
                     cb.define(
                             helper,
                             (b, self, x) -> b.return_(me.supcheg.javafile.typed.Expressions.addInt(
-                                    me.supcheg.javafile.typed.Expressions.mulInt(x, literal(2)),
-                                    me.supcheg.javafile.typed.Expressions.field(self, base))));
+                                    me.supcheg.javafile.typed.Expressions.mulInt(x, literal(2)), self.field(base))));
                     cb.define(unitMethod, b -> b.return_(me.supcheg.javafile.typed.Expressions.staticField(unit)));
                     cb.declareNestedClass("Box", typeParam("T"), new TypedJavaFile.TypedGenericClassSpec1<>() {
                         @Override

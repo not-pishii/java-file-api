@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;
 
-import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.mulInt;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,7 +29,7 @@ class TypeModifiersTest {
                         var x = rb.component("x", PrimitiveToken.INT);
                         var doubled = rb.modified(Modifier.SYNCHRONIZED).declareMethod("doubled", PrimitiveToken.INT);
                         var bodies = rb.bodies();
-                        bodies.define(doubled, (b, self) -> b.return_(mulInt(call(self, x.accessor()), literal(2))));
+                        bodies.define(doubled, (b, self) -> b.return_(mulInt(self.call(x.accessor()), literal(2))));
                         return bodies;
                     }
                 });

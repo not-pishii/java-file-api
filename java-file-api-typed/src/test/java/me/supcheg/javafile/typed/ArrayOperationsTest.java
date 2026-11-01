@@ -20,16 +20,12 @@ import java.util.function.Function;
 import static me.supcheg.javafile.typed.Expressions.addInt;
 import static me.supcheg.javafile.typed.Expressions.assign;
 import static me.supcheg.javafile.typed.Expressions.assignAt;
-import static me.supcheg.javafile.typed.Expressions.at;
-import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.cloneArray;
 import static me.supcheg.javafile.typed.Expressions.lambdaBlock;
-import static me.supcheg.javafile.typed.Expressions.length;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.newArray;
 import static me.supcheg.javafile.typed.Expressions.newArrayOf;
 import static me.supcheg.javafile.typed.Expressions.new_;
-import static me.supcheg.javafile.typed.Expressions.voidCall;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /// The operations on arrays beside `at`, `length` and `assignAt`: the creation of an array of arrays with the
@@ -67,16 +63,15 @@ class ArrayOperationsTest {
                         b -> b.let(
                                 INTS_2,
                                 newArray(INTS_2, literal(2), literal(3)),
-                                a -> b.return_(length(INTS, at(INTS_2, a, literal(1))))));
+                                a -> b.return_(a.arrayAccess(INTS_2, literal(1)).length(INTS))));
                 // new int[2][3][]: the third dimension has no length
                 bodies.define(
                         cube,
                         b -> b.let(
                                 INTS_3,
                                 newArray(INTS_3, literal(2), literal(3)),
-                                a -> b.return_(length(INTS_2, at(INTS_3, a, literal(1))))));
-                bodies.define(
-                        rows, b -> b.let(INTS_2, newArray(INTS_2, literal(4)), a -> b.return_(length(INTS_2, a))));
+                                a -> b.return_(a.arrayAccess(INTS_3, literal(1)).length(INTS_2))));
+                bodies.define(rows, b -> b.let(INTS_2, newArray(INTS_2, literal(4)), a -> b.return_(a.length(INTS_2))));
                 return bodies;
             }
         }));
@@ -133,8 +128,8 @@ class ArrayOperationsTest {
                         b -> b.let(
                                 STRINGS,
                                 newArrayOf(STRINGS, literal("x")),
-                                a -> b.return_(call(
-                                        new_(Gathered_.new_), Gathered_.join_StringArray, cloneArray(STRINGS, a)))));
+                                a -> b.return_(new_(Gathered_.new_)
+                                        .call(Gathered_.join_StringArray, cloneArray(STRINGS, a)))));
                 // a store into the copy does not reach the array
                 bodies.define(
                         original,
@@ -145,10 +140,11 @@ class ArrayOperationsTest {
                                         STRINGS,
                                         cloneArray(STRINGS, a),
                                         c -> b.exec(assignAt(STRINGS, c, literal(0), literal("z")))
-                                                .return_(at(STRINGS, a, literal(0))))));
+                                                .return_(a.arrayAccess(STRINGS, literal(0))))));
                 bodies.define(
                         copied,
-                        b -> b.return_(length(INTS, cloneArray(INTS, newArrayOf(INTS, literal(1), literal(2))))));
+                        b -> b.return_(cloneArray(INTS, newArrayOf(INTS, literal(1), literal(2)))
+                                .length(INTS)));
                 return bodies;
             }
         }));
@@ -191,12 +187,12 @@ class ArrayOperationsTest {
                                                 STRINGS,
                                                 words,
                                                 (loop, word, ctl) -> loop.if_(
-                                                                call(word, String_.isEmpty), t -> t.continue_(ctl))
+                                                                word.call(String_.isEmpty), t -> t.continue_(ctl))
                                                         .if_(
-                                                                call(word, String_.equals_Object, literal("stop")),
+                                                                word.call(String_.equals_Object, literal("stop")),
                                                                 t -> t.break_(ctl))
-                                                        .exec(call(sb, StringBuilder_.append_String, word)))
-                                        .return_(call(sb, StringBuilder_.toString))));
+                                                        .exec(sb.call(StringBuilder_.append_String, word)))
+                                        .return_(sb.call(StringBuilder_.toString))));
                 // the loop of a lambda
                 bodies.define(
                         lambda,
@@ -211,10 +207,10 @@ class ArrayOperationsTest {
                                                                 STRINGS,
                                                                 words,
                                                                 (loop, word, _) -> loop.exec(
-                                                                        call(sb, StringBuilder_.append_String, word)))
+                                                                        sb.call(StringBuilder_.append_String, word)))
                                                         .end()),
-                                        r -> b.exec(voidCall(r, Runnable_.run))
-                                                .return_(call(sb, StringBuilder_.toString)))));
+                                        r -> b.exec(r.voidCall(Runnable_.run))
+                                                .return_(sb.call(StringBuilder_.toString)))));
                 return bodies;
             }
         }));
@@ -228,7 +224,7 @@ class ArrayOperationsTest {
 
     @Test
     void aCheckedExceptionOfAnElementOrOfTheIteratedArrayIsThatOfTheStatement() {
-        var read = call(new_(StringReader_.new_String, literal("a")), StringReader_.read);
+        var read = new_(StringReader_.new_String, literal("a")).call(StringReader_.read);
         JavacVerdict.asJavac(
                 () -> declare(cb -> {
                     var m = cb.declareStaticMethod("m", INTS);

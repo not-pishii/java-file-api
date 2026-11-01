@@ -11,7 +11,6 @@ import java.lang.constant.ClassDesc;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
 import static me.supcheg.javafile.typed.Expressions.addInt;
-import static me.supcheg.javafile.typed.Expressions.field;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.mulInt;
 
@@ -37,8 +36,7 @@ class PointCompileTest {
                         bodies.define(
                                 sumOfSquares,
                                 (body, self) -> body.return_(addInt(
-                                        mulInt(field(self, x), field(self, x)),
-                                        mulInt(field(self, y), field(self, y)))));
+                                        mulInt(self.field(x), self.field(x)), mulInt(self.field(y), self.field(y)))));
                         return bodies;
                     }
                 });

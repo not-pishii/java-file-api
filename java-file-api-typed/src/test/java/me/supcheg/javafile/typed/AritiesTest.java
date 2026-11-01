@@ -15,11 +15,9 @@ import org.junit.jupiter.api.parallel.ExecutionMode;
 import java.lang.constant.ClassDesc;
 
 import static me.supcheg.javafile.typed.Expressions.concat;
-import static me.supcheg.javafile.typed.Expressions.field;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.new_;
 import static me.supcheg.javafile.typed.Expressions.staticCall;
-import static me.supcheg.javafile.typed.Expressions.voidCall;
 import static me.supcheg.javafile.typed.Expressions.voidStaticCall;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -163,13 +161,9 @@ class AritiesTest {
                 bodies.define(same2, (b, self, _, _) -> b.return_(self));
                 bodies.define(
                         own,
-                        (b, self, first, second) -> b.exec(voidCall(
-                                        asWide.apply(self),
-                                        Wide_.put_String_String_String,
-                                        first,
-                                        second,
-                                        literal("?")))
-                                .exec(voidCall(asWide.apply(self), Wide_.put_String_String, first, second))
+                        (b, self, first, second) -> b.exec(asWide.apply(self)
+                                        .voidCall(Wide_.put_String_String_String, first, second, literal("?")))
+                                .exec(asWide.apply(self).voidCall(Wide_.put_String_String, first, second))
                                 .end());
                 bodies.define(
                         joined,
@@ -178,8 +172,9 @@ class AritiesTest {
                 bodies.define(
                         fresh,
                         (b, _, first, second) -> b.return_(concat(
-                                field(new_(Wide_.new_String_String, first, second), Wide_.told),
-                                field(new_(Wide_.new_String_String_String, first, second, literal("!")), Wide_.told))));
+                                new_(Wide_.new_String_String, first, second).field(Wide_.told),
+                                new_(Wide_.new_String_String_String, first, second, literal("!"))
+                                        .field(Wide_.told))));
                 return bodies;
             }
         }));

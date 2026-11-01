@@ -11,7 +11,6 @@ import static me.supcheg.javafile.typed.Expressions.assign;
 import static me.supcheg.javafile.typed.Expressions.bitNotByte;
 import static me.supcheg.javafile.typed.Expressions.bitNotChar;
 import static me.supcheg.javafile.typed.Expressions.bitNotShort;
-import static me.supcheg.javafile.typed.Expressions.instanceOf;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.literalNull;
 import static me.supcheg.javafile.typed.Expressions.negByte;
@@ -122,14 +121,14 @@ class OperatorsChecksTest {
 
     @Test
     void aPlainInstanceofOfAPrimitiveIsRefused() {
-        assertThatThrownBy(() -> instanceOf(literal(1), Object_.TOKEN))
+        assertThatThrownBy(() -> literal(1).instanceOf(Object_.TOKEN))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("instanceOf tests a reference");
     }
 
     @Test
     void aPlainInstanceofThatWouldBeUncheckedIsRefused() {
-        assertThatThrownBy(() -> instanceOf(literalNull(Object_.TOKEN), new List_<>(String_.TOKEN).token))
+        assertThatThrownBy(() -> literalNull(Object_.TOKEN).instanceOf(new List_<>(String_.TOKEN).token))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("unchecked cast");
     }

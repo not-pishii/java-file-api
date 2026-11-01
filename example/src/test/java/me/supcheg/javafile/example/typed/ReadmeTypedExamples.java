@@ -31,14 +31,10 @@ import java.lang.constant.ClassDesc;
 import static me.supcheg.javafile.typed.Expressions.addInt;
 import static me.supcheg.javafile.typed.Expressions.assign;
 import static me.supcheg.javafile.typed.Expressions.assignStaticField;
-import static me.supcheg.javafile.typed.Expressions.at;
-import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.concat;
 import static me.supcheg.javafile.typed.Expressions.divInt;
-import static me.supcheg.javafile.typed.Expressions.field;
 import static me.supcheg.javafile.typed.Expressions.gtInt;
 import static me.supcheg.javafile.typed.Expressions.lambda;
-import static me.supcheg.javafile.typed.Expressions.length;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.mulDouble;
 import static me.supcheg.javafile.typed.Expressions.newArrayOf;
@@ -72,7 +68,7 @@ final class ReadmeTypedExamples {
                         bodies.define(
                                 greet,
                                 (b, self, name) -> b.return_(concat(
-                                        concat(concat(field(self, greeting), literal(", ")), name), literal("!"))));
+                                        concat(concat(self.field(greeting), literal(", ")), name), literal("!"))));
                         return bodies;
                     }
                 });
@@ -128,11 +124,11 @@ final class ReadmeTypedExamples {
                         bodies.define(
                                 area,
                                 (b, self) -> b.return_(mulDouble(
-                                        mulDouble(staticField(Math_.PI), field(self, radius)), field(self, radius))));
+                                        mulDouble(staticField(Math_.PI), self.field(radius)), self.field(radius))));
                         bodies.define(
                                 compareTo.method(),
-                                (b, self, other) -> b.return_(staticCall(
-                                        Double_.compare_double_double, call(self, area), call(other, area))));
+                                (b, self, other) -> b.return_(
+                                        staticCall(Double_.compare_double_double, self.call(area), other.call(area))));
                         return bodies;
                     }
                 });
@@ -161,16 +157,15 @@ final class ReadmeTypedExamples {
                                 max,
                                 (b, self, items) -> b.letVar(
                                         t,
-                                        call(items, list.getFirst),
+                                        items.call(list.getFirst),
                                         best -> b.forEach(
                                                         t,
                                                         items,
                                                         (loop, item, _) -> loop.if_(
                                                                 gtInt(
-                                                                        call(
-                                                                                asComparable.apply(item),
-                                                                                comparable.compareTo_T,
-                                                                                best),
+                                                                        asComparable
+                                                                                .apply(item)
+                                                                                .call(comparable.compareTo_T, best),
                                                                         literal(0)),
                                                                 then -> then.exec(assign(best, item))))
                                                 .return_(best)));
@@ -223,12 +218,12 @@ final class ReadmeTypedExamples {
                                                 String_.TOKEN,
                                                 (then, s) -> then.return_(concat(
                                                         literal("string of "),
-                                                        staticCall(String_.valueOf_int, call(s, String_.length)))),
+                                                        staticCall(String_.valueOf_int, s.call(String_.length)))),
                                                 other -> other.return_(literal("something else"))));
                         bodies.define(
                                 startingWith,
                                 (b, prefix) -> b.return_(
-                                        lambda(strings.sam, text -> call(text, String_.startsWith_String, prefix))));
+                                        lambda(strings.sam, text -> text.call(String_.startsWith_String, prefix))));
                         return bodies;
                     }
                 });
@@ -255,7 +250,7 @@ final class ReadmeTypedExamples {
                         var second = cb.declareStaticMethod("second", String_.TOKEN);
 
                         var bodies = cb.bodies();
-                        bodies.define(countAll, (b, parts) -> b.return_(length(strings, parts)));
+                        bodies.define(countAll, (b, parts) -> b.return_(parts.length(strings)));
                         bodies.define(countTwo, (b, first, last) -> b.return_(literal(0)));
                         bodies.define(
                                 csv,
@@ -272,7 +267,7 @@ final class ReadmeTypedExamples {
                                 b -> b.let(
                                         strings,
                                         newArrayOf(strings, literal("a"), literal("b")),
-                                        names -> b.return_(at(strings, names, literal(1)))));
+                                        names -> b.return_(names.arrayAccess(strings, literal(1)))));
                         return bodies;
                     }
                 });

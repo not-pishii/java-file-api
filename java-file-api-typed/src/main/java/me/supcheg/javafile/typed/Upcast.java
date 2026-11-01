@@ -10,7 +10,7 @@ import me.supcheg.javafile.facts.RefToken;
 /// ```java
 /// Upcast<Self, Comparable<Self>> asComparable = oh.implements_(cmp.implement(h.self()).compareTo_T(compareTo));
 /// ...
-/// call(asComparable.apply(self), cmp.compareTo_T, other)
+/// asComparable.apply(self).call(cmp.compareTo_T, other)
 /// ```
 ///
 /// [#apply(Expr)] changes the type of an expression and nothing in the
