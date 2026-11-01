@@ -35,19 +35,33 @@ public record CompiledClasses(String source, ClassLoader loader, Class<?> genera
         return ofAll(List.of(file), fixtures).getFirst();
     }
 
+    /// Renders, compiles and loads `file` with assertions enabled or disabled for the classes of its loader.
+    ///
+    /// @param file the generated class
+    /// @param assertionsEnabled whether the JVM checks the `assert` statements of the generated class
+    /// @param fixtures the fixture classes, as `{binary name, source}` pairs
+    /// @return the loaded classes
+    public static CompiledClasses of(JavaFile file, boolean assertionsEnabled, String... fixtures) {
+        return ofAll(List.of(file), assertionsEnabled, fixtures).getFirst();
+    }
+
     /// Renders the `files` and compiles them together, in one run of javac, and loads each.
     ///
     /// @param files the generated classes
     /// @param fixtures the fixture classes, as `{binary name, source}` pairs
     /// @return the loaded classes, one for each of the `files`, in their order
     public static List<CompiledClasses> ofAll(List<JavaFile> files, String... fixtures) {
+        return ofAll(files, false, fixtures);
+    }
+
+    private static List<CompiledClasses> ofAll(List<JavaFile> files, boolean assertionsEnabled, String... fixtures) {
         List<JavaFileObject> companions = new ArrayList<>();
         for (int i = 0; i < fixtures.length; i += 2) {
             companions.add(JavaFileObjects.forSourceString(fixtures[i], fixtures[i + 1]));
         }
         Compilation compilation = RenderedJava.compile(files, companions.toArray(JavaFileObject[]::new));
         assertThat(compilation).succeededWithoutWarnings();
-        ClassLoader loader = new GeneratedClassLoader(compilation);
+        ClassLoader loader = new GeneratedClassLoader(compilation, assertionsEnabled);
         try {
             List<CompiledClasses> loaded = new ArrayList<>();
             for (JavaFile file : files) {
@@ -93,9 +107,10 @@ public record CompiledClasses(String source, ClassLoader loader, Class<?> genera
     private static final class GeneratedClassLoader extends ClassLoader {
         private final Compilation compilation;
 
-        GeneratedClassLoader(Compilation compilation) {
+        GeneratedClassLoader(Compilation compilation, boolean assertionsEnabled) {
             super(CompiledClasses.class.getClassLoader());
             this.compilation = compilation;
+            setDefaultAssertionStatus(assertionsEnabled);
         }
 
         @Override

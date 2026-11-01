@@ -37,6 +37,10 @@ final class ScopeCheck {
     static void check(Instr instr, Block<?, ?> block) {
         switch (instr) {
             case Instr.Let(var ignored, var init) -> node(init, in(block), block.path());
+            case Instr.Assert(var condition, var message) -> {
+                node(condition, in(block), block.path());
+                message.ifPresent(value -> node(value, in(block), block.path()));
+            }
             case Instr.Exec(var effect) -> node(effect, in(block), block.path());
             case Instr.If(var condition, var ignoredThen, var ignoredElse) -> node(condition, in(block), block.path());
             case Instr.IfInstance(var operand, var ignoredType, var ignoredVar, var ignoredThen, var ignoredElse) ->

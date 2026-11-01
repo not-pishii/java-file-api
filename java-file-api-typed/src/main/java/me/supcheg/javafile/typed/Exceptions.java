@@ -524,6 +524,7 @@ final class Exceptions {
     private static Stream<Node> nodes(Instr instr) {
         return switch (instr) {
             case Instr.Let(var _, var init) -> Stream.of(init);
+            case Instr.Assert(var condition, var message) -> Stream.concat(Stream.of(condition), message.stream());
             case Instr.Exec(var effect) -> Stream.of(effect);
             case Instr.If(var condition, var _, var _) -> Stream.of(condition);
             case Instr.IfInstance(var operand, var _, var _, var _, var _) -> Stream.of(operand);

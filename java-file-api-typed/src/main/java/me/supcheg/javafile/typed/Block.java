@@ -9,6 +9,7 @@ import me.supcheg.javafile.facts.TypeToken;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -359,6 +360,23 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
         MutVar<T> var = new MutVar<>(type, Var.Role.Mutable.LOCAL, this);
         append(new Instr.Let(var, init.node()));
         return rest.apply(var);
+    }
+
+    /// Appends `assert condition;`.
+    ///
+    /// @param condition the asserted condition
+    /// @return this block
+    public final B assert_(Expr<Prim.Bool> condition) {
+        return append(new Instr.Assert(condition.node(), Optional.empty()));
+    }
+
+    /// Appends `assert condition : message;`.
+    ///
+    /// @param condition the asserted condition
+    /// @param message the diagnostic message
+    /// @return this block
+    public final B assert_(Expr<Prim.Bool> condition, Expr<String> message) {
+        return append(new Instr.Assert(condition.node(), Optional.of(message.node())));
     }
 
     /// Appends `if (condition) { then }`. It never ends this block.

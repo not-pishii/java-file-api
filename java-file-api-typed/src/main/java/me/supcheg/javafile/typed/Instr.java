@@ -5,6 +5,7 @@ import me.supcheg.javafile.facts.ClassToken;
 import me.supcheg.javafile.facts.RefToken;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -19,6 +20,12 @@ sealed interface Instr {
 
     /// A local variable declaration with its initializer.
     record Let(Var<?> var, Node init) implements Plain {}
+
+    /// `assert condition;` or `assert condition : message;`.
+    ///
+    /// @param condition the asserted condition
+    /// @param message the diagnostic message, or empty to omit it
+    record Assert(Node condition, Optional<Node> message) implements Plain {}
 
     /// An expression statement: a call, an instance creation, or an assignment.
     record Exec(Node effect) implements Plain {}

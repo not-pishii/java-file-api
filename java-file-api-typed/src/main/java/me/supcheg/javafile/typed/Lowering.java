@@ -3,6 +3,7 @@ package me.supcheg.javafile.typed;
 import me.supcheg.javafile.code.ArrayCreationExpr;
 import me.supcheg.javafile.code.ArrayInitializer;
 import me.supcheg.javafile.code.ArrayInitializerExpr;
+import me.supcheg.javafile.code.AssertStmt;
 import me.supcheg.javafile.code.AssignOp;
 import me.supcheg.javafile.code.AssignStmt;
 import me.supcheg.javafile.code.AssignTarget;
@@ -427,6 +428,7 @@ final class Lowering {
                 String name = declare(v);
                 yield new LocalVarDeclStmt.Typed(written(v.type()).typeRef(), name, Optional.of(initExpr));
             }
+            case Instr.Assert(var condition, var message) -> new AssertStmt(expr(condition), message.map(this::expr));
             case Instr.Exec(var effect) -> effectStmt(effect);
             case Instr.If(var condition, var then, var otherwise) ->
                 new IfStmt(expr(condition), lowerBlock(then.instrs()), List.of(), lowerOptional(otherwise));
