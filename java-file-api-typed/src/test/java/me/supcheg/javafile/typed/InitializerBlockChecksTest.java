@@ -7,11 +7,9 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;
 
-import static me.supcheg.javafile.typed.Expressions.field;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.new_;
 import static me.supcheg.javafile.typed.Expressions.staticField;
-import static me.supcheg.javafile.typed.Expressions.voidCall;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
@@ -191,7 +189,7 @@ class InitializerBlockChecksTest {
                         bodies.define(zero, (b, _) -> b.end());
                         bodies.define(one, (b, _, value) -> b.end());
                         bodies.define(
-                                block, (b, self) -> b.exec(voidCall(self, read)).end());
+                                block, (b, self) -> b.exec(self.voidCall(read)).end());
                         return bodies;
                     }
                 }));
@@ -211,7 +209,7 @@ class InitializerBlockChecksTest {
                         var block = cb.declareInitializerBlock();
                         var later = cb.declareField("later", PrimitiveToken.INT);
                         var bodies = cb.bodies();
-                        bodies.define(block, (b, self) -> b.let(PrimitiveToken.INT, field(self, later), _ -> b.end()));
+                        bodies.define(block, (b, self) -> b.let(PrimitiveToken.INT, self.field(later), _ -> b.end()));
                         bodies.initialize(later, literal(1));
                         return bodies;
                     }

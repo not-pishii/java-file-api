@@ -12,8 +12,6 @@ import java.lang.constant.ClassDesc;
 import java.util.Set;
 
 import static me.supcheg.javafile.typed.Expressions.assignField;
-import static me.supcheg.javafile.typed.Expressions.call;
-import static me.supcheg.javafile.typed.Expressions.field;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.new_;
 import static me.supcheg.javafile.typed.Expressions.staticField;
@@ -56,34 +54,33 @@ class InitializerBlocksCompileTest {
                         bodies.initialize(after, literal(2));
                         bodies.define(
                                 staticBlock,
-                                b -> b.exec(call(staticField(staticTrace), StringBuilder_.append_String, literal("S;")))
+                                b -> b.exec(staticField(staticTrace).call(StringBuilder_.append_String, literal("S;")))
                                         .end());
                         bodies.define(
                                 first,
-                                (b, self) -> b.exec(
-                                                call(field(self, trace), StringBuilder_.append_String, literal("A")))
-                                        .exec(assignField(self, seen, field(self, before)))
+                                (b, self) -> b.exec(self.field(trace).call(StringBuilder_.append_String, literal("A")))
+                                        .exec(assignField(self, seen, self.field(before)))
                                         .end());
                         bodies.define(
                                 second,
-                                (b, self) -> b.exec(
-                                                call(field(self, trace), StringBuilder_.append_String, literal("B")))
+                                (b, self) -> b.exec(self.field(trace).call(StringBuilder_.append_String, literal("B")))
                                         .end());
                         bodies.define(
                                 zero,
-                                (b, self) -> b.exec(
-                                                call(field(self, trace), StringBuilder_.append_String, literal("C")))
+                                (b, self) -> b.exec(self.field(trace).call(StringBuilder_.append_String, literal("C")))
                                         .end());
                         bodies.define(
                                 one,
                                 (b, self, n) -> b.exec(
-                                                call(field(self, trace), StringBuilder_.append_String, literal("C")))
+                                                self.field(trace).call(StringBuilder_.append_String, literal("C")))
                                         .end());
                         bodies.define(
-                                traceText, (b, self) -> b.return_(call(field(self, trace), StringBuilder_.toString)));
-                        bodies.define(seenText, (b, self) -> b.return_(field(self, seen)));
+                                traceText,
+                                (b, self) -> b.return_(self.field(trace).call(StringBuilder_.toString)));
+                        bodies.define(seenText, (b, self) -> b.return_(self.field(seen)));
                         bodies.define(
-                                staticText, b -> b.return_(call(staticField(staticTrace), StringBuilder_.toString)));
+                                staticText,
+                                b -> b.return_(staticField(staticTrace).call(StringBuilder_.toString)));
                         return bodies;
                     }
                 }));
@@ -120,7 +117,7 @@ class InitializerBlocksCompileTest {
                         eb.constructor(
                                 PrimitiveToken.INT,
                                 (b, self, value) -> b.exec(
-                                                call(field(self, trace), StringBuilder_.append_String, literal("C")))
+                                                self.field(trace).call(StringBuilder_.append_String, literal("C")))
                                         .end());
                         var traceText = eb.declareMethod("traceText", String_.TOKEN);
                         var staticText = eb.declareStaticMethod("staticText", String_.TOKEN);
@@ -130,17 +127,18 @@ class InitializerBlocksCompileTest {
                         bodies.initialize(laterStatic, literal(3));
                         bodies.initialize(laterInstance, literal(4));
                         bodies.define(
-                                traceText, (b, self) -> b.return_(call(field(self, trace), StringBuilder_.toString)));
+                                traceText,
+                                (b, self) -> b.return_(self.field(trace).call(StringBuilder_.toString)));
                         bodies.define(
-                                staticText, b -> b.return_(call(staticField(staticTrace), StringBuilder_.toString)));
+                                staticText,
+                                b -> b.return_(staticField(staticTrace).call(StringBuilder_.toString)));
                         bodies.define(
                                 instanceBlock,
-                                (b, self) -> b.exec(
-                                                call(field(self, trace), StringBuilder_.append_String, literal("B")))
+                                (b, self) -> b.exec(self.field(trace).call(StringBuilder_.append_String, literal("B")))
                                         .end());
                         bodies.define(
                                 staticBlock,
-                                b -> b.exec(call(staticField(staticTrace), StringBuilder_.append_String, literal("S")))
+                                b -> b.exec(staticField(staticTrace).call(StringBuilder_.append_String, literal("S")))
                                         .end());
                         return bodies;
                     }
@@ -170,10 +168,11 @@ class InitializerBlocksCompileTest {
                         bodies.initialize(trace, new_(StringBuilder_.new_));
                         bodies.define(
                                 block,
-                                b -> b.exec(call(staticField(trace), StringBuilder_.append_String, literal("S")))
+                                b -> b.exec(staticField(trace).call(StringBuilder_.append_String, literal("S")))
                                         .end());
                         bodies.define(compact, (b, self, value) -> b.end());
-                        bodies.define(traceText, b -> b.return_(call(staticField(trace), StringBuilder_.toString)));
+                        bodies.define(
+                                traceText, b -> b.return_(staticField(trace).call(StringBuilder_.toString)));
                         return bodies;
                     }
                 }));
@@ -203,24 +202,22 @@ class InitializerBlocksCompileTest {
                                 bodies.initialize(trace, new_(StringBuilder_.new_));
                                 bodies.define(
                                         block,
-                                        (b, self) -> b.exec(call(
-                                                        field(self, trace), StringBuilder_.append_String, literal("B")))
+                                        (b, self) -> b.exec(self.field(trace)
+                                                        .call(StringBuilder_.append_String, literal("B")))
                                                 .end());
                                 bodies.define(
                                         staticBlock,
-                                        b -> b.exec(call(
-                                                        staticField(staticTrace),
-                                                        StringBuilder_.append_String,
-                                                        literal("S")))
+                                        b -> b.exec(staticField(staticTrace)
+                                                        .call(StringBuilder_.append_String, literal("S")))
                                                 .end());
                                 bodies.define(
                                         ctor,
-                                        (b, self) -> b.exec(call(
-                                                        field(self, trace), StringBuilder_.append_String, literal("C")))
+                                        (b, self) -> b.exec(self.field(trace)
+                                                        .call(StringBuilder_.append_String, literal("C")))
                                                 .end());
                                 bodies.define(
                                         text,
-                                        (b, self) -> b.return_(call(field(self, trace), StringBuilder_.toString)));
+                                        (b, self) -> b.return_(self.field(trace).call(StringBuilder_.toString)));
                                 return bodies;
                             }
                         });
