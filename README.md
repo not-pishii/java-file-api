@@ -1367,9 +1367,18 @@ ModuleFile module = TypedJavaFile.module(
 
 An interface and a record take type parameters as a class does: `interface_` and `record` have the same overloads as
 `declareClass`, the token of each parameter is in scope in the header, the components and the members, and `Self` is
-the type with its own type parameters for its type arguments. A bound is the token `typeParam` takes, so a type
-parameter of these two kinds has the leftmost bound it was given — further bounds, which a class header says by a
-witness, are not expressible here yet.
+the type with its own type parameters for its type arguments. A bound is the token `typeParam` takes; a further bound
+is said by `bound` on the interface or record builder, before the components or the members, as a class header says it:
+
+```java
+var comparable = new Comparable_<>(t);
+ib.bound(t, comparable.token); // interface Box<T extends Number & Comparable<T>>
+rb.bound(t, comparable.token); // record Box<T extends Number & Comparable<T>>(T value)
+```
+
+The checks of a further bound are those of a class: the bound is no raw type and no wildcard, it is not the leftmost
+bound already, and the methods the bounds give the type variable together do not clash. A record's bound is said before
+its components, and a type parameter of either kind is in scope in the member types it encloses.
 
 ```java
 JavaFile file = TypedJavaFile.record(
@@ -1404,9 +1413,12 @@ An enum and an annotation type have no type parameters: javac refuses `enum E<T>
 `IllegalArgumentException` before the specification runs, naming the type and why.
 
 A member type is declared through the declaration that encloses it, not as a file of its own. A class builder has
-`declareNestedClass` and `declareInnerClass`, and every kind has `declareNestedInterface`, `declareNestedRecord`,
-`declareNestedEnum` and `declareNestedAnnotationType`; an enum constant's body declares them as well. The call runs a
-declaration of its own, with its own brand and facts, and returns its token:
+`declareNestedClass` and `declareInnerClass`, and every kind — an interface, a record, an enum, an annotation type and
+an enum constant's body — has `declareNestedInterface`, `declareNestedRecord`, `declareNestedEnum` and
+`declareNestedAnnotationType`; the class and interface builders declare a member class, and so does the annotation type
+builder. A nested interface and record have the same generic stages 1 to 3 as a nested class does, with the same bounds;
+a nested enum and annotation type take no type parameters, which javac rejects. The call runs a declaration of its own,
+with its own brand and facts, and returns its token:
 
 ```java
 var inner = cb.declareNestedClass("Inner", new TypedJavaFile.TypedClassHeaderSpec() {
@@ -1423,14 +1435,38 @@ var inner = cb.declareNestedClass("Inner", new TypedJavaFile.TypedClassHeaderSpe
 
 A member class of a class is `static` or inner; an inner one sees the type parameters of the class that encloses it,
 and a static one does not (JLS 8.1.2, 8.1.3). A member class, interface, record, enum or annotation type of an
-interface, a record or an enum is implicitly `static` and sees none. An annotation type declares elements alone, and a
-`package-info.java` and a `module-info.java` declare no type: `nestedType` on their builders refuses a member type, as
-does a member annotation type of an enum constant's body.
+interface, a record, an enum or an annotation type is implicitly `static` and sees none. An annotation type declares
+elements and member types, as Java allows (JLS 9.6.1); a `package-info.java` and a `module-info.java` declare no type,
+so `nestedType` on their builders refuses a member type, as does a member annotation type of an enum constant's body.
+
+`declareInnerClass` returns an [InnerClass]: the token of the inner class and the two expressions only an inner class
+has. `outerThis()` is `Outer.this`, the enclosing instance its body reaches, and `new_(outer, ctor, args...)` is
+`outer.new Inner(args...)`, which creates the inner instance from an outer one. The handle ties the expressions to the
+declaration: a `static` member class has no such handle, and `new_` refuses the fact of a constructor of another class,
+or one that is no constructor at all.
+
+```java
+var label = cb.declareField("label", String_.TOKEN);
+var inner = cb.declareInnerClass("Inner", new TypedJavaFile.TypedInnerClassSpec<Self>() {
+    @Override
+    public <Inner> MemberBodies<Inner, ?> build(ClassHeader<Inner> h, InnerClass<Self, Inner> handle) {
+        var members = h.extendsObject().members();
+        var ctor = members.declareConstructor();
+        var read = members.declareMethod("read", String_.TOKEN);
+        var bodies = members.bodies();
+        bodies.define(ctor, (b, self) -> b.end());
+        bodies.define(read, (b, self) -> b.return_(field(handle.outerThis(), label)));
+        return bodies;
+    }
+});
+var make = cb.declareMethod("make", inner.token());
+// return inner.new_(self, ctor) renders return this.new Inner();
+```
 
 The three generic declaration paths agree at three type parameters: `declareClass`, `interface_` and `record` offer
-the same three stages, and a member class of a class offers the same. The member forms reach twelve because they are
-generated as arity families; the declaration stages are hand-written specifications of the three kinds, and three is
-the limit the three paths share rather than one of them standing at another number.
+the same three stages, and a member class, interface and record offer the same. The member forms reach twelve because
+they are generated as arity families; the declaration stages are hand-written specifications of the three kinds, and
+three is the limit the three paths share rather than one of them standing at another number.
 
 ### Refusals at generation time
 
@@ -1487,7 +1523,20 @@ var read = cb.modified(Modifier.NATIVE).declareMethod("read", PrimitiveToken.INT
 
 A `synchronized` method is defined by the bodies as any other. A `native` method is whole when it is declared: it has no
 body, its fact is there to call, and the bodies neither define it nor wait for it. A constructor is neither
-`synchronized` nor `native`, and a `native` method is never `abstract`; the declaration rejects the rest.
+`synchronized` nor `native`, and a `native` method is never `abstract`; the declaration rejects the rest. A record and
+an enum declare `synchronized` methods too, and an enum a `native` one; a record rejects `native`, which javac rejects
+of a record (JLS 8.10.3), and an interface rejects both, its methods being abstract, default, static or private:
+
+```java
+var spin = rb.modified(Modifier.SYNCHRONIZED).declareVoidMethod("spin");
+var read = eb.modified(Modifier.NATIVE).declareMethod("read", PrimitiveToken.INT);
+```
+
+An abstract class declares abstract methods, in the same declare-then-define stages as the rest: `declareAbstractMethod`
+and `declareVoidAbstractMethod` take the name and the parameter types, and give a fact with no body, which the bodies
+neither define nor wait for. An abstract method is legal in an abstract class alone — a class that is not abstract
+implements every abstract method it inherits (JLS 8.4.3.1) — and javac's rules of `static`, `private`, `final`,
+`native` and `synchronized` hold: the typed layer offers none of those on an abstract method.
 
 A field is `transient` or `volatile` by the exact set of modifiers it is rendered with. A `final` field may be
 `transient`; a mutable one may be `transient` or `volatile`. A `volatile` field is not `final` (JLS 8.3.1.4), and the
@@ -1526,11 +1575,11 @@ them, and otherwise says what the type permits. A type variable may be bounded b
 
 ### What stays in the core API
 
-The typed layer declares every top-level kind: classes, interfaces, records, enums and annotation types, and the
-`package-info.java` and `module-info.java` files. What stays in the core API is what the typed layer does not model:
-[Transforming an existing declaration](#transforming-an-existing-declaration), documentation comments, nested types,
-initializer blocks, and the `Unsafe*` escape hatches. A generator may still use the core API for a declaration the typed
-layer does not express; the typed layer does not replace it.
+The typed layer declares every top-level kind: classes, interfaces, records, enums and annotation types, the
+`package-info.java` and `module-info.java` files, and the member types of each of them. What stays in the core API is
+what the typed layer does not model: [Transforming an existing declaration](#transforming-an-existing-declaration),
+documentation comments, initializer blocks, and the `Unsafe*` escape hatches. A generator may still use the core API
+for a declaration the typed layer does not express; the typed layer does not replace it.
 
 The methods of the typed declarations of §6.5 reach arity 4; their constructors and the class builder's forms reach
 arity 12. A record or enum that implements an interface names it with `implements_`, which gives a witness, and declares
