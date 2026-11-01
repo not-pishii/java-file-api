@@ -2,11 +2,6 @@ package me.supcheg.javafile.typed;
 
 import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.facts.AnnotationRef;
-import me.supcheg.javafile.facts.CtorRef0;
-import me.supcheg.javafile.facts.CtorRef1;
-import me.supcheg.javafile.facts.CtorRef2;
-import me.supcheg.javafile.facts.CtorRef3;
-import me.supcheg.javafile.facts.CtorRef4;
 import me.supcheg.javafile.facts.FinalClassToken;
 import me.supcheg.javafile.facts.InterfaceToken;
 import me.supcheg.javafile.facts.Invocable;
@@ -45,7 +40,7 @@ import java.util.List;
 /// ```
 ///
 /// @param <Self> the brand of the record being declared
-public final class TypedRecordBuilder<Self> extends StaticFieldDeclarations<Self> {
+public final class TypedRecordBuilder<Self> extends RecordConstructorArities<Self> {
     private static final ClassDesc CD_RECORD = ClassDesc.of("java.lang", "Record");
     private static final ClassDesc CD_OBJECT = ConstantDescs.CD_Object;
 
@@ -120,125 +115,31 @@ public final class TypedRecordBuilder<Self> extends StaticFieldDeclarations<Self
         return upcast;
     }
 
-    /// Declares the compact constructor, `public Name { ... }`, which the bodies define.
-    ///
-    /// @return the fact of the canonical constructor
-    /// @throws IllegalArgumentException if a canonical or compact constructor is declared already
-    /// @throws IllegalStateException if the declarations have ended
-    public CtorRef0<Self> declareCompactConstructor() {
+    // The declarations of the record's constructors, `declareCompactConstructor`, `declareCanonicalConstructor`
+    // and `declareConstructor`, of every arity 0 to 12, are generated into the superclass of this class
+    // (RecordConstructorArities, see TypedCodegen). They call the hooks below.
+
+    @Override
+    @SuppressWarnings("unchecked")
+    FinalClassToken<Self> finalSelf() {
+        return (FinalClassToken<Self>) self();
+    }
+
+    @Override
+    <F extends Invocable> F declareCompact(F ctor) {
         requireCanonical();
-        CtorRef0<Self> ctor = ctor0();
-        declaredCtor(ctor, Kind.COMPACT);
-        return ctor;
+        return declaredCtor(ctor, Kind.COMPACT);
     }
 
-    public <A1> CtorRef1<Self, A1> declareCompactConstructor(TypeToken<A1> p1) {
+    @Override
+    <F extends Invocable> F declareCanonical(F ctor) {
         requireCanonical();
-        CtorRef1<Self, A1> ctor = ctor1(p1);
-        declaredCtor(ctor, Kind.COMPACT);
-        return ctor;
+        return declaredCtor(ctor, Kind.CANONICAL);
     }
 
-    public <A1, A2> CtorRef2<Self, A1, A2> declareCompactConstructor(TypeToken<A1> p1, TypeToken<A2> p2) {
-        requireCanonical();
-        CtorRef2<Self, A1, A2> ctor = ctor2(p1, p2);
-        declaredCtor(ctor, Kind.COMPACT);
-        return ctor;
-    }
-
-    public <A1, A2, A3> CtorRef3<Self, A1, A2, A3> declareCompactConstructor(
-            TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3) {
-        requireCanonical();
-        CtorRef3<Self, A1, A2, A3> ctor = ctor3(p1, p2, p3);
-        declaredCtor(ctor, Kind.COMPACT);
-        return ctor;
-    }
-
-    public <A1, A2, A3, A4> CtorRef4<Self, A1, A2, A3, A4> declareCompactConstructor(
-            TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4) {
-        requireCanonical();
-        CtorRef4<Self, A1, A2, A3, A4> ctor = ctor4(p1, p2, p3, p4);
-        declaredCtor(ctor, Kind.COMPACT);
-        return ctor;
-    }
-
-    /// Declares the canonical constructor with an explicit parameter list, which the bodies define.
-    ///
-    /// @return the fact of the canonical constructor
-    /// @throws IllegalArgumentException if a canonical or compact constructor is declared already
-    /// @throws IllegalStateException if the declarations have ended
-    public CtorRef0<Self> declareCanonicalConstructor() {
-        requireCanonical();
-        CtorRef0<Self> ctor = ctor0();
-        declaredCtor(ctor, Kind.CANONICAL);
-        return ctor;
-    }
-
-    public <A1> CtorRef1<Self, A1> declareCanonicalConstructor(TypeToken<A1> p1) {
-        requireCanonical();
-        CtorRef1<Self, A1> ctor = ctor1(p1);
-        declaredCtor(ctor, Kind.CANONICAL);
-        return ctor;
-    }
-
-    public <A1, A2> CtorRef2<Self, A1, A2> declareCanonicalConstructor(TypeToken<A1> p1, TypeToken<A2> p2) {
-        requireCanonical();
-        CtorRef2<Self, A1, A2> ctor = ctor2(p1, p2);
-        declaredCtor(ctor, Kind.CANONICAL);
-        return ctor;
-    }
-
-    public <A1, A2, A3> CtorRef3<Self, A1, A2, A3> declareCanonicalConstructor(
-            TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3) {
-        requireCanonical();
-        CtorRef3<Self, A1, A2, A3> ctor = ctor3(p1, p2, p3);
-        declaredCtor(ctor, Kind.CANONICAL);
-        return ctor;
-    }
-
-    public <A1, A2, A3, A4> CtorRef4<Self, A1, A2, A3, A4> declareCanonicalConstructor(
-            TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4) {
-        requireCanonical();
-        CtorRef4<Self, A1, A2, A3, A4> ctor = ctor4(p1, p2, p3, p4);
-        declaredCtor(ctor, Kind.CANONICAL);
-        return ctor;
-    }
-
-    /// Declares an additional constructor, which the bodies define with `this(...)`.
-    ///
-    /// @return the fact of the constructor
-    /// @throws IllegalArgumentException if a constructor of the parameter list is declared already
-    /// @throws IllegalStateException if the declarations have ended
-    public CtorRef0<Self> declareConstructor() {
-        CtorRef0<Self> ctor = ctor0();
-        declaredCtor(ctor, Kind.CONSTRUCTOR);
-        return ctor;
-    }
-
-    public <A1> CtorRef1<Self, A1> declareConstructor(TypeToken<A1> p1) {
-        CtorRef1<Self, A1> ctor = ctor1(p1);
-        declaredCtor(ctor, Kind.CONSTRUCTOR);
-        return ctor;
-    }
-
-    public <A1, A2> CtorRef2<Self, A1, A2> declareConstructor(TypeToken<A1> p1, TypeToken<A2> p2) {
-        CtorRef2<Self, A1, A2> ctor = ctor2(p1, p2);
-        declaredCtor(ctor, Kind.CONSTRUCTOR);
-        return ctor;
-    }
-
-    public <A1, A2, A3> CtorRef3<Self, A1, A2, A3> declareConstructor(
-            TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3) {
-        CtorRef3<Self, A1, A2, A3> ctor = ctor3(p1, p2, p3);
-        declaredCtor(ctor, Kind.CONSTRUCTOR);
-        return ctor;
-    }
-
-    public <A1, A2, A3, A4> CtorRef4<Self, A1, A2, A3, A4> declareConstructor(
-            TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4) {
-        CtorRef4<Self, A1, A2, A3, A4> ctor = ctor4(p1, p2, p3, p4);
-        declaredCtor(ctor, Kind.CONSTRUCTOR);
-        return ctor;
+    @Override
+    <F extends Invocable> F declareAdditional(F ctor) {
+        return declaredCtor(ctor, Kind.CONSTRUCTOR);
     }
 
     private void requireCanonical() {
@@ -252,27 +153,6 @@ public final class TypedRecordBuilder<Self> extends StaticFieldDeclarations<Self
 
     private <F extends Invocable> F declaredCtor(F ctor, Kind kind) {
         return declare(ctor, kind, List.of(), List.of(), List.of());
-    }
-
-    private CtorRef0<Self> ctor0() {
-        return UnsafeInvocables.ctor((FinalClassToken<Self>) self(), MemberTraits.FINAL);
-    }
-
-    private <A1> CtorRef1<Self, A1> ctor1(TypeToken<A1> p1) {
-        return UnsafeInvocables.ctor((FinalClassToken<Self>) self(), p1, MemberTraits.FINAL);
-    }
-
-    private <A1, A2> CtorRef2<Self, A1, A2> ctor2(TypeToken<A1> p1, TypeToken<A2> p2) {
-        return UnsafeInvocables.ctor((FinalClassToken<Self>) self(), p1, p2, MemberTraits.FINAL);
-    }
-
-    private <A1, A2, A3> CtorRef3<Self, A1, A2, A3> ctor3(TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3) {
-        return UnsafeInvocables.ctor((FinalClassToken<Self>) self(), p1, p2, p3, MemberTraits.FINAL);
-    }
-
-    private <A1, A2, A3, A4> CtorRef4<Self, A1, A2, A3, A4> ctor4(
-            TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4) {
-        return UnsafeInvocables.ctor((FinalClassToken<Self>) self(), p1, p2, p3, p4, MemberTraits.FINAL);
     }
 
     /// The declarations of the record end and the bodies of its members begin.

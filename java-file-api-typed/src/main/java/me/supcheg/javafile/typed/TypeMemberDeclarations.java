@@ -32,7 +32,8 @@ import java.util.List;
 /// or an enum. Each returns the fact of the member it declares; the bodies ([TypedTypeBodies]) define
 /// them.
 ///
-/// The forms reach arity 4 for the kinds of §6.5; the forms of the class builder reach arity 12.
+/// The methods reach arity 4 for the kinds of §6.5; their constructors reach arity 12, as the forms of
+/// the class builder do (`RecordConstructorArities`, `EnumConstructorArities`).
 ///
 /// @param <Self> the brand of the type being declared
 abstract class TypeMemberDeclarations<Self> extends TypeDeclarationSupport<Self> {

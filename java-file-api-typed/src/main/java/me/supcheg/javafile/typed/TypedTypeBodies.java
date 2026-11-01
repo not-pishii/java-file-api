@@ -6,9 +6,17 @@ import me.supcheg.javafile.code.ConstructorInvocation;
 import me.supcheg.javafile.code.VariableInitializer;
 import me.supcheg.javafile.facts.CtorRef0;
 import me.supcheg.javafile.facts.CtorRef1;
+import me.supcheg.javafile.facts.CtorRef10;
+import me.supcheg.javafile.facts.CtorRef11;
+import me.supcheg.javafile.facts.CtorRef12;
 import me.supcheg.javafile.facts.CtorRef2;
 import me.supcheg.javafile.facts.CtorRef3;
 import me.supcheg.javafile.facts.CtorRef4;
+import me.supcheg.javafile.facts.CtorRef5;
+import me.supcheg.javafile.facts.CtorRef6;
+import me.supcheg.javafile.facts.CtorRef7;
+import me.supcheg.javafile.facts.CtorRef8;
+import me.supcheg.javafile.facts.CtorRef9;
 import me.supcheg.javafile.facts.FieldRef;
 import me.supcheg.javafile.facts.Invocable;
 import me.supcheg.javafile.facts.MethodRef0;
@@ -36,9 +44,17 @@ import me.supcheg.javafile.facts.VoidStaticMethodRef4;
 import me.supcheg.javafile.model.Param;
 import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody0;
 import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody1;
+import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody10;
+import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody11;
+import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody12;
 import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody2;
 import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody3;
 import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody4;
+import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody5;
+import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody6;
+import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody7;
+import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody8;
+import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody9;
 import me.supcheg.javafile.typed.TypeDeclarationSupport.Member;
 
 import java.util.List;
@@ -53,8 +69,9 @@ import java.util.stream.Stream;
 /// member is defined here, and each body is lowered where it is defined,
 /// against all the members the type declared.
 ///
-/// The forms reach arity 4 for the kinds of §6.5; the forms of the class
-/// builder reach arity 12 (`DeclarationArities`, `MemberBodyArities`).
+/// The bodies of methods reach arity 4 for the kinds of §6.5; the bodies of
+/// their constructors reach arity 12, as the forms of the class builder do
+/// (`MemberBodyArities`).
 ///
 /// @param <Self> the brand of the type being declared
 /// @param <M> the core member type of the kind
@@ -500,6 +517,53 @@ abstract class TypedTypeBodies<Self, M> {
         defineConstructor(ctor, Start.IMPLICIT, body);
     }
 
+    public final <A1, A2, A3, A4, A5> void define(
+            CtorRef5<Self, A1, A2, A3, A4, A5> ctor, InstanceBody5<Self, VoidBody, Void, A1, A2, A3, A4, A5> body) {
+        defineConstructor(ctor, Start.IMPLICIT, body);
+    }
+
+    public final <A1, A2, A3, A4, A5, A6> void define(
+            CtorRef6<Self, A1, A2, A3, A4, A5, A6> ctor,
+            InstanceBody6<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6> body) {
+        defineConstructor(ctor, Start.IMPLICIT, body);
+    }
+
+    public final <A1, A2, A3, A4, A5, A6, A7> void define(
+            CtorRef7<Self, A1, A2, A3, A4, A5, A6, A7> ctor,
+            InstanceBody7<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7> body) {
+        defineConstructor(ctor, Start.IMPLICIT, body);
+    }
+
+    public final <A1, A2, A3, A4, A5, A6, A7, A8> void define(
+            CtorRef8<Self, A1, A2, A3, A4, A5, A6, A7, A8> ctor,
+            InstanceBody8<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8> body) {
+        defineConstructor(ctor, Start.IMPLICIT, body);
+    }
+
+    public final <A1, A2, A3, A4, A5, A6, A7, A8, A9> void define(
+            CtorRef9<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9> ctor,
+            InstanceBody9<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8, A9> body) {
+        defineConstructor(ctor, Start.IMPLICIT, body);
+    }
+
+    public final <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> void define(
+            CtorRef10<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> ctor,
+            InstanceBody10<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> body) {
+        defineConstructor(ctor, Start.IMPLICIT, body);
+    }
+
+    public final <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> void define(
+            CtorRef11<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> ctor,
+            InstanceBody11<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> body) {
+        defineConstructor(ctor, Start.IMPLICIT, body);
+    }
+
+    public final <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> void define(
+            CtorRef12<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> ctor,
+            InstanceBody12<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> body) {
+        defineConstructor(ctor, Start.IMPLICIT, body);
+    }
+
     public final void defineDelegating(
             CtorRef0<Self> ctor, List<? extends Expr<?>> args, InstanceBody0<Self, VoidBody, Void> body) {
         defineConstructor(ctor, Start.delegating(args), body);
@@ -528,6 +592,62 @@ abstract class TypedTypeBodies<Self, M> {
             CtorRef4<Self, A1, A2, A3, A4> ctor,
             List<? extends Expr<?>> args,
             InstanceBody4<Self, VoidBody, Void, A1, A2, A3, A4> body) {
+        defineConstructor(ctor, Start.delegating(args), body);
+    }
+
+    public final <A1, A2, A3, A4, A5> void defineDelegating(
+            CtorRef5<Self, A1, A2, A3, A4, A5> ctor,
+            List<? extends Expr<?>> args,
+            InstanceBody5<Self, VoidBody, Void, A1, A2, A3, A4, A5> body) {
+        defineConstructor(ctor, Start.delegating(args), body);
+    }
+
+    public final <A1, A2, A3, A4, A5, A6> void defineDelegating(
+            CtorRef6<Self, A1, A2, A3, A4, A5, A6> ctor,
+            List<? extends Expr<?>> args,
+            InstanceBody6<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6> body) {
+        defineConstructor(ctor, Start.delegating(args), body);
+    }
+
+    public final <A1, A2, A3, A4, A5, A6, A7> void defineDelegating(
+            CtorRef7<Self, A1, A2, A3, A4, A5, A6, A7> ctor,
+            List<? extends Expr<?>> args,
+            InstanceBody7<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7> body) {
+        defineConstructor(ctor, Start.delegating(args), body);
+    }
+
+    public final <A1, A2, A3, A4, A5, A6, A7, A8> void defineDelegating(
+            CtorRef8<Self, A1, A2, A3, A4, A5, A6, A7, A8> ctor,
+            List<? extends Expr<?>> args,
+            InstanceBody8<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8> body) {
+        defineConstructor(ctor, Start.delegating(args), body);
+    }
+
+    public final <A1, A2, A3, A4, A5, A6, A7, A8, A9> void defineDelegating(
+            CtorRef9<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9> ctor,
+            List<? extends Expr<?>> args,
+            InstanceBody9<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8, A9> body) {
+        defineConstructor(ctor, Start.delegating(args), body);
+    }
+
+    public final <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> void defineDelegating(
+            CtorRef10<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> ctor,
+            List<? extends Expr<?>> args,
+            InstanceBody10<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> body) {
+        defineConstructor(ctor, Start.delegating(args), body);
+    }
+
+    public final <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> void defineDelegating(
+            CtorRef11<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> ctor,
+            List<? extends Expr<?>> args,
+            InstanceBody11<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> body) {
+        defineConstructor(ctor, Start.delegating(args), body);
+    }
+
+    public final <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> void defineDelegating(
+            CtorRef12<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> ctor,
+            List<? extends Expr<?>> args,
+            InstanceBody12<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> body) {
         defineConstructor(ctor, Start.delegating(args), body);
     }
 
@@ -577,6 +697,174 @@ abstract class TypedTypeBodies<Self, M> {
         Var<A3> p3 = Var.param(param(ctor, 2), root);
         Var<A4> p4 = Var.param(param(ctor, 3), root);
         defineIn(slot, root, List.of(p1, p2, p3, p4), start, b -> body.build(b, self, p1, p2, p3, p4));
+    }
+
+    private <R, A1, A2, A3, A4, A5> void defineConstructor(
+            Invocable ctor, Start start, InstanceBody5<Self, VoidBody, Void, A1, A2, A3, A4, A5> body) {
+        Slot.Awaiting slot = definable(ctor);
+        VoidBody root = VoidBody.root("body of constructor", MemberBodies.declares(ctor));
+        This<Self> self = thisOf(root);
+        Var<A1> p1 = lastParameter(param(ctor, 0), root);
+        Var<A2> p2 = Var.param(param(ctor, 1), root);
+        Var<A3> p3 = Var.param(param(ctor, 2), root);
+        Var<A4> p4 = Var.param(param(ctor, 3), root);
+        Var<A5> p5 = Var.param(param(ctor, 4), root);
+        defineIn(slot, root, List.of(p1, p2, p3, p4, p5), start, b -> body.build(b, self, p1, p2, p3, p4, p5));
+    }
+
+    private <R, A1, A2, A3, A4, A5, A6> void defineConstructor(
+            Invocable ctor, Start start, InstanceBody6<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6> body) {
+        Slot.Awaiting slot = definable(ctor);
+        VoidBody root = VoidBody.root("body of constructor", MemberBodies.declares(ctor));
+        This<Self> self = thisOf(root);
+        Var<A1> p1 = lastParameter(param(ctor, 0), root);
+        Var<A2> p2 = Var.param(param(ctor, 1), root);
+        Var<A3> p3 = Var.param(param(ctor, 2), root);
+        Var<A4> p4 = Var.param(param(ctor, 3), root);
+        Var<A5> p5 = Var.param(param(ctor, 4), root);
+        Var<A6> p6 = Var.param(param(ctor, 5), root);
+        defineIn(slot, root, List.of(p1, p2, p3, p4, p5, p6), start, b -> body.build(b, self, p1, p2, p3, p4, p5, p6));
+    }
+
+    private <R, A1, A2, A3, A4, A5, A6, A7> void defineConstructor(
+            Invocable ctor, Start start, InstanceBody7<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7> body) {
+        Slot.Awaiting slot = definable(ctor);
+        VoidBody root = VoidBody.root("body of constructor", MemberBodies.declares(ctor));
+        This<Self> self = thisOf(root);
+        Var<A1> p1 = lastParameter(param(ctor, 0), root);
+        Var<A2> p2 = Var.param(param(ctor, 1), root);
+        Var<A3> p3 = Var.param(param(ctor, 2), root);
+        Var<A4> p4 = Var.param(param(ctor, 3), root);
+        Var<A5> p5 = Var.param(param(ctor, 4), root);
+        Var<A6> p6 = Var.param(param(ctor, 5), root);
+        Var<A7> p7 = Var.param(param(ctor, 6), root);
+        defineIn(
+                slot,
+                root,
+                List.of(p1, p2, p3, p4, p5, p6, p7),
+                start,
+                b -> body.build(b, self, p1, p2, p3, p4, p5, p6, p7));
+    }
+
+    private <R, A1, A2, A3, A4, A5, A6, A7, A8> void defineConstructor(
+            Invocable ctor, Start start, InstanceBody8<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8> body) {
+        Slot.Awaiting slot = definable(ctor);
+        VoidBody root = VoidBody.root("body of constructor", MemberBodies.declares(ctor));
+        This<Self> self = thisOf(root);
+        Var<A1> p1 = lastParameter(param(ctor, 0), root);
+        Var<A2> p2 = Var.param(param(ctor, 1), root);
+        Var<A3> p3 = Var.param(param(ctor, 2), root);
+        Var<A4> p4 = Var.param(param(ctor, 3), root);
+        Var<A5> p5 = Var.param(param(ctor, 4), root);
+        Var<A6> p6 = Var.param(param(ctor, 5), root);
+        Var<A7> p7 = Var.param(param(ctor, 6), root);
+        Var<A8> p8 = Var.param(param(ctor, 7), root);
+        defineIn(
+                slot,
+                root,
+                List.of(p1, p2, p3, p4, p5, p6, p7, p8),
+                start,
+                b -> body.build(b, self, p1, p2, p3, p4, p5, p6, p7, p8));
+    }
+
+    private <R, A1, A2, A3, A4, A5, A6, A7, A8, A9> void defineConstructor(
+            Invocable ctor, Start start, InstanceBody9<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8, A9> body) {
+        Slot.Awaiting slot = definable(ctor);
+        VoidBody root = VoidBody.root("body of constructor", MemberBodies.declares(ctor));
+        This<Self> self = thisOf(root);
+        Var<A1> p1 = lastParameter(param(ctor, 0), root);
+        Var<A2> p2 = Var.param(param(ctor, 1), root);
+        Var<A3> p3 = Var.param(param(ctor, 2), root);
+        Var<A4> p4 = Var.param(param(ctor, 3), root);
+        Var<A5> p5 = Var.param(param(ctor, 4), root);
+        Var<A6> p6 = Var.param(param(ctor, 5), root);
+        Var<A7> p7 = Var.param(param(ctor, 6), root);
+        Var<A8> p8 = Var.param(param(ctor, 7), root);
+        Var<A9> p9 = Var.param(param(ctor, 8), root);
+        defineIn(
+                slot,
+                root,
+                List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9),
+                start,
+                b -> body.build(b, self, p1, p2, p3, p4, p5, p6, p7, p8, p9));
+    }
+
+    private <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> void defineConstructor(
+            Invocable ctor,
+            Start start,
+            InstanceBody10<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> body) {
+        Slot.Awaiting slot = definable(ctor);
+        VoidBody root = VoidBody.root("body of constructor", MemberBodies.declares(ctor));
+        This<Self> self = thisOf(root);
+        Var<A1> p1 = lastParameter(param(ctor, 0), root);
+        Var<A2> p2 = Var.param(param(ctor, 1), root);
+        Var<A3> p3 = Var.param(param(ctor, 2), root);
+        Var<A4> p4 = Var.param(param(ctor, 3), root);
+        Var<A5> p5 = Var.param(param(ctor, 4), root);
+        Var<A6> p6 = Var.param(param(ctor, 5), root);
+        Var<A7> p7 = Var.param(param(ctor, 6), root);
+        Var<A8> p8 = Var.param(param(ctor, 7), root);
+        Var<A9> p9 = Var.param(param(ctor, 8), root);
+        Var<A10> p10 = Var.param(param(ctor, 9), root);
+        defineIn(
+                slot,
+                root,
+                List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10),
+                start,
+                b -> body.build(b, self, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10));
+    }
+
+    private <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> void defineConstructor(
+            Invocable ctor,
+            Start start,
+            InstanceBody11<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> body) {
+        Slot.Awaiting slot = definable(ctor);
+        VoidBody root = VoidBody.root("body of constructor", MemberBodies.declares(ctor));
+        This<Self> self = thisOf(root);
+        Var<A1> p1 = lastParameter(param(ctor, 0), root);
+        Var<A2> p2 = Var.param(param(ctor, 1), root);
+        Var<A3> p3 = Var.param(param(ctor, 2), root);
+        Var<A4> p4 = Var.param(param(ctor, 3), root);
+        Var<A5> p5 = Var.param(param(ctor, 4), root);
+        Var<A6> p6 = Var.param(param(ctor, 5), root);
+        Var<A7> p7 = Var.param(param(ctor, 6), root);
+        Var<A8> p8 = Var.param(param(ctor, 7), root);
+        Var<A9> p9 = Var.param(param(ctor, 8), root);
+        Var<A10> p10 = Var.param(param(ctor, 9), root);
+        Var<A11> p11 = Var.param(param(ctor, 10), root);
+        defineIn(
+                slot,
+                root,
+                List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11),
+                start,
+                b -> body.build(b, self, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11));
+    }
+
+    private <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> void defineConstructor(
+            Invocable ctor,
+            Start start,
+            InstanceBody12<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> body) {
+        Slot.Awaiting slot = definable(ctor);
+        VoidBody root = VoidBody.root("body of constructor", MemberBodies.declares(ctor));
+        This<Self> self = thisOf(root);
+        Var<A1> p1 = lastParameter(param(ctor, 0), root);
+        Var<A2> p2 = Var.param(param(ctor, 1), root);
+        Var<A3> p3 = Var.param(param(ctor, 2), root);
+        Var<A4> p4 = Var.param(param(ctor, 3), root);
+        Var<A5> p5 = Var.param(param(ctor, 4), root);
+        Var<A6> p6 = Var.param(param(ctor, 5), root);
+        Var<A7> p7 = Var.param(param(ctor, 6), root);
+        Var<A8> p8 = Var.param(param(ctor, 7), root);
+        Var<A9> p9 = Var.param(param(ctor, 8), root);
+        Var<A10> p10 = Var.param(param(ctor, 9), root);
+        Var<A11> p11 = Var.param(param(ctor, 10), root);
+        Var<A12> p12 = Var.param(param(ctor, 11), root);
+        defineIn(
+                slot,
+                root,
+                List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12),
+                start,
+                b -> body.build(b, self, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12));
     }
 
     @SuppressWarnings("unchecked")

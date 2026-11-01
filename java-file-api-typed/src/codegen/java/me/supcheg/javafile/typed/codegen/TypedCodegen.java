@@ -141,6 +141,11 @@ public final class TypedCodegen {
     private static final ClassDesc CLASS_DECLARATION = typed("ClassDeclaration");
     private static final ClassDesc INHERITANCE = typed("Inheritance");
     private static final ClassDesc SUPERCLASS = typed("Superclass");
+    private static final ClassDesc STATIC_FIELD_DECLARATIONS = typed("StaticFieldDeclarations");
+    private static final ClassDesc TYPED_RECORD_BUILDER = typed("TypedRecordBuilder");
+    private static final ClassDesc TYPED_ENUM_BUILDER = typed("TypedEnumBuilder");
+    private static final ClassDesc TARGET_CLASSPATH = facts("TargetClasspath");
+    private static final ClassDesc CLASS_DESC = ClassDesc.of("java.lang.constant", "ClassDesc");
 
     private static final ClassDesc INVOCABLE = facts("Invocable");
     private static final ClassDesc MEMBER_TRAITS = facts("MemberTraits");
@@ -204,7 +209,9 @@ public final class TypedCodegen {
                                 typedSubclassBodyArities(),
                                 typedSubclassBuilderArities(),
                                 subclassHeaderArities(),
-                                superSiteArities()),
+                                superSiteArities(),
+                                recordConstructorArities(),
+                                enumConstructorArities()),
                         IntStream.rangeClosed(3, REACH.lambdas() + 1).mapToObj(TypedCodegen::function))
                 .flatMap(files -> files)
                 .toList();
@@ -1094,6 +1101,169 @@ public final class TypedCodegen {
                 params,
                 documented,
                 b -> b.return_(call("declare", staticCall(UNSAFE_INVOCABLES, declare.factory, args))));
+    }
+
+    /// The constructor forms of a record: `declareCompactConstructor`, `declareCanonicalConstructor` and
+    /// `declareConstructor`, at every arity.
+    private static JavaFile recordConstructorArities() {
+        return arities(
+                "RecordConstructorArities",
+                List.of("Self"),
+                Optional.of(bound(applied(STATIC_FIELD_DECLARATIONS, exact("Self")))),
+                TYPED_RECORD_BUILDER,
+                cb -> {
+                    passingConstructor(
+                            cb,
+                            List.of(
+                                    param("target", Types.of(TARGET_CLASSPATH)),
+                                    param("desc", Types.of(CLASS_DESC)),
+                                    param("kind", Types.STRING)));
+                    hook(cb, List.of(), appliedTo(FINAL_CLASS_TOKEN, "Self"), "finalSelf");
+                    hook(
+                            cb,
+                            List.of(TypeVar.of("F", Types.of(INVOCABLE))),
+                            tv("F"),
+                            "declareCompact",
+                            param("ctor", tv("F")));
+                    hook(
+                            cb,
+                            List.of(TypeVar.of("F", Types.of(INVOCABLE))),
+                            tv("F"),
+                            "declareCanonical",
+                            param("ctor", tv("F")));
+                    hook(
+                            cb,
+                            List.of(TypeVar.of("F", Types.of(INVOCABLE))),
+                            tv("F"),
+                            "declareAdditional",
+                            param("ctor", tv("F")));
+                    for (int n = 0; n <= REACH.declared(); n++) {
+                        recordConstructor(cb, n, "declareCompactConstructor", "declareCompact", "compact");
+                        recordConstructor(cb, n, "declareCanonicalConstructor", "declareCanonical", "canonical");
+                        recordConstructor(cb, n, "declareConstructor", "declareAdditional", "additional");
+                    }
+                });
+    }
+
+    /// `declareCompactConstructor(a1, ..., an)` and its like: the fact of a constructor of the record, which
+    /// the bodies define.
+    private static void recordConstructor(ClassBuilder cb, int n, String name, String declare, String what) {
+        List<String> as = as(n);
+        List<Param> params = IntStream.rangeClosed(1, n)
+                .mapToObj(i -> param("p" + i, typeToken("A" + i)))
+                .toList();
+        List<Expr> args =
+                listOf(List.of(call("finalSelf")), names("p", n), List.of(staticField(MEMBER_TRAITS, "FINAL")));
+        String summary =
+                switch (what) {
+                    case "compact" -> "the compact constructor";
+                    case "canonical" -> "the canonical constructor";
+                    default -> "an additional constructor";
+                };
+        Doc doc = Doc.of("Declares " + summary + " of the record, to be defined by the bodies of the record.");
+        Doc documented = IntStream.rangeClosed(1, n)
+                .boxed()
+                .reduce(
+                        doc,
+                        (d, i) -> d.param("p" + i, "the " + ordinal(i, n) + "parameter type")
+                                .typeParam("A" + i, "the type of the " + ordinal(i, n) + "parameter"),
+                        (_, last) -> last)
+                .returns("the fact of the constructor")
+                .throws_(
+                        ILLEGAL_ARGUMENT,
+                        "if a canonical or compact constructor is declared already, or javac would reject the"
+                                + " constructor")
+                .throws_(ILLEGAL_STATE, "if the declarations of the record have ended");
+        method(
+                cb,
+                PUBLIC,
+                typeVars(as),
+                applied(
+                        facts("CtorRef" + n),
+                        Stream.concat(Stream.of(exact("Self")), exacts(as).stream())
+                                .toList()),
+                name,
+                params,
+                documented,
+                b -> b.return_(call(declare, staticCall(UNSAFE_INVOCABLES, "ctor", args))));
+    }
+
+    /// The constructor forms of an enum: `constructor`, at every arity.
+    private static JavaFile enumConstructorArities() {
+        return arities(
+                "EnumConstructorArities",
+                List.of("Self"),
+                Optional.of(bound(applied(STATIC_FIELD_DECLARATIONS, exact("Self")))),
+                TYPED_ENUM_BUILDER,
+                cb -> {
+                    passingConstructor(
+                            cb,
+                            List.of(
+                                    param("target", Types.of(TARGET_CLASSPATH)),
+                                    param("desc", Types.of(CLASS_DESC)),
+                                    param("kind", Types.STRING)));
+                    hook(cb, List.of(), Types.of(VOID_BODY), "constructorRoot");
+                    hook(
+                            cb,
+                            List.of(),
+                            Optional.empty(),
+                            "declaredConstructor",
+                            param("params", applied(LIST, unbounded())),
+                            param("body", Types.of(VOID_BODY)));
+                    for (int n = 0; n <= REACH.declared(); n++) {
+                        enumConstructor(cb, n);
+                    }
+                });
+    }
+
+    /// `constructor(a1, ..., an, body)`: a `private` constructor of the enum whose body the consumer builds.
+    private static void enumConstructor(ClassBuilder cb, int n) {
+        List<String> as = as(n);
+        TypeRef body = applied(
+                MEMBER_BODY_ARITIES.nested("InstanceBody" + n),
+                listOf(List.of(exact("Self"), exactType(Types.of(VOID_BODY)), exactType(Types.of(VOID))), exacts(as)));
+        List<Param> params = listOf(
+                IntStream.rangeClosed(1, n)
+                        .mapToObj(i -> param("p" + i, typeToken("A" + i)))
+                        .toList(),
+                List.of(param("body", body)));
+        Doc doc = Doc.of("Declares a `private` constructor of the enum, of " + plural(n, "parameter") + ".")
+                .param("body", "the body, given its block, `this` and the parameters");
+        Doc documented = IntStream.rangeClosed(1, n)
+                .boxed()
+                .reduce(
+                        doc,
+                        (d, i) -> d.param("p" + i, "the " + ordinal(i, n) + "parameter type")
+                                .typeParam("A" + i, "the type of the " + ordinal(i, n) + "parameter"),
+                        (_, last) -> last)
+                .throws_(ILLEGAL_STATE, "if the members of the enum have begun");
+        method(cb, PUBLIC, typeVars(as), Optional.empty(), "constructor", params, documented, b -> {
+            b.exprStatement(call("requireHeader", add(literal("a constructor of "), call("described"))));
+            b.localVar("root", Types.of(VOID_BODY), call("constructorRoot"));
+            b.localVar("self", appliedTo(THIS, "Self"), new_(THIS, field("root"), call("self")));
+            IntStream.rangeClosed(1, n)
+                    .forEach(i -> b.localVar(
+                            "v" + i, appliedTo(VAR, "A" + i), staticCall(VAR, "param", field("p" + i), field("root"))));
+            List<Expr> buildArgs = listOf(
+                    List.of(field("b"), field("self")),
+                    IntStream.rangeClosed(1, n)
+                            .mapToObj(i -> (Expr) field("v" + i))
+                            .toList());
+            b.exprStatement(staticCall(
+                    MEMBER_BODIES,
+                    "built",
+                    field("root"),
+                    Exprs.lambda(List.of("b"), field("body").call("build", buildArgs))));
+            b.exprStatement(call(
+                    "declaredConstructor",
+                    staticCall(
+                            LIST,
+                            "of",
+                            IntStream.rangeClosed(1, n)
+                                    .mapToObj(i -> (Expr) field("v" + i))
+                                    .toList()),
+                    field("root")));
+        });
     }
 
     /// The ways a class overrides a method of a supertype.

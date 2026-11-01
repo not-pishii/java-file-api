@@ -4,16 +4,10 @@ import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.facts.InterfaceToken;
 import me.supcheg.javafile.facts.Invocable;
 import me.supcheg.javafile.facts.TargetClasspath;
-import me.supcheg.javafile.facts.TypeToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.model.EnumConstant;
 import me.supcheg.javafile.model.EnumMember;
 import me.supcheg.javafile.type.ClassTypeRef;
-import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody0;
-import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody1;
-import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody2;
-import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody3;
-import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody4;
 import me.supcheg.javafile.typed.TypeDeclarationSupport.Member.Kind;
 
 import java.lang.constant.ClassDesc;
@@ -40,7 +34,7 @@ import java.util.function.Consumer;
 /// ```
 ///
 /// @param <Self> the brand of the enum being declared
-public final class TypedEnumBuilder<Self> extends StaticFieldDeclarations<Self> {
+public final class TypedEnumBuilder<Self> extends EnumConstructorArities<Self> {
     private final List<Constant<Self>> constants = new ArrayList<>();
     private final List<Invocable> abstractMethods = new ArrayList<>();
     private final List<Constructor> constructors = new ArrayList<>();
@@ -130,113 +124,19 @@ public final class TypedEnumBuilder<Self> extends StaticFieldDeclarations<Self> 
         return upcast;
     }
 
-    /// Declares a `private` constructor of the enum, with no parameters.
-    ///
-    /// @param body the body, given its block and `this`
-    /// @throws IllegalStateException if the declarations have ended
-    public void constructor(InstanceBody0<Self, VoidBody, Void> body) {
-        constructor(List.of(), body);
-    }
+    // The declarations of the enum's constructors, `constructor`, of every arity 0 to 12, are generated into the
+    // superclass of this class (EnumConstructorArities, see TypedCodegen). They call the hooks below.
 
-    /// Declares a `private` constructor of the enum with one parameter.
-    ///
-    /// @param p1 the parameter type
-    /// @param body the body, given its block, `this` and the parameter
-    /// @param <A1> the parameter type
-    /// @throws IllegalStateException if the declarations have ended
-    public <A1> void constructor(TypeToken<A1> p1, InstanceBody1<Self, VoidBody, Void, A1> body) {
-        requireHeader("a constructor of " + described());
-        VoidBody root = constructorRoot();
-        This<Self> self = new This<>(root, self());
-        Var<A1> v1 = Var.param(p1, root);
-        MemberBodies.built(root, b -> body.build(b, self, v1));
-        constructors.add(new Constructor(List.of(v1), root));
-    }
-
-    /// Declares a `private` constructor of the enum with two parameters.
-    ///
-    /// @param p1 the first parameter type
-    /// @param p2 the second parameter type
-    /// @param body the body, given its block, `this` and the parameters
-    /// @param <A1> the first parameter type
-    /// @param <A2> the second parameter type
-    /// @throws IllegalStateException if the declarations have ended
-    public <A1, A2> void constructor(
-            TypeToken<A1> p1, TypeToken<A2> p2, InstanceBody2<Self, VoidBody, Void, A1, A2> body) {
-        requireHeader("a constructor of " + described());
-        VoidBody root = constructorRoot();
-        This<Self> self = new This<>(root, self());
-        Var<A1> v1 = Var.param(p1, root);
-        Var<A2> v2 = Var.param(p2, root);
-        MemberBodies.built(root, b -> body.build(b, self, v1, v2));
-        constructors.add(new Constructor(List.of(v1, v2), root));
-    }
-
-    /// Declares a `private` constructor of the enum with three parameters.
-    ///
-    /// @param p1 the first parameter type
-    /// @param p2 the second parameter type
-    /// @param p3 the third parameter type
-    /// @param body the body, given its block, `this` and the parameters
-    /// @param <A1> the first parameter type
-    /// @param <A2> the second parameter type
-    /// @param <A3> the third parameter type
-    /// @throws IllegalStateException if the declarations have ended
-    public <A1, A2, A3> void constructor(
-            TypeToken<A1> p1,
-            TypeToken<A2> p2,
-            TypeToken<A3> p3,
-            InstanceBody3<Self, VoidBody, Void, A1, A2, A3> body) {
-        requireHeader("a constructor of " + described());
-        VoidBody root = constructorRoot();
-        This<Self> self = new This<>(root, self());
-        Var<A1> v1 = Var.param(p1, root);
-        Var<A2> v2 = Var.param(p2, root);
-        Var<A3> v3 = Var.param(p3, root);
-        MemberBodies.built(root, b -> body.build(b, self, v1, v2, v3));
-        constructors.add(new Constructor(List.of(v1, v2, v3), root));
-    }
-
-    /// Declares a `private` constructor of the enum with four parameters.
-    ///
-    /// @param p1 the first parameter type
-    /// @param p2 the second parameter type
-    /// @param p3 the third parameter type
-    /// @param p4 the fourth parameter type
-    /// @param body the body, given its block, `this` and the parameters
-    /// @param <A1> the first parameter type
-    /// @param <A2> the second parameter type
-    /// @param <A3> the third parameter type
-    /// @param <A4> the fourth parameter type
-    /// @throws IllegalStateException if the declarations have ended
-    public <A1, A2, A3, A4> void constructor(
-            TypeToken<A1> p1,
-            TypeToken<A2> p2,
-            TypeToken<A3> p3,
-            TypeToken<A4> p4,
-            InstanceBody4<Self, VoidBody, Void, A1, A2, A3, A4> body) {
-        requireHeader("a constructor of " + described());
-        VoidBody root = constructorRoot();
-        This<Self> self = new This<>(root, self());
-        Var<A1> v1 = Var.param(p1, root);
-        Var<A2> v2 = Var.param(p2, root);
-        Var<A3> v3 = Var.param(p3, root);
-        Var<A4> v4 = Var.param(p4, root);
-        MemberBodies.built(root, b -> body.build(b, self, v1, v2, v3, v4));
-        constructors.add(new Constructor(List.of(v1, v2, v3, v4), root));
-    }
-
-    private void constructor(List<TypeToken<?>> params, InstanceBody0<Self, VoidBody, Void> body) {
-        requireHeader("a constructor of " + described());
-        VoidBody root = constructorRoot();
-        This<Self> self = new This<>(root, self());
-        MemberBodies.built(root, b -> body.build(b, self));
-        constructors.add(new Constructor(List.of(), root));
-    }
-
-    private VoidBody constructorRoot() {
+    @Override
+    VoidBody constructorRoot() {
         return VoidBody.root(
                 "body of constructor", new ExceptionScope.Declares(ExceptionScope.Boundary.CONSTRUCTOR, List.of()));
+    }
+
+    @Override
+    void declaredConstructor(List<?> params, VoidBody body) {
+        constructors.add(new Constructor(
+                params.stream().<Var<?>>map(param -> (Var<?>) param).toList(), body));
     }
 
     /// The declarations of the enum end and the bodies of its members begin.
