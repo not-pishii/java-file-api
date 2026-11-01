@@ -86,6 +86,14 @@ class OperatorsChecksTest {
     }
 
     @Test
+    void javaConvertsACompoundAssignmentImplicitlyAndTheLayerDoesNot() {
+        // the typed call of int += long does not compile at all (NegativeCompileTest); javac takes the Java
+        com.google.testing.compile.CompilationSubject.assertThat(
+                        JavacVerdict.compiled("int probe(int n, long d) { n += d; return n; }"))
+                .succeeded();
+    }
+
+    @Test
     void aCompoundAssignmentTheTypeHasNoOperatorForIsRefused() {
         assertThatThrownBy(() -> assign(place(String_.TOKEN), AssignOp.SUB_ASSIGN, literal("x")))
                 .isInstanceOf(IllegalArgumentException.class)
