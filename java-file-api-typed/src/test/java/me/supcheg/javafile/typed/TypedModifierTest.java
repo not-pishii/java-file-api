@@ -15,6 +15,7 @@ import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.model.Modifier;
 import me.supcheg.javafile.testing.CompiledClasses;
 import me.supcheg.javafile.type.Types;
+import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Tag_;
 import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;
@@ -115,6 +116,29 @@ class TypedModifierTest {
         Object instance = compiled.generated().getConstructor().newInstance();
         compiled.generated().getMethod("bump").invoke(instance);
         assertThat(compiled.generated().getField("counter").getInt(instance)).isEqualTo(1);
+    }
+
+    @Test
+    void aSynchronizedMethodIsAnnotatedAsAnyOther() {
+        JavaFile file =
+                TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), LOCKS, new TypedJavaFile.TypedClassSpec() {
+                    @Override
+                    public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
+                        var tagged = cb.modified(Modifier.SYNCHRONIZED)
+                                .annotated(Tag_.annotation()
+                                        .value(me.supcheg.javafile.facts.AnnotationValues.string("t"))
+                                        .build())
+                                .declareVoidMethod("tagged");
+                        var bodies = cb.bodies();
+                        bodies.define(tagged, (b, self) -> b.end());
+                        return bodies;
+                    }
+                });
+
+        assertThat(file.render())
+                .contains("public synchronized void tagged() {")
+                .contains("@Tag(\"t\")");
+        CompiledClasses.of(file);
     }
 
     @Test

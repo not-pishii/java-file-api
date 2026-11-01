@@ -3,9 +3,11 @@ package me.supcheg.javafile.typed;
 import me.supcheg.javafile.facts.AnnotationRef;
 import me.supcheg.javafile.facts.ClassToken;
 import me.supcheg.javafile.facts.MemberTraits;
+import me.supcheg.javafile.model.Modifier;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -65,6 +67,11 @@ public final class AnnotatedDeclarations<Self, S> extends Declarations<Self, S> 
                                 parameterAnnotations.getOrDefault(index, List.of()).stream())
                         .toList())
                 .toList();
+    }
+
+    @Override
+    Set<Modifier> modifiers() {
+        return declarations.modifiers();
     }
 
     @Override
