@@ -12,6 +12,7 @@ import me.supcheg.javafile.code.ConstructorBody;
 import me.supcheg.javafile.code.ConstructorInvocation;
 import me.supcheg.javafile.code.Expr;
 import me.supcheg.javafile.code.Exprs;
+import me.supcheg.javafile.code.MethodCallExpr;
 import me.supcheg.javafile.doc.DocCommentBuilder;
 import me.supcheg.javafile.model.ConstructorDecl;
 import me.supcheg.javafile.model.Modifier;
@@ -149,6 +150,10 @@ public final class TypedCodegen {
     private static final ClassDesc TYPED_TYPE_BODIES = typed("TypedTypeBodies");
     private static final ClassDesc TYPED_ENUM_CONSTANT_BODIES = typed("TypedEnumConstantBodies");
     private static final ClassDesc TYPED_ENUM_BUILDER = typed("TypedEnumBuilder");
+    private static final ClassDesc TYPED_ENUM_BODIES = typed("TypedEnumBodies");
+    private static final ClassDesc COMPILED_CLASSES = ClassDesc.of("me.supcheg.javafile.testing", "CompiledClasses");
+    private static final ClassDesc NESTED_FORMS = typed("NestedForms");
+    private static final ClassDesc UNSAFE_FACTS = facts("UnsafeFacts");
     private static final ClassDesc ENUM_CONSTANT_MEMBER =
             ClassDesc.of("me.supcheg.javafile.model", "EnumConstantMember");
     private static final ClassDesc MEMBER_KIND =
@@ -158,10 +163,23 @@ public final class TypedCodegen {
     private static final ClassDesc ENUM_CONSTANT_BODY_ARITIES = typed("EnumConstantBodyArities");
     private static final ClassDesc TYPE_PARAMETER = typed("TypeParameter");
     private static final ClassDesc CLASS_HEADER = typed("ClassHeader");
+    private static final ClassDesc TYPE_DECLARATION_SUPPORT = typed("TypeDeclarationSupport");
+    private static final ClassDesc TYPE_MEMBER_DECLARATIONS = typed("TypeMemberDeclarations");
+    private static final ClassDesc TYPED_ANNOTATION_TYPE_BUILDER = typed("TypedAnnotationTypeBuilder");
+    private static final ClassDesc NESTED_DECLARATIONS = typed("NestedDeclarations");
+    private static final ClassDesc NESTED_CLASS_BODIES = NESTED_DECLARATIONS.nested("ClassBodies");
+    private static final ClassDesc NESTED_INTERFACE_BODIES = NESTED_DECLARATIONS.nested("InterfaceBodies");
+    private static final ClassDesc NESTED_RECORD_BODIES = NESTED_DECLARATIONS.nested("RecordBodies");
+    private static final ClassDesc INTERFACE_TOKEN = facts("InterfaceToken");
+    private static final ClassDesc OBJECT = ClassDesc.of("java.lang", "Object");
     private static final ClassDesc TYPE_VAR_TOKEN = facts("TypeVarToken");
     private static final ClassDesc STRING = ClassDesc.of("java.lang", "String");
     private static final ClassDesc JAVA_FILE = ClassDesc.of("me.supcheg.javafile", "JavaFile");
     private static final ClassDesc TYPED_JAVA_FILE = typed("TypedJavaFile");
+    private static final ClassDesc TYPED_CLASS_HEADER_SPEC = TYPED_JAVA_FILE.nested("TypedClassHeaderSpec");
+    private static final ClassDesc TYPED_INTERFACE_SPEC = TYPED_JAVA_FILE.nested("TypedInterfaceSpec");
+    private static final ClassDesc TYPED_ANNOTATION_TYPE_SPEC = TYPED_JAVA_FILE.nested("TypedAnnotationTypeSpec");
+    private static final ClassDesc TYPED_ENUM_SPEC = TYPED_JAVA_FILE.nested("TypedEnumSpec");
     private static final ClassDesc OVERRIDE = ClassDesc.of("java.lang", "Override");
     private static final ClassDesc TARGET_CLASSPATH = facts("TargetClasspath");
     private static final ClassDesc CLASS_DESC = ClassDesc.of("java.lang.constant", "ClassDesc");
@@ -233,6 +251,9 @@ public final class TypedCodegen {
                                 recordConstructorArities(),
                                 enumConstructorArities(),
                                 genericDeclarationArities(),
+                                memberBuilderNestedArities(),
+                                typeMemberDeclarationArities(),
+                                annotationTypeBuilderArities(),
                                 enumConstantBodyArities()),
                         IntStream.rangeClosed(3, REACH.lambdas() + 1).mapToObj(TypedCodegen::function))
                 .flatMap(files -> files)
@@ -243,7 +264,8 @@ public final class TypedCodegen {
     ///
     /// @return the files
     public static List<JavaFile> generateTests() {
-        return Stream.concat(Stream.of(staticFormsTest()), ArityTests.files(MAX_ARITY).stream())
+        return Stream.concat(
+                        Stream.of(staticFormsTest(), nestedGenericAritiesTest()), ArityTests.files(MAX_ARITY).stream())
                 .toList();
     }
 
@@ -288,6 +310,309 @@ public final class TypedCodegen {
                         }));
             });
         });
+    }
+
+    // ------------------------------------------------------------------
+    // The tests of the member types of four to twelve type parameters
+    // ------------------------------------------------------------------
+
+    private static final String NESTED_GENERIC_PACKAGE = "me.supcheg.example";
+
+    /// The generated test of the member types of four to twelve type parameters: a nested class, an
+    /// interface and a record of each arity, inside a class, an interface, an annotation type and an enum
+    /// constant body, each rendered, compiled under `-Xlint:all` in one run of javac, and run.
+    private static JavaFile nestedGenericAritiesTest() {
+        return JavaFile.class_(typed("NestedGenericAritiesTest"), cb -> {
+            generated(cb);
+            cb.withExactModifiers(Set.of());
+            cb.withDoc(d -> d.paragraph("The member types of every hierarchy at four to twelve type parameters:"
+                    + " a nested class, an interface and a record inside a class, an interface, an annotation type"
+                    + " and an enum constant body, each rendered, compiled under `-Xlint:all` and run."));
+            IntStream.rangeClosed(4, MAX_ARITY).forEach(n -> nestedAritiesTest(cb, n));
+        });
+    }
+
+    private static void nestedAritiesTest(ClassBuilder cb, int n) {
+        String count = count(n);
+        String method = "nestedTypesOf" + Character.toUpperCase(count.charAt(0)) + count.substring(1)
+                + "TypeParametersInEveryHierarchyRenderCompileAndRun";
+        cb.withVoidMethod(method, mb -> {
+            mb.withAnnotation(TEST);
+            mb.withThrows(THROWABLE);
+            mb.withBody(b -> {
+                b.localVar("classSpec", memberClassSpec(n));
+                b.localVar("interfaceSpec", memberInterfaceSpec(n));
+                b.localVar("recordSpec", memberRecordSpec(n));
+                b.localVar("aClass", classHierarchy(n, "Nested" + n + "Class"));
+                b.localVar("anInterface", interfaceHierarchy(n, "Nested" + n + "Interface"));
+                b.localVar("anAnnotationType", annotationHierarchy(n, "Nested" + n + "Annotation"));
+                b.localVar("anEnum", enumHierarchy(n, "Nested" + n + "Enum"));
+                Stream.of("aClass", "anInterface", "anAnnotationType", "anEnum")
+                        .forEach(holder -> assertMemberTypes(b, holder, n));
+                b.localVar(
+                        "compiled",
+                        staticCall(
+                                COMPILED_CLASSES,
+                                "ofAll",
+                                staticCall(
+                                        LIST,
+                                        "of",
+                                        field("aClass"),
+                                        field("anInterface"),
+                                        field("anAnnotationType"),
+                                        field("anEnum"))));
+                IntStream.rangeClosed(0, 3).forEach(index -> runFirst(b, index, nestedBinaryName(n, index)));
+            });
+        });
+    }
+
+    /// The binary name of the nested class the test of `n` type parameters runs: of the class, the
+    /// interface, the annotation type and, in the enum, the first constant's body.
+    private static String nestedBinaryName(int n, int index) {
+        String holder =
+                switch (index) {
+                    case 0 -> "Nested" + n + "Class";
+                    case 1 -> "Nested" + n + "Interface";
+                    case 2 -> "Nested" + n + "Annotation";
+                    default -> "Nested" + n + "Enum$1";
+                };
+        return NESTED_GENERIC_PACKAGE + "." + holder + "$Box";
+    }
+
+    private static void assertMemberTypes(CodeBuilder b, String holder, int n) {
+        b.exprStatement(
+                staticCall(ASSERTJ_ASSERTIONS, "assertThat", field(holder).call("render"))
+                        .call("contains", literal("public static final class Box" + variables(n) + " {"))
+                        .call("contains", literal("public T" + n + " first(T" + n + " v0) {")));
+        b.exprStatement(
+                staticCall(ASSERTJ_ASSERTIONS, "assertThat", field(holder).call("render"))
+                        .call("contains", literal("public interface One" + variables(n) + " {"))
+                        .call("contains", literal("T" + n + " first();")));
+        b.exprStatement(
+                staticCall(ASSERTJ_ASSERTIONS, "assertThat", field(holder).call("render"))
+                        .call("contains", literal("public record Pair" + variables(n) + "(T" + n + " first) {")));
+    }
+
+    private static void runFirst(CodeBuilder b, int index, String binaryName) {
+        b.exprStatement(staticCall(
+                        ASSERTJ_ASSERTIONS,
+                        "assertThat",
+                        staticCall(
+                                NESTED_FORMS,
+                                "first",
+                                field("compiled").call("get", literal(index)),
+                                literal(binaryName),
+                                literal("x")))
+                .call("isEqualTo", literal("x")));
+    }
+
+    /// `<T1, T2, ..., Tn>`: the type parameters as the member type writes them.
+    private static String variables(int n) {
+        return "<" + IntStream.rangeClosed(1, n).mapToObj(i -> "T" + i).collect(Collectors.joining(", ")) + ">";
+    }
+
+    /// `T1` to `Tn`: the type variables of the specification of a member type.
+    private static List<String> typeVariables(int n) {
+        return IntStream.rangeClosed(1, n).mapToObj(i -> "T" + i).toList();
+    }
+
+    private static List<TypeArg> objects(int n) {
+        return IntStream.range(0, n).mapToObj(_ -> exactType(Types.of(OBJECT))).toList();
+    }
+
+    /// `TypedJavaFile.typeParam("T1")` to `TypedJavaFile.typeParam("Tn")`.
+    private static List<Expr> typeParams(int n) {
+        return IntStream.rangeClosed(1, n)
+                .mapToObj(i -> (Expr) staticCall(TYPED_JAVA_FILE, "typeParam", literal("T" + i)))
+                .toList();
+    }
+
+    /// `Box, typeParam("T1"), ..., typeParam("Tn"), classSpec` and its like.
+    private static List<Expr> declaration(String name, int n, String spec) {
+        return Stream.concat(
+                        Stream.concat(Stream.of((Expr) literal(name)), typeParams(n).stream()), Stream.of(field(spec)))
+                .toList();
+    }
+
+    private static void declaresNested(CodeBuilder b, Expr receiver, int n) {
+        b.exprStatement(receiver.call(
+                "declareNestedClass", declaration("Box", n, "classSpec").toArray(Expr[]::new)));
+        b.exprStatement(receiver.call(
+                "declareNestedInterface", declaration("One", n, "interfaceSpec").toArray(Expr[]::new)));
+        b.exprStatement(receiver.call(
+                "declareNestedRecord", declaration("Pair", n, "recordSpec").toArray(Expr[]::new)));
+    }
+
+    private static Expr classHierarchy(int n, String simple) {
+        return staticCall(
+                TYPED_JAVA_FILE,
+                "declareClass",
+                staticCall(UNSAFE_FACTS, "unverifiedClasspath"),
+                staticCall(CLASS_DESC, "of", literal(NESTED_GENERIC_PACKAGE), literal(simple)),
+                Exprs.newAnonymous(
+                        Types.of(TYPED_CLASS_HEADER_SPEC),
+                        List.of(),
+                        acb -> acb.withMethod("build", applied(MEMBER_BODIES, exact("Self"), unbounded()), mb -> {
+                            mb.withAnnotation(OVERRIDE);
+                            mb.withTypeParam("Self");
+                            mb.withParam("h", appliedTo(CLASS_HEADER, "Self"));
+                            mb.withBody(b -> {
+                                b.localVar(
+                                        "members",
+                                        field("h").call("extendsObject").call("members"));
+                                declaresNested(b, field("members"), n);
+                                b.return_(field("members").call("bodies"));
+                            });
+                        })));
+    }
+
+    private static Expr interfaceHierarchy(int n, String simple) {
+        return staticCall(
+                TYPED_JAVA_FILE,
+                "interface_",
+                staticCall(UNSAFE_FACTS, "unverifiedClasspath"),
+                staticCall(CLASS_DESC, "of", literal(NESTED_GENERIC_PACKAGE), literal(simple)),
+                Exprs.newAnonymous(
+                        Types.of(TYPED_INTERFACE_SPEC),
+                        List.of(),
+                        acb -> acb.withMethod("build", appliedTo(TYPED_INTERFACE_BODIES, "Self"), mb -> {
+                            mb.withAnnotation(OVERRIDE);
+                            mb.withTypeParam("Self");
+                            mb.withParam("ib", appliedTo(TYPED_INTERFACE_BUILDER, "Self"));
+                            mb.withBody(b -> {
+                                declaresNested(b, field("ib"), n);
+                                b.return_(field("ib").call("bodies"));
+                            });
+                        })));
+    }
+
+    private static Expr annotationHierarchy(int n, String simple) {
+        return staticCall(
+                TYPED_JAVA_FILE,
+                "annotationType",
+                staticCall(UNSAFE_FACTS, "unverifiedClasspath"),
+                staticCall(CLASS_DESC, "of", literal(NESTED_GENERIC_PACKAGE), literal(simple)),
+                Exprs.newAnonymous(
+                        Types.of(TYPED_ANNOTATION_TYPE_SPEC),
+                        List.of(),
+                        acb -> acb.withMethod("build", appliedTo(TYPED_ANNOTATION_TYPE_BUILDER, "Self"), mb -> {
+                            mb.withAnnotation(OVERRIDE);
+                            mb.withTypeParam("Self");
+                            mb.withParam("ab", appliedTo(TYPED_ANNOTATION_TYPE_BUILDER, "Self"));
+                            mb.withBody(b -> {
+                                declaresNested(b, field("ab"), n);
+                                b.return_(field("ab"));
+                            });
+                        })));
+    }
+
+    private static Expr enumHierarchy(int n, String simple) {
+        return staticCall(
+                TYPED_JAVA_FILE,
+                "enum_",
+                staticCall(UNSAFE_FACTS, "unverifiedClasspath"),
+                staticCall(CLASS_DESC, "of", literal(NESTED_GENERIC_PACKAGE), literal(simple)),
+                Exprs.newAnonymous(
+                        Types.of(TYPED_ENUM_SPEC),
+                        List.of(),
+                        acb -> acb.withMethod("build", appliedTo(TYPED_ENUM_BODIES, "Self"), mb -> {
+                            mb.withAnnotation(OVERRIDE);
+                            mb.withTypeParam("Self");
+                            mb.withParam("eb", appliedTo(TYPED_ENUM_BUILDER, "Self"));
+                            mb.withBody(b -> {
+                                b.exprStatement(nestedConstant("A", "declareNestedClass", "Box", n, "classSpec"));
+                                b.exprStatement(
+                                        nestedConstant("B", "declareNestedInterface", "One", n, "interfaceSpec"));
+                                b.exprStatement(nestedConstant("C", "declareNestedRecord", "Pair", n, "recordSpec"));
+                                b.return_(field("eb").call("bodies"));
+                            });
+                        })));
+    }
+
+    /// `eb.constant("A", body -> body.declareNestedClass("Box", p1, ..., pn, classSpec))`.
+    private static MethodCallExpr nestedConstant(String constant, String method, String name, int n, String spec) {
+        return field("eb")
+                .call(
+                        "constant",
+                        literal(constant),
+                        Exprs.lambda(
+                                List.of("body"),
+                                field("body")
+                                        .call(method, declaration(name, n, spec).toArray(Expr[]::new))));
+    }
+
+    /// The specification of a member class of `n` type parameters, whose method `first` takes and
+    /// returns the last of them.
+    private static Expr memberClassSpec(int n) {
+        List<String> ts = typeVariables(n);
+        return Exprs.newAnonymous(
+                bound(applied(GENERIC_DECLARATION_ARITIES.nested("TypedGenericClassSpec" + n), objects(n))),
+                List.of(),
+                acb -> acb.withMethod("build", applied(MEMBER_BODIES, exact("N"), unbounded()), mb -> {
+                    mb.withAnnotation(OVERRIDE);
+                    mb.withTypeParam("N");
+                    ts.forEach(mb::withTypeParam);
+                    mb.withParam("h", appliedTo(CLASS_HEADER, "N"));
+                    IntStream.rangeClosed(1, n)
+                            .forEach(i -> mb.withParam("t" + i, appliedTo(TYPE_VAR_TOKEN, ts.get(i - 1))));
+                    mb.withBody(b -> {
+                        b.localVar("members", field("h").call("extendsObject").call("members"));
+                        b.localVar(
+                                "first",
+                                field("members")
+                                        .call("declareMethod", literal("first"), field("t" + n), field("t" + n)));
+                        b.localVar("bodies", field("members").call("bodies"));
+                        b.exprStatement(field("bodies")
+                                .call(
+                                        "define",
+                                        field("first"),
+                                        Exprs.lambda(
+                                                List.of("b", "self", "value"),
+                                                field("b").call("return_", field("value")))));
+                        b.return_(field("bodies"));
+                    });
+                }));
+    }
+
+    /// The specification of a member interface of `n` type parameters, whose method `first` returns the
+    /// last of them.
+    private static Expr memberInterfaceSpec(int n) {
+        List<String> ts = typeVariables(n);
+        return Exprs.newAnonymous(
+                bound(applied(GENERIC_DECLARATION_ARITIES.nested("TypedGenericInterfaceSpec" + n), objects(n))),
+                List.of(),
+                acb -> acb.withMethod("build", appliedTo(TYPED_INTERFACE_BODIES, "I"), mb -> {
+                    mb.withAnnotation(OVERRIDE);
+                    mb.withTypeParam("I");
+                    ts.forEach(mb::withTypeParam);
+                    mb.withParam("ib", appliedTo(TYPED_INTERFACE_BUILDER, "I"));
+                    IntStream.rangeClosed(1, n)
+                            .forEach(i -> mb.withParam("t" + i, appliedTo(TYPE_VAR_TOKEN, ts.get(i - 1))));
+                    mb.withBody(b -> {
+                        b.exprStatement(field("ib").call("declareAbstractMethod", literal("first"), field("t" + n)));
+                        b.return_(field("ib").call("bodies"));
+                    });
+                }));
+    }
+
+    /// The specification of a member record of `n` type parameters, with a component of the last of them.
+    private static Expr memberRecordSpec(int n) {
+        List<String> ts = typeVariables(n);
+        return Exprs.newAnonymous(
+                bound(applied(GENERIC_DECLARATION_ARITIES.nested("TypedGenericRecordSpec" + n), objects(n))),
+                List.of(),
+                acb -> acb.withMethod("build", appliedTo(TYPED_RECORD_BODIES, "R"), mb -> {
+                    mb.withAnnotation(OVERRIDE);
+                    mb.withTypeParam("R");
+                    ts.forEach(mb::withTypeParam);
+                    mb.withParam("rb", appliedTo(TYPED_RECORD_BUILDER, "R"));
+                    IntStream.rangeClosed(1, n)
+                            .forEach(i -> mb.withParam("t" + i, appliedTo(TYPE_VAR_TOKEN, ts.get(i - 1))));
+                    mb.withBody(b -> {
+                        b.exprStatement(field("rb").call("component", literal("first"), field("t" + n)));
+                        b.return_(field("rb").call("bodies"));
+                    });
+                }));
     }
 
     private static void write(Path out, Map<Path, String> files) {
@@ -2501,6 +2826,250 @@ public final class TypedCodegen {
     }
 
     // ------------------------------------------------------------------
+    // The stages of the member types of four to twelve type parameters
+    // ------------------------------------------------------------------
+
+    /// A kind of member type that the types of §6.5 declare: a class, an interface or a record.
+    ///
+    /// @param method the name of the declaration method
+    /// @param simple the word the generated specification stages are named by
+    /// @param brand the type variable of the token the declaration returns
+    /// @param token the fact of the member type
+    /// @param adapter what declares the member type, given its declaration or builder
+    /// @param hook the method of the hierarchy that declares the member type, of any arity
+    /// @param declaring the name of the type variable of the adapter's generic method
+    /// @param parameter the name of the parameter the specification takes the member type by
+    /// @param parameterType the type of that parameter
+    /// @param variables the name of what the tokens of the type parameters are taken from
+    /// @param built the result of the adapter's method
+    /// @param call the method of [NestedDeclarations] that declares the member type
+    /// @param enclosing whether that method takes the declarations the member type is enclosed by
+    private record NestedKind(
+            String method,
+            String simple,
+            String brand,
+            ClassDesc token,
+            ClassDesc adapter,
+            String hook,
+            String declaring,
+            String parameter,
+            TypeRef parameterType,
+            String variables,
+            TypeRef built,
+            String call,
+            boolean enclosing) {
+        String noun() {
+            return simple.toLowerCase();
+        }
+
+        String spec(int n) {
+            return "TypedGeneric" + simple + "Spec" + n;
+        }
+
+        String parameterDescription() {
+            return enclosing ? "header" : "builder";
+        }
+    }
+
+    private static final NestedKind NESTED_CLASS = new NestedKind(
+            "declareNestedClass",
+            "Class",
+            "N",
+            FINAL_CLASS_TOKEN,
+            NESTED_CLASS_BODIES,
+            "nestedClassToken",
+            "N2",
+            "h",
+            appliedTo(CLASS_HEADER, "N2"),
+            "declaration",
+            applied(MEMBER_BODIES, exact("N2"), unbounded()),
+            "class_",
+            true);
+    private static final NestedKind NESTED_INTERFACE = new NestedKind(
+            "declareNestedInterface",
+            "Interface",
+            "I",
+            INTERFACE_TOKEN,
+            NESTED_INTERFACE_BODIES,
+            "nestedInterfaceToken",
+            "I2",
+            "ib",
+            appliedTo(TYPED_INTERFACE_BUILDER, "I2"),
+            "ib",
+            appliedTo(TYPED_INTERFACE_BODIES, "I2"),
+            "interface_",
+            false);
+    private static final NestedKind NESTED_RECORD = new NestedKind(
+            "declareNestedRecord",
+            "Record",
+            "R",
+            FINAL_CLASS_TOKEN,
+            NESTED_RECORD_BODIES,
+            "nestedRecordToken",
+            "R2",
+            "rb",
+            appliedTo(TYPED_RECORD_BUILDER, "R2"),
+            "rb",
+            appliedTo(TYPED_RECORD_BODIES, "R2"),
+            "record",
+            false);
+    private static final List<NestedKind> NESTED_KINDS = List.of(NESTED_CLASS, NESTED_INTERFACE, NESTED_RECORD);
+
+    /// The stages of the member types of a class, four to twelve type parameters, which `MemberBuilder`
+    /// inherits: they build the specification into the declaration of a member type, which the hooks of
+    /// the builder declare.
+    private static JavaFile memberBuilderNestedArities() {
+        return arities(
+                "MemberBuilderArities",
+                List.of("Self", "S"),
+                Optional.of(bound(appliedTo(DECLARATIONS, "Self", "S"))),
+                MEMBER_BUILDER,
+                cb -> {
+                    nestedHooks(cb);
+                    IntStream.rangeClosed(4, MAX_ARITY)
+                            .forEach(n -> NESTED_KINDS.forEach(kind -> nestedOverload(cb, kind, n, false)));
+                });
+    }
+
+    /// The stages of the member types of an interface, a record or an enum, four to twelve type
+    /// parameters, which `TypeMemberDeclarations` inherits: the declaration of the member type is
+    /// completed and given to the type within the call.
+    private static JavaFile typeMemberDeclarationArities() {
+        return arities(
+                "TypeMemberDeclarationArities",
+                List.of("Self"),
+                Optional.of(bound(appliedTo(TYPE_DECLARATION_SUPPORT, "Self"))),
+                TYPE_MEMBER_DECLARATIONS,
+                cb -> {
+                    passingConstructor(
+                            cb,
+                            List.of(
+                                    param("target", Types.of(TARGET_CLASSPATH)),
+                                    param("desc", Types.of(CLASS_DESC)),
+                                    param("kind", Types.of(STRING))));
+                    IntStream.rangeClosed(4, MAX_ARITY)
+                            .forEach(n -> NESTED_KINDS.forEach(kind -> nestedOverload(cb, kind, n, true)));
+                });
+    }
+
+    /// The stages of the member types of an annotation type, four to twelve type parameters, which
+    /// `TypedAnnotationTypeBuilder` inherits: each member type it builds, the hook of the builder adds.
+    private static JavaFile annotationTypeBuilderArities() {
+        return arities("AnnotationTypeBuilderArities", List.of("Self"), TYPED_ANNOTATION_TYPE_BUILDER, cb -> {
+            nestedHooks(cb);
+            IntStream.rangeClosed(4, MAX_ARITY)
+                    .forEach(n -> NESTED_KINDS.forEach(kind -> nestedOverload(cb, kind, n, false)));
+        });
+    }
+
+    /// The hooks of a hierarchy whose member types a specification declares: the declaration of the
+    /// member type of any arity, which the generated stages of four to twelve call.
+    private static void nestedHooks(ClassBuilder cb) {
+        for (NestedKind kind : NESTED_KINDS) {
+            hook(
+                    cb,
+                    List.of(TypeVar.of(kind.brand())),
+                    applied(kind.token(), exact(kind.brand())),
+                    kind.hook(),
+                    param("name", Types.of(STRING)),
+                    param("parameters", applied(LIST, exactType(applied(TYPE_PARAMETER, unbounded())))),
+                    param("spec", Types.of(kind.adapter())));
+        }
+    }
+
+    /// `declareNestedClass(name, p1, ..., pn, spec)` and its like: the declaration of a member type of
+    /// `n` type parameters.
+    ///
+    /// @param direct whether the hierarchy declares the member type here, as `TypeMemberDeclarations`
+    ///     does, rather than through a hook
+    private static void nestedOverload(ClassBuilder cb, NestedKind kind, int n, boolean direct) {
+        List<String> bs = IntStream.rangeClosed(1, n).mapToObj(i -> "B" + i).toList();
+        Doc doc = Doc.of("Declares a generic member " + kind.noun() + " with " + count(n) + " type parameters.")
+                .param("name", "the simple name of the member " + kind.noun())
+                .params(n, "type parameter")
+                .param(
+                        "spec",
+                        "declares the member " + kind.noun() + ", given its " + kind.parameterDescription()
+                                + " and the tokens of its type parameters")
+                .typeParam(kind.brand(), "the brand of the member " + kind.noun())
+                .returns("the token of the member " + kind.noun())
+                .throws_(
+                        ILLEGAL_ARGUMENT,
+                        "if a type parameter has the name of another or of the member " + kind.noun()
+                                + ", or its bound is a raw type; or if `name` cannot name a type")
+                .throws_(
+                        ILLEGAL_STATE,
+                        "if the declarations of the type have ended, or a member of the member " + kind.noun()
+                                + " is not defined");
+        for (int i = 1; i <= n; i++) {
+            doc = doc.typeParam("B" + i, "the leftmost bound of the " + ordinal(i, n) + "type parameter");
+        }
+        List<TypeVar> vars = typeVars(concat(List.of(kind.brand()), bs));
+        List<Param> params = listOf(
+                List.of(param("name", Types.of(STRING))),
+                IntStream.rangeClosed(1, n)
+                        .mapToObj(i -> param("p" + i, appliedTo(TYPE_PARAMETER, "B" + i)))
+                        .toList(),
+                List.of(param("spec", applied(GENERIC_DECLARATION_ARITIES.nested(kind.spec(n)), exacts(bs)))));
+        method(cb, PUBLIC, vars, applied(kind.token(), exact(kind.brand())), kind.method(), params, doc, b -> {
+            Expr adapter = nestedAdapter(kind, n);
+            Expr parameters = staticCall(LIST, "of", names("p", n));
+            if (!direct) {
+                b.return_(call(kind.hook(), field("name"), parameters, adapter));
+                return;
+            }
+            b.exprStatement(
+                    call("requireDeclaring", add(literal("a member " + kind.noun() + " of "), call("described"))));
+            Expr initializer = staticCall(
+                    NESTED_DECLARATIONS,
+                    kind.call(),
+                    Stream.concat(
+                                    Stream.concat(
+                                            Stream.of((Expr) call("target"), call("desc"), field("name"), parameters),
+                                            kind.enclosing()
+                                                    ? Stream.of((Expr) staticCall(LIST, "of"))
+                                                    : Stream.<Expr>empty()),
+                                    Stream.of(adapter))
+                            .toList());
+            b.localVar(
+                    "nested",
+                    applied(
+                            NESTED_DECLARATIONS.nested("NestedType"),
+                            exactType(applied(kind.token(), exact(kind.brand())))),
+                    initializer);
+            b.exprStatement(call("declaredNested", field("nested").call("type")));
+            b.return_(field("nested").call("token"));
+        });
+    }
+
+    /// `new NestedDeclarations.ClassBodies() { ... }` and its like: what gives the specification the
+    /// tokens of the type parameters of the member type, by its index.
+    private static Expr nestedAdapter(NestedKind kind, int n) {
+        return Exprs.newAnonymous(
+                Types.of(kind.adapter()),
+                List.of(),
+                acb -> acb.withMethod("build", kind.built(), mb -> {
+                    mb.withAnnotation(OVERRIDE);
+                    mb.withTypeParam(kind.declaring());
+                    mb.withParam(kind.parameter(), kind.parameterType());
+                    if (kind.enclosing()) {
+                        mb.withParam("declaration", appliedTo(CLASS_DECLARATION, kind.declaring()));
+                    }
+                    mb.withBody(b -> b.return_(field("spec")
+                            .call(
+                                    "build",
+                                    Stream.concat(
+                                                    Stream.of((Expr) field(kind.parameter())),
+                                                    IntStream.range(0, n).mapToObj(i -> (Expr) staticCall(
+                                                            NESTED_DECLARATIONS,
+                                                            "variable",
+                                                            field(kind.variables()),
+                                                            literal(i))))
+                                            .toArray(Expr[]::new))));
+                }));
+    }
+
+    // ------------------------------------------------------------------
     // The helper methods of the body of an enum constant
     // ------------------------------------------------------------------
 
@@ -2539,6 +3108,9 @@ public final class TypedCodegen {
                             "declaredHelper",
                             param("member", tv("F")),
                             param("kind", Types.of(MEMBER_KIND)));
+                    nestedHooks(cb);
+                    IntStream.rangeClosed(4, MAX_ARITY)
+                            .forEach(n -> NESTED_KINDS.forEach(kind -> nestedOverload(cb, kind, n, false)));
                     for (int n = 0; n <= MAX_ARITY; n++) {
                         helper(cb, n, false, false);
                         helper(cb, n, true, false);

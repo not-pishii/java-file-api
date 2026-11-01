@@ -36,7 +36,7 @@ import java.util.Optional;
 /// ```
 ///
 /// @param <Self> the brand of the annotation type being declared
-public final class TypedAnnotationTypeBuilder<Self> {
+public final class TypedAnnotationTypeBuilder<Self> extends AnnotationTypeBuilderArities<Self> {
     private final TargetClasspath target;
     private final ClassDesc desc;
     private final String described;
@@ -331,6 +331,40 @@ public final class TypedAnnotationTypeBuilder<Self> {
         requireDeclaring("a member record of " + described);
         NestedDeclarations.NestedType<FinalClassToken<R>> nested =
                 NestedDeclarations.record(target, desc, name, p1, p2, p3, spec);
+        memberTypes.add(nested.type());
+        return nested.token();
+    }
+
+    /// Adds a member class of the annotation type with the type parameters of a generated stage:
+    /// what [AnnotationTypeBuilderArities] declares of four to twelve.
+    @Override
+    final <N> FinalClassToken<N> nestedClassToken(
+            String name, List<TypeParameter<?>> parameters, NestedDeclarations.ClassBodies spec) {
+        requireDeclaring("a member class of " + described);
+        NestedDeclarations.NestedType<FinalClassToken<N>> nested =
+                NestedDeclarations.class_(target, desc, name, parameters, List.of(), spec);
+        memberTypes.add(nested.type());
+        return nested.token();
+    }
+
+    /// Adds a member interface of the annotation type with the type parameters of a generated stage.
+    @Override
+    final <I> InterfaceToken<I> nestedInterfaceToken(
+            String name, List<TypeParameter<?>> parameters, NestedDeclarations.InterfaceBodies spec) {
+        requireDeclaring("a member interface of " + described);
+        NestedDeclarations.NestedType<InterfaceToken<I>> nested =
+                NestedDeclarations.interface_(target, desc, name, parameters, spec);
+        memberTypes.add(nested.type());
+        return nested.token();
+    }
+
+    /// Adds a member record of the annotation type with the type parameters of a generated stage.
+    @Override
+    final <R> FinalClassToken<R> nestedRecordToken(
+            String name, List<TypeParameter<?>> parameters, NestedDeclarations.RecordBodies spec) {
+        requireDeclaring("a member record of " + described);
+        NestedDeclarations.NestedType<FinalClassToken<R>> nested =
+                NestedDeclarations.record(target, desc, name, parameters, spec);
         memberTypes.add(nested.type());
         return nested.token();
     }

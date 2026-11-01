@@ -79,7 +79,7 @@ import java.util.stream.Stream;
 ///
 /// @param <Self> the brand of the class being declared
 /// @param <S> the superclass of the class
-public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S>
+public abstract sealed class MemberBuilder<Self, S> extends MemberBuilderArities<Self, S>
         permits TypedClassBuilder, TypedSubclassBuilderArities {
 
     private final String described;
@@ -484,6 +484,36 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
         owner.requireDeclaring("a member class of " + owner.described());
         NestedDeclarations.NestedType<FinalClassToken<N>> nested =
                 NestedDeclarations.class_(owner.target(), owner.desc(), name, parameters, enclosing, spec);
+        owner.declareNested(nested.type());
+        return nested.token();
+    }
+
+    /// Declares a member class of the class with the `parameters` of a generated stage, which
+    /// specifies it by a specification of four to twelve type parameters.
+    @Override
+    final <N> FinalClassToken<N> nestedClassToken(
+            String name, List<TypeParameter<?>> parameters, NestedDeclarations.ClassBodies spec) {
+        return nestedClass(name, parameters, List.of(), spec);
+    }
+
+    /// Declares a member interface of the class with the `parameters` of a generated stage.
+    @Override
+    final <I> InterfaceToken<I> nestedInterfaceToken(
+            String name, List<TypeParameter<?>> parameters, NestedDeclarations.InterfaceBodies spec) {
+        owner.requireDeclaring("a member interface of " + owner.described());
+        NestedDeclarations.NestedType<InterfaceToken<I>> nested =
+                NestedDeclarations.interface_(owner.target(), owner.desc(), name, parameters, spec);
+        owner.declareNested(nested.type());
+        return nested.token();
+    }
+
+    /// Declares a member record of the class with the `parameters` of a generated stage.
+    @Override
+    final <R> FinalClassToken<R> nestedRecordToken(
+            String name, List<TypeParameter<?>> parameters, NestedDeclarations.RecordBodies spec) {
+        owner.requireDeclaring("a member record of " + owner.described());
+        NestedDeclarations.NestedType<FinalClassToken<R>> nested =
+                NestedDeclarations.record(owner.target(), owner.desc(), name, parameters, spec);
         owner.declareNested(nested.type());
         return nested.token();
     }

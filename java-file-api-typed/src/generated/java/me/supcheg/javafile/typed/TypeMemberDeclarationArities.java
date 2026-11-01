@@ -1,0 +1,1072 @@
+package me.supcheg.javafile.typed;
+
+import java.lang.constant.ClassDesc;
+import java.util.List;
+import javax.annotation.processing.Generated;
+import me.supcheg.javafile.facts.FinalClassToken;
+import me.supcheg.javafile.facts.InterfaceToken;
+import me.supcheg.javafile.facts.TargetClasspath;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericClassSpec10;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericClassSpec11;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericClassSpec12;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericClassSpec4;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericClassSpec5;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericClassSpec6;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericClassSpec7;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericClassSpec8;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericClassSpec9;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericInterfaceSpec10;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericInterfaceSpec11;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericInterfaceSpec12;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericInterfaceSpec4;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericInterfaceSpec5;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericInterfaceSpec6;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericInterfaceSpec7;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericInterfaceSpec8;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericInterfaceSpec9;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericRecordSpec10;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericRecordSpec11;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericRecordSpec12;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericRecordSpec4;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericRecordSpec5;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericRecordSpec6;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericRecordSpec7;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericRecordSpec8;
+import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericRecordSpec9;
+import me.supcheg.javafile.typed.NestedDeclarations.ClassBodies;
+import me.supcheg.javafile.typed.NestedDeclarations.InterfaceBodies;
+import me.supcheg.javafile.typed.NestedDeclarations.NestedType;
+import me.supcheg.javafile.typed.NestedDeclarations.RecordBodies;
+
+@Generated("me.supcheg.javafile.typed.codegen.TypedCodegen")
+abstract sealed class TypeMemberDeclarationArities<Self> extends TypeDeclarationSupport<Self> permits TypeMemberDeclarations {
+    TypeMemberDeclarationArities(TargetClasspath target, ClassDesc desc, String kind) {
+        super(target, desc, kind);
+    }
+
+    /**
+     * Declares a generic member class with four type parameters.
+     *
+     * @param name the simple name of the member class
+     * @param p1 the first type parameter
+     * @param p2 the second type parameter
+     * @param p3 the third type parameter
+     * @param p4 the fourth type parameter
+     * @param spec declares the member class, given its header and the tokens of its type parameters
+     * @param <N> the brand of the member class
+     * @return the token of the member class
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the member class, or its bound is a raw type; or if `name` cannot name a type
+     * @throws IllegalStateException if the declarations of the type have ended, or a member of the member class is not defined
+     * @param <B1> the leftmost bound of the first type parameter
+     * @param <B2> the leftmost bound of the second type parameter
+     * @param <B3> the leftmost bound of the third type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter
+     */
+    public <N, B1, B2, B3, B4> FinalClassToken<N> declareNestedClass(String name, TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypedGenericClassSpec4<B1, B2, B3, B4> spec) {
+        requireDeclaring("a member class of " + described());
+        NestedType<FinalClassToken<N>> nested = NestedDeclarations.class_(target(), desc(), name, List.of(p1, p2, p3, p4), List.of(), new ClassBodies() {
+            @Override
+            public <N2> MemberBodies<N2, ?> build(ClassHeader<N2> h, ClassDeclaration<N2> declaration) {
+                return spec.build(h, NestedDeclarations.variable(declaration, 0), NestedDeclarations.variable(declaration, 1), NestedDeclarations.variable(declaration, 2), NestedDeclarations.variable(declaration, 3));
+            }
+        });
+        declaredNested(nested.type());
+        return nested.token();
+    }
+
+    /**
+     * Declares a generic member interface with four type parameters.
+     *
+     * @param name the simple name of the member interface
+     * @param p1 the first type parameter
+     * @param p2 the second type parameter
+     * @param p3 the third type parameter
+     * @param p4 the fourth type parameter
+     * @param spec declares the member interface, given its builder and the tokens of its type parameters
+     * @param <I> the brand of the member interface
+     * @return the token of the member interface
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the member interface, or its bound is a raw type; or if `name` cannot name a type
+     * @throws IllegalStateException if the declarations of the type have ended, or a member of the member interface is not defined
+     * @param <B1> the leftmost bound of the first type parameter
+     * @param <B2> the leftmost bound of the second type parameter
+     * @param <B3> the leftmost bound of the third type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter
+     */
+    public <I, B1, B2, B3, B4> InterfaceToken<I> declareNestedInterface(String name, TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypedGenericInterfaceSpec4<B1, B2, B3, B4> spec) {
+        requireDeclaring("a member interface of " + described());
+        NestedType<InterfaceToken<I>> nested = NestedDeclarations.interface_(target(), desc(), name, List.of(p1, p2, p3, p4), new InterfaceBodies() {
+            @Override
+            public <I2> TypedInterfaceBodies<I2> build(TypedInterfaceBuilder<I2> ib) {
+                return spec.build(ib, NestedDeclarations.variable(ib, 0), NestedDeclarations.variable(ib, 1), NestedDeclarations.variable(ib, 2), NestedDeclarations.variable(ib, 3));
+            }
+        });
+        declaredNested(nested.type());
+        return nested.token();
+    }
+
+    /**
+     * Declares a generic member record with four type parameters.
+     *
+     * @param name the simple name of the member record
+     * @param p1 the first type parameter
+     * @param p2 the second type parameter
+     * @param p3 the third type parameter
+     * @param p4 the fourth type parameter
+     * @param spec declares the member record, given its builder and the tokens of its type parameters
+     * @param <R> the brand of the member record
+     * @return the token of the member record
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the member record, or its bound is a raw type; or if `name` cannot name a type
+     * @throws IllegalStateException if the declarations of the type have ended, or a member of the member record is not defined
+     * @param <B1> the leftmost bound of the first type parameter
+     * @param <B2> the leftmost bound of the second type parameter
+     * @param <B3> the leftmost bound of the third type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter
+     */
+    public <R, B1, B2, B3, B4> FinalClassToken<R> declareNestedRecord(String name, TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypedGenericRecordSpec4<B1, B2, B3, B4> spec) {
+        requireDeclaring("a member record of " + described());
+        NestedType<FinalClassToken<R>> nested = NestedDeclarations.record(target(), desc(), name, List.of(p1, p2, p3, p4), new RecordBodies() {
+            @Override
+            public <R2> TypedRecordBodies<R2> build(TypedRecordBuilder<R2> rb) {
+                return spec.build(rb, NestedDeclarations.variable(rb, 0), NestedDeclarations.variable(rb, 1), NestedDeclarations.variable(rb, 2), NestedDeclarations.variable(rb, 3));
+            }
+        });
+        declaredNested(nested.type());
+        return nested.token();
+    }
+
+    /**
+     * Declares a generic member class with five type parameters.
+     *
+     * @param name the simple name of the member class
+     * @param p1 the first type parameter
+     * @param p2 the second type parameter
+     * @param p3 the third type parameter
+     * @param p4 the fourth type parameter
+     * @param p5 the fifth type parameter
+     * @param spec declares the member class, given its header and the tokens of its type parameters
+     * @param <N> the brand of the member class
+     * @return the token of the member class
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the member class, or its bound is a raw type; or if `name` cannot name a type
+     * @throws IllegalStateException if the declarations of the type have ended, or a member of the member class is not defined
+     * @param <B1> the leftmost bound of the first type parameter
+     * @param <B2> the leftmost bound of the second type parameter
+     * @param <B3> the leftmost bound of the third type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter
+     */
+    public <N, B1, B2, B3, B4, B5> FinalClassToken<N> declareNestedClass(String name, TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, TypedGenericClassSpec5<B1, B2, B3, B4, B5> spec) {
+        requireDeclaring("a member class of " + described());
+        NestedType<FinalClassToken<N>> nested = NestedDeclarations.class_(target(), desc(), name, List.of(p1, p2, p3, p4, p5), List.of(), new ClassBodies() {
+            @Override
+            public <N2> MemberBodies<N2, ?> build(ClassHeader<N2> h, ClassDeclaration<N2> declaration) {
+                return spec.build(h, NestedDeclarations.variable(declaration, 0), NestedDeclarations.variable(declaration, 1), NestedDeclarations.variable(declaration, 2), NestedDeclarations.variable(declaration, 3), NestedDeclarations.variable(declaration, 4));
+            }
+        });
+        declaredNested(nested.type());
+        return nested.token();
+    }
+
+    /**
+     * Declares a generic member interface with five type parameters.
+     *
+     * @param name the simple name of the member interface
+     * @param p1 the first type parameter
+     * @param p2 the second type parameter
+     * @param p3 the third type parameter
+     * @param p4 the fourth type parameter
+     * @param p5 the fifth type parameter
+     * @param spec declares the member interface, given its builder and the tokens of its type parameters
+     * @param <I> the brand of the member interface
+     * @return the token of the member interface
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the member interface, or its bound is a raw type; or if `name` cannot name a type
+     * @throws IllegalStateException if the declarations of the type have ended, or a member of the member interface is not defined
+     * @param <B1> the leftmost bound of the first type parameter
+     * @param <B2> the leftmost bound of the second type parameter
+     * @param <B3> the leftmost bound of the third type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter
+     */
+    public <I, B1, B2, B3, B4, B5> InterfaceToken<I> declareNestedInterface(String name, TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, TypedGenericInterfaceSpec5<B1, B2, B3, B4, B5> spec) {
+        requireDeclaring("a member interface of " + described());
+        NestedType<InterfaceToken<I>> nested = NestedDeclarations.interface_(target(), desc(), name, List.of(p1, p2, p3, p4, p5), new InterfaceBodies() {
+            @Override
+            public <I2> TypedInterfaceBodies<I2> build(TypedInterfaceBuilder<I2> ib) {
+                return spec.build(ib, NestedDeclarations.variable(ib, 0), NestedDeclarations.variable(ib, 1), NestedDeclarations.variable(ib, 2), NestedDeclarations.variable(ib, 3), NestedDeclarations.variable(ib, 4));
+            }
+        });
+        declaredNested(nested.type());
+        return nested.token();
+    }
+
+    /**
+     * Declares a generic member record with five type parameters.
+     *
+     * @param name the simple name of the member record
+     * @param p1 the first type parameter
+     * @param p2 the second type parameter
+     * @param p3 the third type parameter
+     * @param p4 the fourth type parameter
+     * @param p5 the fifth type parameter
+     * @param spec declares the member record, given its builder and the tokens of its type parameters
+     * @param <R> the brand of the member record
+     * @return the token of the member record
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the member record, or its bound is a raw type; or if `name` cannot name a type
+     * @throws IllegalStateException if the declarations of the type have ended, or a member of the member record is not defined
+     * @param <B1> the leftmost bound of the first type parameter
+     * @param <B2> the leftmost bound of the second type parameter
+     * @param <B3> the leftmost bound of the third type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter
+     */
+    public <R, B1, B2, B3, B4, B5> FinalClassToken<R> declareNestedRecord(String name, TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, TypedGenericRecordSpec5<B1, B2, B3, B4, B5> spec) {
+        requireDeclaring("a member record of " + described());
+        NestedType<FinalClassToken<R>> nested = NestedDeclarations.record(target(), desc(), name, List.of(p1, p2, p3, p4, p5), new RecordBodies() {
+            @Override
+            public <R2> TypedRecordBodies<R2> build(TypedRecordBuilder<R2> rb) {
+                return spec.build(rb, NestedDeclarations.variable(rb, 0), NestedDeclarations.variable(rb, 1), NestedDeclarations.variable(rb, 2), NestedDeclarations.variable(rb, 3), NestedDeclarations.variable(rb, 4));
+            }
+        });
+        declaredNested(nested.type());
+        return nested.token();
+    }
+
+    /**
+     * Declares a generic member class with six type parameters.
+     *
+     * @param name the simple name of the member class
+     * @param p1 the first type parameter
+     * @param p2 the second type parameter
+     * @param p3 the third type parameter
+     * @param p4 the fourth type parameter
+     * @param p5 the fifth type parameter
+     * @param p6 the sixth type parameter
+     * @param spec declares the member class, given its header and the tokens of its type parameters
+     * @param <N> the brand of the member class
+     * @return the token of the member class
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the member class, or its bound is a raw type; or if `name` cannot name a type
+     * @throws IllegalStateException if the declarations of the type have ended, or a member of the member class is not defined
+     * @param <B1> the leftmost bound of the first type parameter
+     * @param <B2> the leftmost bound of the second type parameter
+     * @param <B3> the leftmost bound of the third type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter
+     * @param <B6> the leftmost bound of the sixth type parameter
+     */
+    public <N, B1, B2, B3, B4, B5, B6> FinalClassToken<N> declareNestedClass(String name, TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, TypeParameter<B6> p6, TypedGenericClassSpec6<B1, B2, B3, B4, B5, B6> spec) {
+        requireDeclaring("a member class of " + described());
+        NestedType<FinalClassToken<N>> nested = NestedDeclarations.class_(target(), desc(), name, List.of(p1, p2, p3, p4, p5, p6), List.of(), new ClassBodies() {
+            @Override
+            public <N2> MemberBodies<N2, ?> build(ClassHeader<N2> h, ClassDeclaration<N2> declaration) {
+                return spec.build(h, NestedDeclarations.variable(declaration, 0), NestedDeclarations.variable(declaration, 1), NestedDeclarations.variable(declaration, 2), NestedDeclarations.variable(declaration, 3), NestedDeclarations.variable(declaration, 4), NestedDeclarations.variable(declaration, 5));
+            }
+        });
+        declaredNested(nested.type());
+        return nested.token();
+    }
+
+    /**
+     * Declares a generic member interface with six type parameters.
+     *
+     * @param name the simple name of the member interface
+     * @param p1 the first type parameter
+     * @param p2 the second type parameter
+     * @param p3 the third type parameter
+     * @param p4 the fourth type parameter
+     * @param p5 the fifth type parameter
+     * @param p6 the sixth type parameter
+     * @param spec declares the member interface, given its builder and the tokens of its type parameters
+     * @param <I> the brand of the member interface
+     * @return the token of the member interface
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the member interface, or its bound is a raw type; or if `name` cannot name a type
+     * @throws IllegalStateException if the declarations of the type have ended, or a member of the member interface is not defined
+     * @param <B1> the leftmost bound of the first type parameter
+     * @param <B2> the leftmost bound of the second type parameter
+     * @param <B3> the leftmost bound of the third type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter
+     * @param <B6> the leftmost bound of the sixth type parameter
+     */
+    public <I, B1, B2, B3, B4, B5, B6> InterfaceToken<I> declareNestedInterface(String name, TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, TypeParameter<B6> p6, TypedGenericInterfaceSpec6<B1, B2, B3, B4, B5, B6> spec) {
+        requireDeclaring("a member interface of " + described());
+        NestedType<InterfaceToken<I>> nested = NestedDeclarations.interface_(target(), desc(), name, List.of(p1, p2, p3, p4, p5, p6), new InterfaceBodies() {
+            @Override
+            public <I2> TypedInterfaceBodies<I2> build(TypedInterfaceBuilder<I2> ib) {
+                return spec.build(ib, NestedDeclarations.variable(ib, 0), NestedDeclarations.variable(ib, 1), NestedDeclarations.variable(ib, 2), NestedDeclarations.variable(ib, 3), NestedDeclarations.variable(ib, 4), NestedDeclarations.variable(ib, 5));
+            }
+        });
+        declaredNested(nested.type());
+        return nested.token();
+    }
+
+    /**
+     * Declares a generic member record with six type parameters.
+     *
+     * @param name the simple name of the member record
+     * @param p1 the first type parameter
+     * @param p2 the second type parameter
+     * @param p3 the third type parameter
+     * @param p4 the fourth type parameter
+     * @param p5 the fifth type parameter
+     * @param p6 the sixth type parameter
+     * @param spec declares the member record, given its builder and the tokens of its type parameters
+     * @param <R> the brand of the member record
+     * @return the token of the member record
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the member record, or its bound is a raw type; or if `name` cannot name a type
+     * @throws IllegalStateException if the declarations of the type have ended, or a member of the member record is not defined
+     * @param <B1> the leftmost bound of the first type parameter
+     * @param <B2> the leftmost bound of the second type parameter
+     * @param <B3> the leftmost bound of the third type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter
+     * @param <B6> the leftmost bound of the sixth type parameter
+     */
+    public <R, B1, B2, B3, B4, B5, B6> FinalClassToken<R> declareNestedRecord(String name, TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, TypeParameter<B6> p6, TypedGenericRecordSpec6<B1, B2, B3, B4, B5, B6> spec) {
+        requireDeclaring("a member record of " + described());
+        NestedType<FinalClassToken<R>> nested = NestedDeclarations.record(target(), desc(), name, List.of(p1, p2, p3, p4, p5, p6), new RecordBodies() {
+            @Override
+            public <R2> TypedRecordBodies<R2> build(TypedRecordBuilder<R2> rb) {
+                return spec.build(rb, NestedDeclarations.variable(rb, 0), NestedDeclarations.variable(rb, 1), NestedDeclarations.variable(rb, 2), NestedDeclarations.variable(rb, 3), NestedDeclarations.variable(rb, 4), NestedDeclarations.variable(rb, 5));
+            }
+        });
+        declaredNested(nested.type());
+        return nested.token();
+    }
+
+    /**
+     * Declares a generic member class with seven type parameters.
+     *
+     * @param name the simple name of the member class
+     * @param p1 the first type parameter
+     * @param p2 the second type parameter
+     * @param p3 the third type parameter
+     * @param p4 the fourth type parameter
+     * @param p5 the fifth type parameter
+     * @param p6 the sixth type parameter
+     * @param p7 the seventh type parameter
+     * @param spec declares the member class, given its header and the tokens of its type parameters
+     * @param <N> the brand of the member class
+     * @return the token of the member class
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the member class, or its bound is a raw type; or if `name` cannot name a type
+     * @throws IllegalStateException if the declarations of the type have ended, or a member of the member class is not defined
+     * @param <B1> the leftmost bound of the first type parameter
+     * @param <B2> the leftmost bound of the second type parameter
+     * @param <B3> the leftmost bound of the third type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter
+     * @param <B6> the leftmost bound of the sixth type parameter
+     * @param <B7> the leftmost bound of the seventh type parameter
+     */
+    public <N, B1, B2, B3, B4, B5, B6, B7> FinalClassToken<N> declareNestedClass(String name, TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, TypeParameter<B6> p6, TypeParameter<B7> p7, TypedGenericClassSpec7<B1, B2, B3, B4, B5, B6, B7> spec) {
+        requireDeclaring("a member class of " + described());
+        NestedType<FinalClassToken<N>> nested = NestedDeclarations.class_(target(), desc(), name, List.of(p1, p2, p3, p4, p5, p6, p7), List.of(), new ClassBodies() {
+            @Override
+            public <N2> MemberBodies<N2, ?> build(ClassHeader<N2> h, ClassDeclaration<N2> declaration) {
+                return spec.build(h, NestedDeclarations.variable(declaration, 0), NestedDeclarations.variable(declaration, 1), NestedDeclarations.variable(declaration, 2), NestedDeclarations.variable(declaration, 3), NestedDeclarations.variable(declaration, 4), NestedDeclarations.variable(declaration, 5), NestedDeclarations.variable(declaration, 6));
+            }
+        });
+        declaredNested(nested.type());
+        return nested.token();
+    }
+
+    /**
+     * Declares a generic member interface with seven type parameters.
+     *
+     * @param name the simple name of the member interface
+     * @param p1 the first type parameter
+     * @param p2 the second type parameter
+     * @param p3 the third type parameter
+     * @param p4 the fourth type parameter
+     * @param p5 the fifth type parameter
+     * @param p6 the sixth type parameter
+     * @param p7 the seventh type parameter
+     * @param spec declares the member interface, given its builder and the tokens of its type parameters
+     * @param <I> the brand of the member interface
+     * @return the token of the member interface
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the member interface, or its bound is a raw type; or if `name` cannot name a type
+     * @throws IllegalStateException if the declarations of the type have ended, or a member of the member interface is not defined
+     * @param <B1> the leftmost bound of the first type parameter
+     * @param <B2> the leftmost bound of the second type parameter
+     * @param <B3> the leftmost bound of the third type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter
+     * @param <B6> the leftmost bound of the sixth type parameter
+     * @param <B7> the leftmost bound of the seventh type parameter
+     */
+    public <I, B1, B2, B3, B4, B5, B6, B7> InterfaceToken<I> declareNestedInterface(String name, TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, TypeParameter<B6> p6, TypeParameter<B7> p7, TypedGenericInterfaceSpec7<B1, B2, B3, B4, B5, B6, B7> spec) {
+        requireDeclaring("a member interface of " + described());
+        NestedType<InterfaceToken<I>> nested = NestedDeclarations.interface_(target(), desc(), name, List.of(p1, p2, p3, p4, p5, p6, p7), new InterfaceBodies() {
+            @Override
+            public <I2> TypedInterfaceBodies<I2> build(TypedInterfaceBuilder<I2> ib) {
+                return spec.build(ib, NestedDeclarations.variable(ib, 0), NestedDeclarations.variable(ib, 1), NestedDeclarations.variable(ib, 2), NestedDeclarations.variable(ib, 3), NestedDeclarations.variable(ib, 4), NestedDeclarations.variable(ib, 5), NestedDeclarations.variable(ib, 6));
+            }
+        });
+        declaredNested(nested.type());
+        return nested.token();
+    }
+
+    /**
+     * Declares a generic member record with seven type parameters.
+     *
+     * @param name the simple name of the member record
+     * @param p1 the first type parameter
+     * @param p2 the second type parameter
+     * @param p3 the third type parameter
+     * @param p4 the fourth type parameter
+     * @param p5 the fifth type parameter
+     * @param p6 the sixth type parameter
+     * @param p7 the seventh type parameter
+     * @param spec declares the member record, given its builder and the tokens of its type parameters
+     * @param <R> the brand of the member record
+     * @return the token of the member record
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the member record, or its bound is a raw type; or if `name` cannot name a type
+     * @throws IllegalStateException if the declarations of the type have ended, or a member of the member record is not defined
+     * @param <B1> the leftmost bound of the first type parameter
+     * @param <B2> the leftmost bound of the second type parameter
+     * @param <B3> the leftmost bound of the third type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter
+     * @param <B6> the leftmost bound of the sixth type parameter
+     * @param <B7> the leftmost bound of the seventh type parameter
+     */
+    public <R, B1, B2, B3, B4, B5, B6, B7> FinalClassToken<R> declareNestedRecord(String name, TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, TypeParameter<B6> p6, TypeParameter<B7> p7, TypedGenericRecordSpec7<B1, B2, B3, B4, B5, B6, B7> spec) {
+        requireDeclaring("a member record of " + described());
+        NestedType<FinalClassToken<R>> nested = NestedDeclarations.record(target(), desc(), name, List.of(p1, p2, p3, p4, p5, p6, p7), new RecordBodies() {
+            @Override
+            public <R2> TypedRecordBodies<R2> build(TypedRecordBuilder<R2> rb) {
+                return spec.build(rb, NestedDeclarations.variable(rb, 0), NestedDeclarations.variable(rb, 1), NestedDeclarations.variable(rb, 2), NestedDeclarations.variable(rb, 3), NestedDeclarations.variable(rb, 4), NestedDeclarations.variable(rb, 5), NestedDeclarations.variable(rb, 6));
+            }
+        });
+        declaredNested(nested.type());
+        return nested.token();
+    }
+
+    /**
+     * Declares a generic member class with eight type parameters.
+     *
+     * @param name the simple name of the member class
+     * @param p1 the first type parameter
+     * @param p2 the second type parameter
+     * @param p3 the third type parameter
+     * @param p4 the fourth type parameter
+     * @param p5 the fifth type parameter
+     * @param p6 the sixth type parameter
+     * @param p7 the seventh type parameter
+     * @param p8 the eighth type parameter
+     * @param spec declares the member class, given its header and the tokens of its type parameters
+     * @param <N> the brand of the member class
+     * @return the token of the member class
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the member class, or its bound is a raw type; or if `name` cannot name a type
+     * @throws IllegalStateException if the declarations of the type have ended, or a member of the member class is not defined
+     * @param <B1> the leftmost bound of the first type parameter
+     * @param <B2> the leftmost bound of the second type parameter
+     * @param <B3> the leftmost bound of the third type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter
+     * @param <B6> the leftmost bound of the sixth type parameter
+     * @param <B7> the leftmost bound of the seventh type parameter
+     * @param <B8> the leftmost bound of the eighth type parameter
+     */
+    public <N, B1, B2, B3, B4, B5, B6, B7, B8> FinalClassToken<N> declareNestedClass(String name, TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, TypeParameter<B6> p6, TypeParameter<B7> p7, TypeParameter<B8> p8, TypedGenericClassSpec8<B1, B2, B3, B4, B5, B6, B7, B8> spec) {
+        requireDeclaring("a member class of " + described());
+        NestedType<FinalClassToken<N>> nested = NestedDeclarations.class_(target(), desc(), name, List.of(p1, p2, p3, p4, p5, p6, p7, p8), List.of(), new ClassBodies() {
+            @Override
+            public <N2> MemberBodies<N2, ?> build(ClassHeader<N2> h, ClassDeclaration<N2> declaration) {
+                return spec.build(h, NestedDeclarations.variable(declaration, 0), NestedDeclarations.variable(declaration, 1), NestedDeclarations.variable(declaration, 2), NestedDeclarations.variable(declaration, 3), NestedDeclarations.variable(declaration, 4), NestedDeclarations.variable(declaration, 5), NestedDeclarations.variable(declaration, 6), NestedDeclarations.variable(declaration, 7));
+            }
+        });
+        declaredNested(nested.type());
+        return nested.token();
+    }
+
+    /**
+     * Declares a generic member interface with eight type parameters.
+     *
+     * @param name the simple name of the member interface
+     * @param p1 the first type parameter
+     * @param p2 the second type parameter
+     * @param p3 the third type parameter
+     * @param p4 the fourth type parameter
+     * @param p5 the fifth type parameter
+     * @param p6 the sixth type parameter
+     * @param p7 the seventh type parameter
+     * @param p8 the eighth type parameter
+     * @param spec declares the member interface, given its builder and the tokens of its type parameters
+     * @param <I> the brand of the member interface
+     * @return the token of the member interface
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the member interface, or its bound is a raw type; or if `name` cannot name a type
+     * @throws IllegalStateException if the declarations of the type have ended, or a member of the member interface is not defined
+     * @param <B1> the leftmost bound of the first type parameter
+     * @param <B2> the leftmost bound of the second type parameter
+     * @param <B3> the leftmost bound of the third type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter
+     * @param <B6> the leftmost bound of the sixth type parameter
+     * @param <B7> the leftmost bound of the seventh type parameter
+     * @param <B8> the leftmost bound of the eighth type parameter
+     */
+    public <I, B1, B2, B3, B4, B5, B6, B7, B8> InterfaceToken<I> declareNestedInterface(String name, TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, TypeParameter<B6> p6, TypeParameter<B7> p7, TypeParameter<B8> p8, TypedGenericInterfaceSpec8<B1, B2, B3, B4, B5, B6, B7, B8> spec) {
+        requireDeclaring("a member interface of " + described());
+        NestedType<InterfaceToken<I>> nested = NestedDeclarations.interface_(target(), desc(), name, List.of(p1, p2, p3, p4, p5, p6, p7, p8), new InterfaceBodies() {
+            @Override
+            public <I2> TypedInterfaceBodies<I2> build(TypedInterfaceBuilder<I2> ib) {
+                return spec.build(ib, NestedDeclarations.variable(ib, 0), NestedDeclarations.variable(ib, 1), NestedDeclarations.variable(ib, 2), NestedDeclarations.variable(ib, 3), NestedDeclarations.variable(ib, 4), NestedDeclarations.variable(ib, 5), NestedDeclarations.variable(ib, 6), NestedDeclarations.variable(ib, 7));
+            }
+        });
+        declaredNested(nested.type());
+        return nested.token();
+    }
+
+    /**
+     * Declares a generic member record with eight type parameters.
+     *
+     * @param name the simple name of the member record
+     * @param p1 the first type parameter
+     * @param p2 the second type parameter
+     * @param p3 the third type parameter
+     * @param p4 the fourth type parameter
+     * @param p5 the fifth type parameter
+     * @param p6 the sixth type parameter
+     * @param p7 the seventh type parameter
+     * @param p8 the eighth type parameter
+     * @param spec declares the member record, given its builder and the tokens of its type parameters
+     * @param <R> the brand of the member record
+     * @return the token of the member record
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the member record, or its bound is a raw type; or if `name` cannot name a type
+     * @throws IllegalStateException if the declarations of the type have ended, or a member of the member record is not defined
+     * @param <B1> the leftmost bound of the first type parameter
+     * @param <B2> the leftmost bound of the second type parameter
+     * @param <B3> the leftmost bound of the third type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter
+     * @param <B6> the leftmost bound of the sixth type parameter
+     * @param <B7> the leftmost bound of the seventh type parameter
+     * @param <B8> the leftmost bound of the eighth type parameter
+     */
+    public <R, B1, B2, B3, B4, B5, B6, B7, B8> FinalClassToken<R> declareNestedRecord(String name, TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, TypeParameter<B6> p6, TypeParameter<B7> p7, TypeParameter<B8> p8, TypedGenericRecordSpec8<B1, B2, B3, B4, B5, B6, B7, B8> spec) {
+        requireDeclaring("a member record of " + described());
+        NestedType<FinalClassToken<R>> nested = NestedDeclarations.record(target(), desc(), name, List.of(p1, p2, p3, p4, p5, p6, p7, p8), new RecordBodies() {
+            @Override
+            public <R2> TypedRecordBodies<R2> build(TypedRecordBuilder<R2> rb) {
+                return spec.build(rb, NestedDeclarations.variable(rb, 0), NestedDeclarations.variable(rb, 1), NestedDeclarations.variable(rb, 2), NestedDeclarations.variable(rb, 3), NestedDeclarations.variable(rb, 4), NestedDeclarations.variable(rb, 5), NestedDeclarations.variable(rb, 6), NestedDeclarations.variable(rb, 7));
+            }
+        });
+        declaredNested(nested.type());
+        return nested.token();
+    }
+
+    /**
+     * Declares a generic member class with nine type parameters.
+     *
+     * @param name the simple name of the member class
+     * @param p1 the first type parameter
+     * @param p2 the second type parameter
+     * @param p3 the third type parameter
+     * @param p4 the fourth type parameter
+     * @param p5 the fifth type parameter
+     * @param p6 the sixth type parameter
+     * @param p7 the seventh type parameter
+     * @param p8 the eighth type parameter
+     * @param p9 the ninth type parameter
+     * @param spec declares the member class, given its header and the tokens of its type parameters
+     * @param <N> the brand of the member class
+     * @return the token of the member class
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the member class, or its bound is a raw type; or if `name` cannot name a type
+     * @throws IllegalStateException if the declarations of the type have ended, or a member of the member class is not defined
+     * @param <B1> the leftmost bound of the first type parameter
+     * @param <B2> the leftmost bound of the second type parameter
+     * @param <B3> the leftmost bound of the third type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter
+     * @param <B6> the leftmost bound of the sixth type parameter
+     * @param <B7> the leftmost bound of the seventh type parameter
+     * @param <B8> the leftmost bound of the eighth type parameter
+     * @param <B9> the leftmost bound of the ninth type parameter
+     */
+    public <N, B1, B2, B3, B4, B5, B6, B7, B8, B9> FinalClassToken<N> declareNestedClass(String name, TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, TypeParameter<B6> p6, TypeParameter<B7> p7, TypeParameter<B8> p8, TypeParameter<B9> p9, TypedGenericClassSpec9<B1, B2, B3, B4, B5, B6, B7, B8, B9> spec) {
+        requireDeclaring("a member class of " + described());
+        NestedType<FinalClassToken<N>> nested = NestedDeclarations.class_(target(), desc(), name, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9), List.of(), new ClassBodies() {
+            @Override
+            public <N2> MemberBodies<N2, ?> build(ClassHeader<N2> h, ClassDeclaration<N2> declaration) {
+                return spec.build(h, NestedDeclarations.variable(declaration, 0), NestedDeclarations.variable(declaration, 1), NestedDeclarations.variable(declaration, 2), NestedDeclarations.variable(declaration, 3), NestedDeclarations.variable(declaration, 4), NestedDeclarations.variable(declaration, 5), NestedDeclarations.variable(declaration, 6), NestedDeclarations.variable(declaration, 7), NestedDeclarations.variable(declaration, 8));
+            }
+        });
+        declaredNested(nested.type());
+        return nested.token();
+    }
+
+    /**
+     * Declares a generic member interface with nine type parameters.
+     *
+     * @param name the simple name of the member interface
+     * @param p1 the first type parameter
+     * @param p2 the second type parameter
+     * @param p3 the third type parameter
+     * @param p4 the fourth type parameter
+     * @param p5 the fifth type parameter
+     * @param p6 the sixth type parameter
+     * @param p7 the seventh type parameter
+     * @param p8 the eighth type parameter
+     * @param p9 the ninth type parameter
+     * @param spec declares the member interface, given its builder and the tokens of its type parameters
+     * @param <I> the brand of the member interface
+     * @return the token of the member interface
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the member interface, or its bound is a raw type; or if `name` cannot name a type
+     * @throws IllegalStateException if the declarations of the type have ended, or a member of the member interface is not defined
+     * @param <B1> the leftmost bound of the first type parameter
+     * @param <B2> the leftmost bound of the second type parameter
+     * @param <B3> the leftmost bound of the third type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter
+     * @param <B6> the leftmost bound of the sixth type parameter
+     * @param <B7> the leftmost bound of the seventh type parameter
+     * @param <B8> the leftmost bound of the eighth type parameter
+     * @param <B9> the leftmost bound of the ninth type parameter
+     */
+    public <I, B1, B2, B3, B4, B5, B6, B7, B8, B9> InterfaceToken<I> declareNestedInterface(String name, TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, TypeParameter<B6> p6, TypeParameter<B7> p7, TypeParameter<B8> p8, TypeParameter<B9> p9, TypedGenericInterfaceSpec9<B1, B2, B3, B4, B5, B6, B7, B8, B9> spec) {
+        requireDeclaring("a member interface of " + described());
+        NestedType<InterfaceToken<I>> nested = NestedDeclarations.interface_(target(), desc(), name, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9), new InterfaceBodies() {
+            @Override
+            public <I2> TypedInterfaceBodies<I2> build(TypedInterfaceBuilder<I2> ib) {
+                return spec.build(ib, NestedDeclarations.variable(ib, 0), NestedDeclarations.variable(ib, 1), NestedDeclarations.variable(ib, 2), NestedDeclarations.variable(ib, 3), NestedDeclarations.variable(ib, 4), NestedDeclarations.variable(ib, 5), NestedDeclarations.variable(ib, 6), NestedDeclarations.variable(ib, 7), NestedDeclarations.variable(ib, 8));
+            }
+        });
+        declaredNested(nested.type());
+        return nested.token();
+    }
+
+    /**
+     * Declares a generic member record with nine type parameters.
+     *
+     * @param name the simple name of the member record
+     * @param p1 the first type parameter
+     * @param p2 the second type parameter
+     * @param p3 the third type parameter
+     * @param p4 the fourth type parameter
+     * @param p5 the fifth type parameter
+     * @param p6 the sixth type parameter
+     * @param p7 the seventh type parameter
+     * @param p8 the eighth type parameter
+     * @param p9 the ninth type parameter
+     * @param spec declares the member record, given its builder and the tokens of its type parameters
+     * @param <R> the brand of the member record
+     * @return the token of the member record
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the member record, or its bound is a raw type; or if `name` cannot name a type
+     * @throws IllegalStateException if the declarations of the type have ended, or a member of the member record is not defined
+     * @param <B1> the leftmost bound of the first type parameter
+     * @param <B2> the leftmost bound of the second type parameter
+     * @param <B3> the leftmost bound of the third type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter
+     * @param <B6> the leftmost bound of the sixth type parameter
+     * @param <B7> the leftmost bound of the seventh type parameter
+     * @param <B8> the leftmost bound of the eighth type parameter
+     * @param <B9> the leftmost bound of the ninth type parameter
+     */
+    public <R, B1, B2, B3, B4, B5, B6, B7, B8, B9> FinalClassToken<R> declareNestedRecord(String name, TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, TypeParameter<B6> p6, TypeParameter<B7> p7, TypeParameter<B8> p8, TypeParameter<B9> p9, TypedGenericRecordSpec9<B1, B2, B3, B4, B5, B6, B7, B8, B9> spec) {
+        requireDeclaring("a member record of " + described());
+        NestedType<FinalClassToken<R>> nested = NestedDeclarations.record(target(), desc(), name, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9), new RecordBodies() {
+            @Override
+            public <R2> TypedRecordBodies<R2> build(TypedRecordBuilder<R2> rb) {
+                return spec.build(rb, NestedDeclarations.variable(rb, 0), NestedDeclarations.variable(rb, 1), NestedDeclarations.variable(rb, 2), NestedDeclarations.variable(rb, 3), NestedDeclarations.variable(rb, 4), NestedDeclarations.variable(rb, 5), NestedDeclarations.variable(rb, 6), NestedDeclarations.variable(rb, 7), NestedDeclarations.variable(rb, 8));
+            }
+        });
+        declaredNested(nested.type());
+        return nested.token();
+    }
+
+    /**
+     * Declares a generic member class with ten type parameters.
+     *
+     * @param name the simple name of the member class
+     * @param p1 the first type parameter
+     * @param p2 the second type parameter
+     * @param p3 the third type parameter
+     * @param p4 the fourth type parameter
+     * @param p5 the fifth type parameter
+     * @param p6 the sixth type parameter
+     * @param p7 the seventh type parameter
+     * @param p8 the eighth type parameter
+     * @param p9 the ninth type parameter
+     * @param p10 the tenth type parameter
+     * @param spec declares the member class, given its header and the tokens of its type parameters
+     * @param <N> the brand of the member class
+     * @return the token of the member class
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the member class, or its bound is a raw type; or if `name` cannot name a type
+     * @throws IllegalStateException if the declarations of the type have ended, or a member of the member class is not defined
+     * @param <B1> the leftmost bound of the first type parameter
+     * @param <B2> the leftmost bound of the second type parameter
+     * @param <B3> the leftmost bound of the third type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter
+     * @param <B6> the leftmost bound of the sixth type parameter
+     * @param <B7> the leftmost bound of the seventh type parameter
+     * @param <B8> the leftmost bound of the eighth type parameter
+     * @param <B9> the leftmost bound of the ninth type parameter
+     * @param <B10> the leftmost bound of the tenth type parameter
+     */
+    public <N, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10> FinalClassToken<N> declareNestedClass(String name, TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, TypeParameter<B6> p6, TypeParameter<B7> p7, TypeParameter<B8> p8, TypeParameter<B9> p9, TypeParameter<B10> p10, TypedGenericClassSpec10<B1, B2, B3, B4, B5, B6, B7, B8, B9, B10> spec) {
+        requireDeclaring("a member class of " + described());
+        NestedType<FinalClassToken<N>> nested = NestedDeclarations.class_(target(), desc(), name, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10), List.of(), new ClassBodies() {
+            @Override
+            public <N2> MemberBodies<N2, ?> build(ClassHeader<N2> h, ClassDeclaration<N2> declaration) {
+                return spec.build(h, NestedDeclarations.variable(declaration, 0), NestedDeclarations.variable(declaration, 1), NestedDeclarations.variable(declaration, 2), NestedDeclarations.variable(declaration, 3), NestedDeclarations.variable(declaration, 4), NestedDeclarations.variable(declaration, 5), NestedDeclarations.variable(declaration, 6), NestedDeclarations.variable(declaration, 7), NestedDeclarations.variable(declaration, 8), NestedDeclarations.variable(declaration, 9));
+            }
+        });
+        declaredNested(nested.type());
+        return nested.token();
+    }
+
+    /**
+     * Declares a generic member interface with ten type parameters.
+     *
+     * @param name the simple name of the member interface
+     * @param p1 the first type parameter
+     * @param p2 the second type parameter
+     * @param p3 the third type parameter
+     * @param p4 the fourth type parameter
+     * @param p5 the fifth type parameter
+     * @param p6 the sixth type parameter
+     * @param p7 the seventh type parameter
+     * @param p8 the eighth type parameter
+     * @param p9 the ninth type parameter
+     * @param p10 the tenth type parameter
+     * @param spec declares the member interface, given its builder and the tokens of its type parameters
+     * @param <I> the brand of the member interface
+     * @return the token of the member interface
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the member interface, or its bound is a raw type; or if `name` cannot name a type
+     * @throws IllegalStateException if the declarations of the type have ended, or a member of the member interface is not defined
+     * @param <B1> the leftmost bound of the first type parameter
+     * @param <B2> the leftmost bound of the second type parameter
+     * @param <B3> the leftmost bound of the third type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter
+     * @param <B6> the leftmost bound of the sixth type parameter
+     * @param <B7> the leftmost bound of the seventh type parameter
+     * @param <B8> the leftmost bound of the eighth type parameter
+     * @param <B9> the leftmost bound of the ninth type parameter
+     * @param <B10> the leftmost bound of the tenth type parameter
+     */
+    public <I, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10> InterfaceToken<I> declareNestedInterface(String name, TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, TypeParameter<B6> p6, TypeParameter<B7> p7, TypeParameter<B8> p8, TypeParameter<B9> p9, TypeParameter<B10> p10, TypedGenericInterfaceSpec10<B1, B2, B3, B4, B5, B6, B7, B8, B9, B10> spec) {
+        requireDeclaring("a member interface of " + described());
+        NestedType<InterfaceToken<I>> nested = NestedDeclarations.interface_(target(), desc(), name, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10), new InterfaceBodies() {
+            @Override
+            public <I2> TypedInterfaceBodies<I2> build(TypedInterfaceBuilder<I2> ib) {
+                return spec.build(ib, NestedDeclarations.variable(ib, 0), NestedDeclarations.variable(ib, 1), NestedDeclarations.variable(ib, 2), NestedDeclarations.variable(ib, 3), NestedDeclarations.variable(ib, 4), NestedDeclarations.variable(ib, 5), NestedDeclarations.variable(ib, 6), NestedDeclarations.variable(ib, 7), NestedDeclarations.variable(ib, 8), NestedDeclarations.variable(ib, 9));
+            }
+        });
+        declaredNested(nested.type());
+        return nested.token();
+    }
+
+    /**
+     * Declares a generic member record with ten type parameters.
+     *
+     * @param name the simple name of the member record
+     * @param p1 the first type parameter
+     * @param p2 the second type parameter
+     * @param p3 the third type parameter
+     * @param p4 the fourth type parameter
+     * @param p5 the fifth type parameter
+     * @param p6 the sixth type parameter
+     * @param p7 the seventh type parameter
+     * @param p8 the eighth type parameter
+     * @param p9 the ninth type parameter
+     * @param p10 the tenth type parameter
+     * @param spec declares the member record, given its builder and the tokens of its type parameters
+     * @param <R> the brand of the member record
+     * @return the token of the member record
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the member record, or its bound is a raw type; or if `name` cannot name a type
+     * @throws IllegalStateException if the declarations of the type have ended, or a member of the member record is not defined
+     * @param <B1> the leftmost bound of the first type parameter
+     * @param <B2> the leftmost bound of the second type parameter
+     * @param <B3> the leftmost bound of the third type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter
+     * @param <B6> the leftmost bound of the sixth type parameter
+     * @param <B7> the leftmost bound of the seventh type parameter
+     * @param <B8> the leftmost bound of the eighth type parameter
+     * @param <B9> the leftmost bound of the ninth type parameter
+     * @param <B10> the leftmost bound of the tenth type parameter
+     */
+    public <R, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10> FinalClassToken<R> declareNestedRecord(String name, TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, TypeParameter<B6> p6, TypeParameter<B7> p7, TypeParameter<B8> p8, TypeParameter<B9> p9, TypeParameter<B10> p10, TypedGenericRecordSpec10<B1, B2, B3, B4, B5, B6, B7, B8, B9, B10> spec) {
+        requireDeclaring("a member record of " + described());
+        NestedType<FinalClassToken<R>> nested = NestedDeclarations.record(target(), desc(), name, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10), new RecordBodies() {
+            @Override
+            public <R2> TypedRecordBodies<R2> build(TypedRecordBuilder<R2> rb) {
+                return spec.build(rb, NestedDeclarations.variable(rb, 0), NestedDeclarations.variable(rb, 1), NestedDeclarations.variable(rb, 2), NestedDeclarations.variable(rb, 3), NestedDeclarations.variable(rb, 4), NestedDeclarations.variable(rb, 5), NestedDeclarations.variable(rb, 6), NestedDeclarations.variable(rb, 7), NestedDeclarations.variable(rb, 8), NestedDeclarations.variable(rb, 9));
+            }
+        });
+        declaredNested(nested.type());
+        return nested.token();
+    }
+
+    /**
+     * Declares a generic member class with eleven type parameters.
+     *
+     * @param name the simple name of the member class
+     * @param p1 the first type parameter
+     * @param p2 the second type parameter
+     * @param p3 the third type parameter
+     * @param p4 the fourth type parameter
+     * @param p5 the fifth type parameter
+     * @param p6 the sixth type parameter
+     * @param p7 the seventh type parameter
+     * @param p8 the eighth type parameter
+     * @param p9 the ninth type parameter
+     * @param p10 the tenth type parameter
+     * @param p11 the eleventh type parameter
+     * @param spec declares the member class, given its header and the tokens of its type parameters
+     * @param <N> the brand of the member class
+     * @return the token of the member class
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the member class, or its bound is a raw type; or if `name` cannot name a type
+     * @throws IllegalStateException if the declarations of the type have ended, or a member of the member class is not defined
+     * @param <B1> the leftmost bound of the first type parameter
+     * @param <B2> the leftmost bound of the second type parameter
+     * @param <B3> the leftmost bound of the third type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter
+     * @param <B6> the leftmost bound of the sixth type parameter
+     * @param <B7> the leftmost bound of the seventh type parameter
+     * @param <B8> the leftmost bound of the eighth type parameter
+     * @param <B9> the leftmost bound of the ninth type parameter
+     * @param <B10> the leftmost bound of the tenth type parameter
+     * @param <B11> the leftmost bound of the eleventh type parameter
+     */
+    public <N, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11> FinalClassToken<N> declareNestedClass(String name, TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, TypeParameter<B6> p6, TypeParameter<B7> p7, TypeParameter<B8> p8, TypeParameter<B9> p9, TypeParameter<B10> p10, TypeParameter<B11> p11, TypedGenericClassSpec11<B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11> spec) {
+        requireDeclaring("a member class of " + described());
+        NestedType<FinalClassToken<N>> nested = NestedDeclarations.class_(target(), desc(), name, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11), List.of(), new ClassBodies() {
+            @Override
+            public <N2> MemberBodies<N2, ?> build(ClassHeader<N2> h, ClassDeclaration<N2> declaration) {
+                return spec.build(h, NestedDeclarations.variable(declaration, 0), NestedDeclarations.variable(declaration, 1), NestedDeclarations.variable(declaration, 2), NestedDeclarations.variable(declaration, 3), NestedDeclarations.variable(declaration, 4), NestedDeclarations.variable(declaration, 5), NestedDeclarations.variable(declaration, 6), NestedDeclarations.variable(declaration, 7), NestedDeclarations.variable(declaration, 8), NestedDeclarations.variable(declaration, 9), NestedDeclarations.variable(declaration, 10));
+            }
+        });
+        declaredNested(nested.type());
+        return nested.token();
+    }
+
+    /**
+     * Declares a generic member interface with eleven type parameters.
+     *
+     * @param name the simple name of the member interface
+     * @param p1 the first type parameter
+     * @param p2 the second type parameter
+     * @param p3 the third type parameter
+     * @param p4 the fourth type parameter
+     * @param p5 the fifth type parameter
+     * @param p6 the sixth type parameter
+     * @param p7 the seventh type parameter
+     * @param p8 the eighth type parameter
+     * @param p9 the ninth type parameter
+     * @param p10 the tenth type parameter
+     * @param p11 the eleventh type parameter
+     * @param spec declares the member interface, given its builder and the tokens of its type parameters
+     * @param <I> the brand of the member interface
+     * @return the token of the member interface
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the member interface, or its bound is a raw type; or if `name` cannot name a type
+     * @throws IllegalStateException if the declarations of the type have ended, or a member of the member interface is not defined
+     * @param <B1> the leftmost bound of the first type parameter
+     * @param <B2> the leftmost bound of the second type parameter
+     * @param <B3> the leftmost bound of the third type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter
+     * @param <B6> the leftmost bound of the sixth type parameter
+     * @param <B7> the leftmost bound of the seventh type parameter
+     * @param <B8> the leftmost bound of the eighth type parameter
+     * @param <B9> the leftmost bound of the ninth type parameter
+     * @param <B10> the leftmost bound of the tenth type parameter
+     * @param <B11> the leftmost bound of the eleventh type parameter
+     */
+    public <I, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11> InterfaceToken<I> declareNestedInterface(String name, TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, TypeParameter<B6> p6, TypeParameter<B7> p7, TypeParameter<B8> p8, TypeParameter<B9> p9, TypeParameter<B10> p10, TypeParameter<B11> p11, TypedGenericInterfaceSpec11<B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11> spec) {
+        requireDeclaring("a member interface of " + described());
+        NestedType<InterfaceToken<I>> nested = NestedDeclarations.interface_(target(), desc(), name, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11), new InterfaceBodies() {
+            @Override
+            public <I2> TypedInterfaceBodies<I2> build(TypedInterfaceBuilder<I2> ib) {
+                return spec.build(ib, NestedDeclarations.variable(ib, 0), NestedDeclarations.variable(ib, 1), NestedDeclarations.variable(ib, 2), NestedDeclarations.variable(ib, 3), NestedDeclarations.variable(ib, 4), NestedDeclarations.variable(ib, 5), NestedDeclarations.variable(ib, 6), NestedDeclarations.variable(ib, 7), NestedDeclarations.variable(ib, 8), NestedDeclarations.variable(ib, 9), NestedDeclarations.variable(ib, 10));
+            }
+        });
+        declaredNested(nested.type());
+        return nested.token();
+    }
+
+    /**
+     * Declares a generic member record with eleven type parameters.
+     *
+     * @param name the simple name of the member record
+     * @param p1 the first type parameter
+     * @param p2 the second type parameter
+     * @param p3 the third type parameter
+     * @param p4 the fourth type parameter
+     * @param p5 the fifth type parameter
+     * @param p6 the sixth type parameter
+     * @param p7 the seventh type parameter
+     * @param p8 the eighth type parameter
+     * @param p9 the ninth type parameter
+     * @param p10 the tenth type parameter
+     * @param p11 the eleventh type parameter
+     * @param spec declares the member record, given its builder and the tokens of its type parameters
+     * @param <R> the brand of the member record
+     * @return the token of the member record
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the member record, or its bound is a raw type; or if `name` cannot name a type
+     * @throws IllegalStateException if the declarations of the type have ended, or a member of the member record is not defined
+     * @param <B1> the leftmost bound of the first type parameter
+     * @param <B2> the leftmost bound of the second type parameter
+     * @param <B3> the leftmost bound of the third type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter
+     * @param <B6> the leftmost bound of the sixth type parameter
+     * @param <B7> the leftmost bound of the seventh type parameter
+     * @param <B8> the leftmost bound of the eighth type parameter
+     * @param <B9> the leftmost bound of the ninth type parameter
+     * @param <B10> the leftmost bound of the tenth type parameter
+     * @param <B11> the leftmost bound of the eleventh type parameter
+     */
+    public <R, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11> FinalClassToken<R> declareNestedRecord(String name, TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, TypeParameter<B6> p6, TypeParameter<B7> p7, TypeParameter<B8> p8, TypeParameter<B9> p9, TypeParameter<B10> p10, TypeParameter<B11> p11, TypedGenericRecordSpec11<B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11> spec) {
+        requireDeclaring("a member record of " + described());
+        NestedType<FinalClassToken<R>> nested = NestedDeclarations.record(target(), desc(), name, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11), new RecordBodies() {
+            @Override
+            public <R2> TypedRecordBodies<R2> build(TypedRecordBuilder<R2> rb) {
+                return spec.build(rb, NestedDeclarations.variable(rb, 0), NestedDeclarations.variable(rb, 1), NestedDeclarations.variable(rb, 2), NestedDeclarations.variable(rb, 3), NestedDeclarations.variable(rb, 4), NestedDeclarations.variable(rb, 5), NestedDeclarations.variable(rb, 6), NestedDeclarations.variable(rb, 7), NestedDeclarations.variable(rb, 8), NestedDeclarations.variable(rb, 9), NestedDeclarations.variable(rb, 10));
+            }
+        });
+        declaredNested(nested.type());
+        return nested.token();
+    }
+
+    /**
+     * Declares a generic member class with twelve type parameters.
+     *
+     * @param name the simple name of the member class
+     * @param p1 the first type parameter
+     * @param p2 the second type parameter
+     * @param p3 the third type parameter
+     * @param p4 the fourth type parameter
+     * @param p5 the fifth type parameter
+     * @param p6 the sixth type parameter
+     * @param p7 the seventh type parameter
+     * @param p8 the eighth type parameter
+     * @param p9 the ninth type parameter
+     * @param p10 the tenth type parameter
+     * @param p11 the eleventh type parameter
+     * @param p12 the twelfth type parameter
+     * @param spec declares the member class, given its header and the tokens of its type parameters
+     * @param <N> the brand of the member class
+     * @return the token of the member class
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the member class, or its bound is a raw type; or if `name` cannot name a type
+     * @throws IllegalStateException if the declarations of the type have ended, or a member of the member class is not defined
+     * @param <B1> the leftmost bound of the first type parameter
+     * @param <B2> the leftmost bound of the second type parameter
+     * @param <B3> the leftmost bound of the third type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter
+     * @param <B6> the leftmost bound of the sixth type parameter
+     * @param <B7> the leftmost bound of the seventh type parameter
+     * @param <B8> the leftmost bound of the eighth type parameter
+     * @param <B9> the leftmost bound of the ninth type parameter
+     * @param <B10> the leftmost bound of the tenth type parameter
+     * @param <B11> the leftmost bound of the eleventh type parameter
+     * @param <B12> the leftmost bound of the twelfth type parameter
+     */
+    public <N, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12> FinalClassToken<N> declareNestedClass(String name, TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, TypeParameter<B6> p6, TypeParameter<B7> p7, TypeParameter<B8> p8, TypeParameter<B9> p9, TypeParameter<B10> p10, TypeParameter<B11> p11, TypeParameter<B12> p12, TypedGenericClassSpec12<B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12> spec) {
+        requireDeclaring("a member class of " + described());
+        NestedType<FinalClassToken<N>> nested = NestedDeclarations.class_(target(), desc(), name, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12), List.of(), new ClassBodies() {
+            @Override
+            public <N2> MemberBodies<N2, ?> build(ClassHeader<N2> h, ClassDeclaration<N2> declaration) {
+                return spec.build(h, NestedDeclarations.variable(declaration, 0), NestedDeclarations.variable(declaration, 1), NestedDeclarations.variable(declaration, 2), NestedDeclarations.variable(declaration, 3), NestedDeclarations.variable(declaration, 4), NestedDeclarations.variable(declaration, 5), NestedDeclarations.variable(declaration, 6), NestedDeclarations.variable(declaration, 7), NestedDeclarations.variable(declaration, 8), NestedDeclarations.variable(declaration, 9), NestedDeclarations.variable(declaration, 10), NestedDeclarations.variable(declaration, 11));
+            }
+        });
+        declaredNested(nested.type());
+        return nested.token();
+    }
+
+    /**
+     * Declares a generic member interface with twelve type parameters.
+     *
+     * @param name the simple name of the member interface
+     * @param p1 the first type parameter
+     * @param p2 the second type parameter
+     * @param p3 the third type parameter
+     * @param p4 the fourth type parameter
+     * @param p5 the fifth type parameter
+     * @param p6 the sixth type parameter
+     * @param p7 the seventh type parameter
+     * @param p8 the eighth type parameter
+     * @param p9 the ninth type parameter
+     * @param p10 the tenth type parameter
+     * @param p11 the eleventh type parameter
+     * @param p12 the twelfth type parameter
+     * @param spec declares the member interface, given its builder and the tokens of its type parameters
+     * @param <I> the brand of the member interface
+     * @return the token of the member interface
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the member interface, or its bound is a raw type; or if `name` cannot name a type
+     * @throws IllegalStateException if the declarations of the type have ended, or a member of the member interface is not defined
+     * @param <B1> the leftmost bound of the first type parameter
+     * @param <B2> the leftmost bound of the second type parameter
+     * @param <B3> the leftmost bound of the third type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter
+     * @param <B6> the leftmost bound of the sixth type parameter
+     * @param <B7> the leftmost bound of the seventh type parameter
+     * @param <B8> the leftmost bound of the eighth type parameter
+     * @param <B9> the leftmost bound of the ninth type parameter
+     * @param <B10> the leftmost bound of the tenth type parameter
+     * @param <B11> the leftmost bound of the eleventh type parameter
+     * @param <B12> the leftmost bound of the twelfth type parameter
+     */
+    public <I, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12> InterfaceToken<I> declareNestedInterface(String name, TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, TypeParameter<B6> p6, TypeParameter<B7> p7, TypeParameter<B8> p8, TypeParameter<B9> p9, TypeParameter<B10> p10, TypeParameter<B11> p11, TypeParameter<B12> p12, TypedGenericInterfaceSpec12<B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12> spec) {
+        requireDeclaring("a member interface of " + described());
+        NestedType<InterfaceToken<I>> nested = NestedDeclarations.interface_(target(), desc(), name, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12), new InterfaceBodies() {
+            @Override
+            public <I2> TypedInterfaceBodies<I2> build(TypedInterfaceBuilder<I2> ib) {
+                return spec.build(ib, NestedDeclarations.variable(ib, 0), NestedDeclarations.variable(ib, 1), NestedDeclarations.variable(ib, 2), NestedDeclarations.variable(ib, 3), NestedDeclarations.variable(ib, 4), NestedDeclarations.variable(ib, 5), NestedDeclarations.variable(ib, 6), NestedDeclarations.variable(ib, 7), NestedDeclarations.variable(ib, 8), NestedDeclarations.variable(ib, 9), NestedDeclarations.variable(ib, 10), NestedDeclarations.variable(ib, 11));
+            }
+        });
+        declaredNested(nested.type());
+        return nested.token();
+    }
+
+    /**
+     * Declares a generic member record with twelve type parameters.
+     *
+     * @param name the simple name of the member record
+     * @param p1 the first type parameter
+     * @param p2 the second type parameter
+     * @param p3 the third type parameter
+     * @param p4 the fourth type parameter
+     * @param p5 the fifth type parameter
+     * @param p6 the sixth type parameter
+     * @param p7 the seventh type parameter
+     * @param p8 the eighth type parameter
+     * @param p9 the ninth type parameter
+     * @param p10 the tenth type parameter
+     * @param p11 the eleventh type parameter
+     * @param p12 the twelfth type parameter
+     * @param spec declares the member record, given its builder and the tokens of its type parameters
+     * @param <R> the brand of the member record
+     * @return the token of the member record
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the member record, or its bound is a raw type; or if `name` cannot name a type
+     * @throws IllegalStateException if the declarations of the type have ended, or a member of the member record is not defined
+     * @param <B1> the leftmost bound of the first type parameter
+     * @param <B2> the leftmost bound of the second type parameter
+     * @param <B3> the leftmost bound of the third type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter
+     * @param <B6> the leftmost bound of the sixth type parameter
+     * @param <B7> the leftmost bound of the seventh type parameter
+     * @param <B8> the leftmost bound of the eighth type parameter
+     * @param <B9> the leftmost bound of the ninth type parameter
+     * @param <B10> the leftmost bound of the tenth type parameter
+     * @param <B11> the leftmost bound of the eleventh type parameter
+     * @param <B12> the leftmost bound of the twelfth type parameter
+     */
+    public <R, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12> FinalClassToken<R> declareNestedRecord(String name, TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, TypeParameter<B6> p6, TypeParameter<B7> p7, TypeParameter<B8> p8, TypeParameter<B9> p9, TypeParameter<B10> p10, TypeParameter<B11> p11, TypeParameter<B12> p12, TypedGenericRecordSpec12<B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12> spec) {
+        requireDeclaring("a member record of " + described());
+        NestedType<FinalClassToken<R>> nested = NestedDeclarations.record(target(), desc(), name, List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12), new RecordBodies() {
+            @Override
+            public <R2> TypedRecordBodies<R2> build(TypedRecordBuilder<R2> rb) {
+                return spec.build(rb, NestedDeclarations.variable(rb, 0), NestedDeclarations.variable(rb, 1), NestedDeclarations.variable(rb, 2), NestedDeclarations.variable(rb, 3), NestedDeclarations.variable(rb, 4), NestedDeclarations.variable(rb, 5), NestedDeclarations.variable(rb, 6), NestedDeclarations.variable(rb, 7), NestedDeclarations.variable(rb, 8), NestedDeclarations.variable(rb, 9), NestedDeclarations.variable(rb, 10), NestedDeclarations.variable(rb, 11));
+            }
+        });
+        declaredNested(nested.type());
+        return nested.token();
+    }
+}

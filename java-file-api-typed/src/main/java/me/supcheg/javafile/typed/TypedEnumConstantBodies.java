@@ -506,6 +506,37 @@ public final class TypedEnumConstantBodies<Self> extends EnumConstantBodyArities
         return type.token();
     }
 
+    /// Declares a member class of the constant's body with the type parameters of a generated stage:
+    /// what [EnumConstantBodyArities] declares of four to twelve.
+    @Override
+    final <N> FinalClassToken<N> nestedClassToken(
+            String name, List<TypeParameter<?>> parameters, NestedDeclarations.ClassBodies spec) {
+        NestedDeclarations.NestedType<FinalClassToken<N>> type =
+                NestedDeclarations.class_(owner().target(), owner().desc(), name, parameters, List.of(), spec);
+        nested = Stream.concat(nested.stream(), Stream.of(type.type())).toList();
+        return type.token();
+    }
+
+    /// Declares a member interface of the constant's body with the type parameters of a generated stage.
+    @Override
+    final <I> InterfaceToken<I> nestedInterfaceToken(
+            String name, List<TypeParameter<?>> parameters, NestedDeclarations.InterfaceBodies spec) {
+        NestedDeclarations.NestedType<InterfaceToken<I>> type =
+                NestedDeclarations.interface_(owner().target(), owner().desc(), name, parameters, spec);
+        nested = Stream.concat(nested.stream(), Stream.of(type.type())).toList();
+        return type.token();
+    }
+
+    /// Declares a member record of the constant's body with the type parameters of a generated stage.
+    @Override
+    final <R> FinalClassToken<R> nestedRecordToken(
+            String name, List<TypeParameter<?>> parameters, NestedDeclarations.RecordBodies spec) {
+        NestedDeclarations.NestedType<FinalClassToken<R>> type =
+                NestedDeclarations.record(owner().target(), owner().desc(), name, parameters, spec);
+        nested = Stream.concat(nested.stream(), Stream.of(type.type())).toList();
+        return type.token();
+    }
+
     /// Declares a `public` member enum of the constant's body, implicitly `static`.
     ///
     /// @param name the simple name of the member enum

@@ -34,7 +34,7 @@ import java.util.Set;
 /// @param <Self> the brand of the class being declared
 /// @param <S> the superclass of the class
 public abstract sealed class Declarations<Self, S> extends DeclarationArities<Self, S>
-        permits MemberBuilder,
+        permits MemberBuilderArities,
                 ThrowingDeclarations,
                 AnnotatedDeclarations,
                 ModifiedDeclarations,

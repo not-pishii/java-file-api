@@ -44,6 +44,30 @@ final class NestedDeclarations {
         <N> MemberBodies<N, ?> build(ClassHeader<N> header, ClassDeclaration<N> declaration);
     }
 
+    /// What declares a member interface, given its builder: the tokens of its type parameters are
+    /// the builder's, by [TypeDeclarationSupport#variable].
+    @FunctionalInterface
+    interface InterfaceBodies {
+        /// Declares the interface through the builder.
+        ///
+        /// @param builder the self-branded interface builder
+        /// @param <I> the brand of the interface being declared
+        /// @return the bodies of the members: the stage the declaration of the interface ends in
+        <I> TypedInterfaceBodies<I> build(TypedInterfaceBuilder<I> builder);
+    }
+
+    /// What declares a member record, given its builder: the tokens of its type parameters are the
+    /// builder's, by [TypeDeclarationSupport#variable].
+    @FunctionalInterface
+    interface RecordBodies {
+        /// Declares the record through the builder.
+        ///
+        /// @param builder the self-branded record builder
+        /// @param <R> the brand of the record being declared
+        /// @return the bodies of the members: the stage the declaration of the record ends in
+        <R> TypedRecordBodies<R> build(TypedRecordBuilder<R> builder);
+    }
+
     /// A member type as it was declared: its token, and the declaration its enclosing file renders.
     ///
     /// @param token the token
@@ -225,6 +249,22 @@ final class NestedDeclarations {
         return (InterfaceToken<I>) builder.self();
     }
 
+    /// Declares a member interface with the `parameters` the specification's tokens describe: what
+    /// the generated stages of four to twelve type parameters build, the hand-written ones of one to
+    /// three taking the tokens themselves.
+    static <I> NestedType<InterfaceToken<I>> interface_(
+            TargetClasspath target,
+            ClassDesc outer,
+            String name,
+            List<TypeParameter<?>> parameters,
+            InterfaceBodies spec) {
+        TypedInterfaceBuilder<I> builder =
+                new TypedInterfaceBuilder<>(target, desc(outer, name), parameters, List.of());
+        TypeDecl type = builder.completeNested(Objects.requireNonNull(
+                spec.build(builder), "a specification returns the bodies of the members of the interface"));
+        return new NestedType<>(builderToken(builder), type);
+    }
+
     static <R> NestedType<FinalClassToken<R>> record(
             TargetClasspath target, ClassDesc outer, String name, TypedJavaFile.TypedRecordSpec spec) {
         TypedRecordBuilder<R> builder = new TypedRecordBuilder<>(target, desc(outer, name), List.of(), List.of());
@@ -278,6 +318,19 @@ final class NestedDeclarations {
         TypeDecl type = builder.completeNested(
                 Objects.requireNonNull(bodies, "a specification returns the bodies of the members of the record"));
         return new NestedType<>(builderToken(builder), type);
+    }
+
+    /// Declares a member record with the `parameters` the specification's tokens describe: what the
+    /// generated stages of four to twelve type parameters build, the hand-written ones of one to three
+    /// taking the tokens themselves.
+    static <R> NestedType<FinalClassToken<R>> record(
+            TargetClasspath target,
+            ClassDesc outer,
+            String name,
+            List<TypeParameter<?>> parameters,
+            RecordBodies spec) {
+        TypedRecordBuilder<R> builder = new TypedRecordBuilder<>(target, desc(outer, name), parameters, List.of());
+        return recordBuilt(builder, spec.build(builder));
     }
 
     @SuppressWarnings("unchecked")

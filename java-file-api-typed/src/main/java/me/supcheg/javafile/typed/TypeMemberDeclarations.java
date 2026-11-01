@@ -57,7 +57,7 @@ import java.util.Set;
 /// the class builder do (`RecordConstructorArities`, `EnumConstructorArities`).
 ///
 /// @param <Self> the brand of the type being declared
-abstract class TypeMemberDeclarations<Self> extends TypeDeclarationSupport<Self> {
+abstract non-sealed class TypeMemberDeclarations<Self> extends TypeMemberDeclarationArities<Self> {
 
     TypeMemberDeclarations(
             me.supcheg.javafile.facts.TargetClasspath target, java.lang.constant.ClassDesc desc, String kind) {
