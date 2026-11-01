@@ -822,6 +822,50 @@ public final class Counter {
 }
 ```
 
+### Typed initializer blocks
+
+A class and an enum declare instance and static initializer blocks, a record a static one, and an interface neither.
+A block is no fact - Java gives it no name and no type - so it is only declared, by `declareInitializerBlock()` or
+`declareStaticInitializerBlock()`, and defined in the bodies, exactly once, like a field its initializer. The body of
+an instance block is handed `this`, as the body of an instance method is; the body of a static block gets none:
+
+```java
+var seen = cb.declareMutableField("seen", PrimitiveToken.INT);
+var init = cb.declareInitializerBlock();
+var load = cb.declareStaticInitializerBlock();
+
+var bodies = cb.bodies();
+bodies.initialize(seen, literal(0));
+bodies.define(init, (b, self) -> b.exec(assignField(self, seen, literal(1))).end());
+bodies.define(load, b -> b.end());
+```
+
+```java
+public int seen = 0;
+
+static {
+}
+
+{
+    this.seen = 1;
+}
+```
+
+The blocks and the field initializers keep their source order. An instance block runs before every constructor, after
+the constructor of the superclass, which an enum's does before each of its constructors; a static block runs once, when
+the class is initialized. An instance block reads and writes the instance fields and calls the instance methods; a
+static one touches the static fields and methods and has no `this`. A read of a field whose initializer has not run -
+a field declared after the block - is refused, as the typed layer already refuses a forward read in a static field
+initializer (JLS 8.3.3); the facts prove it, and the read would be of the field's default value.
+
+An instance block may throw a checked exception only if every constructor declares it, and the refusal names the
+exception and the constructors that do not (JLS 11.2.3); a static block throws no checked exception at all. An
+initializer must be able to complete normally (JLS 8.6, 8.7), so its body is an `InitializerBody`, which has no
+`return_` - javac rejects a `return` there - and whose terminating `throw` or `loopForever` is refused. A record has
+no instance block, which its compact constructor replaces (JLS 8.10.4); an interface has neither (JLS 9.4). The same
+work is in the constructor, where the typed layer's own ordering and exception checks apply, but a block that runs
+before every constructor is a member of its own.
+
 ### Extending and implementing
 
 The typed class closest to [Records and sealed interfaces](#records-and-sealed-interfaces): it implements an existing
@@ -1721,7 +1765,6 @@ end there instead of holding the text; the typed layer renders no broken source.
 What follows is not a hole waiting to be filled: the typed layer does not express it on purpose.
 
 - **`switch` statements.** The typed layer models the same choices as a `switch` expression ([`switch_`](#typed-method-bodies-trycatch-lambdas-instanceof-enum-switch)), which yields a value or ends the body it is in and carries the terminality rules; a statement form would add no choice.
-- **Initializer blocks.** The core API has `withInitializerBlock` and `withStaticInitializerBlock`; the typed layer has no such member. The same work goes in a constructor, a method or a field initializer, where the typed layer's own ordering and exception checks apply, rather than in a block whose place among the fields the typed planning does not model.
 - **Local and anonymous classes.** The core API declares them (`LocalTypeDeclStmt`, an anonymous class body in `new`); the typed layer has no form for a type declared inside a body. The one anonymous class it writes is the body of an enum constant, which is no declaration the generator names.
 - **Compound assignment with narrowing.** `int += long` makes Java convert implicitly (JLS 15.26.2); the typed layer writes no implicit conversion, so the call does not type-check in the generator and is refused. Write the conversion out: `assign(x, AssignOp.ADD_ASSIGN, narrowTruncatingLongToInt(y))`.
 - **A resource whose `close()` throws out of the `try`.** A try-with-resources closes its resource on every way out, so a checked exception `close()` declares and the `try` catches nowhere and the member does not declare is refused when the resource is declared (JLS 14.20.3), rather than rendered into code javac rejects and that fails at run time.
@@ -1731,8 +1774,7 @@ What follows is not a hole waiting to be filled: the typed layer does not expres
 The typed layer declares every top-level kind: classes, interfaces, records, enums and annotation types, the
 `package-info.java` and `module-info.java` files, the member types of each of them, and their documentation comments.
 What stays in the core API is what the typed layer does not model:
-[Transforming an existing declaration](#transforming-an-existing-declaration), initializer blocks, and the `Unsafe*`
-escape hatches. A generator may still use the core API for a declaration the typed layer does not express; the typed
+[Transforming an existing declaration](#transforming-an-existing-declaration) and the `Unsafe*` escape hatches. A generator may still use the core API for a declaration the typed layer does not express; the typed
 layer does not replace it.
 
 The default, static and private methods of the typed declarations of §6.5 reach arity 4; their abstract methods and
