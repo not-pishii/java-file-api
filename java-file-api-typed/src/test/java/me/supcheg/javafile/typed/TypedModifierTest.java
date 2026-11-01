@@ -344,23 +344,6 @@ class TypedModifierTest {
     }
 
     @Test
-    void aSealedClassNamesAPermittedSubtypeByItsNameToo() {
-        ClassDesc node = ClassDesc.of(EXAMPLE, "Node");
-        ClassDesc leaf = ClassDesc.of(EXAMPLE, "Leaf");
-
-        JavaFile file = TypedJavaFile.declareClass(
-                UnsafeFacts.unverifiedClasspath(), node, new TypedJavaFile.TypedClassHeaderSpec() {
-                    @Override
-                    public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
-                        h.permits(leaf);
-                        return h.extendsObject().members().bodies();
-                    }
-                });
-
-        assertThat(file.render()).contains("public sealed class Node permits Leaf");
-    }
-
-    @Test
     void namingNoPermittedSubtypeLeavesTheClassFinal() {
         JavaFile file = TypedJavaFile.declareClass(
                 UnsafeFacts.unverifiedClasspath(),

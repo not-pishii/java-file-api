@@ -1447,9 +1447,9 @@ JavaFile file = TypedJavaFile.declareClass(target, ClassDesc.of("com.example", "
 // public sealed class Node permits Leaf { }
 ```
 
-`permits` takes a `ClassToken`, which proves the permitted type a class; a `ClassDesc` names one as an interface names
-one, and a bare name cannot tell a class from an interface. `permits` makes the class sealed, so it is not final, and
-`non-sealed` beside a `permits` clause is rejected. `nonSealed()` is allowed only where Java allows it: the class has to
+`permits` takes a `ClassToken` and nothing else: only a token proves the permitted type a class, where a bare name
+cannot, and a permitted subtype of a class is never an interface. `permits` makes the class sealed, so it is not final,
+and `non-sealed` beside a `permits` clause is rejected. `nonSealed()` is allowed only where Java allows it: the class has to
 extend a sealed class or implement a sealed interface, which the end of the header holds it to. An `abstract` class has
 no constructor in the typed layer: nothing it declares is instantiated there. Extending a sealed type needs a heritage
 that tells the permitted subtypes, which a metamodel of a sealed type does not; the typed layer refuses such a supertype

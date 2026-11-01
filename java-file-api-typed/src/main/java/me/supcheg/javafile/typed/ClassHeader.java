@@ -8,8 +8,6 @@ import me.supcheg.javafile.facts.InterfaceToken;
 import me.supcheg.javafile.facts.TargetClasspathMismatchException;
 import me.supcheg.javafile.facts.TypeVarToken;
 
-import java.lang.constant.ClassDesc;
-
 /// The first stage of the header of a class ([Header]): the class has a
 /// name, and says what it extends.
 ///
@@ -88,19 +86,6 @@ public final class ClassHeader<Self> extends Header<Self> {
         for (ClassToken<?> subtype : subtypes) {
             permits(subtype);
         }
-        return this;
-    }
-
-    /// Names a permitted subtype by its name, as an interface names one: a
-    /// `ClassDesc` does not tell a class from an interface, so the typed layer
-    /// cannot hold it to being a class, and javac decides.
-    ///
-    /// @param subtype the permitted subtype
-    /// @return this stage
-    /// @throws IllegalArgumentException if the subtype is the class itself, or is named already
-    /// @throws IllegalStateException if the class has its superclass, or its declaration is complete
-    public ClassHeader<Self> permits(ClassDesc subtype) {
-        declaration().permit(subtype);
         return this;
     }
 
