@@ -1189,4 +1189,32 @@ class NegativeCompileTest {
                 "cannot find symbol",
                 "new_int");
     }
+
+    @Test
+    void strictfpIsNoModifierOfTheModel() {
+        assertRejected(
+                "StrictfpModifier",
+                "void use() { Object modifier = me.supcheg.javafile.model.Modifier.STRICTFP; }",
+                "cannot find symbol",
+                "STRICTFP");
+    }
+
+    @Test
+    void aPermittedSubtypeOfAClassIsAClassToken() {
+        assertRejected(
+                "PermittedInterface",
+                """
+                void use() {
+                    TypedJavaFile.declareClass(UnsafeFacts.unverifiedClasspath(), ClassDesc.of("fixtures", "Node"),
+                            new TypedJavaFile.TypedClassHeaderSpec() {
+                                public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
+                                    h.permits(Runnable_.TOKEN);
+                                    return null;
+                                }
+                            });
+                }
+                """,
+                "no suitable method found for permits",
+                "cannot be converted to me.supcheg.javafile.facts.ClassToken<?>");
+    }
 }
