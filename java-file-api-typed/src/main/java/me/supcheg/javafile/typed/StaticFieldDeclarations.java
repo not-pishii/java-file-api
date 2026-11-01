@@ -60,6 +60,28 @@ abstract class StaticFieldDeclarations<Self> extends TypeMemberDeclarations<Self
                 List.of(annotations));
     }
 
+    /// Declares a documented `public static final` field of the type that declares `annotations`.
+    ///
+    /// @param name the field name
+    /// @param type the field type
+    /// @param doc the documentation comment
+    /// @param annotations the annotations, in order
+    /// @param <T> the field type
+    /// @return the fact of the field, which can be read but not assigned
+    /// @throws IllegalArgumentException if a field of that name is declared already, an annotation type
+    ///     cannot annotate a field, or the text of `doc` contains `*/`
+    /// @throws IllegalStateException if the type mentions a type parameter, or the declarations have ended
+    @SafeVarargs
+    @SuppressWarnings("varargs")
+    public final <T> StaticFieldRef<T> declareStaticField(
+            String name, TypeToken<T> type, me.supcheg.javafile.doc.DocComment doc, AnnotationRef<?>... annotations) {
+        return declaredStatic(
+                UnsafeFacts.staticField(self(), name, type),
+                Set.of(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL),
+                List.of(annotations),
+                java.util.Optional.of(Docs.requireSafe(doc, "static field " + name + " of " + described())));
+    }
+
     /// Declares a `public static` field of the type, not `final`, to be given its initializer by its bodies
     /// and assigned by them later.
     ///
@@ -90,12 +112,39 @@ abstract class StaticFieldDeclarations<Self> extends TypeMemberDeclarations<Self
         if (!mutableStaticFields()) {
             throw new IllegalArgumentException("a static field of " + described() + " cannot be mutable: Java"
                     + " lets a record declare one, and the typed layer renders a record's static field public"
-                    + " static final alone — declare it final, or hold the changing value in an enum or a class");
+                    + " static final alone - declare it final, or hold the changing value in an enum or a class");
         }
         return declaredStatic(
                 UnsafeFacts.mutableStaticField(self(), name, type),
                 Set.of(Modifier.PUBLIC, Modifier.STATIC),
                 List.of(annotations));
+    }
+
+    /// Declares a documented `public static` field of the type, not `final`, that declares `annotations`.
+    ///
+    /// @param name the field name
+    /// @param type the field type
+    /// @param doc the documentation comment
+    /// @param annotations the annotations, in order
+    /// @param <T> the field type
+    /// @return the fact of the field, which can be read and assigned
+    /// @throws IllegalArgumentException if a field of that name is declared already, an annotation type
+    ///     cannot annotate a field, or the text of `doc` contains `*/`
+    /// @throws IllegalStateException if the type mentions a type parameter, or the declarations have ended
+    @SafeVarargs
+    @SuppressWarnings("varargs")
+    public final <T> MutableStaticFieldRef<T> declareMutableStaticField(
+            String name, TypeToken<T> type, me.supcheg.javafile.doc.DocComment doc, AnnotationRef<?>... annotations) {
+        if (!mutableStaticFields()) {
+            throw new IllegalArgumentException("a static field of " + described() + " cannot be mutable: Java"
+                    + " lets a record declare one, and the typed layer renders a record's static field public"
+                    + " static final alone - declare it final, or hold the changing value in an enum or a class");
+        }
+        return declaredStatic(
+                UnsafeFacts.mutableStaticField(self(), name, type),
+                Set.of(Modifier.PUBLIC, Modifier.STATIC),
+                List.of(annotations),
+                java.util.Optional.of(Docs.requireSafe(doc, "static field " + name + " of " + described())));
     }
 
     /// Whether a static field of the type may be one that is not `final`: a record's may not, since the typed

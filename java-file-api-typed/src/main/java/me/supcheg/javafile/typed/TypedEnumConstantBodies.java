@@ -16,7 +16,6 @@ import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.typed.TypeDeclarationSupport.Member;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.IntStream;
 
@@ -259,6 +258,7 @@ public final class TypedEnumConstantBodies<Self> extends TypedTypeBodies<Self, E
                         owner.scope("the body of " + method),
                         true,
                         Set.of(),
+                        java.util.Optional.empty(),
                         Site.here()))
                 .toList();
         return new Declared(owner.self(), owner.inherited(), members, owner::table);
@@ -345,7 +345,7 @@ public final class TypedEnumConstantBodies<Self> extends TypedTypeBodies<Self, E
                 params,
                 code,
                 throwsClause,
-                Optional.empty());
+                declared.doc());
     }
 
     @Override

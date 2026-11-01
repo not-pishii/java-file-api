@@ -42,6 +42,7 @@ import java.util.List;
 public final class TypedInterfaceBuilder<Self> extends TypeMemberDeclarations<Self> {
     private final List<ClassDesc> permits = new ArrayList<>();
     private final List<me.supcheg.javafile.type.ClassOrInterfaceTypeRef> extendsInterfaces = new ArrayList<>();
+    private java.util.Optional<me.supcheg.javafile.doc.DocComment> doc = java.util.Optional.empty();
 
     TypedInterfaceBuilder(
             TargetClasspath target,
@@ -65,6 +66,25 @@ public final class TypedInterfaceBuilder<Self> extends TypeMemberDeclarations<Se
     @Override
     boolean allowSynchronizedAndNative() {
         return false;
+    }
+
+    /// Documents the interface, e.g. a sentence of what it is for.
+    ///
+    /// @param doc the comment
+    /// @return this builder
+    /// @throws IllegalArgumentException if the text of `doc` contains `*/`
+    public TypedInterfaceBuilder<Self> withDoc(me.supcheg.javafile.doc.DocComment doc) {
+        this.doc = java.util.Optional.of(Docs.requireSafe(doc, described()));
+        return this;
+    }
+
+    /// Documents the interface with one paragraph of plain text.
+    ///
+    /// @param text the text
+    /// @return this builder
+    /// @throws IllegalArgumentException if `text` is empty, or contains `*/`
+    public TypedInterfaceBuilder<Self> withDoc(String text) {
+        return withDoc(Docs.of(text, described()));
     }
 
     /// Adds an interface to the `extends` clause.
@@ -142,6 +162,7 @@ public final class TypedInterfaceBuilder<Self> extends TypeMemberDeclarations<Se
     }
 
     private void populate(InterfaceBuilder ib, List<?> members) {
+        doc.ifPresent(ib::withDoc);
         typeParams().forEach(ib::withTypeParam);
         extendsInterfaces.forEach(ib::withExtends);
         permits.forEach(ib::withPermits);

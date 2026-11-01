@@ -16,7 +16,6 @@ import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.typed.TypeDeclarationSupport.Member;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 /// Defines the members of a typed record (§6.5), branded with `Self`: the
@@ -65,7 +64,7 @@ public final class TypedRecordBodies<Self> extends TypedTypeBodies<Self, RecordM
                 params,
                 code,
                 throwsClause,
-                Optional.empty());
+                declared.doc());
     }
 
     @Override
@@ -87,7 +86,7 @@ public final class TypedRecordBodies<Self> extends TypedTypeBodies<Self, RecordM
         return switch (declared.kind()) {
             case COMPACT ->
                 new CompactConstructorDecl(
-                        annotations, Set.of(Modifier.PUBLIC), implicit(body, declared), throwsClause, Optional.empty());
+                        annotations, Set.of(Modifier.PUBLIC), implicit(body, declared), throwsClause, declared.doc());
             case CANONICAL ->
                 new CanonicalConstructorDecl(
                         annotations,
@@ -95,9 +94,9 @@ public final class TypedRecordBodies<Self> extends TypedTypeBodies<Self, RecordM
                         params,
                         implicit(body, declared),
                         throwsClause,
-                        Optional.empty());
+                        declared.doc());
             default ->
-                new ConstructorDecl(annotations, Set.of(Modifier.PUBLIC), params, body, throwsClause, Optional.empty());
+                new ConstructorDecl(annotations, Set.of(Modifier.PUBLIC), params, body, throwsClause, declared.doc());
         };
     }
 
@@ -129,6 +128,6 @@ public final class TypedRecordBodies<Self> extends TypedTypeBodies<Self, RecordM
                         .map(me.supcheg.javafile.facts.AnnotationRef::toUse)
                         .toList(),
                 initializer,
-                Optional.empty());
+                declared.doc());
     }
 }

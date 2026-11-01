@@ -43,6 +43,7 @@ public final class TypedAnnotationTypeBuilder<Self> {
     private final List<AnnotationRef<?>> annotations = new ArrayList<>();
     private final List<AnnotationElementDecl> elements = new ArrayList<>();
     private final List<TypeDecl> memberTypes = new ArrayList<>();
+    private java.util.Optional<me.supcheg.javafile.doc.DocComment> doc = java.util.Optional.empty();
     private boolean complete;
 
     TypedAnnotationTypeBuilder(TargetClasspath target, ClassDesc desc) {
@@ -50,6 +51,28 @@ public final class TypedAnnotationTypeBuilder<Self> {
         this.desc = desc;
         this.described = "annotation type " + (desc.packageName().isEmpty() ? "" : desc.packageName() + ".")
                 + desc.displayName();
+    }
+
+    /// Documents the annotation type, e.g. a sentence of what it is for.
+    ///
+    /// @param doc the comment
+    /// @return this builder
+    /// @throws IllegalArgumentException if the text of `doc` contains `*/`
+    /// @throws IllegalStateException if the declaration is complete
+    public TypedAnnotationTypeBuilder<Self> withDoc(me.supcheg.javafile.doc.DocComment doc) {
+        requireDeclaring("the documentation of " + described);
+        this.doc = java.util.Optional.of(Docs.requireSafe(doc, described));
+        return this;
+    }
+
+    /// Documents the annotation type with one paragraph of plain text.
+    ///
+    /// @param text the text
+    /// @return this builder
+    /// @throws IllegalArgumentException if `text` is empty, or contains `*/`
+    /// @throws IllegalStateException if the declaration is complete
+    public TypedAnnotationTypeBuilder<Self> withDoc(String text) {
+        return withDoc(Docs.of(text, described));
     }
 
     /// Adds an annotation to the declaration of the annotation type.
@@ -312,10 +335,55 @@ public final class TypedAnnotationTypeBuilder<Self> {
     /// @throws IllegalArgumentException if the type is not one JLS 9.6.1 allows
     /// @throws IllegalStateException if the declaration is complete
     public <T> TypedAnnotationTypeBuilder<Self> element(String name, TypeToken<T> type) {
-        requireDeclaring("element " + name + " of " + described);
+        return element(name, type, List.of());
+    }
+
+    /// Adds an element that declares annotations, with no default value.
+    ///
+    /// @param name the element name
+    /// @param type the element type
+    /// @param annotations the annotations, in order
+    /// @param <T> the element type
+    /// @return this builder
+    /// @throws IllegalArgumentException if the type is not one JLS 9.6.1 allows, or an annotation cannot
+    ///     annotate a method
+    /// @throws IllegalStateException if the declaration is complete
+    @SafeVarargs
+    @SuppressWarnings("varargs")
+    public final <T> TypedAnnotationTypeBuilder<Self> element(
+            String name, TypeToken<T> type, AnnotationRef<?>... annotations) {
+        return element(name, type, List.of(annotations));
+    }
+
+    /// Adds a documented element that declares annotations, with no default value.
+    ///
+    /// @param name the element name
+    /// @param type the element type
+    /// @param doc the documentation comment
+    /// @param annotations the annotations, in order
+    /// @param <T> the element type
+    /// @return this builder
+    /// @throws IllegalArgumentException if the type is not one JLS 9.6.1 allows, an annotation cannot
+    ///     annotate a method, or the text of `doc` contains `*/`
+    /// @throws IllegalStateException if the declaration is complete
+    @SafeVarargs
+    @SuppressWarnings("varargs")
+    public final <T> TypedAnnotationTypeBuilder<Self> element(
+            String name, TypeToken<T> type, me.supcheg.javafile.doc.DocComment doc, AnnotationRef<?>... annotations) {
         requireElementType(name, type);
-        elements.add(new AnnotationElementDecl(name, type.typeRef(), Optional.empty(), Optional.empty()));
-        return this;
+        return element(name, type.typeRef(), Optional.empty(), Optional.of(doc), List.of(annotations));
+    }
+
+    private <T> TypedAnnotationTypeBuilder<Self> element(
+            String name, TypeToken<T> type, List<AnnotationRef<?>> annotations) {
+        requireElementType(name, type);
+        return element(name, type.typeRef(), Optional.empty(), Optional.empty(), annotations);
+    }
+
+    private <T> TypedAnnotationTypeBuilder<Self> element(
+            String name, TypeToken<T> type, AnnotationValue<T> defaultValue, List<AnnotationRef<?>> annotations) {
+        requireElementType(name, type);
+        return element(name, type.typeRef(), Optional.of(defaultValue.toCore()), Optional.empty(), annotations);
     }
 
     /// Adds an element with a default value.
@@ -329,11 +397,49 @@ public final class TypedAnnotationTypeBuilder<Self> {
     /// @throws IllegalStateException if the declaration is complete
     public <T> TypedAnnotationTypeBuilder<Self> element(
             String name, TypeToken<T> type, AnnotationValue<T> defaultValue) {
-        requireDeclaring("element " + name + " of " + described);
+        return element(name, type, defaultValue, List.of());
+    }
+    /// Adds an element that declares annotations, with a default value.
+    ///
+    /// @param name the element name
+    /// @param type the element type
+    /// @param defaultValue the default value
+    /// @param annotations the annotations, in order
+    /// @param <T> the element type
+    /// @return this builder
+    /// @throws IllegalArgumentException if the type is not one JLS 9.6.1 allows, the value is not of it,
+    ///     or an annotation cannot annotate a method
+    /// @throws IllegalStateException if the declaration is complete
+    @SafeVarargs
+    @SuppressWarnings("varargs")
+    public final <T> TypedAnnotationTypeBuilder<Self> element(
+            String name, TypeToken<T> type, AnnotationValue<T> defaultValue, AnnotationRef<?>... annotations) {
+        return element(name, type, defaultValue, List.of(annotations));
+    }
+
+    /// Adds a documented element that declares annotations, with a default value.
+    ///
+    /// @param name the element name
+    /// @param type the element type
+    /// @param defaultValue the default value
+    /// @param doc the documentation comment
+    /// @param annotations the annotations, in order
+    /// @param <T> the element type
+    /// @return this builder
+    /// @throws IllegalArgumentException if the type is not one JLS 9.6.1 allows, the value is not of it,
+    ///     an annotation cannot annotate a method, or the text of `doc` contains `*/`
+    /// @throws IllegalStateException if the declaration is complete
+    @SafeVarargs
+    @SuppressWarnings("varargs")
+    public final <T> TypedAnnotationTypeBuilder<Self> element(
+            String name,
+            TypeToken<T> type,
+            AnnotationValue<T> defaultValue,
+            me.supcheg.javafile.doc.DocComment doc,
+            AnnotationRef<?>... annotations) {
         requireElementType(name, type);
-        elements.add(
-                new AnnotationElementDecl(name, type.typeRef(), Optional.of(defaultValue.toCore()), Optional.empty()));
-        return this;
+        return element(
+                name, type.typeRef(), Optional.of(defaultValue.toCore()), Optional.of(doc), List.of(annotations));
     }
 
     /// Adds an element whose type is an annotation type, with no default value.
@@ -344,9 +450,44 @@ public final class TypedAnnotationTypeBuilder<Self> {
     /// @return this builder
     /// @throws IllegalStateException if the declaration is complete
     public <A> TypedAnnotationTypeBuilder<Self> annotationElement(String name, AnnotationType<A> type) {
-        requireDeclaring("element " + name + " of " + described);
-        elements.add(new AnnotationElementDecl(name, type.token().typeRef(), Optional.empty(), Optional.empty()));
-        return this;
+        return annotationElement(name, type, Optional.empty(), Optional.empty(), List.of());
+    }
+
+    /// Adds an element of an annotation type that declares annotations, with no default value.
+    ///
+    /// @param name the element name
+    /// @param type the annotation type
+    /// @param annotations the annotations, in order
+    /// @param <A> the annotation type
+    /// @return this builder
+    /// @throws IllegalArgumentException if an annotation cannot annotate a method
+    /// @throws IllegalStateException if the declaration is complete
+    @SafeVarargs
+    @SuppressWarnings("varargs")
+    public final <A> TypedAnnotationTypeBuilder<Self> annotationElement(
+            String name, AnnotationType<A> type, AnnotationRef<?>... annotations) {
+        return annotationElement(name, type, Optional.empty(), Optional.empty(), List.of(annotations));
+    }
+
+    /// Adds a documented element of an annotation type, with no default value.
+    ///
+    /// @param name the element name
+    /// @param type the annotation type
+    /// @param doc the documentation comment
+    /// @param annotations the annotations, in order
+    /// @param <A> the annotation type
+    /// @return this builder
+    /// @throws IllegalArgumentException if an annotation cannot annotate a method, or the text of `doc`
+    ///     contains `*/`
+    /// @throws IllegalStateException if the declaration is complete
+    @SafeVarargs
+    @SuppressWarnings("varargs")
+    public final <A> TypedAnnotationTypeBuilder<Self> annotationElement(
+            String name,
+            AnnotationType<A> type,
+            me.supcheg.javafile.doc.DocComment doc,
+            AnnotationRef<?>... annotations) {
+        return annotationElement(name, type, Optional.empty(), Optional.of(doc), List.of(annotations));
     }
 
     /// Adds an element whose type is an annotation type, with a default value.
@@ -359,10 +500,58 @@ public final class TypedAnnotationTypeBuilder<Self> {
     /// @throws IllegalStateException if the declaration is complete
     public <A> TypedAnnotationTypeBuilder<Self> annotationElement(
             String name, AnnotationType<A> type, AnnotationValue<A> defaultValue) {
-        requireDeclaring("element " + name + " of " + described);
-        elements.add(new AnnotationElementDecl(
-                name, type.token().typeRef(), Optional.of(defaultValue.toCore()), Optional.empty()));
-        return this;
+        return annotationElement(name, type, Optional.of(defaultValue.toCore()), Optional.empty(), List.of());
+    }
+
+    /// Adds an element of an annotation type that declares annotations, with a default value.
+    ///
+    /// @param name the element name
+    /// @param type the annotation type
+    /// @param defaultValue the default value
+    /// @param annotations the annotations, in order
+    /// @param <A> the annotation type
+    /// @return this builder
+    /// @throws IllegalArgumentException if an annotation cannot annotate a method
+    /// @throws IllegalStateException if the declaration is complete
+    @SafeVarargs
+    @SuppressWarnings("varargs")
+    public final <A> TypedAnnotationTypeBuilder<Self> annotationElement(
+            String name, AnnotationType<A> type, AnnotationValue<A> defaultValue, AnnotationRef<?>... annotations) {
+        return annotationElement(
+                name, type, Optional.of(defaultValue.toCore()), Optional.empty(), List.of(annotations));
+    }
+
+    /// Adds a documented element of an annotation type, with a default value.
+    ///
+    /// @param name the element name
+    /// @param type the annotation type
+    /// @param defaultValue the default value
+    /// @param doc the documentation comment
+    /// @param annotations the annotations, in order
+    /// @param <A> the annotation type
+    /// @return this builder
+    /// @throws IllegalArgumentException if an annotation cannot annotate a method, or the text of `doc`
+    ///     contains `*/`
+    /// @throws IllegalStateException if the declaration is complete
+    @SafeVarargs
+    @SuppressWarnings("varargs")
+    public final <A> TypedAnnotationTypeBuilder<Self> annotationElement(
+            String name,
+            AnnotationType<A> type,
+            AnnotationValue<A> defaultValue,
+            me.supcheg.javafile.doc.DocComment doc,
+            AnnotationRef<?>... annotations) {
+        return annotationElement(
+                name, type, Optional.of(defaultValue.toCore()), Optional.of(doc), List.of(annotations));
+    }
+
+    private <A> TypedAnnotationTypeBuilder<Self> annotationElement(
+            String name,
+            AnnotationType<A> type,
+            Optional<me.supcheg.javafile.annotation.AnnotationValue> defaultValue,
+            Optional<me.supcheg.javafile.doc.DocComment> doc,
+            List<AnnotationRef<?>> annotations) {
+        return element(name, type.token().typeRef(), defaultValue, doc, annotations);
     }
 
     /// Adds an element whose type is an array of an annotation type, with no default value.
@@ -373,13 +562,44 @@ public final class TypedAnnotationTypeBuilder<Self> {
     /// @return this builder
     /// @throws IllegalStateException if the declaration is complete
     public <A> TypedAnnotationTypeBuilder<Self> annotationArrayElement(String name, AnnotationType<A> type) {
-        requireDeclaring("element " + name + " of " + described);
-        elements.add(new AnnotationElementDecl(
-                name,
-                me.supcheg.javafile.facts.ArrayToken.of(type.token()).typeRef(),
-                Optional.empty(),
-                Optional.empty()));
-        return this;
+        return annotationArrayElement(name, type, Optional.empty(), Optional.empty(), List.of());
+    }
+
+    /// Adds an array element of an annotation type that declares annotations, with no default value.
+    ///
+    /// @param name the element name
+    /// @param type the annotation type
+    /// @param annotations the annotations, in order
+    /// @param <A> the annotation type
+    /// @return this builder
+    /// @throws IllegalArgumentException if an annotation cannot annotate a method
+    /// @throws IllegalStateException if the declaration is complete
+    @SafeVarargs
+    @SuppressWarnings("varargs")
+    public final <A> TypedAnnotationTypeBuilder<Self> annotationArrayElement(
+            String name, AnnotationType<A> type, AnnotationRef<?>... annotations) {
+        return annotationArrayElement(name, type, Optional.empty(), Optional.empty(), List.of(annotations));
+    }
+
+    /// Adds a documented array element of an annotation type, with no default value.
+    ///
+    /// @param name the element name
+    /// @param type the annotation type
+    /// @param doc the documentation comment
+    /// @param annotations the annotations, in order
+    /// @param <A> the annotation type
+    /// @return this builder
+    /// @throws IllegalArgumentException if an annotation cannot annotate a method, or the text of `doc`
+    ///     contains `*/`
+    /// @throws IllegalStateException if the declaration is complete
+    @SafeVarargs
+    @SuppressWarnings("varargs")
+    public final <A> TypedAnnotationTypeBuilder<Self> annotationArrayElement(
+            String name,
+            AnnotationType<A> type,
+            me.supcheg.javafile.doc.DocComment doc,
+            AnnotationRef<?>... annotations) {
+        return annotationArrayElement(name, type, Optional.empty(), Optional.of(doc), List.of(annotations));
     }
 
     /// Adds an element whose type is an array of an annotation type, with a default value.
@@ -392,13 +612,93 @@ public final class TypedAnnotationTypeBuilder<Self> {
     /// @throws IllegalStateException if the declaration is complete
     public <A> TypedAnnotationTypeBuilder<Self> annotationArrayElement(
             String name, AnnotationType<A> type, AnnotationValue<A[]> defaultValue) {
+        return annotationArrayElement(name, type, Optional.of(defaultValue.toCore()), Optional.empty(), List.of());
+    }
+
+    /// Adds an array element of an annotation type that declares annotations, with a default value.
+    ///
+    /// @param name the element name
+    /// @param type the annotation type
+    /// @param defaultValue the default value
+    /// @param annotations the annotations, in order
+    /// @param <A> the annotation type
+    /// @return this builder
+    /// @throws IllegalArgumentException if an annotation cannot annotate a method
+    /// @throws IllegalStateException if the declaration is complete
+    @SafeVarargs
+    @SuppressWarnings("varargs")
+    public final <A> TypedAnnotationTypeBuilder<Self> annotationArrayElement(
+            String name, AnnotationType<A> type, AnnotationValue<A[]> defaultValue, AnnotationRef<?>... annotations) {
+        return annotationArrayElement(
+                name, type, Optional.of(defaultValue.toCore()), Optional.empty(), List.of(annotations));
+    }
+
+    /// Adds a documented array element of an annotation type, with a default value.
+    ///
+    /// @param name the element name
+    /// @param type the annotation type
+    /// @param defaultValue the default value
+    /// @param doc the documentation comment
+    /// @param annotations the annotations, in order
+    /// @param <A> the annotation type
+    /// @return this builder
+    /// @throws IllegalArgumentException if an annotation cannot annotate a method, or the text of `doc`
+    ///     contains `*/`
+    /// @throws IllegalStateException if the declaration is complete
+    @SafeVarargs
+    @SuppressWarnings("varargs")
+    public final <A> TypedAnnotationTypeBuilder<Self> annotationArrayElement(
+            String name,
+            AnnotationType<A> type,
+            AnnotationValue<A[]> defaultValue,
+            me.supcheg.javafile.doc.DocComment doc,
+            AnnotationRef<?>... annotations) {
+        return annotationArrayElement(
+                name, type, Optional.of(defaultValue.toCore()), Optional.of(doc), List.of(annotations));
+    }
+
+    private <A> TypedAnnotationTypeBuilder<Self> annotationArrayElement(
+            String name,
+            AnnotationType<A> type,
+            Optional<me.supcheg.javafile.annotation.AnnotationValue> defaultValue,
+            Optional<me.supcheg.javafile.doc.DocComment> doc,
+            List<AnnotationRef<?>> annotations) {
+        return element(
+                name, me.supcheg.javafile.facts.ArrayToken.of(type.token()).typeRef(), defaultValue, doc, annotations);
+    }
+
+    private TypedAnnotationTypeBuilder<Self> element(
+            String name,
+            me.supcheg.javafile.type.TypeRef type,
+            Optional<me.supcheg.javafile.annotation.AnnotationValue> defaultValue,
+            Optional<me.supcheg.javafile.doc.DocComment> doc,
+            List<AnnotationRef<?>> annotations) {
         requireDeclaring("element " + name + " of " + described);
         elements.add(new AnnotationElementDecl(
                 name,
-                me.supcheg.javafile.facts.ArrayToken.of(type.token()).typeRef(),
-                Optional.of(defaultValue.toCore()),
-                Optional.empty()));
+                type,
+                annotations.stream()
+                        .map(annotation -> {
+                            requireMethodTarget(name, annotation);
+                            return annotation.toUse();
+                        })
+                        .toList(),
+                defaultValue,
+                doc.map(comment -> Docs.requireSafe(comment, "element " + name + " of " + described))));
         return this;
+    }
+
+    /// Holds an annotation of an element to what a method may carry: an annotation whose targets
+    /// are none may annotate anything, and another must name `METHOD` (JLS 9.6.4.1).
+    private void requireMethodTarget(String name, AnnotationRef<?> annotation) {
+        if (!annotation.type().targets().isEmpty()
+                && !annotation.type().targets().contains(java.lang.annotation.ElementType.METHOD)) {
+            throw new IllegalArgumentException(
+                    "the annotation @" + annotation.type().token() + " of element " + name
+                            + " of " + described + " cannot annotate a method: its targets are "
+                            + annotation.type().targets() + " (JLS 9.6.4.1)");
+        }
+        target.verify(annotation.type().token());
     }
 
     private void requireElementType(String name, TypeToken<?> type) {
@@ -463,6 +763,7 @@ public final class TypedAnnotationTypeBuilder<Self> {
     }
 
     private void populate(me.supcheg.javafile.builder.AnnotationTypeBuilder ab) {
+        doc.ifPresent(ab::withDoc);
         annotations.forEach(annotation -> ab.withAnnotation(annotation.toUse()));
         elements.forEach(ab::accept);
         memberTypes.forEach(ab::withType);

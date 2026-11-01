@@ -44,6 +44,25 @@ public final class TypedSubclassBuilder<Self, S> extends TypedSubclassBuilderAri
         this.extended = extended;
     }
 
+    /// Documents the class, e.g. a sentence of what it is for.
+    ///
+    /// @param doc the comment
+    /// @return this builder
+    /// @throws IllegalArgumentException if the text of `doc` contains `*/`
+    public TypedSubclassBuilder<Self, S> withDoc(me.supcheg.javafile.doc.DocComment doc) {
+        doc(doc);
+        return this;
+    }
+
+    /// Documents the class with one paragraph of plain text.
+    ///
+    /// @param text the text
+    /// @return this builder
+    /// @throws IllegalArgumentException if `text` is empty, or contains `*/`
+    public TypedSubclassBuilder<Self, S> withDoc(String text) {
+        return withDoc(Docs.of(text, described()));
+    }
+
     /// The witness that the class is of its superclass: `cb.asSuper().apply(self)` is `this` as an
     /// `S`, by which the facts of `S` and of the classes above it are called on it.
     ///

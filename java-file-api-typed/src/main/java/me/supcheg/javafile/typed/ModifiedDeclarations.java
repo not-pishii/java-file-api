@@ -46,4 +46,9 @@ public final class ModifiedDeclarations<Self, S> extends Declarations<Self, S> {
     Set<Modifier> modifiers() {
         return modifiers;
     }
+
+    @Override
+    java.util.Optional<me.supcheg.javafile.doc.DocComment> doc() {
+        return declarations.doc();
+    }
 }

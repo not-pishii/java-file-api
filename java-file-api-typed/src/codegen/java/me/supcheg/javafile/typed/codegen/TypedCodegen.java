@@ -146,6 +146,7 @@ public final class TypedCodegen {
     private static final ClassDesc TYPED_ENUM_BUILDER = typed("TypedEnumBuilder");
     private static final ClassDesc TARGET_CLASSPATH = facts("TargetClasspath");
     private static final ClassDesc CLASS_DESC = ClassDesc.of("java.lang.constant", "ClassDesc");
+    private static final ClassDesc DOC_COMMENT = ClassDesc.of("me.supcheg.javafile.doc", "DocComment");
 
     private static final ClassDesc INVOCABLE = facts("Invocable");
     private static final ClassDesc MEMBER_TRAITS = facts("MemberTraits");
@@ -1210,26 +1211,40 @@ public final class TypedCodegen {
                             "declaredConstructor",
                             param("params", applied(LIST, unbounded())),
                             param("body", Types.of(VOID_BODY)));
+                    hook(
+                            cb,
+                            List.of(),
+                            Optional.empty(),
+                            "declaredConstructor",
+                            param("params", applied(LIST, unbounded())),
+                            param("body", Types.of(VOID_BODY)),
+                            param("doc", Types.of(DOC_COMMENT)));
                     for (int n = 0; n <= REACH.declared(); n++) {
-                        enumConstructor(cb, n);
+                        enumConstructor(cb, n, false);
+                        enumConstructor(cb, n, true);
                     }
                 });
     }
 
     /// `constructor(a1, ..., an, body)`: a `private` constructor of the enum whose body the consumer builds.
-    private static void enumConstructor(ClassBuilder cb, int n) {
+    /// With `documented`, the first parameter is the documentation comment of the constructor.
+    private static void enumConstructor(ClassBuilder cb, int n, boolean documented) {
         List<String> as = as(n);
         TypeRef body = applied(
                 MEMBER_BODY_ARITIES.nested("InstanceBody" + n),
                 listOf(List.of(exact("Self"), exactType(Types.of(VOID_BODY)), exactType(Types.of(VOID))), exacts(as)));
         List<Param> params = listOf(
+                documented ? List.<Param>of(param("doc", Types.of(DOC_COMMENT))) : List.<Param>of(),
                 IntStream.rangeClosed(1, n)
                         .mapToObj(i -> param("p" + i, typeToken("A" + i)))
                         .toList(),
                 List.of(param("body", body)));
         Doc doc = Doc.of("Declares a `private` constructor of the enum, of " + plural(n, "parameter") + ".")
                 .param("body", "the body, given its block, `this` and the parameters");
-        Doc documented = IntStream.rangeClosed(1, n)
+        if (documented) {
+            doc = doc.param("doc", "the documentation comment");
+        }
+        Doc documentedDoc = IntStream.rangeClosed(1, n)
                 .boxed()
                 .reduce(
                         doc,
@@ -1237,7 +1252,7 @@ public final class TypedCodegen {
                                 .typeParam("A" + i, "the type of the " + ordinal(i, n) + "parameter"),
                         (_, last) -> last)
                 .throws_(ILLEGAL_STATE, "if the members of the enum have begun");
-        method(cb, PUBLIC, typeVars(as), Optional.empty(), "constructor", params, documented, b -> {
+        method(cb, PUBLIC, typeVars(as), Optional.empty(), "constructor", params, documentedDoc, b -> {
             b.exprStatement(call("requireHeader", add(literal("a constructor of "), call("described"))));
             b.localVar("root", Types.of(VOID_BODY), call("constructorRoot"));
             b.localVar("self", appliedTo(THIS, "Self"), new_(THIS, field("root"), call("self")));
@@ -1254,15 +1269,18 @@ public final class TypedCodegen {
                     "built",
                     field("root"),
                     Exprs.lambda(List.of("b"), field("body").call("build", buildArgs))));
-            b.exprStatement(call(
-                    "declaredConstructor",
-                    staticCall(
-                            LIST,
-                            "of",
-                            IntStream.rangeClosed(1, n)
-                                    .mapToObj(i -> (Expr) field("v" + i))
-                                    .toList()),
-                    field("root")));
+            List<Expr> declared = new java.util.ArrayList<>();
+            declared.add(staticCall(
+                    LIST,
+                    "of",
+                    IntStream.rangeClosed(1, n)
+                            .mapToObj(i -> (Expr) field("v" + i))
+                            .toList()));
+            declared.add(field("root"));
+            if (documented) {
+                declared.add(field("doc"));
+            }
+            b.exprStatement(call("declaredConstructor", declared));
         });
     }
 

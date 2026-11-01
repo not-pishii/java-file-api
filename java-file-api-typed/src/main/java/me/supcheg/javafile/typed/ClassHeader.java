@@ -28,6 +28,25 @@ public final class ClassHeader<Self> extends Header<Self> {
         return this;
     }
 
+    /// Documents the class, e.g. a sentence of what it is for.
+    ///
+    /// @param doc the comment
+    /// @return this stage
+    /// @throws IllegalArgumentException if the text of `doc` contains `*/`
+    public ClassHeader<Self> withDoc(me.supcheg.javafile.doc.DocComment doc) {
+        declaration().doc(doc);
+        return this;
+    }
+
+    /// Documents the class with one paragraph of plain text.
+    ///
+    /// @param text the text
+    /// @return this stage
+    /// @throws IllegalArgumentException if `text` is empty, or contains `*/`
+    public ClassHeader<Self> withDoc(String text) {
+        return withDoc(Docs.of(text, "class " + declaration().described()));
+    }
+
     /// Declares the class `abstract` instead of `final`: `public abstract class Name`.
     ///
     /// An abstract class is no final class; its constructors are not declared

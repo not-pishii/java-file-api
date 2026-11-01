@@ -66,7 +66,7 @@ public final class TypedEnumBodies<Self> extends TypedTypeBodies<Self, EnumMembe
                     annotations,
                     Set.copyOf(modifiers),
                     throwsClause,
-                    Optional.empty());
+                    declared.doc());
         }
         return new MethodDecl(
                 declared.fact().name(),
@@ -77,7 +77,7 @@ public final class TypedEnumBodies<Self> extends TypedTypeBodies<Self, EnumMembe
                 params,
                 code,
                 throwsClause,
-                Optional.empty());
+                declared.doc());
     }
 
     @Override
@@ -94,7 +94,7 @@ public final class TypedEnumBodies<Self> extends TypedTypeBodies<Self, EnumMembe
                 annotations,
                 Set.of(Modifier.PUBLIC, Modifier.ABSTRACT),
                 throwsClause,
-                Optional.empty());
+                declared.doc());
     }
 
     @Override
@@ -118,7 +118,7 @@ public final class TypedEnumBodies<Self> extends TypedTypeBodies<Self, EnumMembe
                         .toList(),
                 declared.modifiers(),
                 Optional.of(initializer),
-                Optional.empty());
+                declared.doc());
     }
 
     @Override
@@ -136,7 +136,7 @@ public final class TypedEnumBodies<Self> extends TypedTypeBodies<Self, EnumMembe
                         .toList(),
                 declared.modifiers(),
                 Optional.of(initializer),
-                Optional.empty());
+                declared.doc());
     }
 
     @Override
@@ -157,7 +157,7 @@ public final class TypedEnumBodies<Self> extends TypedTypeBodies<Self, EnumMembe
                                 .map(arg -> lowering.lowerExpr(arg.node()))
                                 .toList(),
                         body(constant),
-                        Optional.empty()))
+                        constant.doc()))
                 .toList();
     }
 
@@ -189,7 +189,7 @@ public final class TypedEnumBodies<Self> extends TypedTypeBodies<Self, EnumMembe
                                     lowering.declareUpfront(param), param.type().typeRef()))
                             .toList();
                     CodeBody code = lowering.lowerBlock(constructor.body().instrs());
-                    return new EnumConstructorDecl(List.of(), params, code, List.of(), Optional.empty());
+                    return new EnumConstructorDecl(List.of(), params, code, List.of(), constructor.doc());
                 })
                 .toList();
     }

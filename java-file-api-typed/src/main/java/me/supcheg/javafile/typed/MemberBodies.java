@@ -171,7 +171,7 @@ public abstract sealed class MemberBodies<Self, S> extends MemberBodyArities<Sel
                                                 self, owner.scope("the initializer of field " + name), owner.bounded()),
                                         Optional.empty())
                                 .lowerInitializer(initializer.node(), field.type())),
-                        Optional.empty()),
+                        slot.declared().doc()),
                 "the initializer of field " + name);
     }
 
@@ -215,7 +215,7 @@ public abstract sealed class MemberBodies<Self, S> extends MemberBodyArities<Sel
                                         field,
                                         declaredFrom(field))
                                 .lowerInitializer(initializer.node(), field.type())),
-                        Optional.empty()),
+                        slot.declared().doc()),
                 "the initializer of static field " + name);
     }
 
@@ -351,7 +351,7 @@ public abstract sealed class MemberBodies<Self, S> extends MemberBodyArities<Sel
                                         .toList(),
                                 declared.modifiers(),
                                 Optional.empty(),
-                                Optional.empty()));
+                                declared.doc()));
                     case Slot.BlankStatic(var declared) ->
                         Stream.of(new FieldDecl(
                                 declared.fact().name(),
@@ -361,7 +361,7 @@ public abstract sealed class MemberBodies<Self, S> extends MemberBodyArities<Sel
                                         .toList(),
                                 declared.modifiers(),
                                 Optional.empty(),
-                                Optional.empty()));
+                                declared.doc()));
                     case Slot.Defined(var _, var member) -> Stream.of(member);
                 })
                 .toList();
@@ -564,7 +564,7 @@ public abstract sealed class MemberBodies<Self, S> extends MemberBodyArities<Sel
                         coreParams,
                         body,
                         throwsClause(declared, lowering),
-                        Optional.empty());
+                        declared.doc());
             }
             case INSTANCE_METHOD -> {
                 CodeBody code = lowering.lowerBlock(root.instrs());
@@ -577,7 +577,7 @@ public abstract sealed class MemberBodies<Self, S> extends MemberBodyArities<Sel
                         coreParams,
                         code,
                         throwsClause(declared, lowering),
-                        Optional.empty());
+                        declared.doc());
             }
             case STATIC_METHOD -> {
                 CodeBody code = lowering.lowerBlock(root.instrs());
@@ -590,7 +590,7 @@ public abstract sealed class MemberBodies<Self, S> extends MemberBodyArities<Sel
                         coreParams,
                         code,
                         throwsClause(declared, lowering),
-                        Optional.empty());
+                        declared.doc());
             }
         };
     }

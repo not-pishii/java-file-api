@@ -54,7 +54,7 @@ public final class TypedInterfaceBodies<Self> extends TypedTypeBodies<Self, Inte
                         params,
                         code,
                         throwsClause,
-                        java.util.Optional.empty());
+                        declared.doc());
             case STATIC ->
                 new StaticMethodDecl(
                         declared.fact().name(),
@@ -64,7 +64,7 @@ public final class TypedInterfaceBodies<Self> extends TypedTypeBodies<Self, Inte
                         params,
                         code,
                         throwsClause,
-                        java.util.Optional.empty());
+                        declared.doc());
             case PRIVATE ->
                 new PrivateMethodDecl(
                         declared.fact().name(),
@@ -75,7 +75,7 @@ public final class TypedInterfaceBodies<Self> extends TypedTypeBodies<Self, Inte
                         code,
                         false,
                         throwsClause,
-                        java.util.Optional.empty());
+                        declared.doc());
             case PRIVATE_STATIC ->
                 new PrivateMethodDecl(
                         declared.fact().name(),
@@ -86,7 +86,7 @@ public final class TypedInterfaceBodies<Self> extends TypedTypeBodies<Self, Inte
                         code,
                         true,
                         throwsClause,
-                        java.util.Optional.empty());
+                        declared.doc());
             case METHOD, ABSTRACT, CONSTRUCTOR, CANONICAL, COMPACT, ACCESSOR ->
                 throw new IllegalStateException(
                         "an interface cannot declare " + declared.fact() + " of kind " + declared.kind());
@@ -107,7 +107,7 @@ public final class TypedInterfaceBodies<Self> extends TypedTypeBodies<Self, Inte
                 annotations,
                 Set.of(Modifier.PUBLIC, Modifier.ABSTRACT),
                 throwsClause,
-                java.util.Optional.empty());
+                declared.doc());
     }
 
     @Override
@@ -134,7 +134,7 @@ public final class TypedInterfaceBodies<Self> extends TypedTypeBodies<Self, Inte
                         .map(me.supcheg.javafile.facts.AnnotationRef::toUse)
                         .toList(),
                 initializer,
-                java.util.Optional.empty());
+                declared.doc());
     }
 
     @Override

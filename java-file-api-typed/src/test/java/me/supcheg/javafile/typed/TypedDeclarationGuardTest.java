@@ -207,9 +207,16 @@ class TypedDeclarationGuardTest {
                 eb.constant("A", cb -> {
                     var callable = callable(eb);
                     var field = new TypeDeclarationSupport.Member.Field(
-                            UnsafeFacts.field(eb.self(), "f", PrimitiveToken.INT), Set.of(), List.of(), Site.here());
+                            UnsafeFacts.field(eb.self(), "f", PrimitiveToken.INT),
+                            Set.of(),
+                            List.of(),
+                            java.util.Optional.empty(),
+                            Site.here());
                     var constant = new TypeDeclarationSupport.Member.Constant(
-                            UnsafeFacts.staticField(eb.self(), "C", PrimitiveToken.INT), List.of(), Site.here());
+                            UnsafeFacts.staticField(eb.self(), "C", PrimitiveToken.INT),
+                            List.of(),
+                            java.util.Optional.empty(),
+                            Site.here());
                     assertThatIllegalStateException()
                             .isThrownBy(() -> cb.abstractMethod(callable, List.of(), List.of(), List.of()))
                             .withMessageContaining("a constant body cannot declare an abstract method");
@@ -819,6 +826,7 @@ class TypedDeclarationGuardTest {
                 declaration.scope("the guard"),
                 false,
                 Set.of(),
+                java.util.Optional.empty(),
                 Site.here());
     }
 }

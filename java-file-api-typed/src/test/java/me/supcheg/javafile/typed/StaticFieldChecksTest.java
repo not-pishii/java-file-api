@@ -301,6 +301,7 @@ class StaticFieldChecksTest {
                 UnsafeFacts.staticField(String_.TOKEN, "S", PrimitiveToken.INT),
                 Set.of(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL),
                 List.of(),
+                java.util.Optional.empty(),
                 Site.here());
         TypedInterfaceBodies[] interfaceBodies = new TypedInterfaceBodies[1];
         TypedJavaFile.interface_(UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedInterfaceSpec() {

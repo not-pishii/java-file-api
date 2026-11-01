@@ -295,6 +295,32 @@ abstract class TypeMemberDeclarations<Self> extends TypeDeclarationSupport<Self>
         return MemberTraits.DEFAULT;
     }
 
+    /// Documents the member declared next: a method, a field, a constant or an enum constant.
+    ///
+    /// ```java
+    /// eb.documented("Stops the machine.").declareVoidMethod("stop");
+    /// ```
+    ///
+    /// @param doc the comment
+    /// @return this builder
+    /// @throws IllegalArgumentException if the text of `doc` contains `*/`
+    /// @throws IllegalStateException if the declarations have ended
+    public final TypeMemberDeclarations<Self> documented(me.supcheg.javafile.doc.DocComment doc) {
+        requireDeclaring("a documentation comment of " + described());
+        document(doc);
+        return this;
+    }
+
+    /// Documents the member declared next with one paragraph of plain text.
+    ///
+    /// @param text the text
+    /// @return this builder
+    /// @throws IllegalArgumentException if `text` is empty, or contains `*/`
+    /// @throws IllegalStateException if the declarations have ended
+    public final TypeMemberDeclarations<Self> documented(String text) {
+        return documented(Docs.of(text, described()));
+    }
+
     /// Whether the kind has `synchronized` and `native` methods: an enum has both, an interface
     /// neither, and a record has `synchronized` alone — javac rejects a native method of a record
     /// (JLS 8.10.3).
@@ -513,6 +539,31 @@ abstract class TypeMemberDeclarations<Self> extends TypeDeclarationSupport<Self>
         return declareConstant(name, type, List.of());
     }
 
+    /// Declares a documented constant of an interface: implicitly `public static final`.
+    ///
+    /// @param name the constant name
+    /// @param type the constant type
+    /// @param doc the documentation comment
+    /// @param annotations the annotations, in order
+    /// @param <T> the constant type
+    /// @return the fact of the constant
+    /// @throws IllegalArgumentException if a field of the name is declared already, an annotation cannot
+    ///     annotate a field, or the text of `doc` contains `*/`
+    /// @throws IllegalStateException if the declarations have ended
+    @SafeVarargs
+    @SuppressWarnings("varargs")
+    public final <T> me.supcheg.javafile.facts.StaticFieldRef<T> declareConstant(
+            String name,
+            TypeToken<T> type,
+            me.supcheg.javafile.doc.DocComment doc,
+            me.supcheg.javafile.facts.AnnotationRef<?>... annotations) {
+        return declareConstant(
+                name,
+                type,
+                List.of(annotations),
+                java.util.Optional.of(Docs.requireSafe(doc, "constant " + name + " of " + described())));
+    }
+
     /// Declares an instance field of a record or an enum.
     ///
     /// @param name the field name
@@ -525,6 +576,30 @@ abstract class TypeMemberDeclarations<Self> extends TypeDeclarationSupport<Self>
     public final <T> me.supcheg.javafile.facts.FieldRef<Self, T> declareField(
             String name, TypeToken<T> type, java.util.Set<me.supcheg.javafile.model.Modifier> modifiers) {
         return declareField(name, type, modifiers, List.of());
+    }
+
+    /// Declares a documented instance field of a record or an enum.
+    ///
+    /// @param name the field name
+    /// @param type the field type
+    /// @param modifiers the modifiers of the field
+    /// @param doc the documentation comment
+    /// @param <T> the field type
+    /// @return the fact of the field
+    /// @throws IllegalArgumentException if a field of the name is declared already, or the text of `doc`
+    ///     contains `*/`
+    /// @throws IllegalStateException if the declarations have ended
+    public final <T> me.supcheg.javafile.facts.FieldRef<Self, T> declareField(
+            String name,
+            TypeToken<T> type,
+            java.util.Set<me.supcheg.javafile.model.Modifier> modifiers,
+            me.supcheg.javafile.doc.DocComment doc) {
+        return declareField(
+                name,
+                type,
+                modifiers,
+                List.of(),
+                java.util.Optional.of(Docs.requireSafe(doc, "field " + name + " of " + described())));
     }
 
     // ------------------------------------------------------------------

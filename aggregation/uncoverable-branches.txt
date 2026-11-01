@@ -204,9 +204,6 @@ me/supcheg/javafile/typed/TypedTypeBodies.java :: case Slot.Awaiting _, Slot.Bla
 me/supcheg/javafile/typed/TypedTypeBodies.java :: when defined.declared() instanceof Member.Constant constant && constant.fact() == field ->
     a record pattern binds the member of a defined slot: javac tests that member for null, and no slot is defined with a null member
 
-me/supcheg/javafile/typed/MemberBodies.java :: case Slot.Defined(Member.StaticField declared, var _)
-    a record pattern binds the member of a defined slot: javac tests that member for null, and no slot is defined with a null member
-
 me/supcheg/javafile/typed/ScopeCheck.java :: switch (b.nesting()) {
     a switch statement over an enum: javac makes a branch for the value that is none of the constants, and every constant has an arm
 

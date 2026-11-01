@@ -86,6 +86,25 @@ public final class TypedClassBuilder<Self> extends MemberBuilder<Self, Object> {
         super(declared, inherited, superclass);
     }
 
+    /// Documents the class, e.g. a sentence of what it is for.
+    ///
+    /// @param doc the comment
+    /// @return this builder
+    /// @throws IllegalArgumentException if the text of `doc` contains `*/`
+    public TypedClassBuilder<Self> withDoc(me.supcheg.javafile.doc.DocComment doc) {
+        doc(doc);
+        return this;
+    }
+
+    /// Documents the class with one paragraph of plain text.
+    ///
+    /// @param text the text
+    /// @return this builder
+    /// @throws IllegalArgumentException if `text` is empty, or contains `*/`
+    public TypedClassBuilder<Self> withDoc(String text) {
+        return withDoc(Docs.of(text, described()));
+    }
+
     /// The declarations of the class end and the bodies of its members begin.
     ///
     /// What can be judged of the declarations alone is judged here: the methods the class

@@ -41,11 +41,31 @@ public final class TypedEnumBuilder<Self> extends EnumConstructorArities<Self> {
     private final List<Invocable> abstractMethods = new ArrayList<>();
     private final List<Constructor> constructors = new ArrayList<>();
     private final List<me.supcheg.javafile.type.ClassOrInterfaceTypeRef> interfaces = new ArrayList<>();
+    private java.util.Optional<me.supcheg.javafile.doc.DocComment> doc = java.util.Optional.empty();
     private TypedEnumBodies<Self> bodies;
 
     TypedEnumBuilder(TargetClasspath target, ClassDesc desc) {
         super(target, desc, "enum");
         self(UnsafeFacts.<Self>declaredEnumToken(new ClassTypeRef(desc), List.of(), this::table));
+    }
+
+    /// Documents the enum, e.g. a sentence of what it is for.
+    ///
+    /// @param doc the comment
+    /// @return this builder
+    /// @throws IllegalArgumentException if the text of `doc` contains `*/`
+    public TypedEnumBuilder<Self> withDoc(me.supcheg.javafile.doc.DocComment doc) {
+        this.doc = java.util.Optional.of(Docs.requireSafe(doc, described()));
+        return this;
+    }
+
+    /// Documents the enum with one paragraph of plain text.
+    ///
+    /// @param text the text
+    /// @return this builder
+    /// @throws IllegalArgumentException if `text` is empty, or contains `*/`
+    public TypedEnumBuilder<Self> withDoc(String text) {
+        return withDoc(Docs.of(text, described()));
     }
 
     @Override
@@ -61,7 +81,18 @@ public final class TypedEnumBuilder<Self> extends EnumConstructorArities<Self> {
     /// @return this builder
     /// @throws IllegalStateException if the members have begun
     public TypedEnumBuilder<Self> constant(String name) {
-        return constant(name, List.of(), null);
+        return constant(name, java.util.Optional.empty(), List.of(), null);
+    }
+
+    /// Adds a documented constant with no arguments and no constant-specific body.
+    ///
+    /// @param name the constant name
+    /// @param doc the documentation comment
+    /// @return this builder
+    /// @throws IllegalArgumentException if the text of `doc` contains `*/`
+    /// @throws IllegalStateException if the members have begun
+    public TypedEnumBuilder<Self> constant(String name, me.supcheg.javafile.doc.DocComment doc) {
+        return constant(name, java.util.Optional.of(doc), List.of(), null);
     }
 
     /// Adds a constant with constructor arguments and no constant-specific body.
@@ -73,7 +104,7 @@ public final class TypedEnumBuilder<Self> extends EnumConstructorArities<Self> {
     @SafeVarargs
     @SuppressWarnings("varargs")
     public final TypedEnumBuilder<Self> constant(String name, Expr<?>... args) {
-        return constant(name, List.of(args), null);
+        return constant(name, java.util.Optional.empty(), List.of(args), null);
     }
 
     /// Adds a constant with constructor arguments and no constant-specific body.
@@ -83,7 +114,7 @@ public final class TypedEnumBuilder<Self> extends EnumConstructorArities<Self> {
     /// @return this builder
     /// @throws IllegalStateException if the members have begun
     public TypedEnumBuilder<Self> constant(String name, List<? extends Expr<?>> args) {
-        return constant(name, args, null);
+        return constant(name, java.util.Optional.empty(), args, null);
     }
 
     /// Adds a constant with a constant-specific class body, which overrides the abstract methods of the
@@ -94,7 +125,7 @@ public final class TypedEnumBuilder<Self> extends EnumConstructorArities<Self> {
     /// @return this builder
     /// @throws IllegalStateException if the members have begun
     public TypedEnumBuilder<Self> constant(String name, Consumer<TypedEnumConstantBodies<Self>> body) {
-        return constant(name, List.of(), body);
+        return constant(name, java.util.Optional.empty(), List.of(), body);
     }
 
     /// Adds a constant with constructor arguments and a constant-specific class body.
@@ -106,8 +137,37 @@ public final class TypedEnumBuilder<Self> extends EnumConstructorArities<Self> {
     /// @throws IllegalStateException if the members have begun
     public TypedEnumBuilder<Self> constant(
             String name, List<? extends Expr<?>> args, Consumer<TypedEnumConstantBodies<Self>> body) {
+        return constant(name, java.util.Optional.empty(), args, body);
+    }
+
+    /// Adds a documented constant with constructor arguments and a constant-specific class body.
+    ///
+    /// @param name the constant name
+    /// @param doc the documentation comment
+    /// @param args the constructor arguments, in order
+    /// @param body populates the body, or `null` for none
+    /// @return this builder
+    /// @throws IllegalArgumentException if the text of `doc` contains `*/`
+    /// @throws IllegalStateException if the members have begun
+    public TypedEnumBuilder<Self> constant(
+            String name,
+            me.supcheg.javafile.doc.DocComment doc,
+            List<? extends Expr<?>> args,
+            Consumer<TypedEnumConstantBodies<Self>> body) {
+        return constant(name, java.util.Optional.of(doc), args, body);
+    }
+
+    private TypedEnumBuilder<Self> constant(
+            String name,
+            java.util.Optional<me.supcheg.javafile.doc.DocComment> doc,
+            List<? extends Expr<?>> args,
+            Consumer<TypedEnumConstantBodies<Self>> body) {
         requireHeader("constant " + name + " of " + described());
-        constants.add(new Constant<>(name, List.copyOf(args), body));
+        constants.add(new Constant<>(
+                name,
+                List.copyOf(args),
+                body,
+                doc.map(comment -> Docs.requireSafe(comment, "constant " + name + " of " + described()))));
         self(UnsafeFacts.<Self>declaredEnumToken(
                 new ClassTypeRef(desc()), constants.stream().map(Constant::name).toList(), this::table));
         return this;
@@ -137,8 +197,19 @@ public final class TypedEnumBuilder<Self> extends EnumConstructorArities<Self> {
 
     @Override
     void declaredConstructor(List<?> params, VoidBody body) {
+        declaredConstructor(params, body, java.util.Optional.empty());
+    }
+
+    void declaredConstructor(
+            List<?> params, VoidBody body, java.util.Optional<me.supcheg.javafile.doc.DocComment> doc) {
         constructors.add(new Constructor(
-                params.stream().<Var<?>>map(param -> (Var<?>) param).toList(), body));
+                params.stream().<Var<?>>map(param -> (Var<?>) param).toList(),
+                body,
+                doc.map(comment -> Docs.requireSafe(comment, "a constructor of " + described()))));
+    }
+
+    void declaredConstructor(List<?> params, VoidBody body, me.supcheg.javafile.doc.DocComment doc) {
+        declaredConstructor(params, body, java.util.Optional.of(doc));
     }
 
     /// The declarations of the enum end and the bodies of its members begin.
@@ -166,6 +237,7 @@ public final class TypedEnumBuilder<Self> extends EnumConstructorArities<Self> {
     }
 
     private void populate(EnumBuilder eb, List<?> members) {
+        doc.ifPresent(eb::withDoc);
         for (EnumConstant constant : bodies.enumConstants()) {
             eb.withConstant(constant);
         }
@@ -175,7 +247,11 @@ public final class TypedEnumBuilder<Self> extends EnumConstructorArities<Self> {
     }
 
     /// A constant as it was declared.
-    record Constant<Self>(String name, List<Expr<?>> args, Consumer<TypedEnumConstantBodies<Self>> body) {
+    record Constant<Self>(
+            String name,
+            List<Expr<?>> args,
+            Consumer<TypedEnumConstantBodies<Self>> body,
+            java.util.Optional<me.supcheg.javafile.doc.DocComment> doc) {
         Constant {
             args = List.copyOf(args);
         }
@@ -183,7 +259,7 @@ public final class TypedEnumBuilder<Self> extends EnumConstructorArities<Self> {
 
     /// A constructor as it was declared: its parameters and the body built before the methods were all
     /// declared, which the bodies of the enum lower once they are.
-    record Constructor(List<Var<?>> params, VoidBody body) {
+    record Constructor(List<Var<?>> params, VoidBody body, java.util.Optional<me.supcheg.javafile.doc.DocComment> doc) {
         Constructor {
             params = List.copyOf(params);
         }

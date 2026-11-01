@@ -23,6 +23,7 @@ import me.supcheg.javafile.type.TypeVarRef;
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -52,6 +53,7 @@ abstract class TypeDeclarationSupport<Self> {
     private TypeSignatureRegistry registry;
     private List<Member> members = List.of();
     private List<me.supcheg.javafile.model.TypeDecl> nested = List.of();
+    private Optional<me.supcheg.javafile.doc.DocComment> pendingDoc = Optional.empty();
     private boolean membersDeclared;
     private boolean membersBegan;
     private boolean complete;
@@ -351,9 +353,26 @@ abstract class TypeDeclarationSupport<Self> {
         }
         if (membersBegan) {
             throw new IllegalStateException("cannot declare " + what + ": the declarations of " + described
-                    + " have ended — bodies() began the bodies of its members");
+                    + " have ended - bodies() began the bodies of its members");
         }
         Scopes.requireNoneOpen(what);
+    }
+
+    /// Holds a documentation comment for the member declared next.
+    ///
+    /// @param doc the comment
+    /// @throws IllegalArgumentException if the text of `doc` contains `*/`
+    final void document(me.supcheg.javafile.doc.DocComment doc) {
+        pendingDoc = Optional.of(Docs.requireSafe(doc, described));
+    }
+
+    /// The documentation comment of the member declared next, which it takes.
+    ///
+    /// @return the comment, or empty
+    final Optional<me.supcheg.javafile.doc.DocComment> takeDoc() {
+        Optional<me.supcheg.javafile.doc.DocComment> taken = pendingDoc;
+        pendingDoc = Optional.empty();
+        return taken;
     }
 
     private TypeSignatureRegistry registry() {
@@ -409,6 +428,31 @@ abstract class TypeDeclarationSupport<Self> {
             List<AnnotationRef<?>> annotations,
             List<List<AnnotationRef<?>>> parameterAnnotations,
             Set<Modifier> modifiers) {
+        return declare(member, kind, thrown, annotations, parameterAnnotations, modifiers, takeDoc());
+    }
+
+    /// Declares a method of the type, rendered with `modifiers` beside those its kind fixes and with a
+    /// documentation comment.
+    ///
+    /// @param member the fact of the method
+    /// @param kind how the method is rendered
+    /// @param thrown the exception classes of its `throws` clause
+    /// @param annotations the annotations it declares
+    /// @param parameterAnnotations the annotations of each parameter
+    /// @param modifiers the modifiers it is rendered with, `synchronized` or `native`
+    /// @param doc the documentation comment, if any
+    /// @param <F> the fact
+    /// @return the fact
+    /// @throws IllegalArgumentException if javac would reject the method
+    /// @throws IllegalStateException if the declarations have ended
+    final <F extends Invocable> F declare(
+            F member,
+            Member.Kind kind,
+            List<ClassToken<? extends Throwable>> thrown,
+            List<AnnotationRef<?>> annotations,
+            List<List<AnnotationRef<?>>> parameterAnnotations,
+            Set<Modifier> modifiers,
+            Optional<me.supcheg.javafile.doc.DocComment> doc) {
         requireDeclaring(member.toString());
         Set<Modifier> rendered = requireModifiers(member, kind, modifiers);
         TypeScope scope = scope(kind, "the signature of " + member);
@@ -430,6 +474,7 @@ abstract class TypeDeclarationSupport<Self> {
                 scope(kind, "the body of " + member),
                 registry().overrides(member.signature()),
                 rendered,
+                doc,
                 Site.here());
         declared(declared);
         declaredMember(declared);
@@ -467,6 +512,31 @@ abstract class TypeDeclarationSupport<Self> {
             List<ClassToken<? extends Throwable>> thrown,
             List<AnnotationRef<?>> annotations,
             List<List<AnnotationRef<?>>> parameterAnnotations) {
+        return declareOverride(up, member, kind, thrown, annotations, parameterAnnotations, takeDoc());
+    }
+
+    /// Declares a documented method that overrides the one of a supertype the type has by `up`.
+    ///
+    /// @param up the witness that the type is of the supertype
+    /// @param member the fact of the method
+    /// @param kind how the method is rendered
+    /// @param thrown the exception classes of its `throws` clause
+    /// @param annotations the annotations it declares
+    /// @param parameterAnnotations the annotations of each parameter
+    /// @param doc the documentation comment, if any
+    /// @param <O> the supertype
+    /// @param <F> the fact
+    /// @return the fact
+    /// @throws IllegalArgumentException if the type inherits no such method, or cannot override it
+    /// @throws IllegalStateException if the declarations have ended
+    final <O, F extends Invocable> F declareOverride(
+            Upcast<Self, ? extends O> up,
+            F member,
+            Member.Kind kind,
+            List<ClassToken<? extends Throwable>> thrown,
+            List<AnnotationRef<?>> annotations,
+            List<List<AnnotationRef<?>>> parameterAnnotations,
+            Optional<me.supcheg.javafile.doc.DocComment> doc) {
         if (!Tokens.sameType(up.self(), self)) {
             throw new IllegalArgumentException("the witness is of " + up.self() + ", and the type is " + self);
         }
@@ -490,6 +560,7 @@ abstract class TypeDeclarationSupport<Self> {
                 scope(kind, "the body of " + member),
                 true,
                 Set.of(),
+                doc,
                 Site.here()));
         return member;
     }
@@ -505,6 +576,25 @@ abstract class TypeDeclarationSupport<Self> {
     /// @throws IllegalArgumentException if a field of the name is declared already, or the type is out of scope
     final <T> FieldRef<Self, T> declareField(
             String name, TypeToken<T> type, Set<Modifier> modifiers, List<AnnotationRef<?>> annotations) {
+        return declareField(name, type, modifiers, annotations, takeDoc());
+    }
+
+    /// Declares a documented field of the type.
+    ///
+    /// @param name the field name
+    /// @param type the field type
+    /// @param modifiers the modifiers of the field
+    /// @param annotations the annotations it declares
+    /// @param doc the documentation comment, if any
+    /// @param <T> the field type
+    /// @return the fact of the field
+    /// @throws IllegalArgumentException if a field of the name is declared already, or the type is out of scope
+    final <T> FieldRef<Self, T> declareField(
+            String name,
+            TypeToken<T> type,
+            Set<Modifier> modifiers,
+            List<AnnotationRef<?>> annotations,
+            Optional<me.supcheg.javafile.doc.DocComment> doc) {
         requireDeclaring("field " + name + " of " + described);
         TypeScope scope = modifiers.contains(Modifier.STATIC)
                 ? staticScope("the type of field " + name)
@@ -513,7 +603,7 @@ abstract class TypeDeclarationSupport<Self> {
         scope.require(type);
         registry().field(name);
         FieldRef<Self, T> field = UnsafeFacts.field(self, name, type);
-        declared(new Member.Field(field, Set.copyOf(modifiers), annotations, Site.here()));
+        declared(new Member.Field(field, Set.copyOf(modifiers), annotations, doc, Site.here()));
         return field;
     }
 
@@ -526,12 +616,29 @@ abstract class TypeDeclarationSupport<Self> {
     /// @return the fact of the constant
     /// @throws IllegalArgumentException if a field of the name is declared already, or the type is out of scope
     final <T> StaticFieldRef<T> declareConstant(String name, TypeToken<T> type, List<AnnotationRef<?>> annotations) {
+        return declareConstant(name, type, annotations, takeDoc());
+    }
+
+    /// Declares a documented constant field of the type: implicitly `public static final`.
+    ///
+    /// @param name the constant name
+    /// @param type the constant type
+    /// @param annotations the annotations it declares
+    /// @param doc the documentation comment, if any
+    /// @param <T> the constant type
+    /// @return the fact of the constant
+    /// @throws IllegalArgumentException if a field of the name is declared already, or the type is out of scope
+    final <T> StaticFieldRef<T> declareConstant(
+            String name,
+            TypeToken<T> type,
+            List<AnnotationRef<?>> annotations,
+            Optional<me.supcheg.javafile.doc.DocComment> doc) {
         requireDeclaring("constant " + name + " of " + described);
         Tokens.requireNotRaw(type);
         staticScope("the type of constant " + name).require(type);
         registry().field(name);
         StaticFieldRef<T> constant = UnsafeFacts.staticField(self, name, type);
-        declared(new Member.Constant(constant, annotations, Site.here()));
+        declared(new Member.Constant(constant, annotations, doc, Site.here()));
         return constant;
     }
 
@@ -543,17 +650,36 @@ abstract class TypeDeclarationSupport<Self> {
     /// @param <F> the fact
     /// @return the fact, `field`
     /// @throws IllegalArgumentException if a field of that name is declared already
-    /// @throws IllegalStateException if the type mentions a type parameter — which a `static` member has not
-    ///     in scope (JLS 8.1.2) —, or the declarations have ended
+    /// @throws IllegalStateException if the type mentions a type parameter - which a `static` member has not
+    ///     in scope (JLS 8.1.2) -, or the declarations have ended
     final <F extends StaticFieldRef<?>> F declaredStatic(
             F field, Set<Modifier> modifiers, List<AnnotationRef<?>> annotations) {
+        return declaredStatic(field, modifiers, annotations, takeDoc());
+    }
+
+    /// Declares a documented static field of the type, which the bodies of the type give its initializer.
+    ///
+    /// @param field its fact
+    /// @param modifiers its modifiers
+    /// @param annotations the annotations it declares
+    /// @param doc the documentation comment, if any
+    /// @param <F> the fact
+    /// @return the fact, `field`
+    /// @throws IllegalArgumentException if a field of that name is declared already
+    /// @throws IllegalStateException if the type mentions a type parameter - which a `static` member has not
+    ///     in scope (JLS 8.1.2) -, or the declarations have ended
+    final <F extends StaticFieldRef<?>> F declaredStatic(
+            F field,
+            Set<Modifier> modifiers,
+            List<AnnotationRef<?>> annotations,
+            Optional<me.supcheg.javafile.doc.DocComment> doc) {
         String name = field.name();
         requireDeclaring("static field " + name + " of " + described);
         Tokens.requireNotRaw(field.type());
         staticScope("the type of static field " + name).require(field.type());
         registry().field(name);
         annotations.forEach(annotation -> target().verify(annotation.type().token()));
-        declared(new Member.StaticField(field, Set.copyOf(modifiers), annotations, Site.here()));
+        declared(new Member.StaticField(field, Set.copyOf(modifiers), annotations, doc, Site.here()));
         return field;
     }
 
@@ -700,6 +826,7 @@ abstract class TypeDeclarationSupport<Self> {
                 TypeScope scope,
                 boolean overrides,
                 Set<Modifier> modifiers,
+                Optional<me.supcheg.javafile.doc.DocComment> doc,
                 Site site)
                 implements Member {
             public Callable {
@@ -716,8 +843,14 @@ abstract class TypeDeclarationSupport<Self> {
         /// @param fact its fact
         /// @param modifiers its modifiers
         /// @param annotations the annotations it declares
+        /// @param doc the documentation comment, if any
         /// @param site where it was declared
-        record Field(FieldRef<?, ?> fact, Set<Modifier> modifiers, List<AnnotationRef<?>> annotations, Site site)
+        record Field(
+                FieldRef<?, ?> fact,
+                Set<Modifier> modifiers,
+                List<AnnotationRef<?>> annotations,
+                Optional<me.supcheg.javafile.doc.DocComment> doc,
+                Site site)
                 implements Member {
             public Field {
                 modifiers = Set.copyOf(modifiers);
@@ -729,8 +862,14 @@ abstract class TypeDeclarationSupport<Self> {
         ///
         /// @param fact its fact
         /// @param annotations the annotations it declares
+        /// @param doc the documentation comment, if any
         /// @param site where it was declared
-        record Constant(StaticFieldRef<?> fact, List<AnnotationRef<?>> annotations, Site site) implements Member {
+        record Constant(
+                StaticFieldRef<?> fact,
+                List<AnnotationRef<?>> annotations,
+                Optional<me.supcheg.javafile.doc.DocComment> doc,
+                Site site)
+                implements Member {
             public Constant {
                 annotations = List.copyOf(annotations);
             }
@@ -741,9 +880,14 @@ abstract class TypeDeclarationSupport<Self> {
         /// @param fact its fact
         /// @param modifiers its modifiers
         /// @param annotations the annotations it declares
+        /// @param doc the documentation comment, if any
         /// @param site where it was declared
         record StaticField(
-                StaticFieldRef<?> fact, Set<Modifier> modifiers, List<AnnotationRef<?>> annotations, Site site)
+                StaticFieldRef<?> fact,
+                Set<Modifier> modifiers,
+                List<AnnotationRef<?>> annotations,
+                Optional<me.supcheg.javafile.doc.DocComment> doc,
+                Site site)
                 implements Member {
             public StaticField {
                 modifiers = Set.copyOf(modifiers);

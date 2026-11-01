@@ -34,9 +34,20 @@ import java.util.Set;
 /// @param <Self> the brand of the class being declared
 /// @param <S> the superclass of the class
 public abstract sealed class Declarations<Self, S> extends DeclarationArities<Self, S>
-        permits MemberBuilder, ThrowingDeclarations, AnnotatedDeclarations, ModifiedDeclarations {
+        permits MemberBuilder,
+                ThrowingDeclarations,
+                AnnotatedDeclarations,
+                ModifiedDeclarations,
+                DocumentedDeclarations {
 
     Declarations() {}
+
+    /// The documentation comment a member declared here carries.
+    ///
+    /// @return the comment, or empty
+    java.util.Optional<me.supcheg.javafile.doc.DocComment> doc() {
+        return java.util.Optional.empty();
+    }
 
     /// The annotations a member declared here declares.
     ///
@@ -68,7 +79,7 @@ public abstract sealed class Declarations<Self, S> extends DeclarationArities<Se
 
     @Override
     <F extends Invocable> F declare(F member) {
-        return builder().declare(member, thrown(), annotations(), parameterAnnotations(), modifiers());
+        return builder().declare(member, thrown(), annotations(), parameterAnnotations(), modifiers(), doc());
     }
 
     /// The declarations of the members that declare `annotations`, the
@@ -101,6 +112,30 @@ public abstract sealed class Declarations<Self, S> extends DeclarationArities<Se
         return new AnnotatedDeclarations<>(this, List.of(), java.util.Map.of(parameter, List.of(annotations)));
     }
 
+    /// The declarations of the members that carry a documentation comment:
+    ///
+    /// ```java
+    /// var greet = cb.documented("Greets the world.")
+    ///         .declareStaticMethod("greet", String_.TOKEN);
+    /// ```
+    ///
+    /// @param doc the comment
+    /// @return the declarations that document the members they declare
+    /// @throws IllegalArgumentException if the text of `doc` contains `*/`
+    public final DocumentedDeclarations<Self, S> documented(me.supcheg.javafile.doc.DocComment doc) {
+        return new DocumentedDeclarations<>(
+                this, Docs.requireSafe(doc, builder().described()));
+    }
+
+    /// The declarations of the members that carry a comment of one paragraph of plain text.
+    ///
+    /// @param text the text
+    /// @return the declarations that document the members they declare
+    /// @throws IllegalArgumentException if `text` is empty, or contains `*/`
+    public final DocumentedDeclarations<Self, S> documented(String text) {
+        return documented(Docs.of(text, builder().described()));
+    }
+
     /// The declarations of the methods of the class that are rendered with
     /// `modifiers` beside those their form fixes:
     ///
@@ -126,7 +161,7 @@ public abstract sealed class Declarations<Self, S> extends DeclarationArities<Se
 
     @Override
     <F extends Invocable> F overriding(F own) {
-        return builder().declareOverride(own, thrown());
+        return builder().declareOverride(own, thrown(), doc());
     }
 
     /// The traits of a member declared here: `traits`, with the `throws` clause.

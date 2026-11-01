@@ -1,6 +1,7 @@
 package me.supcheg.javafile.typed;
 
 import me.supcheg.javafile.JavaFile;
+import me.supcheg.javafile.doc.DocComment;
 import me.supcheg.javafile.facts.Access;
 import me.supcheg.javafile.facts.MutableFieldRef;
 import me.supcheg.javafile.facts.Prim;
@@ -24,6 +25,7 @@ class ConstructorAritiesTest {
 
     private static final String EXAMPLE = "me.supcheg.example";
     private static final List<? extends Expr<?>> ZEROES = Collections.nCopies(12, literal(0));
+    private static final DocComment DOC = DocComment.of("A documented constructor of the enum.");
 
     private static ClassDesc desc(String kind, int arity) {
         return ClassDesc.of(EXAMPLE, kind + arity);
@@ -60,6 +62,7 @@ class ConstructorAritiesTest {
         files.add(additional);
         files.add(additionalOfTwelve);
         files.add(enumeration);
+        files.add(plainHighArityEnumeration());
 
         CompiledClasses.ofAll(files);
 
@@ -451,11 +454,103 @@ class ConstructorAritiesTest {
                 new TypedJavaFile.TypedEnumSpec() {
                     @Override
                     public <Self> TypedEnumBodies<Self> build(TypedEnumBuilder<Self> eb) {
-                        eb.constructor((b, self) -> b.end());
-                        eb.constructor(INT, (b, self, a1) -> b.end());
-                        eb.constructor(INT, INT, (b, self, a1, a2) -> b.end());
-                        eb.constructor(INT, INT, INT, (b, self, a1, a2, a3) -> b.end());
-                        eb.constructor(INT, INT, INT, INT, (b, self, a1, a2, a3, a4) -> b.end());
+                        eb.constructor(DOC, (b, self) -> b.end());
+                        eb.constructor(DOC, INT, (b, self, a1) -> b.end());
+                        eb.constructor(DOC, INT, INT, (b, self, a1, a2) -> b.end());
+                        eb.constructor(DOC, INT, INT, INT, (b, self, a1, a2, a3) -> b.end());
+                        eb.constructor(DOC, INT, INT, INT, INT, (b, self, a1, a2, a3, a4) -> b.end());
+                        eb.constructor(DOC, INT, INT, INT, INT, INT, (b, self, a1, a2, a3, a4, a5) -> b.end());
+                        eb.constructor(DOC, INT, INT, INT, INT, INT, INT, (b, self, a1, a2, a3, a4, a5, a6) -> b.end());
+                        eb.constructor(
+                                DOC,
+                                INT,
+                                INT,
+                                INT,
+                                INT,
+                                INT,
+                                INT,
+                                INT,
+                                (b, self, a1, a2, a3, a4, a5, a6, a7) -> b.end());
+                        eb.constructor(
+                                DOC,
+                                INT,
+                                INT,
+                                INT,
+                                INT,
+                                INT,
+                                INT,
+                                INT,
+                                INT,
+                                (b, self, a1, a2, a3, a4, a5, a6, a7, a8) -> b.end());
+                        eb.constructor(
+                                DOC,
+                                INT,
+                                INT,
+                                INT,
+                                INT,
+                                INT,
+                                INT,
+                                INT,
+                                INT,
+                                INT,
+                                (b, self, a1, a2, a3, a4, a5, a6, a7, a8, a9) -> b.end());
+                        eb.constructor(
+                                DOC,
+                                INT,
+                                INT,
+                                INT,
+                                INT,
+                                INT,
+                                INT,
+                                INT,
+                                INT,
+                                INT,
+                                INT,
+                                (b, self, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10) -> b.end());
+                        eb.constructor(
+                                DOC,
+                                INT,
+                                INT,
+                                INT,
+                                INT,
+                                INT,
+                                INT,
+                                INT,
+                                INT,
+                                INT,
+                                INT,
+                                INT,
+                                (b, self, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11) -> b.end());
+                        eb.constructor(
+                                DOC,
+                                INT,
+                                INT,
+                                INT,
+                                INT,
+                                INT,
+                                INT,
+                                INT,
+                                INT,
+                                INT,
+                                INT,
+                                INT,
+                                INT,
+                                (b, self, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12) -> b.end());
+                        return eb.bodies();
+                    }
+                });
+    }
+
+    /// An enum whose plain constructors of arities 5 to 12 are rendered beside those of
+    /// [#enumeration], which documents its own: a constructor is of the parameters alone, so
+    /// the documented and the plain forms of one arity cannot share an enum.
+    private static JavaFile plainHighArityEnumeration() {
+        return TypedJavaFile.enum_(
+                UnsafeFacts.unverifiedClasspath(),
+                ClassDesc.of(EXAMPLE, "PlainEnum"),
+                new TypedJavaFile.TypedEnumSpec() {
+                    @Override
+                    public <Self> TypedEnumBodies<Self> build(TypedEnumBuilder<Self> eb) {
                         eb.constructor(INT, INT, INT, INT, INT, (b, self, a1, a2, a3, a4, a5) -> b.end());
                         eb.constructor(INT, INT, INT, INT, INT, INT, (b, self, a1, a2, a3, a4, a5, a6) -> b.end());
                         eb.constructor(

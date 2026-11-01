@@ -92,6 +92,21 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
         return self;
     }
 
+    /// Documents the class.
+    ///
+    /// @param doc the comment
+    /// @throws IllegalArgumentException if the text of `doc` contains `*/`
+    final void doc(me.supcheg.javafile.doc.DocComment doc) {
+        owner.doc(doc);
+    }
+
+    /// The name of the class, for messages.
+    ///
+    /// @return the class as the declaration describes it
+    final String described() {
+        return described;
+    }
+
     // ------------------------------------------------------------------
     // Member types
     // ------------------------------------------------------------------
@@ -712,8 +727,157 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
                 List.of(annotations));
     }
 
+    /// Declares a `public final` documented field that declares `annotations`.
+    ///
+    /// @param name the field name
+    /// @param type the field type
+    /// @param doc the documentation comment
+    /// @param annotations the annotations, in order
+    /// @param <T> the field type
+    /// @return the fact of the field
+    /// @throws IllegalArgumentException if a field of that name is declared already, an annotation type
+    ///     cannot annotate a field, or the text of `doc` contains `*/`
+    /// @throws IllegalStateException if the type mentions a type parameter of another class, or the
+    ///     declarations of the class have ended
+    @SafeVarargs
+    @SuppressWarnings("varargs")
+    public final <T> FieldRef<Self, T> declareField(
+            String name, TypeToken<T> type, me.supcheg.javafile.doc.DocComment doc, AnnotationRef<?>... annotations) {
+        return declared(
+                UnsafeFacts.field(self, name, type),
+                Set.of(Modifier.PUBLIC, Modifier.FINAL),
+                List.of(annotations),
+                Optional.of(Docs.requireSafe(doc, "field " + name + " of " + described)));
+    }
+
+    /// Declares a documented field by the exact modifiers it is rendered with.
+    ///
+    /// @param name the field name
+    /// @param type the field type
+    /// @param modifiers the exact modifiers of the field
+    /// @param doc the documentation comment
+    /// @param <T> the field type
+    /// @return the fact of the field
+    /// @throws IllegalArgumentException if the modifiers are not those of a field of the class, a field
+    ///     of that name is declared already, or the text of `doc` contains `*/`
+    public final <T> FieldRef<Self, T> declareField(
+            String name, TypeToken<T> type, Set<Modifier> modifiers, me.supcheg.javafile.doc.DocComment doc) {
+        boolean legal = modifiers.contains(Modifier.PUBLIC)
+                && modifiers.contains(Modifier.FINAL)
+                && modifiers.stream()
+                        .allMatch(m -> m == Modifier.PUBLIC || m == Modifier.FINAL || m == Modifier.TRANSIENT);
+        if (!legal) {
+            throw new IllegalArgumentException("field " + name + " of " + described + " cannot be " + modifiers
+                    + ": a field of the class is public final, with transient, and a mutable one is public, with"
+                    + " transient or volatile");
+        }
+        return declared(
+                UnsafeFacts.field(self, name, type),
+                modifiers,
+                List.of(),
+                Optional.of(Docs.requireSafe(doc, "field " + name + " of " + described)));
+    }
+
+    /// Declares a documented `public` field, not `final`, that declares `annotations`.
+    ///
+    /// @param name the field name
+    /// @param type the field type
+    /// @param doc the documentation comment
+    /// @param annotations the annotations, in order
+    /// @param <T> the field type
+    /// @return the fact of the field, which can be read and assigned
+    /// @throws IllegalArgumentException if a field of that name is declared already, an annotation type
+    ///     cannot annotate a field, or the text of `doc` contains `*/`
+    @SafeVarargs
+    @SuppressWarnings("varargs")
+    public final <T> MutableFieldRef<Self, T> declareMutableField(
+            String name, TypeToken<T> type, me.supcheg.javafile.doc.DocComment doc, AnnotationRef<?>... annotations) {
+        return declared(
+                UnsafeFacts.mutableField(self, name, type),
+                Set.of(Modifier.PUBLIC),
+                List.of(annotations),
+                Optional.of(Docs.requireSafe(doc, "field " + name + " of " + described)));
+    }
+
+    /// Declares a documented `public` field, not `final`, by the exact modifiers it is rendered with.
+    ///
+    /// @param name the field name
+    /// @param type the field type
+    /// @param modifiers the exact modifiers of the field
+    /// @param doc the documentation comment
+    /// @param <T> the field type
+    /// @return the fact of the field, which can be read and assigned
+    /// @throws IllegalArgumentException if the modifiers are not those of a mutable field of the class,
+    ///     a field of that name is declared already, or the text of `doc` contains `*/`
+    public final <T> MutableFieldRef<Self, T> declareMutableField(
+            String name, TypeToken<T> type, Set<Modifier> modifiers, me.supcheg.javafile.doc.DocComment doc) {
+        boolean legal = modifiers.contains(Modifier.PUBLIC)
+                && !modifiers.contains(Modifier.FINAL)
+                && modifiers.stream()
+                        .allMatch(m -> m == Modifier.PUBLIC || m == Modifier.TRANSIENT || m == Modifier.VOLATILE);
+        if (!legal) {
+            throw new IllegalArgumentException("mutable field " + name + " of " + described + " cannot be " + modifiers
+                    + ": a mutable field of the class is public, with transient or volatile");
+        }
+        return declared(
+                UnsafeFacts.mutableField(self, name, type),
+                modifiers,
+                List.of(),
+                Optional.of(Docs.requireSafe(doc, "field " + name + " of " + described)));
+    }
+
+    /// Declares a documented `public static final` field that declares `annotations`.
+    ///
+    /// @param name the field name
+    /// @param type the field type
+    /// @param doc the documentation comment
+    /// @param annotations the annotations, in order
+    /// @param <T> the field type
+    /// @return the fact of the field, which can be read but not assigned
+    /// @throws IllegalArgumentException if a field of that name is declared already, an annotation type
+    ///     cannot annotate a field, or the text of `doc` contains `*/`
+    @SafeVarargs
+    @SuppressWarnings("varargs")
+    public final <T> StaticFieldRef<T> declareStaticField(
+            String name, TypeToken<T> type, me.supcheg.javafile.doc.DocComment doc, AnnotationRef<?>... annotations) {
+        return declaredStatic(
+                UnsafeFacts.staticField(self, name, type),
+                Set.of(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL),
+                List.of(annotations),
+                Optional.of(Docs.requireSafe(doc, "static field " + name + " of " + described)));
+    }
+
+    /// Declares a documented `public static` field, not `final`, that declares `annotations`.
+    ///
+    /// @param name the field name
+    /// @param type the field type
+    /// @param doc the documentation comment
+    /// @param annotations the annotations, in order
+    /// @param <T> the field type
+    /// @return the fact of the field, which can be read and assigned
+    /// @throws IllegalArgumentException if a field of that name is declared already, an annotation type
+    ///     cannot annotate a field, or the text of `doc` contains `*/`
+    @SafeVarargs
+    @SuppressWarnings("varargs")
+    public final <T> MutableStaticFieldRef<T> declareMutableStaticField(
+            String name, TypeToken<T> type, me.supcheg.javafile.doc.DocComment doc, AnnotationRef<?>... annotations) {
+        return declaredStatic(
+                UnsafeFacts.mutableStaticField(self, name, type),
+                Set.of(Modifier.PUBLIC, Modifier.STATIC),
+                List.of(annotations),
+                Optional.of(Docs.requireSafe(doc, "static field " + name + " of " + described)));
+    }
+
     private <F extends FieldRef<Self, ?>> F declared(
             F field, Set<Modifier> modifiers, List<AnnotationRef<?>> annotations) {
+        return declared(field, modifiers, annotations, Optional.empty());
+    }
+
+    private <F extends FieldRef<Self, ?>> F declared(
+            F field,
+            Set<Modifier> modifiers,
+            List<AnnotationRef<?>> annotations,
+            Optional<me.supcheg.javafile.doc.DocComment> doc) {
         String name = field.name();
         Site site = Site.here();
         owner.requireDeclaring("field " + name + " of " + described);
@@ -723,7 +887,7 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
         registry.field(name);
         annotations.forEach(
                 annotation -> owner.target().verify(annotation.type().token()));
-        declared(new Member.Field(field, modifiers, annotations, site));
+        declared(new Member.Field(field, modifiers, annotations, doc, site));
         return field;
     }
 
@@ -731,6 +895,14 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
     /// is serialized with no value of its own, so what it is of need not be `Serializable`.
     private <F extends StaticFieldRef<?>> F declaredStatic(
             F field, Set<Modifier> modifiers, List<AnnotationRef<?>> annotations) {
+        return declaredStatic(field, modifiers, annotations, Optional.empty());
+    }
+
+    private <F extends StaticFieldRef<?>> F declaredStatic(
+            F field,
+            Set<Modifier> modifiers,
+            List<AnnotationRef<?>> annotations,
+            Optional<me.supcheg.javafile.doc.DocComment> doc) {
         String name = field.name();
         Site site = Site.here();
         owner.requireDeclaring("static field " + name + " of " + described);
@@ -739,7 +911,7 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
         registry.field(name);
         annotations.forEach(
                 annotation -> owner.target().verify(annotation.type().token()));
-        declared(new Member.StaticField(field, modifiers, annotations, site));
+        declared(new Member.StaticField(field, modifiers, annotations, doc, site));
         return field;
     }
 
@@ -842,8 +1014,9 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
             List<ClassToken<? extends Throwable>> thrown,
             List<AnnotationRef<?>> annotations,
             List<List<AnnotationRef<?>>> parameterAnnotations,
-            Set<Modifier> modifiers) {
-        return declare(member, thrown, annotations, parameterAnnotations, modifiers, Site.here());
+            Set<Modifier> modifiers,
+            Optional<me.supcheg.javafile.doc.DocComment> doc) {
+        return declare(member, thrown, annotations, parameterAnnotations, modifiers, doc, Site.here());
     }
 
     /// Declares a method or constructor of the class, said at `site`.
@@ -853,6 +1026,7 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
             List<AnnotationRef<?>> annotations,
             List<List<AnnotationRef<?>>> parameterAnnotations,
             Set<Modifier> modifiers,
+            Optional<me.supcheg.javafile.doc.DocComment> doc,
             Site site) {
         owner.requireDeclaring(member.toString());
         requireInScope(member);
@@ -872,7 +1046,7 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
         Set<Modifier> rendered = requireModifiers(member, modifiers);
         registry.member(member);
         if (rendered.contains(Modifier.NATIVE)) {
-            declared(new Member.Given(nativeMethod(member, thrown, annotations, parameters, rendered)));
+            declared(new Member.Given(nativeMethod(member, thrown, annotations, parameters, rendered, doc)));
             return member;
         }
         declared(new Member.Callable(
@@ -884,6 +1058,7 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
                 member.arity(),
                 scope(member.kind(), "the body of " + member),
                 rendered,
+                doc,
                 site));
         return member;
     }
@@ -918,7 +1093,8 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
             List<ClassToken<? extends Throwable>> thrown,
             List<AnnotationRef<?>> annotations,
             List<List<AnnotationRef<?>>> parameterAnnotations,
-            Set<Modifier> modifiers) {
+            Set<Modifier> modifiers,
+            Optional<me.supcheg.javafile.doc.DocComment> doc) {
         Set<Modifier> rendered = new java.util.LinkedHashSet<>();
         rendered.add(Modifier.PUBLIC);
         if (member.kind() == InvocableKind.STATIC_METHOD) {
@@ -953,7 +1129,7 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
                 thrown.stream()
                         .<ClassOrInterfaceTypeRef>map(type -> type.typeRef())
                         .toList(),
-                Optional.empty());
+                doc);
     }
 
     // ------------------------------------------------------------------
@@ -1149,12 +1325,22 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
     /// @param thrown the exception classes of its `throws` clause, as its fact has them
     /// @return the fact, `own`
     /// @throws IllegalArgumentException if the class inherits no such method, or cannot override it
-    <F extends Invocable> F declareOverride(F own, List<ClassToken<? extends Throwable>> thrown) {
-        return declareOverride(own, thrown, Site.here());
+    /// Declares a documented method of the class that overrides.
+    <F extends Invocable> F declareOverride(
+            F own, List<ClassToken<? extends Throwable>> thrown, Optional<me.supcheg.javafile.doc.DocComment> doc) {
+        return declareOverride(own, thrown, doc, Site.here());
     }
 
     /// Declares a method of the class that overrides, said at `site`.
     <F extends Invocable> F declareOverride(F own, List<ClassToken<? extends Throwable>> thrown, Site site) {
+        return declareOverride(own, thrown, Optional.empty(), site);
+    }
+
+    private <F extends Invocable> F declareOverride(
+            F own,
+            List<ClassToken<? extends Throwable>> thrown,
+            Optional<me.supcheg.javafile.doc.DocComment> doc,
+            Site site) {
         owner.requireDeclaring(own.toString());
         requireInScope(own);
         // What a result is a subtype of is told by its metamodel, which has to hold on the target.
@@ -1170,6 +1356,7 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
                 registry.override(own),
                 scope(own.kind(), "the body of " + own),
                 Set.of(),
+                doc,
                 site));
         return own;
     }
@@ -1238,6 +1425,7 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
                 Arity arity,
                 TypeScope scope,
                 Set<Modifier> modifiers,
+                Optional<me.supcheg.javafile.doc.DocComment> doc,
                 Site site)
                 implements Member {
             public Callable {
@@ -1254,8 +1442,14 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
         /// @param fact its fact
         /// @param modifiers its modifiers
         /// @param annotations the annotations it declares
+        /// @param doc the documentation comment, if any
         /// @param site where it was declared
-        record Field(FieldRef<?, ?> fact, Set<Modifier> modifiers, List<AnnotationRef<?>> annotations, Site site)
+        record Field(
+                FieldRef<?, ?> fact,
+                Set<Modifier> modifiers,
+                List<AnnotationRef<?>> annotations,
+                Optional<me.supcheg.javafile.doc.DocComment> doc,
+                Site site)
                 implements Member {
             public Field {
                 modifiers = Set.copyOf(modifiers);
@@ -1268,9 +1462,14 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
         /// @param fact its fact
         /// @param modifiers its modifiers
         /// @param annotations the annotations it declares
+        /// @param doc the documentation comment, if any
         /// @param site where it was declared
         record StaticField(
-                StaticFieldRef<?> fact, Set<Modifier> modifiers, List<AnnotationRef<?>> annotations, Site site)
+                StaticFieldRef<?> fact,
+                Set<Modifier> modifiers,
+                List<AnnotationRef<?>> annotations,
+                Optional<me.supcheg.javafile.doc.DocComment> doc,
+                Site site)
                 implements Member {
             public StaticField {
                 modifiers = Set.copyOf(modifiers);

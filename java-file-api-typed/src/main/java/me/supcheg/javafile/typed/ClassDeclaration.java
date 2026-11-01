@@ -5,6 +5,7 @@ import me.supcheg.javafile.Invariants;
 import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.builder.ClassBuilder;
+import me.supcheg.javafile.doc.DocComment;
 import me.supcheg.javafile.facts.AnnotationRef;
 import me.supcheg.javafile.facts.ClassToken;
 import me.supcheg.javafile.facts.Complete;
@@ -36,6 +37,7 @@ import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -75,6 +77,7 @@ final class ClassDeclaration<Self> {
     private final boolean nested;
     private List<Variable> variables;
     private List<AnnotationRef<?>> annotations = List.of();
+    private Optional<DocComment> doc = Optional.empty();
     private Set<Modifier> modifiers;
     private List<ClassDesc> permits = List.of();
     private List<TypeDecl> nestedTypes = List.of();
@@ -306,6 +309,21 @@ final class ClassDeclaration<Self> {
 
     private List<AnnotationUse> annotationUses() {
         return annotations.stream().map(AnnotationRef::toUse).toList();
+    }
+
+    /// Documents the class.
+    ///
+    /// @param doc the comment
+    /// @throws IllegalArgumentException if the text of `doc` contains `*/`
+    void doc(DocComment doc) {
+        this.doc = Optional.of(Docs.requireSafe(doc, described));
+    }
+
+    /// The documentation comment of the class, if any.
+    ///
+    /// @return the comment
+    Optional<DocComment> doc() {
+        return doc;
     }
 
     /// Declares the class `abstract` instead of `final`.
@@ -951,6 +969,7 @@ final class ClassDeclaration<Self> {
 
     private void populate(ClassBuilder cb, Extended extended, List<ClassMember> members) {
         cb.withExactModifiers(modifiers);
+        doc().ifPresent(cb::withDoc);
         annotationUses().forEach(cb::withAnnotation);
         typeParams().forEach(cb::withTypeParam);
         switch (extended.superclass()) {

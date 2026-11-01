@@ -75,6 +75,11 @@ public final class AnnotatedDeclarations<Self, S> extends Declarations<Self, S> 
     }
 
     @Override
+    java.util.Optional<me.supcheg.javafile.doc.DocComment> doc() {
+        return declarations.doc();
+    }
+
+    @Override
     MemberTraits traits(MemberTraits traits) {
         MemberTraits applied = declarations.traits(traits);
         return annotations().isEmpty()

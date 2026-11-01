@@ -52,6 +52,7 @@ public final class TypedRecordBuilder<Self> extends RecordConstructorArities<Sel
 
     private final List<Component> components = new ArrayList<>();
     private final List<me.supcheg.javafile.type.ClassOrInterfaceTypeRef> interfaces = new ArrayList<>();
+    private java.util.Optional<me.supcheg.javafile.doc.DocComment> doc = java.util.Optional.empty();
 
     TypedRecordBuilder(
             TargetClasspath target,
@@ -79,6 +80,25 @@ public final class TypedRecordBuilder<Self> extends RecordConstructorArities<Sel
     @Override
     boolean allowNativeMethod() {
         return false;
+    }
+
+    /// Documents the record, e.g. a sentence of what it is for.
+    ///
+    /// @param doc the comment
+    /// @return this builder
+    /// @throws IllegalArgumentException if the text of `doc` contains `*/`
+    public TypedRecordBuilder<Self> withDoc(me.supcheg.javafile.doc.DocComment doc) {
+        this.doc = java.util.Optional.of(Docs.requireSafe(doc, described()));
+        return this;
+    }
+
+    /// Documents the record with one paragraph of plain text.
+    ///
+    /// @param text the text
+    /// @return this builder
+    /// @throws IllegalArgumentException if `text` is empty, or contains `*/`
+    public TypedRecordBuilder<Self> withDoc(String text) {
+        return withDoc(Docs.of(text, described()));
     }
 
     /// Gives a type parameter of the record one more bound, an interface, before its components:
@@ -124,6 +144,46 @@ public final class TypedRecordBuilder<Self> extends RecordConstructorArities<Sel
     @SuppressWarnings("varargs")
     public final <T> TypedRecordComponent<Self, T> component(
             String name, TypeToken<T> type, AnnotationRef<?>... annotations) {
+        return component(name, type, java.util.Optional.empty(), List.of(annotations));
+    }
+
+    /// Adds a documented component.
+    ///
+    /// @param name the component name
+    /// @param type the component type
+    /// @param doc the documentation comment
+    /// @param <T> the component type
+    /// @return the component, with the fact of its accessor and its private field
+    /// @throws IllegalArgumentException if the type is out of scope, or the text of `doc` contains `*/`
+    /// @throws IllegalStateException if the members have begun
+    public <T> TypedRecordComponent<Self, T> component(
+            String name, TypeToken<T> type, me.supcheg.javafile.doc.DocComment doc) {
+        return component(name, type, doc, new AnnotationRef<?>[0]);
+    }
+
+    /// Adds a documented component that declares `annotations`.
+    ///
+    /// @param name the component name
+    /// @param type the component type
+    /// @param doc the documentation comment
+    /// @param annotations the annotations, in order
+    /// @param <T> the component type
+    /// @return the component, with the fact of its accessor and its private field
+    /// @throws IllegalArgumentException if the type is out of scope, an annotation cannot annotate a
+    ///     component, or the text of `doc` contains `*/`
+    /// @throws IllegalStateException if the members have begun
+    @SafeVarargs
+    @SuppressWarnings("varargs")
+    public final <T> TypedRecordComponent<Self, T> component(
+            String name, TypeToken<T> type, me.supcheg.javafile.doc.DocComment doc, AnnotationRef<?>... annotations) {
+        return component(name, type, java.util.Optional.of(doc), List.of(annotations));
+    }
+
+    private <T> TypedRecordComponent<Self, T> component(
+            String name,
+            TypeToken<T> type,
+            java.util.Optional<me.supcheg.javafile.doc.DocComment> doc,
+            List<AnnotationRef<?>> annotations) {
         requireHeader("component " + name + " of " + described());
         Tokens.requireNotRaw(type);
         scope("the type of component " + name).require(type);
@@ -132,7 +192,11 @@ public final class TypedRecordBuilder<Self> extends RecordConstructorArities<Sel
         }
         var accessor = UnsafeInvocables.method(self(), name, type, MemberTraits.FINAL);
         var field = UnsafeFacts.field(self(), name, type);
-        components.add(new Component(name, type, List.of(annotations)));
+        components.add(new Component(
+                name,
+                type,
+                annotations,
+                doc.map(comment -> Docs.requireSafe(comment, "component " + name + " of " + described()))));
         componentDeclared();
         return new TypedRecordComponent<>(name, type, accessor, field);
     }
@@ -212,17 +276,23 @@ public final class TypedRecordBuilder<Self> extends RecordConstructorArities<Sel
     }
 
     private void populate(RecordBuilder rb, List<?> members) {
+        doc.ifPresent(rb::withDoc);
         typeParams().forEach(rb::withTypeParam);
         components.forEach(component -> rb.withComponent(new RecordComponent(
                 component.name(),
                 component.type().typeRef(),
-                component.annotations().stream().map(AnnotationRef::toUse).toList())));
+                component.annotations().stream().map(AnnotationRef::toUse).toList(),
+                component.doc())));
         interfaces.forEach(rb::withInterface);
         members.forEach(member -> rb.accept((RecordMember) member));
         declaredNested().forEach(rb::accept);
     }
 
-    record Component(String name, TypeToken<?> type, List<AnnotationRef<?>> annotations) {
+    record Component(
+            String name,
+            TypeToken<?> type,
+            List<AnnotationRef<?>> annotations,
+            java.util.Optional<me.supcheg.javafile.doc.DocComment> doc) {
         Component {
             annotations = List.copyOf(annotations);
         }
