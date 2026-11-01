@@ -92,10 +92,8 @@ public final class TypedRecordBodies<Self> extends TypedTypeBodies<Self, RecordM
                         implicit(body, declared),
                         throwsClause,
                         Optional.empty());
-            case CONSTRUCTOR ->
+            default ->
                 new ConstructorDecl(annotations, Set.of(Modifier.PUBLIC), params, body, throwsClause, Optional.empty());
-            case METHOD, ABSTRACT, DEFAULT, STATIC, PRIVATE, PRIVATE_STATIC, ACCESSOR ->
-                throw new IllegalStateException("a record constructor is of no kind " + declared.kind());
         };
     }
 

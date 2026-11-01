@@ -40,7 +40,6 @@ abstract class TypeDeclarationSupport<Self> {
     private Inheritance inherited;
     private DeclaredToken<Self> self;
     private TypeSignatureRegistry registry;
-    private List<AnnotationRef<?>> annotations = List.of();
     private List<Member> members = List.of();
     private boolean membersBegan;
     private boolean complete;
@@ -80,14 +79,6 @@ abstract class TypeDeclarationSupport<Self> {
         return described;
     }
 
-    final String kind() {
-        return kind;
-    }
-
-    final DeclarationIdentity identity() {
-        return identity;
-    }
-
     final Inheritance inherited() {
         return inherited;
     }
@@ -117,21 +108,6 @@ abstract class TypeDeclarationSupport<Self> {
     // The header
     // ------------------------------------------------------------------
 
-    /// Adds an annotation to the declaration of the type.
-    ///
-    /// @param annotation the annotation
-    /// @throws IllegalArgumentException if the annotation type cannot annotate a type
-    /// @throws IllegalStateException if the members have begun
-    final void annotate(AnnotationRef<?> annotation) {
-        requireHeader("an annotation of " + described);
-        target.verify(annotation.type().token());
-        annotations = Stream.concat(annotations.stream(), Stream.of(annotation)).toList();
-    }
-
-    final List<AnnotationRef<?>> annotations() {
-        return annotations;
-    }
-
     /// Names a supertype of the type: an interface it extends or implements.
     ///
     /// @param supertype the supertype, with its type arguments
@@ -150,10 +126,6 @@ abstract class TypeDeclarationSupport<Self> {
         if (membersBegan) {
             throw new IllegalStateException("cannot declare " + what + ": the members of " + described
                     + " have begun, and a type names its supertypes before them");
-        }
-        if (complete) {
-            throw new IllegalStateException(
-                    "cannot declare " + what + ": the declaration of " + described + " is already complete");
         }
     }
 
@@ -190,10 +162,8 @@ abstract class TypeDeclarationSupport<Self> {
 
     private TypeScope scope(Member.Kind kind, String where) {
         return switch (kind) {
-            case ABSTRACT, DEFAULT, METHOD, PRIVATE -> scope(where);
+            case ABSTRACT, DEFAULT, METHOD, PRIVATE, CONSTRUCTOR, CANONICAL, COMPACT, ACCESSOR -> scope(where);
             case STATIC, PRIVATE_STATIC -> staticScope(where);
-            case CONSTRUCTOR, CANONICAL, COMPACT -> scope(where);
-            case ACCESSOR -> scope(where);
         };
     }
 
@@ -220,8 +190,11 @@ abstract class TypeDeclarationSupport<Self> {
             Tokens.requireNotRaw(type);
             scope.require(type);
         });
-        registry().method(member);
-        annotations.forEach(annotation -> target.verify(annotation.type().token()));
+        if (kind == Member.Kind.CONSTRUCTOR || kind == Member.Kind.CANONICAL || kind == Member.Kind.COMPACT) {
+            registry().constructor(member);
+        } else {
+            registry().method(member);
+        }
         Member.Callable declared = new Member.Callable(
                 member,
                 kind,
@@ -274,7 +247,6 @@ abstract class TypeDeclarationSupport<Self> {
                     + " the supertype " + up.supertype() + " has no method of its signature");
         }
         registry().method(member);
-        annotations.forEach(annotation -> target.verify(annotation.type().token()));
         declared(new Member.Callable(
                 member,
                 kind,
@@ -305,7 +277,6 @@ abstract class TypeDeclarationSupport<Self> {
         Tokens.requireNotRaw(type);
         scope.require(type);
         registry().field(name);
-        annotations.forEach(annotation -> target.verify(annotation.type().token()));
         FieldRef<Self, T> field = UnsafeFacts.field(self, name, type);
         declared(new Member.Field(field, Set.copyOf(modifiers), annotations, Site.here()));
         return field;
@@ -324,7 +295,6 @@ abstract class TypeDeclarationSupport<Self> {
         Tokens.requireNotRaw(type);
         staticScope("the type of constant " + name).require(type);
         registry().field(name);
-        annotations.forEach(annotation -> target.verify(annotation.type().token()));
         StaticFieldRef<T> constant = UnsafeFacts.staticField(self, name, type);
         declared(new Member.Constant(constant, annotations, Site.here()));
         return constant;

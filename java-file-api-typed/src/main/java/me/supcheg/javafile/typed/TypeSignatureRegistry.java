@@ -175,12 +175,7 @@ final class TypeSignatureRegistry {
                 .collect(Collectors.partitioningBy(
                         method -> method.kind() == InvocableKind.INSTANCE_METHOD,
                         Collectors.mapping(Invocable::declared, Collectors.toSet())));
-        Map<Boolean, List<Inheritance.Group>> had = inherited
-                .groups()
-                .collect(Collectors.partitioningBy(group -> switch (group.standing()) {
-                    case ABSTRACT, DEFAULT, CONCRETE, FINAL -> true;
-                    case STATIC -> false;
-                }));
+        List<Inheritance.Group> had = inherited.groups().toList();
         Set<MethodTableTemplate.Signature> constructorSignatures =
                 constructors.stream().map(Invocable::declared).collect(Collectors.toSet());
         Set<MethodTableTemplate.Signature> variableArity = Stream.concat(
@@ -191,21 +186,15 @@ final class TypeSignatureRegistry {
                                 .filter(constructor -> constructor.arity() instanceof Arity.Variable)
                                 .map(Invocable::declared))
                 .collect(Collectors.toSet());
-        had.values().stream()
-                .flatMap(List::stream)
+        had.stream()
                 .filter(group -> group.arity() instanceof Arity.Variable)
                 .map(TypeSignatureRegistry::inherited)
                 .forEach(variableArity::add);
         return new MethodTableTemplate(
                 Set.of(),
-                Stream.concat(
-                                declared.get(true).stream(),
-                                had.get(true).stream().map(TypeSignatureRegistry::inherited))
+                Stream.concat(declared.get(true).stream(), had.stream().map(TypeSignatureRegistry::inherited))
                         .collect(Collectors.toSet()),
-                Stream.concat(
-                                declared.get(false).stream(),
-                                had.get(false).stream().map(TypeSignatureRegistry::inherited))
-                        .collect(Collectors.toSet()),
+                declared.get(false).stream().collect(Collectors.toSet()),
                 constructorSignatures,
                 variableArity);
     }

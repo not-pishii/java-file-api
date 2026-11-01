@@ -251,14 +251,9 @@ public final class TypedEnumBuilder<Self> extends TypeMemberDeclarations<Self> {
         return built;
     }
 
-    TypedEnumBodies<Self> lastBodies() {
-        return bodies;
-    }
-
     @Override
     JavaFile file(List<?> members) {
         return JavaFile.enum_(desc(), eb -> {
-            annotations().forEach(annotation -> eb.withAnnotation(annotation.toUse()));
             for (EnumConstant constant : bodies.enumConstants()) {
                 eb.withConstant(constant);
             }

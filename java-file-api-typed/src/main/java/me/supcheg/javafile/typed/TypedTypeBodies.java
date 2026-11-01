@@ -4,7 +4,6 @@ import me.supcheg.javafile.code.CodeBody;
 import me.supcheg.javafile.code.ConstructorBody;
 import me.supcheg.javafile.code.ConstructorInvocation;
 import me.supcheg.javafile.code.VariableInitializer;
-import me.supcheg.javafile.facts.Arity;
 import me.supcheg.javafile.facts.CtorRef0;
 import me.supcheg.javafile.facts.CtorRef1;
 import me.supcheg.javafile.facts.CtorRef2;
@@ -62,8 +61,6 @@ import java.util.stream.Stream;
 abstract class TypedTypeBodies<Self, M> {
     private final TypeDeclarationSupport<Self> owner;
     private final me.supcheg.javafile.facts.DeclaredToken<Self> self;
-    private final Inheritance inherited;
-    private final java.util.function.Supplier<me.supcheg.javafile.facts.MethodTableTemplate> methods;
     private List<Slot> slots;
 
     /// What a type declared, as its bodies take it.
@@ -85,8 +82,6 @@ abstract class TypedTypeBodies<Self, M> {
     TypedTypeBodies(TypeDeclarationSupport<Self> owner, Declared declared) {
         this.owner = owner;
         this.self = owner.self();
-        this.inherited = declared.inherited();
-        this.methods = declared.methods();
         this.slots = declared.members().stream()
                 .<Slot>map(member -> switch (member) {
                     case Member.Callable callable ->
@@ -105,14 +100,6 @@ abstract class TypedTypeBodies<Self, M> {
 
     final me.supcheg.javafile.facts.DeclaredToken<Self> self() {
         return self;
-    }
-
-    final Inheritance inherited() {
-        return inherited;
-    }
-
-    final java.util.function.Supplier<me.supcheg.javafile.facts.MethodTableTemplate> methods() {
-        return methods;
     }
 
     // ------------------------------------------------------------------
@@ -248,7 +235,7 @@ abstract class TypedTypeBodies<Self, M> {
         Slot.Awaiting slot = definable(method);
         Body<R> root = Body.root("body of method " + method.name(), MemberBodies.declares(method));
         This<Self> self = thisOf(root);
-        Var<A1> p1 = lastParameter(slot, method.param1(), root);
+        Var<A1> p1 = lastParameter(method.param1(), root);
         defineIn(slot, root, List.of(p1), Start.IMPLICIT, b -> body.build(b, self, p1));
     }
 
@@ -257,7 +244,7 @@ abstract class TypedTypeBodies<Self, M> {
         Slot.Awaiting slot = definable(method);
         Body<R> root = Body.root("body of method " + method.name(), MemberBodies.declares(method));
         This<Self> self = thisOf(root);
-        Var<A1> p1 = lastParameter(slot, method.param1(), root);
+        Var<A1> p1 = lastParameter(method.param1(), root);
         Var<A2> p2 = Var.param(method.param2(), root);
         defineIn(slot, root, List.of(p1, p2), Start.IMPLICIT, b -> body.build(b, self, p1, p2));
     }
@@ -267,7 +254,7 @@ abstract class TypedTypeBodies<Self, M> {
         Slot.Awaiting slot = definable(method);
         Body<R> root = Body.root("body of method " + method.name(), MemberBodies.declares(method));
         This<Self> self = thisOf(root);
-        Var<A1> p1 = lastParameter(slot, method.param1(), root);
+        Var<A1> p1 = lastParameter(method.param1(), root);
         Var<A2> p2 = Var.param(method.param2(), root);
         Var<A3> p3 = Var.param(method.param3(), root);
         defineIn(slot, root, List.of(p1, p2, p3), Start.IMPLICIT, b -> body.build(b, self, p1, p2, p3));
@@ -278,7 +265,7 @@ abstract class TypedTypeBodies<Self, M> {
         Slot.Awaiting slot = definable(method);
         Body<R> root = Body.root("body of method " + method.name(), MemberBodies.declares(method));
         This<Self> self = thisOf(root);
-        Var<A1> p1 = lastParameter(slot, method.param1(), root);
+        Var<A1> p1 = lastParameter(method.param1(), root);
         Var<A2> p2 = Var.param(method.param2(), root);
         Var<A3> p3 = Var.param(method.param3(), root);
         Var<A4> p4 = Var.param(method.param4(), root);
@@ -296,7 +283,7 @@ abstract class TypedTypeBodies<Self, M> {
         Slot.Awaiting slot = definable(method);
         VoidBody root = VoidBody.root("body of method " + method.name(), MemberBodies.declares(method));
         This<Self> self = thisOf(root);
-        Var<A1> p1 = lastParameter(slot, method.param1(), root);
+        Var<A1> p1 = lastParameter(method.param1(), root);
         defineIn(slot, root, List.of(p1), Start.IMPLICIT, b -> body.build(b, self, p1));
     }
 
@@ -305,7 +292,7 @@ abstract class TypedTypeBodies<Self, M> {
         Slot.Awaiting slot = definable(method);
         VoidBody root = VoidBody.root("body of method " + method.name(), MemberBodies.declares(method));
         This<Self> self = thisOf(root);
-        Var<A1> p1 = lastParameter(slot, method.param1(), root);
+        Var<A1> p1 = lastParameter(method.param1(), root);
         Var<A2> p2 = Var.param(method.param2(), root);
         defineIn(slot, root, List.of(p1, p2), Start.IMPLICIT, b -> body.build(b, self, p1, p2));
     }
@@ -315,7 +302,7 @@ abstract class TypedTypeBodies<Self, M> {
         Slot.Awaiting slot = definable(method);
         VoidBody root = VoidBody.root("body of method " + method.name(), MemberBodies.declares(method));
         This<Self> self = thisOf(root);
-        Var<A1> p1 = lastParameter(slot, method.param1(), root);
+        Var<A1> p1 = lastParameter(method.param1(), root);
         Var<A2> p2 = Var.param(method.param2(), root);
         Var<A3> p3 = Var.param(method.param3(), root);
         defineIn(slot, root, List.of(p1, p2, p3), Start.IMPLICIT, b -> body.build(b, self, p1, p2, p3));
@@ -326,7 +313,7 @@ abstract class TypedTypeBodies<Self, M> {
         Slot.Awaiting slot = definable(method);
         VoidBody root = VoidBody.root("body of method " + method.name(), MemberBodies.declares(method));
         This<Self> self = thisOf(root);
-        Var<A1> p1 = lastParameter(slot, method.param1(), root);
+        Var<A1> p1 = lastParameter(method.param1(), root);
         Var<A2> p2 = Var.param(method.param2(), root);
         Var<A3> p3 = Var.param(method.param3(), root);
         Var<A4> p4 = Var.param(method.param4(), root);
@@ -342,7 +329,7 @@ abstract class TypedTypeBodies<Self, M> {
     public final <R, A1> void define(StaticMethodRef1<R, A1> method, BiFunction<Body<R>, Var<A1>, Terminated<R>> body) {
         Slot.Awaiting slot = definable(method);
         Body<R> root = Body.root("body of static method " + method.name(), MemberBodies.declares(method));
-        Var<A1> p1 = lastParameter(slot, method.param1(), root);
+        Var<A1> p1 = lastParameter(method.param1(), root);
         defineIn(slot, root, List.of(p1), Start.IMPLICIT, b -> body.apply(b, p1));
     }
 
@@ -350,7 +337,7 @@ abstract class TypedTypeBodies<Self, M> {
             StaticMethodRef2<R, A1, A2> method, Function3<Body<R>, Var<A1>, Var<A2>, Terminated<R>> body) {
         Slot.Awaiting slot = definable(method);
         Body<R> root = Body.root("body of static method " + method.name(), MemberBodies.declares(method));
-        Var<A1> p1 = lastParameter(slot, method.param1(), root);
+        Var<A1> p1 = lastParameter(method.param1(), root);
         Var<A2> p2 = Var.param(method.param2(), root);
         defineIn(slot, root, List.of(p1, p2), Start.IMPLICIT, b -> body.apply(b, p1, p2));
     }
@@ -359,7 +346,7 @@ abstract class TypedTypeBodies<Self, M> {
             StaticMethodRef3<R, A1, A2, A3> method, Function4<Body<R>, Var<A1>, Var<A2>, Var<A3>, Terminated<R>> body) {
         Slot.Awaiting slot = definable(method);
         Body<R> root = Body.root("body of static method " + method.name(), MemberBodies.declares(method));
-        Var<A1> p1 = lastParameter(slot, method.param1(), root);
+        Var<A1> p1 = lastParameter(method.param1(), root);
         Var<A2> p2 = Var.param(method.param2(), root);
         Var<A3> p3 = Var.param(method.param3(), root);
         defineIn(slot, root, List.of(p1, p2, p3), Start.IMPLICIT, b -> body.apply(b, p1, p2, p3));
@@ -370,7 +357,7 @@ abstract class TypedTypeBodies<Self, M> {
             Function5<Body<R>, Var<A1>, Var<A2>, Var<A3>, Var<A4>, Terminated<R>> body) {
         Slot.Awaiting slot = definable(method);
         Body<R> root = Body.root("body of static method " + method.name(), MemberBodies.declares(method));
-        Var<A1> p1 = lastParameter(slot, method.param1(), root);
+        Var<A1> p1 = lastParameter(method.param1(), root);
         Var<A2> p2 = Var.param(method.param2(), root);
         Var<A3> p3 = Var.param(method.param3(), root);
         Var<A4> p4 = Var.param(method.param4(), root);
@@ -387,7 +374,7 @@ abstract class TypedTypeBodies<Self, M> {
             VoidStaticMethodRef1<A1> method, BiFunction<VoidBody, Var<A1>, Terminated<Void>> body) {
         Slot.Awaiting slot = definable(method);
         VoidBody root = VoidBody.root("body of static method " + method.name(), MemberBodies.declares(method));
-        Var<A1> p1 = lastParameter(slot, method.param1(), root);
+        Var<A1> p1 = lastParameter(method.param1(), root);
         defineIn(slot, root, List.of(p1), Start.IMPLICIT, b -> body.apply(b, p1));
     }
 
@@ -395,7 +382,7 @@ abstract class TypedTypeBodies<Self, M> {
             VoidStaticMethodRef2<A1, A2> method, Function3<VoidBody, Var<A1>, Var<A2>, Terminated<Void>> body) {
         Slot.Awaiting slot = definable(method);
         VoidBody root = VoidBody.root("body of static method " + method.name(), MemberBodies.declares(method));
-        Var<A1> p1 = lastParameter(slot, method.param1(), root);
+        Var<A1> p1 = lastParameter(method.param1(), root);
         Var<A2> p2 = Var.param(method.param2(), root);
         defineIn(slot, root, List.of(p1, p2), Start.IMPLICIT, b -> body.apply(b, p1, p2));
     }
@@ -405,7 +392,7 @@ abstract class TypedTypeBodies<Self, M> {
             Function4<VoidBody, Var<A1>, Var<A2>, Var<A3>, Terminated<Void>> body) {
         Slot.Awaiting slot = definable(method);
         VoidBody root = VoidBody.root("body of static method " + method.name(), MemberBodies.declares(method));
-        Var<A1> p1 = lastParameter(slot, method.param1(), root);
+        Var<A1> p1 = lastParameter(method.param1(), root);
         Var<A2> p2 = Var.param(method.param2(), root);
         Var<A3> p3 = Var.param(method.param3(), root);
         defineIn(slot, root, List.of(p1, p2, p3), Start.IMPLICIT, b -> body.apply(b, p1, p2, p3));
@@ -416,7 +403,7 @@ abstract class TypedTypeBodies<Self, M> {
             Function5<VoidBody, Var<A1>, Var<A2>, Var<A3>, Var<A4>, Terminated<Void>> body) {
         Slot.Awaiting slot = definable(method);
         VoidBody root = VoidBody.root("body of static method " + method.name(), MemberBodies.declares(method));
-        Var<A1> p1 = lastParameter(slot, method.param1(), root);
+        Var<A1> p1 = lastParameter(method.param1(), root);
         Var<A2> p2 = Var.param(method.param2(), root);
         Var<A3> p3 = Var.param(method.param3(), root);
         Var<A4> p4 = Var.param(method.param4(), root);
@@ -491,7 +478,7 @@ abstract class TypedTypeBodies<Self, M> {
         Slot.Awaiting slot = definable(ctor);
         VoidBody root = VoidBody.root("body of constructor", MemberBodies.declares(ctor));
         This<Self> self = thisOf(root);
-        Var<A1> p1 = lastParameter(slot, param(ctor, 0), root);
+        Var<A1> p1 = lastParameter(param(ctor, 0), root);
         defineIn(slot, root, List.of(p1), start, b -> body.build(b, self, p1));
     }
 
@@ -500,7 +487,7 @@ abstract class TypedTypeBodies<Self, M> {
         Slot.Awaiting slot = definable(ctor);
         VoidBody root = VoidBody.root("body of constructor", MemberBodies.declares(ctor));
         This<Self> self = thisOf(root);
-        Var<A1> p1 = lastParameter(slot, param(ctor, 0), root);
+        Var<A1> p1 = lastParameter(param(ctor, 0), root);
         Var<A2> p2 = Var.param(param(ctor, 1), root);
         defineIn(slot, root, List.of(p1, p2), start, b -> body.build(b, self, p1, p2));
     }
@@ -510,7 +497,7 @@ abstract class TypedTypeBodies<Self, M> {
         Slot.Awaiting slot = definable(ctor);
         VoidBody root = VoidBody.root("body of constructor", MemberBodies.declares(ctor));
         This<Self> self = thisOf(root);
-        Var<A1> p1 = lastParameter(slot, param(ctor, 0), root);
+        Var<A1> p1 = lastParameter(param(ctor, 0), root);
         Var<A2> p2 = Var.param(param(ctor, 1), root);
         Var<A3> p3 = Var.param(param(ctor, 2), root);
         defineIn(slot, root, List.of(p1, p2, p3), start, b -> body.build(b, self, p1, p2, p3));
@@ -521,7 +508,7 @@ abstract class TypedTypeBodies<Self, M> {
         Slot.Awaiting slot = definable(ctor);
         VoidBody root = VoidBody.root("body of constructor", MemberBodies.declares(ctor));
         This<Self> self = thisOf(root);
-        Var<A1> p1 = lastParameter(slot, param(ctor, 0), root);
+        Var<A1> p1 = lastParameter(param(ctor, 0), root);
         Var<A2> p2 = Var.param(param(ctor, 1), root);
         Var<A3> p3 = Var.param(param(ctor, 2), root);
         Var<A4> p4 = Var.param(param(ctor, 3), root);
@@ -533,20 +520,9 @@ abstract class TypedTypeBodies<Self, M> {
         return (TypeToken<T>) member.params().get(index);
     }
 
-    /// The last parameter of a declared member, of `type`: that of a member of variable arity declared
-    /// `@SafeVarargs` is one the body may read and store into and loop over, and may not let the array
-    /// out of the member.
-    private static <T> Var<T> lastParameter(Slot.Awaiting slot, TypeToken<T> type, Block<?, ?> root) {
-        Var.Role.Fixed role =
-                switch (slot.declared().fact().arity()) {
-                    case Arity.Fixed _ -> Var.Role.Fixed.PARAMETER;
-                    case Arity.Variable(var safety) ->
-                        switch (safety) {
-                            case UNCHECKED -> Var.Role.Fixed.PARAMETER;
-                            case SAFE_VARARGS -> Var.Role.Fixed.SAFE_VARARGS_PARAMETER;
-                        };
-                };
-        return new Var<>(type, role, root);
+    /// The last parameter of a declared member, of `type`.
+    private static <T> Var<T> lastParameter(TypeToken<T> type, Block<?, ?> root) {
+        return new Var<>(type, Var.Role.Fixed.PARAMETER, root);
     }
 
     // ------------------------------------------------------------------
@@ -582,13 +558,7 @@ abstract class TypedTypeBodies<Self, M> {
                     return new Param(declaredName, param.type().typeRef(), annotations);
                 })
                 .toList();
-        List<Param> coreParams =
-                switch (declared.fact().arity()) {
-                    case Arity.Fixed _ -> named;
-                    case Arity.Variable _ ->
-                        Stream.concat(named.stream().limit(named.size() - 1L), Stream.of(variable(named.getLast())))
-                                .toList();
-                };
+        List<Param> coreParams = named;
         List<me.supcheg.javafile.annotation.AnnotationUse> annotations = Stream.of(
                         declared.annotations().stream().map(me.supcheg.javafile.facts.AnnotationRef::toUse),
                         declared.overrides()
@@ -597,10 +567,7 @@ abstract class TypedTypeBodies<Self, M> {
                                 : Stream.<me.supcheg.javafile.annotation.AnnotationUse>empty())
                 .flatMap(Function.identity())
                 .toList();
-        List<me.supcheg.javafile.type.ClassOrInterfaceTypeRef> throwsClause = declared.thrown().stream()
-                .<me.supcheg.javafile.type.ClassOrInterfaceTypeRef>map(
-                        type -> lowering.named(type).typeRef())
-                .toList();
+        List<me.supcheg.javafile.type.ClassOrInterfaceTypeRef> throwsClause = List.of();
         return switch (declared.kind()) {
             case CONSTRUCTOR, CANONICAL, COMPACT -> {
                 ConstructorBody body =
@@ -629,27 +596,13 @@ abstract class TypedTypeBodies<Self, M> {
         return null;
     }
 
-    private static Param variable(Param last) {
-        me.supcheg.javafile.type.ArrayTypeRef array = me.supcheg.javafile.Invariants.present(
-                java.util.Optional.of(last.type())
-                        .filter(me.supcheg.javafile.type.ArrayTypeRef.class::isInstance)
-                        .map(me.supcheg.javafile.type.ArrayTypeRef.class::cast),
-                "the last parameter of a method of variable arity is an array, got %s",
-                last.type());
-        return new Param(last.name(), array.component(), last.annotations(), true);
-    }
-
     private M abstractMethod(Member.Callable declared) {
         List<Param> params = IntStream.range(0, declared.fact().params().size())
                 .mapToObj(index -> new Param(
                         "v" + index, declared.fact().params().get(index).typeRef()))
                 .toList();
-        List<me.supcheg.javafile.annotation.AnnotationUse> annotations = declared.annotations().stream()
-                .map(me.supcheg.javafile.facts.AnnotationRef::toUse)
-                .toList();
-        List<me.supcheg.javafile.type.ClassOrInterfaceTypeRef> throwsClause = declared.thrown().stream()
-                .<me.supcheg.javafile.type.ClassOrInterfaceTypeRef>map(type -> type.typeRef())
-                .toList();
+        List<me.supcheg.javafile.annotation.AnnotationUse> annotations = List.of();
+        List<me.supcheg.javafile.type.ClassOrInterfaceTypeRef> throwsClause = List.of();
         return abstractMethod(declared, params, throwsClause, annotations);
     }
 

@@ -31,7 +31,6 @@ public final class TypedEnumBodies<Self> extends TypedTypeBodies<Self, EnumMembe
     private final List<TypedEnumBuilder.Constant<Self>> constants;
     private final List<Invocable> abstractMethods;
     private final List<TypedEnumBuilder.Constructor> constructors;
-    private List<EnumConstructorDecl> renderedConstructors;
 
     TypedEnumBodies(
             TypedEnumBuilder<Self> owner,
@@ -152,14 +151,11 @@ public final class TypedEnumBodies<Self> extends TypedTypeBodies<Self, EnumMembe
     }
 
     private List<EnumConstructorDecl> enumConstructors() {
-        if (renderedConstructors != null) {
-            return renderedConstructors;
-        }
         Lowering lowering = new Lowering(
                 owner().target(),
                 new Lowering.Place.InClass(self(), owner().scope("the body of a constructor"), owner().bounded()),
                 Optional.empty());
-        renderedConstructors = constructors.stream()
+        return constructors.stream()
                 .map(constructor -> {
                     List<Param> params = constructor.params().stream()
                             .map(param -> new Param(
@@ -169,6 +165,5 @@ public final class TypedEnumBodies<Self> extends TypedTypeBodies<Self, EnumMembe
                     return new EnumConstructorDecl(List.of(), params, code, List.of(), Optional.empty());
                 })
                 .toList();
-        return renderedConstructors;
     }
 }

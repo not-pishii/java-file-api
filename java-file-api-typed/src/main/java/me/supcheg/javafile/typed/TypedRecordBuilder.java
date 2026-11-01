@@ -282,7 +282,6 @@ public final class TypedRecordBuilder<Self> extends TypeMemberDeclarations<Self>
     @Override
     JavaFile file(List<?> members) {
         return JavaFile.record(desc(), rb -> {
-            annotations().forEach(annotation -> rb.withAnnotation(annotation.toUse()));
             components.forEach(component -> rb.withComponent(new RecordComponent(
                     component.name(),
                     component.type().typeRef(),

@@ -871,13 +871,12 @@ final class Lowering {
         };
     }
 
-    /// Whether a type is `type` or a subtype of it: a class by its superclass chain, an interface by
-    /// the interfaces it extends.
+    /// Whether a type is `type` or a subtype of it: a class by its superclass chain, a declared
+    /// interface by the type itself alone, which is the one the typed layer declares its body in.
     private static boolean isSubclassOf(DeclaredToken<?> self, ClassDesc type) {
         return switch (self) {
             case ClassToken<?> cls -> cls.isSubclassOf(type);
-            case InterfaceToken<?> iface ->
-                iface.erasure().equals(type) || iface.shape().interfaces().contains(type);
+            case InterfaceToken<?> iface -> iface.erasure().equals(type);
         };
     }
 

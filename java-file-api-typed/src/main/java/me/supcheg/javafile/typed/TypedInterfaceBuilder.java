@@ -97,7 +97,6 @@ public final class TypedInterfaceBuilder<Self> extends TypeMemberDeclarations<Se
     @Override
     JavaFile file(List<?> members) {
         return JavaFile.interface_(desc(), ib -> {
-            annotations().forEach(annotation -> ib.withAnnotation(annotation.toUse()));
             extendsInterfaces.forEach(ib::withExtends);
             permits.forEach(ib::withPermits);
             members.forEach(member -> ib.accept((InterfaceMember) member));
