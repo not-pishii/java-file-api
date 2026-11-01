@@ -198,7 +198,7 @@ class TypedDeclarationGuardTest {
     }
 
     @Test
-    void aConstantBodyDeclaresMethodsAlone() {
+    void aConstantBodyRefusesAnAbstractMethodAConstructorAndAConstant() {
         TypedJavaFile.enum_(UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedEnumSpec() {
             @Override
             public <Self> TypedEnumBodies<Self> build(TypedEnumBuilder<Self> eb) {
@@ -206,12 +206,6 @@ class TypedDeclarationGuardTest {
                 eb.constructor((b, self) -> b.end());
                 eb.constant("A", cb -> {
                     var callable = callable(eb);
-                    var field = new TypeDeclarationSupport.Member.Field(
-                            UnsafeFacts.field(eb.self(), "f", PrimitiveToken.INT),
-                            Set.of(),
-                            List.of(),
-                            java.util.Optional.empty(),
-                            Site.here());
                     var constant = new TypeDeclarationSupport.Member.Constant(
                             UnsafeFacts.staticField(eb.self(), "C", PrimitiveToken.INT),
                             List.of(),
@@ -224,11 +218,9 @@ class TypedDeclarationGuardTest {
                             .isThrownBy(() -> cb.constructor(callable, null, List.of(), List.of(), List.of()))
                             .withMessageContaining("a constant body has no constructor");
                     assertThatIllegalStateException()
-                            .isThrownBy(() -> cb.field(field, null))
-                            .withMessageContaining("a constant body of the typed layer declares methods alone");
-                    assertThatIllegalStateException()
                             .isThrownBy(() -> cb.constant(constant, null))
-                            .withMessageContaining("a constant body of the typed layer declares methods alone");
+                            .withMessageContaining(
+                                    "a constant body of the typed layer declares fields and methods, not a constant");
                     cb.override(abstractMethod, (b, self) -> b.return_(literal(0)));
                 });
                 return eb.bodies();

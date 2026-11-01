@@ -123,6 +123,46 @@ abstract class TypedTypeBodies<Self, M> {
         return self;
     }
 
+    /// The static fields and methods that the body being lowered declares itself, which it reaches
+    /// unqualified: the body of an enum constant is the body of an anonymous class, and has no name to
+    /// qualify them by. A type declared as a file has none.
+    ///
+    /// @return the names of those members
+    java.util.Set<String> localStaticMembers() {
+        return java.util.Set.of();
+    }
+
+    // ------------------------------------------------------------------
+    // Declarations made by a body of its own
+    // ------------------------------------------------------------------
+
+    /// Adds a method that the body of an enum constant declares, which [#define] then defines. The
+    /// methods of a constant's body are declared after the bodies of the enum began: the body is built
+    /// once the enum's declarations ended, and a constant's own methods are its own.
+    ///
+    /// @param declared the method
+    final void declaredMethod(Member.Callable declared) {
+        slots = Stream.concat(slots.stream(), Stream.of(new Slot.Awaiting(declared)))
+                .toList();
+    }
+
+    /// Adds a field that the body of an enum constant declares, which [#initialize] then initializes.
+    ///
+    /// @param declared the field
+    final void declaredField(Member.Field declared) {
+        slots = Stream.concat(slots.stream(), Stream.of(new Slot.Blank(declared)))
+                .toList();
+    }
+
+    /// Adds a static field that the body of an enum constant declares, which [#initialize] then
+    /// initializes.
+    ///
+    /// @param declared the field
+    final void declaredStaticField(Member.StaticField declared) {
+        slots = Stream.concat(slots.stream(), Stream.of(new Slot.BlankStatic(declared)))
+                .toList();
+    }
+
     // ------------------------------------------------------------------
     // Definitions
     // ------------------------------------------------------------------
@@ -208,7 +248,8 @@ abstract class TypedTypeBodies<Self, M> {
         Exceptions.initializer(initializer.node(), "initializer of " + what);
         Lowering lowering = new Lowering(
                 owner.target(),
-                new Lowering.Place.InClass(self, owner.scope("the initializer of " + what), owner.bounded()),
+                new Lowering.Place.InClass(
+                        self, owner.scope("the initializer of " + what), owner.bounded(), localStaticMembers()),
                 java.util.Optional.empty());
         VariableInitializer lowered = lowering.lowerInitializer(initializer.node(), field.type());
         defined(slot, field(slot.declared(), lowered), "the initializer of " + what);
@@ -258,7 +299,8 @@ abstract class TypedTypeBodies<Self, M> {
                                         self,
                                         owner.staticScope("the initializer of constant "
                                                 + constant.declared().fact().name()),
-                                        owner.bounded()),
+                                        owner.bounded(),
+                                        localStaticMembers()),
                                 java.util.Optional.empty())
                         .lowerInitializer(initializer.node(), type);
             case Slot.BlankStatic staticField ->
@@ -268,7 +310,8 @@ abstract class TypedTypeBodies<Self, M> {
                                         self,
                                         owner.staticScope("the initializer of static field "
                                                 + staticField.declared().fact().name()),
-                                        owner.bounded()),
+                                        owner.bounded(),
+                                        localStaticMembers()),
                                 staticField.declared().fact(),
                                 declaredFrom(staticField.declared().fact()))
                         .lowerInitializer(initializer.node(), type);
@@ -897,7 +940,9 @@ abstract class TypedTypeBodies<Self, M> {
     private M lower(Member.Callable declared, Block<?, ?> root, List<Var<?>> params, Start start) {
         Invocable fact = declared.fact();
         Lowering lowering = new Lowering(
-                owner.target(), new Lowering.Place.InClass(self, declared.scope(), owner.bounded()), fact.resultType());
+                owner.target(),
+                new Lowering.Place.InClass(self, declared.scope(), owner.bounded(), localStaticMembers()),
+                fact.resultType());
         List<Param> named = IntStream.range(0, params.size())
                 .mapToObj(index -> {
                     Var<?> param = params.get(index);

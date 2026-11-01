@@ -7,9 +7,17 @@ import me.supcheg.javafile.facts.Invocable;
 import me.supcheg.javafile.facts.MemberTraits;
 import me.supcheg.javafile.facts.MethodRef0;
 import me.supcheg.javafile.facts.MethodRef1;
+import me.supcheg.javafile.facts.MethodRef10;
+import me.supcheg.javafile.facts.MethodRef11;
+import me.supcheg.javafile.facts.MethodRef12;
 import me.supcheg.javafile.facts.MethodRef2;
 import me.supcheg.javafile.facts.MethodRef3;
 import me.supcheg.javafile.facts.MethodRef4;
+import me.supcheg.javafile.facts.MethodRef5;
+import me.supcheg.javafile.facts.MethodRef6;
+import me.supcheg.javafile.facts.MethodRef7;
+import me.supcheg.javafile.facts.MethodRef8;
+import me.supcheg.javafile.facts.MethodRef9;
 import me.supcheg.javafile.facts.StaticMethodRef0;
 import me.supcheg.javafile.facts.StaticMethodRef1;
 import me.supcheg.javafile.facts.StaticMethodRef2;
@@ -19,9 +27,17 @@ import me.supcheg.javafile.facts.TypeToken;
 import me.supcheg.javafile.facts.UnsafeInvocables;
 import me.supcheg.javafile.facts.VoidMethodRef0;
 import me.supcheg.javafile.facts.VoidMethodRef1;
+import me.supcheg.javafile.facts.VoidMethodRef10;
+import me.supcheg.javafile.facts.VoidMethodRef11;
+import me.supcheg.javafile.facts.VoidMethodRef12;
 import me.supcheg.javafile.facts.VoidMethodRef2;
 import me.supcheg.javafile.facts.VoidMethodRef3;
 import me.supcheg.javafile.facts.VoidMethodRef4;
+import me.supcheg.javafile.facts.VoidMethodRef5;
+import me.supcheg.javafile.facts.VoidMethodRef6;
+import me.supcheg.javafile.facts.VoidMethodRef7;
+import me.supcheg.javafile.facts.VoidMethodRef8;
+import me.supcheg.javafile.facts.VoidMethodRef9;
 import me.supcheg.javafile.facts.VoidStaticMethodRef0;
 import me.supcheg.javafile.facts.VoidStaticMethodRef1;
 import me.supcheg.javafile.facts.VoidStaticMethodRef2;
@@ -63,6 +79,73 @@ abstract class TypeMemberDeclarations<Self> extends TypeDeclarationSupport<Self>
         requireDeclaring("a member class of " + described());
         NestedDeclarations.NestedType<FinalClassToken<N>> nested =
                 NestedDeclarations.class_(target(), desc(), name, java.util.List.of(), java.util.List.of(), spec);
+        declaredNested(nested.type());
+        return nested.token();
+    }
+
+    /// Declares a generic `public static final` member class of the type with one type parameter,
+    /// implicitly `static`; see [#declareNestedClass(String, TypedJavaFile.TypedClassHeaderSpec)].
+    ///
+    /// @param name the simple name of the member class
+    /// @param p1 the type parameter
+    /// @param spec declares the member class, given its header and the token of the type parameter
+    /// @param <N> the brand of the member class
+    /// @param <B1> the leftmost bound of the type parameter
+    /// @return the token of the member class
+    public final <N, B1> FinalClassToken<N> declareNestedClass(
+            String name, TypeParameter<B1> p1, TypedJavaFile.TypedGenericClassSpec1<B1> spec) {
+        requireDeclaring("a member class of " + described());
+        NestedDeclarations.NestedType<FinalClassToken<N>> nested =
+                NestedDeclarations.class_(target(), desc(), name, p1, spec);
+        declaredNested(nested.type());
+        return nested.token();
+    }
+
+    /// Declares a generic `public static final` member class of the type with two type parameters,
+    /// see [#declareNestedClass(String, TypeParameter, TypedJavaFile.TypedGenericClassSpec1)].
+    ///
+    /// @param name the simple name of the member class
+    /// @param p1 the first type parameter
+    /// @param p2 the second type parameter
+    /// @param spec declares the member class, given its header and the tokens of its type parameters
+    /// @param <N> the brand of the member class
+    /// @param <B1> the leftmost bound of the first type parameter
+    /// @param <B2> the leftmost bound of the second type parameter
+    /// @return the token of the member class
+    public final <N, B1, B2> FinalClassToken<N> declareNestedClass(
+            String name,
+            TypeParameter<B1> p1,
+            TypeParameter<B2> p2,
+            TypedJavaFile.TypedGenericClassSpec2<B1, B2> spec) {
+        requireDeclaring("a member class of " + described());
+        NestedDeclarations.NestedType<FinalClassToken<N>> nested =
+                NestedDeclarations.class_(target(), desc(), name, p1, p2, spec);
+        declaredNested(nested.type());
+        return nested.token();
+    }
+
+    /// Declares a generic `public static final` member class of the type with three type parameters,
+    /// see [#declareNestedClass(String, TypeParameter, TypedJavaFile.TypedGenericClassSpec1)].
+    ///
+    /// @param name the simple name of the member class
+    /// @param p1 the first type parameter
+    /// @param p2 the second type parameter
+    /// @param p3 the third type parameter
+    /// @param spec declares the member class, given its header and the tokens of its type parameters
+    /// @param <N> the brand of the member class
+    /// @param <B1> the leftmost bound of the first type parameter
+    /// @param <B2> the leftmost bound of the second type parameter
+    /// @param <B3> the leftmost bound of the third type parameter
+    /// @return the token of the member class
+    public final <N, B1, B2, B3> FinalClassToken<N> declareNestedClass(
+            String name,
+            TypeParameter<B1> p1,
+            TypeParameter<B2> p2,
+            TypeParameter<B3> p3,
+            TypedJavaFile.TypedGenericClassSpec3<B1, B2, B3> spec) {
+        requireDeclaring("a member class of " + described());
+        NestedDeclarations.NestedType<FinalClassToken<N>> nested =
+                NestedDeclarations.class_(target(), desc(), name, p1, p2, p3, spec);
         declaredNested(nested.type());
         return nested.token();
     }
@@ -651,6 +734,635 @@ abstract class TypeMemberDeclarations<Self> extends TypeDeclarationSupport<Self>
     public final <A1, A2, A3, A4> VoidMethodRef4<Self, A1, A2, A3, A4> declareVoidAbstractMethod(
             String name, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4) {
         return declared(UnsafeInvocables.voidMethod(self(), name, p1, p2, p3, p4, abstractTraits()), Kind.ABSTRACT);
+    }
+
+    /// Declares an abstract method with five parameters, see
+    /// [#declareAbstractMethod(String, TypeToken)].
+    ///
+    /// @param name the method name
+    /// @param result the result type
+    /// @param p1 the first parameter type
+    /// @param p2 the second parameter type
+    /// @param p3 the third parameter type
+    /// @param p4 the fourth parameter type
+    /// @param p5 the fifth parameter type
+    /// @param <R> the result type
+    /// @param <A1> the first parameter type
+    /// @param <A2> the second parameter type
+    /// @param <A3> the third parameter type
+    /// @param <A4> the fourth parameter type
+    /// @param <A5> the fifth parameter type
+    /// @return the fact of the abstract method
+    public final <R, A1, A2, A3, A4, A5> MethodRef5<Self, R, A1, A2, A3, A4, A5> declareAbstractMethod(
+            String name,
+            TypeToken<R> result,
+            TypeToken<A1> p1,
+            TypeToken<A2> p2,
+            TypeToken<A3> p3,
+            TypeToken<A4> p4,
+            TypeToken<A5> p5) {
+        return declared(
+                UnsafeInvocables.method(self(), name, result, p1, p2, p3, p4, p5, abstractTraits()), Kind.ABSTRACT);
+    }
+
+    /// Declares a `public abstract void` method with five parameters, see
+    /// [#declareAbstractMethod(String, TypeToken)].
+    ///
+    /// @param name the method name
+    /// @param p1 the first parameter type
+    /// @param p2 the second parameter type
+    /// @param p3 the third parameter type
+    /// @param p4 the fourth parameter type
+    /// @param p5 the fifth parameter type
+    /// @param <A1> the first parameter type
+    /// @param <A2> the second parameter type
+    /// @param <A3> the third parameter type
+    /// @param <A4> the fourth parameter type
+    /// @param <A5> the fifth parameter type
+    /// @return the fact of the abstract method
+    public final <A1, A2, A3, A4, A5> VoidMethodRef5<Self, A1, A2, A3, A4, A5> declareVoidAbstractMethod(
+            String name, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5) {
+        return declared(UnsafeInvocables.voidMethod(self(), name, p1, p2, p3, p4, p5, abstractTraits()), Kind.ABSTRACT);
+    }
+
+    /// Declares an abstract method with six parameters, see
+    /// [#declareAbstractMethod(String, TypeToken)].
+    ///
+    /// @param name the method name
+    /// @param result the result type
+    /// @param p1 the first parameter type
+    /// @param p2 the second parameter type
+    /// @param p3 the third parameter type
+    /// @param p4 the fourth parameter type
+    /// @param p5 the fifth parameter type
+    /// @param p6 the sixth parameter type
+    /// @param <R> the result type
+    /// @param <A1> the first parameter type
+    /// @param <A2> the second parameter type
+    /// @param <A3> the third parameter type
+    /// @param <A4> the fourth parameter type
+    /// @param <A5> the fifth parameter type
+    /// @param <A6> the sixth parameter type
+    /// @return the fact of the abstract method
+    public final <R, A1, A2, A3, A4, A5, A6> MethodRef6<Self, R, A1, A2, A3, A4, A5, A6> declareAbstractMethod(
+            String name,
+            TypeToken<R> result,
+            TypeToken<A1> p1,
+            TypeToken<A2> p2,
+            TypeToken<A3> p3,
+            TypeToken<A4> p4,
+            TypeToken<A5> p5,
+            TypeToken<A6> p6) {
+        return declared(
+                UnsafeInvocables.method(self(), name, result, p1, p2, p3, p4, p5, p6, abstractTraits()), Kind.ABSTRACT);
+    }
+
+    /// Declares a `public abstract void` method with six parameters, see
+    /// [#declareAbstractMethod(String, TypeToken)].
+    ///
+    /// @param name the method name
+    /// @param p1 the first parameter type
+    /// @param p2 the second parameter type
+    /// @param p3 the third parameter type
+    /// @param p4 the fourth parameter type
+    /// @param p5 the fifth parameter type
+    /// @param p6 the sixth parameter type
+    /// @param <A1> the first parameter type
+    /// @param <A2> the second parameter type
+    /// @param <A3> the third parameter type
+    /// @param <A4> the fourth parameter type
+    /// @param <A5> the fifth parameter type
+    /// @param <A6> the sixth parameter type
+    /// @return the fact of the abstract method
+    public final <A1, A2, A3, A4, A5, A6> VoidMethodRef6<Self, A1, A2, A3, A4, A5, A6> declareVoidAbstractMethod(
+            String name,
+            TypeToken<A1> p1,
+            TypeToken<A2> p2,
+            TypeToken<A3> p3,
+            TypeToken<A4> p4,
+            TypeToken<A5> p5,
+            TypeToken<A6> p6) {
+        return declared(
+                UnsafeInvocables.voidMethod(self(), name, p1, p2, p3, p4, p5, p6, abstractTraits()), Kind.ABSTRACT);
+    }
+
+    /// Declares an abstract method with seven parameters, see
+    /// [#declareAbstractMethod(String, TypeToken)].
+    ///
+    /// @param name the method name
+    /// @param result the result type
+    /// @param p1 the first parameter type
+    /// @param p2 the second parameter type
+    /// @param p3 the third parameter type
+    /// @param p4 the fourth parameter type
+    /// @param p5 the fifth parameter type
+    /// @param p6 the sixth parameter type
+    /// @param p7 the seventh parameter type
+    /// @param <R> the result type
+    /// @param <A1> the first parameter type
+    /// @param <A2> the second parameter type
+    /// @param <A3> the third parameter type
+    /// @param <A4> the fourth parameter type
+    /// @param <A5> the fifth parameter type
+    /// @param <A6> the sixth parameter type
+    /// @param <A7> the seventh parameter type
+    /// @return the fact of the abstract method
+    public final <R, A1, A2, A3, A4, A5, A6, A7> MethodRef7<Self, R, A1, A2, A3, A4, A5, A6, A7> declareAbstractMethod(
+            String name,
+            TypeToken<R> result,
+            TypeToken<A1> p1,
+            TypeToken<A2> p2,
+            TypeToken<A3> p3,
+            TypeToken<A4> p4,
+            TypeToken<A5> p5,
+            TypeToken<A6> p6,
+            TypeToken<A7> p7) {
+        return declared(
+                UnsafeInvocables.method(self(), name, result, p1, p2, p3, p4, p5, p6, p7, abstractTraits()),
+                Kind.ABSTRACT);
+    }
+
+    /// Declares a `public abstract void` method with seven parameters, see
+    /// [#declareAbstractMethod(String, TypeToken)].
+    ///
+    /// @param name the method name
+    /// @param p1 the first parameter type
+    /// @param p2 the second parameter type
+    /// @param p3 the third parameter type
+    /// @param p4 the fourth parameter type
+    /// @param p5 the fifth parameter type
+    /// @param p6 the sixth parameter type
+    /// @param p7 the seventh parameter type
+    /// @param <A1> the first parameter type
+    /// @param <A2> the second parameter type
+    /// @param <A3> the third parameter type
+    /// @param <A4> the fourth parameter type
+    /// @param <A5> the fifth parameter type
+    /// @param <A6> the sixth parameter type
+    /// @param <A7> the seventh parameter type
+    /// @return the fact of the abstract method
+    public final <A1, A2, A3, A4, A5, A6, A7>
+            VoidMethodRef7<Self, A1, A2, A3, A4, A5, A6, A7> declareVoidAbstractMethod(
+                    String name,
+                    TypeToken<A1> p1,
+                    TypeToken<A2> p2,
+                    TypeToken<A3> p3,
+                    TypeToken<A4> p4,
+                    TypeToken<A5> p5,
+                    TypeToken<A6> p6,
+                    TypeToken<A7> p7) {
+        return declared(
+                UnsafeInvocables.voidMethod(self(), name, p1, p2, p3, p4, p5, p6, p7, abstractTraits()), Kind.ABSTRACT);
+    }
+
+    /// Declares an abstract method with eight parameters, see
+    /// [#declareAbstractMethod(String, TypeToken)].
+    ///
+    /// @param name the method name
+    /// @param result the result type
+    /// @param p1 the first parameter type
+    /// @param p2 the second parameter type
+    /// @param p3 the third parameter type
+    /// @param p4 the fourth parameter type
+    /// @param p5 the fifth parameter type
+    /// @param p6 the sixth parameter type
+    /// @param p7 the seventh parameter type
+    /// @param p8 the eighth parameter type
+    /// @param <R> the result type
+    /// @param <A1> the first parameter type
+    /// @param <A2> the second parameter type
+    /// @param <A3> the third parameter type
+    /// @param <A4> the fourth parameter type
+    /// @param <A5> the fifth parameter type
+    /// @param <A6> the sixth parameter type
+    /// @param <A7> the seventh parameter type
+    /// @param <A8> the eighth parameter type
+    /// @return the fact of the abstract method
+    public final <R, A1, A2, A3, A4, A5, A6, A7, A8>
+            MethodRef8<Self, R, A1, A2, A3, A4, A5, A6, A7, A8> declareAbstractMethod(
+                    String name,
+                    TypeToken<R> result,
+                    TypeToken<A1> p1,
+                    TypeToken<A2> p2,
+                    TypeToken<A3> p3,
+                    TypeToken<A4> p4,
+                    TypeToken<A5> p5,
+                    TypeToken<A6> p6,
+                    TypeToken<A7> p7,
+                    TypeToken<A8> p8) {
+        return declared(
+                UnsafeInvocables.method(self(), name, result, p1, p2, p3, p4, p5, p6, p7, p8, abstractTraits()),
+                Kind.ABSTRACT);
+    }
+
+    /// Declares a `public abstract void` method with eight parameters, see
+    /// [#declareAbstractMethod(String, TypeToken)].
+    ///
+    /// @param name the method name
+    /// @param p1 the first parameter type
+    /// @param p2 the second parameter type
+    /// @param p3 the third parameter type
+    /// @param p4 the fourth parameter type
+    /// @param p5 the fifth parameter type
+    /// @param p6 the sixth parameter type
+    /// @param p7 the seventh parameter type
+    /// @param p8 the eighth parameter type
+    /// @param <A1> the first parameter type
+    /// @param <A2> the second parameter type
+    /// @param <A3> the third parameter type
+    /// @param <A4> the fourth parameter type
+    /// @param <A5> the fifth parameter type
+    /// @param <A6> the sixth parameter type
+    /// @param <A7> the seventh parameter type
+    /// @param <A8> the eighth parameter type
+    /// @return the fact of the abstract method
+    public final <A1, A2, A3, A4, A5, A6, A7, A8>
+            VoidMethodRef8<Self, A1, A2, A3, A4, A5, A6, A7, A8> declareVoidAbstractMethod(
+                    String name,
+                    TypeToken<A1> p1,
+                    TypeToken<A2> p2,
+                    TypeToken<A3> p3,
+                    TypeToken<A4> p4,
+                    TypeToken<A5> p5,
+                    TypeToken<A6> p6,
+                    TypeToken<A7> p7,
+                    TypeToken<A8> p8) {
+        return declared(
+                UnsafeInvocables.voidMethod(self(), name, p1, p2, p3, p4, p5, p6, p7, p8, abstractTraits()),
+                Kind.ABSTRACT);
+    }
+
+    /// Declares an abstract method with nine parameters, see
+    /// [#declareAbstractMethod(String, TypeToken)].
+    ///
+    /// @param name the method name
+    /// @param result the result type
+    /// @param p1 the first parameter type
+    /// @param p2 the second parameter type
+    /// @param p3 the third parameter type
+    /// @param p4 the fourth parameter type
+    /// @param p5 the fifth parameter type
+    /// @param p6 the sixth parameter type
+    /// @param p7 the seventh parameter type
+    /// @param p8 the eighth parameter type
+    /// @param p9 the ninth parameter type
+    /// @param <R> the result type
+    /// @param <A1> the first parameter type
+    /// @param <A2> the second parameter type
+    /// @param <A3> the third parameter type
+    /// @param <A4> the fourth parameter type
+    /// @param <A5> the fifth parameter type
+    /// @param <A6> the sixth parameter type
+    /// @param <A7> the seventh parameter type
+    /// @param <A8> the eighth parameter type
+    /// @param <A9> the ninth parameter type
+    /// @return the fact of the abstract method
+    public final <R, A1, A2, A3, A4, A5, A6, A7, A8, A9>
+            MethodRef9<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9> declareAbstractMethod(
+                    String name,
+                    TypeToken<R> result,
+                    TypeToken<A1> p1,
+                    TypeToken<A2> p2,
+                    TypeToken<A3> p3,
+                    TypeToken<A4> p4,
+                    TypeToken<A5> p5,
+                    TypeToken<A6> p6,
+                    TypeToken<A7> p7,
+                    TypeToken<A8> p8,
+                    TypeToken<A9> p9) {
+        return declared(
+                UnsafeInvocables.method(self(), name, result, p1, p2, p3, p4, p5, p6, p7, p8, p9, abstractTraits()),
+                Kind.ABSTRACT);
+    }
+
+    /// Declares a `public abstract void` method with nine parameters, see
+    /// [#declareAbstractMethod(String, TypeToken)].
+    ///
+    /// @param name the method name
+    /// @param p1 the first parameter type
+    /// @param p2 the second parameter type
+    /// @param p3 the third parameter type
+    /// @param p4 the fourth parameter type
+    /// @param p5 the fifth parameter type
+    /// @param p6 the sixth parameter type
+    /// @param p7 the seventh parameter type
+    /// @param p8 the eighth parameter type
+    /// @param p9 the ninth parameter type
+    /// @param <A1> the first parameter type
+    /// @param <A2> the second parameter type
+    /// @param <A3> the third parameter type
+    /// @param <A4> the fourth parameter type
+    /// @param <A5> the fifth parameter type
+    /// @param <A6> the sixth parameter type
+    /// @param <A7> the seventh parameter type
+    /// @param <A8> the eighth parameter type
+    /// @param <A9> the ninth parameter type
+    /// @return the fact of the abstract method
+    public final <A1, A2, A3, A4, A5, A6, A7, A8, A9>
+            VoidMethodRef9<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9> declareVoidAbstractMethod(
+                    String name,
+                    TypeToken<A1> p1,
+                    TypeToken<A2> p2,
+                    TypeToken<A3> p3,
+                    TypeToken<A4> p4,
+                    TypeToken<A5> p5,
+                    TypeToken<A6> p6,
+                    TypeToken<A7> p7,
+                    TypeToken<A8> p8,
+                    TypeToken<A9> p9) {
+        return declared(
+                UnsafeInvocables.voidMethod(self(), name, p1, p2, p3, p4, p5, p6, p7, p8, p9, abstractTraits()),
+                Kind.ABSTRACT);
+    }
+
+    /// Declares an abstract method with ten parameters, see
+    /// [#declareAbstractMethod(String, TypeToken)].
+    ///
+    /// @param name the method name
+    /// @param result the result type
+    /// @param p1 the first parameter type
+    /// @param p2 the second parameter type
+    /// @param p3 the third parameter type
+    /// @param p4 the fourth parameter type
+    /// @param p5 the fifth parameter type
+    /// @param p6 the sixth parameter type
+    /// @param p7 the seventh parameter type
+    /// @param p8 the eighth parameter type
+    /// @param p9 the ninth parameter type
+    /// @param p10 the tenth parameter type
+    /// @param <R> the result type
+    /// @param <A1> the first parameter type
+    /// @param <A2> the second parameter type
+    /// @param <A3> the third parameter type
+    /// @param <A4> the fourth parameter type
+    /// @param <A5> the fifth parameter type
+    /// @param <A6> the sixth parameter type
+    /// @param <A7> the seventh parameter type
+    /// @param <A8> the eighth parameter type
+    /// @param <A9> the ninth parameter type
+    /// @param <A10> the tenth parameter type
+    /// @return the fact of the abstract method
+    public final <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10>
+            MethodRef10<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> declareAbstractMethod(
+                    String name,
+                    TypeToken<R> result,
+                    TypeToken<A1> p1,
+                    TypeToken<A2> p2,
+                    TypeToken<A3> p3,
+                    TypeToken<A4> p4,
+                    TypeToken<A5> p5,
+                    TypeToken<A6> p6,
+                    TypeToken<A7> p7,
+                    TypeToken<A8> p8,
+                    TypeToken<A9> p9,
+                    TypeToken<A10> p10) {
+        return declared(
+                UnsafeInvocables.method(
+                        self(), name, result, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, abstractTraits()),
+                Kind.ABSTRACT);
+    }
+
+    /// Declares a `public abstract void` method with ten parameters, see
+    /// [#declareAbstractMethod(String, TypeToken)].
+    ///
+    /// @param name the method name
+    /// @param p1 the first parameter type
+    /// @param p2 the second parameter type
+    /// @param p3 the third parameter type
+    /// @param p4 the fourth parameter type
+    /// @param p5 the fifth parameter type
+    /// @param p6 the sixth parameter type
+    /// @param p7 the seventh parameter type
+    /// @param p8 the eighth parameter type
+    /// @param p9 the ninth parameter type
+    /// @param p10 the tenth parameter type
+    /// @param <A1> the first parameter type
+    /// @param <A2> the second parameter type
+    /// @param <A3> the third parameter type
+    /// @param <A4> the fourth parameter type
+    /// @param <A5> the fifth parameter type
+    /// @param <A6> the sixth parameter type
+    /// @param <A7> the seventh parameter type
+    /// @param <A8> the eighth parameter type
+    /// @param <A9> the ninth parameter type
+    /// @param <A10> the tenth parameter type
+    /// @return the fact of the abstract method
+    public final <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10>
+            VoidMethodRef10<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> declareVoidAbstractMethod(
+                    String name,
+                    TypeToken<A1> p1,
+                    TypeToken<A2> p2,
+                    TypeToken<A3> p3,
+                    TypeToken<A4> p4,
+                    TypeToken<A5> p5,
+                    TypeToken<A6> p6,
+                    TypeToken<A7> p7,
+                    TypeToken<A8> p8,
+                    TypeToken<A9> p9,
+                    TypeToken<A10> p10) {
+        return declared(
+                UnsafeInvocables.voidMethod(self(), name, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, abstractTraits()),
+                Kind.ABSTRACT);
+    }
+
+    /// Declares an abstract method with eleven parameters, see
+    /// [#declareAbstractMethod(String, TypeToken)].
+    ///
+    /// @param name the method name
+    /// @param result the result type
+    /// @param p1 the first parameter type
+    /// @param p2 the second parameter type
+    /// @param p3 the third parameter type
+    /// @param p4 the fourth parameter type
+    /// @param p5 the fifth parameter type
+    /// @param p6 the sixth parameter type
+    /// @param p7 the seventh parameter type
+    /// @param p8 the eighth parameter type
+    /// @param p9 the ninth parameter type
+    /// @param p10 the tenth parameter type
+    /// @param p11 the eleventh parameter type
+    /// @param <R> the result type
+    /// @param <A1> the first parameter type
+    /// @param <A2> the second parameter type
+    /// @param <A3> the third parameter type
+    /// @param <A4> the fourth parameter type
+    /// @param <A5> the fifth parameter type
+    /// @param <A6> the sixth parameter type
+    /// @param <A7> the seventh parameter type
+    /// @param <A8> the eighth parameter type
+    /// @param <A9> the ninth parameter type
+    /// @param <A10> the tenth parameter type
+    /// @param <A11> the eleventh parameter type
+    /// @return the fact of the abstract method
+    public final <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11>
+            MethodRef11<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> declareAbstractMethod(
+                    String name,
+                    TypeToken<R> result,
+                    TypeToken<A1> p1,
+                    TypeToken<A2> p2,
+                    TypeToken<A3> p3,
+                    TypeToken<A4> p4,
+                    TypeToken<A5> p5,
+                    TypeToken<A6> p6,
+                    TypeToken<A7> p7,
+                    TypeToken<A8> p8,
+                    TypeToken<A9> p9,
+                    TypeToken<A10> p10,
+                    TypeToken<A11> p11) {
+        return declared(
+                UnsafeInvocables.method(
+                        self(), name, result, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, abstractTraits()),
+                Kind.ABSTRACT);
+    }
+
+    /// Declares a `public abstract void` method with eleven parameters, see
+    /// [#declareAbstractMethod(String, TypeToken)].
+    ///
+    /// @param name the method name
+    /// @param p1 the first parameter type
+    /// @param p2 the second parameter type
+    /// @param p3 the third parameter type
+    /// @param p4 the fourth parameter type
+    /// @param p5 the fifth parameter type
+    /// @param p6 the sixth parameter type
+    /// @param p7 the seventh parameter type
+    /// @param p8 the eighth parameter type
+    /// @param p9 the ninth parameter type
+    /// @param p10 the tenth parameter type
+    /// @param p11 the eleventh parameter type
+    /// @param <A1> the first parameter type
+    /// @param <A2> the second parameter type
+    /// @param <A3> the third parameter type
+    /// @param <A4> the fourth parameter type
+    /// @param <A5> the fifth parameter type
+    /// @param <A6> the sixth parameter type
+    /// @param <A7> the seventh parameter type
+    /// @param <A8> the eighth parameter type
+    /// @param <A9> the ninth parameter type
+    /// @param <A10> the tenth parameter type
+    /// @param <A11> the eleventh parameter type
+    /// @return the fact of the abstract method
+    public final <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11>
+            VoidMethodRef11<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> declareVoidAbstractMethod(
+                    String name,
+                    TypeToken<A1> p1,
+                    TypeToken<A2> p2,
+                    TypeToken<A3> p3,
+                    TypeToken<A4> p4,
+                    TypeToken<A5> p5,
+                    TypeToken<A6> p6,
+                    TypeToken<A7> p7,
+                    TypeToken<A8> p8,
+                    TypeToken<A9> p9,
+                    TypeToken<A10> p10,
+                    TypeToken<A11> p11) {
+        return declared(
+                UnsafeInvocables.voidMethod(
+                        self(), name, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, abstractTraits()),
+                Kind.ABSTRACT);
+    }
+
+    /// Declares an abstract method with twelve parameters, see
+    /// [#declareAbstractMethod(String, TypeToken)].
+    ///
+    /// @param name the method name
+    /// @param result the result type
+    /// @param p1 the first parameter type
+    /// @param p2 the second parameter type
+    /// @param p3 the third parameter type
+    /// @param p4 the fourth parameter type
+    /// @param p5 the fifth parameter type
+    /// @param p6 the sixth parameter type
+    /// @param p7 the seventh parameter type
+    /// @param p8 the eighth parameter type
+    /// @param p9 the ninth parameter type
+    /// @param p10 the tenth parameter type
+    /// @param p11 the eleventh parameter type
+    /// @param p12 the twelfth parameter type
+    /// @param <R> the result type
+    /// @param <A1> the first parameter type
+    /// @param <A2> the second parameter type
+    /// @param <A3> the third parameter type
+    /// @param <A4> the fourth parameter type
+    /// @param <A5> the fifth parameter type
+    /// @param <A6> the sixth parameter type
+    /// @param <A7> the seventh parameter type
+    /// @param <A8> the eighth parameter type
+    /// @param <A9> the ninth parameter type
+    /// @param <A10> the tenth parameter type
+    /// @param <A11> the eleventh parameter type
+    /// @param <A12> the twelfth parameter type
+    /// @return the fact of the abstract method
+    public final <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12>
+            MethodRef12<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> declareAbstractMethod(
+                    String name,
+                    TypeToken<R> result,
+                    TypeToken<A1> p1,
+                    TypeToken<A2> p2,
+                    TypeToken<A3> p3,
+                    TypeToken<A4> p4,
+                    TypeToken<A5> p5,
+                    TypeToken<A6> p6,
+                    TypeToken<A7> p7,
+                    TypeToken<A8> p8,
+                    TypeToken<A9> p9,
+                    TypeToken<A10> p10,
+                    TypeToken<A11> p11,
+                    TypeToken<A12> p12) {
+        return declared(
+                UnsafeInvocables.method(
+                        self(), name, result, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, abstractTraits()),
+                Kind.ABSTRACT);
+    }
+
+    /// Declares a `public abstract void` method with twelve parameters, see
+    /// [#declareAbstractMethod(String, TypeToken)].
+    ///
+    /// @param name the method name
+    /// @param p1 the first parameter type
+    /// @param p2 the second parameter type
+    /// @param p3 the third parameter type
+    /// @param p4 the fourth parameter type
+    /// @param p5 the fifth parameter type
+    /// @param p6 the sixth parameter type
+    /// @param p7 the seventh parameter type
+    /// @param p8 the eighth parameter type
+    /// @param p9 the ninth parameter type
+    /// @param p10 the tenth parameter type
+    /// @param p11 the eleventh parameter type
+    /// @param p12 the twelfth parameter type
+    /// @param <A1> the first parameter type
+    /// @param <A2> the second parameter type
+    /// @param <A3> the third parameter type
+    /// @param <A4> the fourth parameter type
+    /// @param <A5> the fifth parameter type
+    /// @param <A6> the sixth parameter type
+    /// @param <A7> the seventh parameter type
+    /// @param <A8> the eighth parameter type
+    /// @param <A9> the ninth parameter type
+    /// @param <A10> the tenth parameter type
+    /// @param <A11> the eleventh parameter type
+    /// @param <A12> the twelfth parameter type
+    /// @return the fact of the abstract method
+    public final <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12>
+            VoidMethodRef12<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> declareVoidAbstractMethod(
+                    String name,
+                    TypeToken<A1> p1,
+                    TypeToken<A2> p2,
+                    TypeToken<A3> p3,
+                    TypeToken<A4> p4,
+                    TypeToken<A5> p5,
+                    TypeToken<A6> p6,
+                    TypeToken<A7> p7,
+                    TypeToken<A8> p8,
+                    TypeToken<A9> p9,
+                    TypeToken<A10> p10,
+                    TypeToken<A11> p11,
+                    TypeToken<A12> p12) {
+        return declared(
+                UnsafeInvocables.voidMethod(
+                        self(), name, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, abstractTraits()),
+                Kind.ABSTRACT);
     }
 
     // ------------------------------------------------------------------

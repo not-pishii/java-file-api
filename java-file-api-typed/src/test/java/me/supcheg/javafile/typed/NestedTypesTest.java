@@ -132,6 +132,7 @@ class NestedTypesTest {
                     @Override
                     public <Self> TypedRecordBodies<Self> build(TypedRecordBuilder<Self> rb) {
                         rb.component("x", PrimitiveToken.INT);
+                        rb.declareNestedClass("Box", typeParam("T"), box());
                         rb.declareNestedInterface("Named", new TypedJavaFile.TypedInterfaceSpec() {
                             @Override
                             public <Self2> TypedInterfaceBodies<Self2> build(TypedInterfaceBuilder<Self2> ib) {
@@ -160,6 +161,7 @@ class NestedTypesTest {
 
         assertThat(compiled.source())
                 .contains("public record Nested(int x) {")
+                .contains("public static final class Box<T> {")
                 .contains("public interface Named {")
                 .contains("public enum Kind {")
                 .contains("public @interface Mark {");
@@ -171,6 +173,7 @@ class NestedTypesTest {
                 UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedEnumSpec() {
                     @Override
                     public <Self> TypedEnumBodies<Self> build(TypedEnumBuilder<Self> eb) {
+                        eb.declareNestedClass("EnumBox", typeParam("T"), box());
                         eb.constant("A", body -> {
                             body.declareNestedClass("Member", classWith("member"));
                             body.declareNestedInterface("Inside", new TypedJavaFile.TypedInterfaceSpec() {
@@ -207,6 +210,7 @@ class NestedTypesTest {
                 }));
 
         assertThat(compiled.source())
+                .contains("public static final class EnumBox<T> {")
                 .contains("A() {")
                 .contains("public static final class Member {")
                 .contains("public interface Inside {")
@@ -575,6 +579,167 @@ class NestedTypesTest {
                 .contains("public interface One<A> {")
                 .contains("public record Pair<A, B, C>(A first, B second, C third) {");
         CompiledClasses.of(file);
+    }
+
+    @Test
+    void aGenericMemberClassOfAnInterfaceAnAnnotationTypeAndAnEnumConstantBodyRendersCompilesAndRuns()
+            throws Throwable {
+        JavaFile anInterface = TypedJavaFile.interface_(
+                UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedInterfaceSpec() {
+                    @Override
+                    public <Self> TypedInterfaceBodies<Self> build(TypedInterfaceBuilder<Self> ib) {
+                        ib.declareNestedClass("Box", typeParam("T"), box());
+                        ib.declareNestedClass("Pair", typeParam("A"), typeParam("B"), pair());
+                        ib.declareNestedClass("Triple", typeParam("A"), typeParam("B"), typeParam("C"), triple());
+                        return ib.bodies();
+                    }
+                });
+
+        assertThat(anInterface.render()).isEqualTo("""
+                        package me.supcheg.example;
+
+                        public interface Nested {
+                            public static final class Box<T> {
+                                public T echo(T v0) {
+                                    return v0;
+                                }
+                            }
+
+                            public static final class Pair<A, B> {
+                                public A first(A v0, B v1) {
+                                    return v0;
+                                }
+                            }
+
+                            public static final class Triple<A, B, C> {
+                                public A first(A v0, B v1, C v2) {
+                                    return v0;
+                                }
+                            }
+                        }
+                        """);
+        CompiledClasses.of(anInterface);
+
+        JavaFile anAnnotationType = TypedJavaFile.annotationType(
+                UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedAnnotationTypeSpec() {
+                    @Override
+                    public <Self> TypedAnnotationTypeBuilder<Self> build(TypedAnnotationTypeBuilder<Self> ab) {
+                        ab.declareNestedClass("Box", typeParam("T"), box());
+                        ab.declareNestedClass("Pair", typeParam("A"), typeParam("B"), pair());
+                        ab.declareNestedClass("Triple", typeParam("A"), typeParam("B"), typeParam("C"), triple());
+                        return ab;
+                    }
+                });
+
+        assertThat(anAnnotationType.render()).isEqualTo("""
+                        package me.supcheg.example;
+
+                        public @interface Nested {
+                            public static final class Box<T> {
+                                public T echo(T v0) {
+                                    return v0;
+                                }
+                            }
+                            public static final class Pair<A, B> {
+                                public A first(A v0, B v1) {
+                                    return v0;
+                                }
+                            }
+                            public static final class Triple<A, B, C> {
+                                public A first(A v0, B v1, C v2) {
+                                    return v0;
+                                }
+                            }
+                        }
+                        """);
+        CompiledClasses.of(anAnnotationType);
+
+        JavaFile anEnum =
+                TypedJavaFile.enum_(UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedEnumSpec() {
+                    @Override
+                    public <Self> TypedEnumBodies<Self> build(TypedEnumBuilder<Self> eb) {
+                        eb.constant("A", body -> {
+                            body.declareNestedClass("Box", typeParam("T"), box());
+                            body.declareNestedClass("Pair", typeParam("A"), typeParam("B"), pair());
+                            body.declareNestedClass("Triple", typeParam("A"), typeParam("B"), typeParam("C"), triple());
+                        });
+                        return eb.bodies();
+                    }
+                });
+
+        assertThat(anEnum.render()).isEqualTo("""
+                        package me.supcheg.example;
+
+                        public enum Nested {
+                            A() {
+                                public static final class Box<T> {
+                                    public T echo(T v0) {
+                                        return v0;
+                                    }
+                                }
+
+                                public static final class Pair<A, B> {
+                                    public A first(A v0, B v1) {
+                                        return v0;
+                                    }
+                                }
+
+                                public static final class Triple<A, B, C> {
+                                    public A first(A v0, B v1, C v2) {
+                                        return v0;
+                                    }
+                                }
+                            };
+                        }
+                        """);
+        CompiledClasses compiled = CompiledClasses.of(anEnum);
+        Class<?> box = compiled.loader().loadClass("me.supcheg.example.Nested$1$Box");
+        var constructor = box.getDeclaredConstructor();
+        constructor.trySetAccessible();
+        Object inside = constructor.newInstance();
+        var echo = box.getDeclaredMethod("echo", Object.class);
+        echo.trySetAccessible();
+        assertThat(echo.invoke(inside, "x")).isEqualTo("x");
+    }
+
+    private static TypedJavaFile.TypedGenericClassSpec1<Object> box() {
+        return new TypedJavaFile.TypedGenericClassSpec1<>() {
+            @Override
+            public <Box, T> MemberBodies<Box, ?> build(ClassHeader<Box> h, TypeVarToken<T> t) {
+                var members = h.extendsObject().members();
+                var echo = members.declareMethod("echo", t, t);
+                var bodies = members.bodies();
+                bodies.define(echo, (b, self, value) -> b.return_(value));
+                return bodies;
+            }
+        };
+    }
+
+    private static TypedJavaFile.TypedGenericClassSpec2<Object, Object> pair() {
+        return new TypedJavaFile.TypedGenericClassSpec2<>() {
+            @Override
+            public <Pair, A, B> MemberBodies<Pair, ?> build(ClassHeader<Pair> h, TypeVarToken<A> a, TypeVarToken<B> b) {
+                var members = h.extendsObject().members();
+                var first = members.declareMethod("first", a, a, b);
+                var bodies = members.bodies();
+                bodies.define(first, (body, self, one, two) -> body.return_(one));
+                return bodies;
+            }
+        };
+    }
+
+    private static TypedJavaFile.TypedGenericClassSpec3<Object, Object, Object> triple() {
+        return new TypedJavaFile.TypedGenericClassSpec3<>() {
+            @Override
+            public <Triple, A, B, C> MemberBodies<Triple, ?> build(
+                    ClassHeader<Triple> h, TypeVarToken<A> a, TypeVarToken<B> b, TypeVarToken<C> c) {
+                var members = h.extendsObject().members();
+                var first = members.declareMethod("first", a, a, b, c);
+                var bodies = members.bodies();
+                bodies.define(first, (body, self, one, two, three) -> body.return_(one));
+                return bodies;
+            }
+        };
     }
 
     @Test

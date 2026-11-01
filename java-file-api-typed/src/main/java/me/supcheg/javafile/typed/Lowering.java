@@ -340,7 +340,7 @@ final class Lowering {
         Tokens.requireNotRaw(type);
         switch (place) {
             case Place.Standalone _ -> new TypeScope.Standalone().require(type);
-            case Place.InClass(var _, var scope, var _) -> scope.require(type);
+            case Place.InClass(var _, var scope, var _, var _) -> scope.require(type);
         }
         return type;
     }
@@ -644,11 +644,10 @@ final class Lowering {
                 superCall(superclass, method, args, passing);
             case Node.StaticCall(var method, var args, var passing) -> {
                 subclassReaching(method.access(), method.owner(), method);
-                yield new StaticMethodCallExpr(
-                        raw(method.owner()),
-                        method.name(),
-                        arguments(method, new Searched.Unconsulted(), args, passing),
-                        typeArgs(method));
+                var lowered = arguments(method, new Searched.Unconsulted(), args, passing);
+                yield localStatic(method.owner(), method.name())
+                        ? Exprs.call(method.name(), lowered)
+                        : new StaticMethodCallExpr(raw(method.owner()), method.name(), lowered, typeArgs(method));
             }
             case Node.New(var ctor, var args, var passing) -> {
                 subclassReaching(ctor.access(), ctor.owner(), ctor).ifPresent(subclass -> {
@@ -661,7 +660,12 @@ final class Lowering {
             }
             case Node.FieldGet(var receiver, var field) ->
                 fieldReceiver(receiver, field).field(field.name());
-            case Node.StaticFieldGet(var field) -> Exprs.staticField(staticOwner(field), field.name());
+            case Node.StaticFieldGet(var field) -> {
+                ClassTypeRef owner = staticOwner(field);
+                yield localStatic(field.owner(), field.name())
+                        ? new FieldAccessExpr(Optional.empty(), field.name())
+                        : Exprs.staticField(owner, field.name());
+            }
             case Node.EnumConst(var constant) -> {
                 mentions(constant.owner());
                 yield Exprs.staticField(raw(constant.owner()), constant.name());
@@ -903,7 +907,7 @@ final class Lowering {
                         throw new IllegalStateException(member + " is protected: it is reached in the body of a"
                                 + " subclass of " + owner + " alone (JLS 6.6.2), and this code is in the body of"
                                 + " no class");
-                    case Place.InClass(var self, var _, var _) -> {
+                    case Place.InClass(var self, var _, var _, var _) -> {
                         if (!isSubclassOf(self, owner.erasure())) {
                             throw new IllegalStateException(member + " is protected: it is reached in the body"
                                     + " of a subclass of " + owner + " alone (JLS 6.6.2), and " + self
@@ -1264,7 +1268,7 @@ final class Lowering {
     private Optional<List<DeclaredToken<?>>> bounds(TypeVarToken<?> variable) {
         return switch (place) {
             case Place.Standalone _ -> Optional.empty();
-            case Place.InClass(var _, var _, var variables) ->
+            case Place.InClass(var _, var _, var variables, var _) ->
                 variables.stream()
                         .filter(bounded -> bounded.variable() == variable)
                         .findFirst()
@@ -1392,6 +1396,15 @@ final class Lowering {
         return new SuperExpr();
     }
 
+    /// Whether a static member is one the body being lowered declares itself: the body of an enum
+    /// constant is an anonymous class, and reaches its own static members unqualified - it has no name
+    /// to qualify them by.
+    private boolean localStatic(DeclaredToken<?> owner, String name) {
+        return place instanceof Place.InClass(var self, var _, var _, var localNames)
+                && owner.erasure().equals(self.erasure())
+                && localNames.contains(name);
+    }
+
     /// The raw type qualifying a static field: its owner, whatever type the
     /// generator reached the fact through, so no field of a subtype hides
     /// it and no other supertype of one makes the name ambiguous.
@@ -1490,9 +1503,15 @@ final class Lowering {
         /// @param self the class
         /// @param scope the type parameters of the class that are in scope there
         /// @param variables the type parameters of the class, each with its bounds
-        record InClass(DeclaredToken<?> self, TypeScope scope, List<Subtyping.Bounded> variables) implements Place {
+        /// @param localStatics the static fields and methods the body being lowered declares itself,
+        ///     which it reaches unqualified: it is the body of an anonymous class, and the class has no
+        ///     name to qualify them by
+        record InClass(
+                DeclaredToken<?> self, TypeScope scope, List<Subtyping.Bounded> variables, Set<String> localStatics)
+                implements Place {
             public InClass {
                 variables = List.copyOf(variables);
+                localStatics = Set.copyOf(localStatics);
             }
         }
     }

@@ -105,6 +105,73 @@ public final class TypedAnnotationTypeBuilder<Self> {
         return nested.token();
     }
 
+    /// Adds a generic member class to the annotation type with one type parameter, implicitly `static`
+    /// and `public`; see [#declareNestedClass(String, TypedJavaFile.TypedClassHeaderSpec)].
+    ///
+    /// @param name the simple name of the member class
+    /// @param p1 the type parameter
+    /// @param spec declares the member class, given its header and the token of the type parameter
+    /// @param <N> the brand of the member class
+    /// @param <B1> the leftmost bound of the type parameter
+    /// @return the token of the member class
+    public <N, B1> FinalClassToken<N> declareNestedClass(
+            String name, TypeParameter<B1> p1, TypedJavaFile.TypedGenericClassSpec1<B1> spec) {
+        requireDeclaring("a member class of " + described);
+        NestedDeclarations.NestedType<FinalClassToken<N>> nested =
+                NestedDeclarations.class_(target, desc, name, p1, spec);
+        memberTypes.add(nested.type());
+        return nested.token();
+    }
+
+    /// Adds a generic member class to the annotation type with two type parameters, see
+    /// [#declareNestedClass(String, TypeParameter, TypedJavaFile.TypedGenericClassSpec1)].
+    ///
+    /// @param name the simple name of the member class
+    /// @param p1 the first type parameter
+    /// @param p2 the second type parameter
+    /// @param spec declares the member class, given its header and the tokens of its type parameters
+    /// @param <N> the brand of the member class
+    /// @param <B1> the leftmost bound of the first type parameter
+    /// @param <B2> the leftmost bound of the second type parameter
+    /// @return the token of the member class
+    public <N, B1, B2> FinalClassToken<N> declareNestedClass(
+            String name,
+            TypeParameter<B1> p1,
+            TypeParameter<B2> p2,
+            TypedJavaFile.TypedGenericClassSpec2<B1, B2> spec) {
+        requireDeclaring("a member class of " + described);
+        NestedDeclarations.NestedType<FinalClassToken<N>> nested =
+                NestedDeclarations.class_(target, desc, name, p1, p2, spec);
+        memberTypes.add(nested.type());
+        return nested.token();
+    }
+
+    /// Adds a generic member class to the annotation type with three type parameters, see
+    /// [#declareNestedClass(String, TypeParameter, TypedJavaFile.TypedGenericClassSpec1)].
+    ///
+    /// @param name the simple name of the member class
+    /// @param p1 the first type parameter
+    /// @param p2 the second type parameter
+    /// @param p3 the third type parameter
+    /// @param spec declares the member class, given its header and the tokens of its type parameters
+    /// @param <N> the brand of the member class
+    /// @param <B1> the leftmost bound of the first type parameter
+    /// @param <B2> the leftmost bound of the second type parameter
+    /// @param <B3> the leftmost bound of the third type parameter
+    /// @return the token of the member class
+    public <N, B1, B2, B3> FinalClassToken<N> declareNestedClass(
+            String name,
+            TypeParameter<B1> p1,
+            TypeParameter<B2> p2,
+            TypeParameter<B3> p3,
+            TypedJavaFile.TypedGenericClassSpec3<B1, B2, B3> spec) {
+        requireDeclaring("a member class of " + described);
+        NestedDeclarations.NestedType<FinalClassToken<N>> nested =
+                NestedDeclarations.class_(target, desc, name, p1, p2, p3, spec);
+        memberTypes.add(nested.type());
+        return nested.token();
+    }
+
     /// Adds a member interface to the annotation type, implicitly `static` and `public`.
     ///
     /// @param name the simple name of the member interface

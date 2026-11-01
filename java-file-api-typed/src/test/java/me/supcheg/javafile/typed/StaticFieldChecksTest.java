@@ -293,10 +293,10 @@ class StaticFieldChecksTest {
                 .withMessageContaining("field static int me.supcheg.example.Probe.COUNT");
     }
 
-    /// An interface declares constants, and a constant body of an enum methods alone: the guard of each kind
-    /// that the public builders do not reach is held directly.
+    /// An interface declares constants, not static fields: the guard of the kind that the public builder does
+    /// not reach is held directly.
     @Test
-    void anInterfaceAndAnEnumConstantBodyDeclareNoStaticField() {
+    void anInterfaceDeclaresNoStaticField() {
         TypeDeclarationSupport.Member.StaticField field = new TypeDeclarationSupport.Member.StaticField(
                 UnsafeFacts.staticField(String_.TOKEN, "S", PrimitiveToken.INT),
                 Set.of(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL),
@@ -315,18 +315,5 @@ class StaticFieldChecksTest {
         assertThatIllegalStateException()
                 .isThrownBy(() -> interfaceBodies[0].staticField(field, null))
                 .withMessageContaining("an interface declares constants, not static fields");
-        TypedJavaFile.enum_(UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedEnumSpec() {
-            @Override
-            public <Self> TypedEnumBodies<Self> build(TypedEnumBuilder<Self> eb) {
-                var abstractMethod = eb.declareAbstractMethod("a", PrimitiveToken.INT);
-                eb.constant("A", cb -> {
-                    assertThatIllegalStateException()
-                            .isThrownBy(() -> cb.staticField(field, null))
-                            .withMessageContaining("a constant body of the typed layer declares methods alone");
-                    cb.override(abstractMethod, (b, self) -> b.return_(literal(0)));
-                });
-                return eb.bodies();
-            }
-        });
     }
 }

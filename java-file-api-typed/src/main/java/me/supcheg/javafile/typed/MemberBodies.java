@@ -168,7 +168,10 @@ public abstract sealed class MemberBodies<Self, S> extends MemberBodyArities<Sel
                         Optional.of(new Lowering(
                                         target,
                                         new Lowering.Place.InClass(
-                                                self, owner.scope("the initializer of field " + name), owner.bounded()),
+                                                self,
+                                                owner.scope("the initializer of field " + name),
+                                                owner.bounded(),
+                                                Set.of()),
                                         Optional.empty())
                                 .lowerInitializer(initializer.node(), field.type())),
                         slot.declared().doc()),
@@ -211,7 +214,8 @@ public abstract sealed class MemberBodies<Self, S> extends MemberBodyArities<Sel
                                         new Lowering.Place.InClass(
                                                 self,
                                                 owner.staticScope("the initializer of static field " + name),
-                                                owner.bounded()),
+                                                owner.bounded(),
+                                                Set.of()),
                                         field,
                                         declaredFrom(field))
                                 .lowerInitializer(initializer.node(), field.type())),
@@ -523,7 +527,9 @@ public abstract sealed class MemberBodies<Self, S> extends MemberBodyArities<Sel
     private ClassMember lower(Member.Callable declared, Block<?, ?> root, List<Var<?>> params, Start start) {
         Invocable fact = declared.fact();
         Lowering lowering = new Lowering(
-                target, new Lowering.Place.InClass(self, declared.scope(), owner.bounded()), fact.resultType());
+                target,
+                new Lowering.Place.InClass(self, declared.scope(), owner.bounded(), Set.of()),
+                fact.resultType());
         List<Param> named = java.util.stream.IntStream.range(0, params.size())
                 .mapToObj(index -> {
                     Var<?> param = params.get(index);

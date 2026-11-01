@@ -92,6 +92,58 @@ final class NestedDeclarations {
         });
     }
 
+    static <N, B1> NestedType<FinalClassToken<N>> class_(
+            TargetClasspath target,
+            ClassDesc outer,
+            String name,
+            TypeParameter<B1> p1,
+            TypedJavaFile.TypedGenericClassSpec1<B1> spec) {
+        return class_(target, outer, name, List.of(p1), List.of(), new ClassBodies() {
+            @Override
+            public <N2> MemberBodies<N2, ?> build(ClassHeader<N2> header, ClassDeclaration<N2> declaration) {
+                return spec.build(header, NestedDeclarations.variable(declaration, 0));
+            }
+        });
+    }
+
+    static <N, B1, B2> NestedType<FinalClassToken<N>> class_(
+            TargetClasspath target,
+            ClassDesc outer,
+            String name,
+            TypeParameter<B1> p1,
+            TypeParameter<B2> p2,
+            TypedJavaFile.TypedGenericClassSpec2<B1, B2> spec) {
+        return class_(target, outer, name, List.of(p1, p2), List.of(), new ClassBodies() {
+            @Override
+            public <N2> MemberBodies<N2, ?> build(ClassHeader<N2> header, ClassDeclaration<N2> declaration) {
+                return spec.build(
+                        header,
+                        NestedDeclarations.variable(declaration, 0),
+                        NestedDeclarations.variable(declaration, 1));
+            }
+        });
+    }
+
+    static <N, B1, B2, B3> NestedType<FinalClassToken<N>> class_(
+            TargetClasspath target,
+            ClassDesc outer,
+            String name,
+            TypeParameter<B1> p1,
+            TypeParameter<B2> p2,
+            TypeParameter<B3> p3,
+            TypedJavaFile.TypedGenericClassSpec3<B1, B2, B3> spec) {
+        return class_(target, outer, name, List.of(p1, p2, p3), List.of(), new ClassBodies() {
+            @Override
+            public <N2> MemberBodies<N2, ?> build(ClassHeader<N2> header, ClassDeclaration<N2> declaration) {
+                return spec.build(
+                        header,
+                        NestedDeclarations.variable(declaration, 0),
+                        NestedDeclarations.variable(declaration, 1),
+                        NestedDeclarations.variable(declaration, 2));
+            }
+        });
+    }
+
     /// Declares an inner member class and returns the handle that ties its body to the instance of
     /// the class it is declared in: `Outer.this` and `outer.new Inner(...)`.
     static <O, N> NestedType<InnerClass<O, N>> innerClass(

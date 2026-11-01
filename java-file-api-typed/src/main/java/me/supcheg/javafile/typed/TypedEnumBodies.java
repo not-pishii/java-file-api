@@ -180,7 +180,8 @@ public final class TypedEnumBodies<Self> extends TypedTypeBodies<Self, EnumMembe
     private List<EnumConstructorDecl> enumConstructors() {
         Lowering lowering = new Lowering(
                 owner().target(),
-                new Lowering.Place.InClass(self(), owner().scope("the body of a constructor"), owner().bounded()),
+                new Lowering.Place.InClass(
+                        self(), owner().scope("the body of a constructor"), owner().bounded(), Set.of()),
                 Optional.empty());
         return constructors.stream()
                 .map(constructor -> {

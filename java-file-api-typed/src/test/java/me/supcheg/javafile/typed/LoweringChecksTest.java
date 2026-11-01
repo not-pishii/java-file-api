@@ -5,9 +5,13 @@ import me.supcheg.javafile.code.ConstructorBody;
 import me.supcheg.javafile.code.ConstructorInvocation;
 import me.supcheg.javafile.code.Exprs;
 import me.supcheg.javafile.code.FieldAccessExpr;
+import me.supcheg.javafile.code.MethodCallExpr;
+import me.supcheg.javafile.code.StaticFieldAccessExpr;
+import me.supcheg.javafile.code.StaticMethodCallExpr;
 import me.supcheg.javafile.facts.ArrayToken;
 import me.supcheg.javafile.facts.Prim;
 import me.supcheg.javafile.facts.PrimitiveToken;
+import me.supcheg.javafile.facts.TargetClasspath;
 import me.supcheg.javafile.facts.TypeVarToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.testing.CompiledClasses;
@@ -22,6 +26,7 @@ import org.junit.jupiter.api.Test;
 import java.lang.constant.ClassDesc;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.literal;
@@ -135,10 +140,56 @@ class LoweringChecksTest {
     }
 
     @Test
+    void aStaticMemberOfTheBodyIsLoweredUnqualifiedAndAnotherTypeQualified() {
+        TargetClasspath classpath = UnsafeFacts.unverifiedClasspath();
+        var field = UnsafeFacts.staticField(Mid_.TOKEN, "S", PrimitiveToken.INT);
+        Node read = new Node.StaticFieldGet(field);
+        Node call = new Node.StaticCall(Base_.util, List.of(), Node.Passing.EACH);
+
+        assertThat(new Lowering(classpath).lowerExpr(read)).isInstanceOf(StaticFieldAccessExpr.class);
+        assertThat(new Lowering(
+                                classpath,
+                                new Lowering.Place.InClass(Mid_.TOKEN, new TypeScope.Standalone(), List.of(), Set.of()),
+                                Optional.empty())
+                        .lowerExpr(read))
+                .isInstanceOf(StaticFieldAccessExpr.class);
+        assertThat(new Lowering(
+                                classpath,
+                                new Lowering.Place.InClass(
+                                        Base_.TOKEN, new TypeScope.Standalone(), List.of(), Set.of("S")),
+                                Optional.empty())
+                        .lowerExpr(read))
+                .isInstanceOf(StaticFieldAccessExpr.class);
+        assertThat(new Lowering(
+                                classpath,
+                                new Lowering.Place.InClass(
+                                        Mid_.TOKEN, new TypeScope.Standalone(), List.of(), Set.of("S")),
+                                Optional.empty())
+                        .lowerExpr(read))
+                .isInstanceOf(FieldAccessExpr.class)
+                .satisfies(expression ->
+                        assertThat(((FieldAccessExpr) expression).target()).isEmpty());
+
+        assertThat(new Lowering(
+                                classpath,
+                                new Lowering.Place.InClass(Mid_.TOKEN, new TypeScope.Standalone(), List.of(), Set.of()),
+                                Optional.empty())
+                        .lowerExpr(call))
+                .isInstanceOf(StaticMethodCallExpr.class);
+        assertThat(new Lowering(
+                                classpath,
+                                new Lowering.Place.InClass(
+                                        Base_.TOKEN, new TypeScope.Standalone(), List.of(), Set.of("util")),
+                                Optional.empty())
+                        .lowerExpr(call))
+                .isInstanceOf(MethodCallExpr.class);
+    }
+
+    @Test
     void aConstructorBeginsWithTheInvocationItIsGivenOrWithNone() {
         Lowering lowering = new Lowering(
                 UnsafeFacts.unverifiedClasspath(),
-                new Lowering.Place.InClass(Mid_.TOKEN, new TypeScope.Standalone(), List.of()),
+                new Lowering.Place.InClass(Mid_.TOKEN, new TypeScope.Standalone(), List.of(), java.util.Set.of()),
                 Optional.empty());
         SuperInvocation invocation = new SuperInvocation(
                 Base_.super_String, List.of(new Node.Operand(literal("x").node(), String_.TOKEN)), Node.Passing.EACH);
@@ -154,7 +205,7 @@ class LoweringChecksTest {
         // new Base("x") in a subclass of Base in another package: super("x") alone is its access (JLS 6.6.2.2)
         Lowering lowering = new Lowering(
                 UnsafeFacts.unverifiedClasspath(),
-                new Lowering.Place.InClass(Mid_.TOKEN, new TypeScope.Standalone(), List.of()),
+                new Lowering.Place.InClass(Mid_.TOKEN, new TypeScope.Standalone(), List.of(), java.util.Set.of()),
                 Optional.empty());
         Node created = new Node.New(
                 Base_.super_String, List.of(new Node.Operand(literal("x").node(), String_.TOKEN)), Node.Passing.EACH);
