@@ -71,6 +71,7 @@ final class Constants {
                     case BooleanLiteral value -> new Folded.OfBoolean(value.value());
                     case StringLiteral value -> new Folded.OfString(value.value());
                 };
+            case Node.TextBlock(var value) -> new Folded.OfString(value);
             case Node.StaticFieldGet(var field) ->
                 field.constantValue().map(Constants::ofValue).orElse(NONE);
             case Node.Not(var operand) ->

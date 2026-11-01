@@ -58,6 +58,12 @@ sealed interface Node {
     /// A literal, which is its value for constant folding.
     record Lit(ConstantLiteral literal) implements Exact {}
 
+    /// A text block literal: a constant `String`, rendered with `"""` delimiters or, where its value
+    /// cannot be written in a block, as an escaped string literal (the core renderer decides).
+    ///
+    /// @param value the text block content
+    record TextBlock(String value) implements Exact {}
+
     /// `null` of a reference type, `((T) null)`: the bare `null` has no type of its own to javac, and is
     /// no constant expression (JLS 15.29). (A text block is a constant `String` and, once supported, must
     /// be a [Lit] so that [Constants] folds it as javac does.)

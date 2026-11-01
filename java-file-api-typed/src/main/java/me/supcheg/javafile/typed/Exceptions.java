@@ -479,6 +479,7 @@ final class Exceptions {
                     case Node.LambdaBody.Block _ -> new Act.Computes();
                 };
             case Node.Lit _ -> new Act.Computes();
+            case Node.TextBlock _ -> new Act.Computes();
             case Node.Null _ -> new Act.Computes();
             case Node.Local _ -> new Act.Computes();
             case Node.This _ -> new Act.Computes();
@@ -567,6 +568,7 @@ final class Exceptions {
     private static Stream<Node> children(Node node) {
         return switch (node) {
             case Node.Lit _ -> Stream.empty();
+            case Node.TextBlock _ -> Stream.empty();
             case Node.Null _ -> Stream.empty();
             case Node.Local _ -> Stream.empty();
             case Node.This _ -> Stream.empty();

@@ -125,6 +125,15 @@ public final class Expressions extends ExpressionArities {
         return Expr.of(new Node.Lit(new me.supcheg.javafile.code.BooleanLiteral(value)), PrimitiveToken.BOOLEAN);
     }
 
+    /// Creates a text block literal of type `String`, rendered with `"""` delimiters, or as an escaped
+    /// string literal where the value cannot be written in a block (a `U+0085`, `U+2028` or `U+2029` in it).
+    ///
+    /// @param value the text block content
+    /// @return the literal
+    public static Expr<String> textBlock(String value) {
+        return Expr.of(new Node.TextBlock(value), String_.TOKEN);
+    }
+
     /// Creates the `null` literal at the given reference type, rendered as
     /// `((T) null)`: the bare `null` has no type of its own to javac, so
     /// `null.length()`, `null + null` or a call of an overloaded method with

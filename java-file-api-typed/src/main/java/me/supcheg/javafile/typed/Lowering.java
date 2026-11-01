@@ -621,6 +621,7 @@ final class Lowering {
     private Expr expr(Node node, Typing typing) {
         return switch (node) {
             case Node.Lit(var literal) -> literal;
+            case Node.TextBlock(var value) -> Exprs.textBlock(value);
             case Node.Null(var type) -> {
                 mentions(type);
                 yield Exprs.cast(written(type).typeRef(), Exprs.literalNull());

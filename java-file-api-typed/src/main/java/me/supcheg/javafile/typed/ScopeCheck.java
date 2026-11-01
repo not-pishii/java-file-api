@@ -91,6 +91,7 @@ final class ScopeCheck {
                 requireInScope(v, use, where);
             }
             case Node.Lit ignored -> {}
+            case Node.TextBlock ignored -> {}
             case Node.Null ignored -> {}
             case Node.This(var owner) -> requireThisInScope(owner, use, where);
             case Node.OuterThis ignored -> {}
