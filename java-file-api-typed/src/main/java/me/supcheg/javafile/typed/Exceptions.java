@@ -297,8 +297,8 @@ final class Exceptions {
     private static void requireCatchable(Instr.Try statement, Rethrows rethrows) {
         Block<?, ?> body = statement.body();
         List<Instr.Catch> catches = statement.catches();
-        boolean known = !throwsUnknown(body);
-        List<ExceptionType> thrown = known ? thrown(body, rethrows).toList() : List.of();
+        boolean known = !throwsUnknown(statement);
+        List<ExceptionType> thrown = known ? thrownOf(statement, rethrows).toList() : List.of();
         requireCatchableIn(body, rethrows);
         IntStream.range(0, catches.size()).forEach(i -> {
             Instr.Catch clause = catches.get(i);
@@ -400,7 +400,7 @@ final class Exceptions {
 
     private static Stream<ExceptionType> thrownByTryAndCatchBlocks(Instr.Try statement, Rethrows rethrows) {
         List<Instr.Catch> catches = statement.catches();
-        List<ExceptionType> thrown = thrown(statement.body(), rethrows).toList();
+        List<ExceptionType> thrown = thrownOf(statement, rethrows).toList();
         List<ExceptionType.OfClass> types = types(catches);
         // what the block throws is known: the clauses of a try block with untyped code are not checked
         // (requireCatchable)
@@ -412,6 +412,27 @@ final class Exceptions {
                                 catches.get(i).body(),
                                 rethrows.with(
                                         catches.get(i).var(), rethrown(types.get(i), types.subList(0, i), thrown)))));
+    }
+
+    /// What the `try` block of `statement` throws with the initializers of its resources: a resource is
+    /// initialized before the block runs, and a `catch` clause covers it as it covers the block.
+    private static Stream<ExceptionType> thrownOf(Instr.Try statement, Rethrows rethrows) {
+        return Stream.concat(
+                statement.resources().stream()
+                        .flatMap(resource -> resource.init().stream())
+                        .flatMap(Exceptions::raised)
+                        .map(Raise::type),
+                thrown(statement.body(), rethrows));
+    }
+
+    /// Whether the `try` statement throws an unknown exception, in its block or in the initializer of
+    /// a resource: an expression of `Unsafe` may throw anything.
+    private static boolean throwsUnknown(Instr.Try statement) {
+        return throwsUnknown(statement.body())
+                || statement.resources().stream()
+                        .flatMap(resource -> resource.init().stream())
+                        .flatMap(Exceptions::descendants)
+                        .anyMatch(Node.Raw.class::isInstance);
     }
 
     /// Whether what `block` throws is not known: it holds, at any depth, a

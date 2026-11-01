@@ -113,6 +113,7 @@
     Rival.class,
     Tagged.class,
     Applying.class,
+    Closing.class,
     Rawly.class,
     Spreads.class,
     Lined.class,
@@ -138,6 +139,7 @@ package me.supcheg.javafile.typed.testfacts;
 
 import me.supcheg.javafile.facts.meta.Facts;
 import me.supcheg.javafile.typed.fixtures.Applying;
+import me.supcheg.javafile.typed.fixtures.Closing;
 import me.supcheg.javafile.typed.fixtures.Lined;
 import me.supcheg.javafile.typed.fixtures.Numbering;
 import me.supcheg.javafile.typed.fixtures.Overloads;

@@ -54,6 +54,7 @@ public sealed class Var<T> extends Expr<T> permits MutVar {
             SAFE_VARARGS_PARAMETER("parameter of variable arity of a @SafeVarargs member"),
             LAMBDA_PARAMETER("lambda parameter"),
             LOCAL("local variable"),
+            RESOURCE("resource variable"),
             PATTERN_BINDING("pattern binding"),
             CAUGHT_EXCEPTION("caught exception"),
             /// The variable of a `for`-each loop.

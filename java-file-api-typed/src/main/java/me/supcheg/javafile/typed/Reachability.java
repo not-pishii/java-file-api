@@ -38,7 +38,7 @@ final class Reachability {
                 ((canCompleteNormally(body) || holds(body, new Instr.Continue(ctl)))
                                 && !Constants.isConstant(condition, true))
                         || breaks(ctl, label, body);
-            case Instr.Try(var body, var catches, var _) ->
+            case Instr.Try(var body, var _, var catches, var _) ->
                 // A finally block completes normally by its type (FinallyBody).
                 canCompleteNormally(body) || catches.stream().anyMatch(c -> canCompleteNormally(c.body()));
             case Instr.Jump _ -> false;

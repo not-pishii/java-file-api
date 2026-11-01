@@ -813,7 +813,9 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
         TryClauses clauses = collected.close();
         B bodyBlock = open("try block of try_", clauses.scope(), body);
         return continueWith(
-                clauses.statement(bodyBlock), "try_ whose try block and every catch_ end", Instead.TRY_TERMINATED);
+                clauses.statement(bodyBlock, List.of()),
+                "try_ whose try block and every catch_ end",
+                Instead.TRY_TERMINATED);
     }
 
     /// Appends `try { body } catch ... finally ...` whose `try` block and
@@ -835,7 +837,60 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
         handlers.accept(collected);
         TryClauses clauses = collected.close();
         B bodyBlock = closed("try block of tryTerminated", clauses.scope(), body);
-        return appendFinal(clauses.statement(bodyBlock), "tryTerminated");
+        return appendFinal(clauses.statement(bodyBlock, List.of()), "tryTerminated");
+    }
+
+    /// Appends `try (resources) { body } catch ... finally ...` as a statement. It must complete
+    /// normally; if the `try` block and every `catch` end, use
+    /// [#tryWithResourcesTerminated(Consumer, BiFunction)], which ends this block.
+    ///
+    /// The handlers come first, as with [#try_(Consumer, Consumer)], and the resources are declared by
+    /// `body` before it runs, in its order: a resource is in scope in the body, and in the initializers
+    /// of the resources after it.
+    ///
+    /// @param handlers adds `catch` clauses and the `finally` block
+    /// @param body declares the resources, given the resource builder, and builds the try block
+    /// @return this block
+    /// @throws IllegalStateException if `handlers` adds neither a `catch` nor a `finally`, if the
+    ///     statement cannot complete normally, if a `catch_` can catch nothing, or if `body` declares no
+    ///     resource
+    public final B tryWithResources(
+            Consumer<? super Handlers<B>> handlers, BiConsumer<? super B, ? super Resources> body) {
+        requireOpen();
+        Handlers<B> collected = new Handlers<>(self());
+        handlers.accept(collected);
+        TryClauses clauses = collected.close();
+        B bodyBlock = child("try block of tryWithResources", clauses.scope());
+        Resources resources = new Resources(bodyBlock);
+        fill(bodyBlock, b -> body.accept(b, resources));
+        List<Instr.Resource> made = resources.close();
+        return continueWith(
+                clauses.statement(bodyBlock, made),
+                "tryWithResources whose try block and every catch_ end",
+                Instead.TRY_TERMINATED);
+    }
+
+    /// Appends `try (resources) { body } catch ... finally ...` whose `try` block and every `catch`
+    /// block end, and so ends this block.
+    ///
+    /// @param handlers adds `catch` clauses, each of which must end, and the `finally` block
+    /// @param body declares the resources, given the resource builder, and builds the try block, which
+    ///     must end
+    /// @return the proof that this block ended
+    /// @throws IllegalStateException if `handlers` adds neither a `catch` nor a `finally`, if a
+    ///     `catch_` can catch nothing, or if `body` declares no resource
+    public final Terminated<R> tryWithResourcesTerminated(
+            Consumer<? super TerminatedHandlers<R, B>> handlers,
+            BiFunction<? super B, ? super Resources, Terminated<R>> body) {
+        requireOpen();
+        TerminatedHandlers<R, B> collected = new TerminatedHandlers<>(self());
+        handlers.accept(collected);
+        TryClauses clauses = collected.close();
+        B bodyBlock = child("try block of tryWithResourcesTerminated", clauses.scope());
+        Resources resources = new Resources(bodyBlock);
+        Block.build(bodyBlock, b -> body.apply(b, resources));
+        List<Instr.Resource> made = resources.close();
+        return appendFinal(clauses.statement(bodyBlock, made), "tryWithResourcesTerminated");
     }
 
     /// Appends an untyped core statement. Its reachability is the author's

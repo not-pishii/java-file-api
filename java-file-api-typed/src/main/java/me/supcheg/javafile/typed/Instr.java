@@ -120,8 +120,24 @@ sealed interface Instr {
     /// `continue label;` of the loop the label names.
     record ContinueLabel(Label label) implements Jump {}
 
-    /// `try { ... } catch (...) { ... } finally { ... }`: a `catch` clause at least, or a `finally` block.
-    record Try(Block<?, ?> body, List<Catch> catches, Finally finallyBlock) implements Instr {}
+    /// `try (resources) { ... } catch (...) { ... } finally { ... }`: a `catch` clause at least, or a
+    /// `finally` block.
+    ///
+    /// @param body the try block
+    /// @param resources the resources, in declaration order
+    /// @param catches the `catch` clauses
+    /// @param finallyBlock the `finally` block, or that there is none
+    record Try(Block<?, ?> body, List<Resource> resources, List<Catch> catches, Finally finallyBlock) implements Instr {
+        public Try {
+            resources = List.copyOf(resources);
+        }
+    }
+
+    /// A resource of a [Try]: a new variable with its initializer, or an existing effectively-final one.
+    ///
+    /// @param var the resource variable
+    /// @param init the initializer, or empty for an existing variable
+    record Resource(Var<?> var, Optional<Node> init) {}
 
     /// The `finally` block of a `try`, or that it has none.
     sealed interface Finally {
@@ -164,7 +180,7 @@ sealed interface Instr {
             case DoWhile(var _, var _, var body, var _) -> Stream.of(body);
             case For(var _, var _, var _, var _, var _, var _, var body) -> Stream.of(body);
             case ForEach(var _, var _, var _, var _, var body) -> Stream.of(body);
-            case Try(var body, var catches, var finallyBlock) ->
+            case Try(var body, var _, var catches, var finallyBlock) ->
                 Stream.of(Stream.of(body), catches.stream().map(Catch::body), finallyBlock.blocks())
                         .flatMap(Function.identity());
             case Plain _ -> Stream.empty();

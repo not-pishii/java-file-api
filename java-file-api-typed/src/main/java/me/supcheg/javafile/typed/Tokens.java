@@ -32,6 +32,20 @@ final class Tokens {
         return a.typeRef().equals(b.typeRef());
     }
 
+    /// Rejects a resource that is no `AutoCloseable`: a try-with-resources closes it, and javac requires
+    /// the type of the resource to have a `close()` method.
+    ///
+    /// @param type the resource type
+    /// @param where the construct, for the message
+    /// @throws IllegalArgumentException if `type` is not a subtype of `java.lang.AutoCloseable`
+    static void requireAutoCloseable(TypeToken<?> type, String where) {
+        if (!isSubtypeOf(type, ClassDesc.of("java.lang", "AutoCloseable"))) {
+            throw new IllegalArgumentException(where + " declares a resource of " + type
+                    + ", which is no subtype of java.lang.AutoCloseable: a try-with-resources closes its"
+                    + " resources (JLS 14.20.3)");
+        }
+    }
+
     /// Whether a value of the type `type` is assignable to `supertype`, as the facts record it: the
     /// type itself, a class of its superclass chain, an interface it implements or inherits, `Object`
     /// for every reference type, and `Cloneable` and `Serializable` for an array. A type variable is

@@ -532,7 +532,8 @@ final class Lowering {
             case Instr.Continue(var ctl) -> new ContinueStmt(label(ctl));
             case Instr.BreakLabel(var label) -> new BreakStmt(Optional.of(labels.of(label)));
             case Instr.ContinueLabel(var label) -> new ContinueStmt(Optional.of(labels.of(label)));
-            case Instr.Try(var body, var catches, var finallyBlock) -> tryStmt(body, catches, finallyBlock);
+            case Instr.Try(var body, var resources, var catches, var finallyBlock) ->
+                tryStmt(body, resources, catches, finallyBlock);
             case Instr.Raw(var s) -> s;
         };
     }
@@ -571,15 +572,36 @@ final class Lowering {
         return Optional.of(labels.of(ctl));
     }
 
-    private Stmt tryStmt(Block<?, ?> body, List<Instr.Catch> catches, Instr.Finally finallyBlock) {
-        CodeBody bodyCode = lowerBlock(body.instrs());
-        List<CatchClause> coreCatches = catches.stream().map(this::catchClause).toList();
-        return switch (finallyBlock) {
-            case Instr.Finally.Of(var block) ->
-                new TryStmt.WithFinally(List.of(), bodyCode, coreCatches, lowerBlock(block.instrs()));
-            // A try without a finally block has a catch clause (CatchClauses.close).
-            case Instr.Finally.None _ -> new TryStmt.CatchOnly(List.of(), bodyCode, NonEmptyList.copyOf(coreCatches));
-        };
+    private Stmt tryStmt(
+            Block<?, ?> body, List<Instr.Resource> resources, List<Instr.Catch> catches, Instr.Finally finallyBlock) {
+        names.push();
+        try {
+            // In declaration order: a resource is in scope in the initializers after it and in the body.
+            List<me.supcheg.javafile.code.Resource> coreResources =
+                    resources.stream().map(this::resource).toList();
+            CodeBody bodyCode = lowerBlock(body.instrs());
+            List<CatchClause> coreCatches =
+                    catches.stream().map(this::catchClause).toList();
+            return switch (finallyBlock) {
+                case Instr.Finally.Of(var block) ->
+                    new TryStmt.WithFinally(coreResources, bodyCode, coreCatches, lowerBlock(block.instrs()));
+                // A try without a finally block has a catch clause (CatchClauses.close).
+                case Instr.Finally.None _ ->
+                    new TryStmt.CatchOnly(coreResources, bodyCode, NonEmptyList.copyOf(coreCatches));
+            };
+        } finally {
+            names.pop();
+        }
+    }
+
+    private me.supcheg.javafile.code.Resource resource(Instr.Resource resource) {
+        if (resource.init().isPresent()) {
+            Expr init = initializer(resource.init().get(), resource.var().type());
+            String name = declare(resource.var());
+            return new me.supcheg.javafile.code.Resource.Declared(
+                    Optional.of(written(resource.var().type()).typeRef()), name, init);
+        }
+        return new me.supcheg.javafile.code.Resource.Existing(names.nameOf(resource.var()));
     }
 
     private CatchClause catchClause(Instr.Catch clause) {

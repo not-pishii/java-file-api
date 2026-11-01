@@ -29,8 +29,8 @@ record TryClauses(List<Instr.Catch> catches, Instr.Finally finallyBlock) {
     ///
     /// @throws IllegalStateException if a clause — of this statement or, by what a binding of this one
     ///     rethrows, of one nested in it — catches a checked exception its `try` block cannot throw
-    Instr.Try statement(Block<?, ?> body) {
-        Instr.Try statement = new Instr.Try(body, catches, finallyBlock);
+    Instr.Try statement(Block<?, ?> body, List<Instr.Resource> resources) {
+        Instr.Try statement = new Instr.Try(body, resources, catches, finallyBlock);
         Exceptions.requireCatchable(statement);
         return statement;
     }
