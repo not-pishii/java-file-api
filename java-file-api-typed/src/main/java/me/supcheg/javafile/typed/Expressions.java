@@ -3,6 +3,7 @@ package me.supcheg.javafile.typed;
 import me.supcheg.javafile.code.NonEmptyList;
 import me.supcheg.javafile.facts.Arity;
 import me.supcheg.javafile.facts.ArrayToken;
+import me.supcheg.javafile.facts.DeclaredToken;
 import me.supcheg.javafile.facts.EnumConstant;
 import me.supcheg.javafile.facts.EnumToken;
 import me.supcheg.javafile.facts.FieldRef;
@@ -20,6 +21,7 @@ import me.supcheg.javafile.type.ParameterizedTypeRef;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -772,6 +774,43 @@ public final class Expressions extends ExpressionArities {
 
     static <T> Var<T> lambdaParameter(TypeToken<T> type, Block<?, ?> scope) {
         return new Var<>(type, Var.Role.Fixed.LAMBDA_PARAMETER, scope);
+    }
+
+    /// A method reference bound to a receiver, `receiver::method`, of the functional interface `samType`
+    /// whose method `sam` has the parameters and result of `method`.
+    ///
+    /// @param receiver the bound receiver
+    /// @param method the fact of the referenced method, an instance method of the receiver's type
+    /// @param samType the functional interface the reference implements
+    /// @param sam the single abstract method of `samType`
+    /// @param <O> the receiver type
+    /// @param <F> the functional interface
+    /// @return the method reference
+    /// @throws IllegalArgumentException if `method` is not an instance method of the receiver's type, or its
+    ///     parameters or result are not those of `sam`
+    public static <O, F> Expr<F> methodRef(
+            Expr<? extends O> receiver, Invocable method, InterfaceToken<F> samType, Invocable sam) {
+        Node.Operand target = receiver(receiver, method);
+        MethodReferences.bound(target.type(), method, samType, sam);
+        return Expr.of(new Node.MethodRef(Optional.of(target), method.owner(), method, sam), samType);
+    }
+
+    /// A method reference qualified by a type, `Type::method`, of the functional interface `samType`
+    /// whose method `sam` has the parameters and result of `method`: the unbound instance reference
+    /// `Type::instanceMethod`, whose first parameter the receiver is, or the static `Type::staticMethod`.
+    ///
+    /// @param type the qualifying type, the owner of the method or a subtype of it
+    /// @param method the fact of the referenced method
+    /// @param samType the functional interface the reference implements
+    /// @param sam the single abstract method of `samType`
+    /// @param <F> the functional interface
+    /// @return the method reference
+    /// @throws IllegalArgumentException if `method` is a constructor, `type` is not the owner or a subtype
+    ///     of it, or the parameters or result are not those of `sam`
+    public static <F> Expr<F> methodRef(
+            DeclaredToken<?> type, Invocable method, InterfaceToken<F> samType, Invocable sam) {
+        MethodReferences.onType(type, method, samType, sam);
+        return Expr.of(new Node.MethodRef(Optional.empty(), type, method, sam), samType);
     }
 
     /// Builds an expression lambda in the innermost block being built:

@@ -138,6 +138,8 @@ final class ScopeCheck {
             case Node.Cast(var ignored, var operand) -> node(operand.node(), use, where);
             case Node.Upcast(var inner, var ignoredInner, var ignored) -> node(inner, use, where);
             case Node.Lambda(var ignoredSam, var ignoredParams, var body) -> lambda(body, use, where);
+            case Node.MethodRef(var receiver, var ignoredType, var ignoredMethod, var ignoredSam) ->
+                receiver.ifPresent(r -> node(r.node(), use, where));
             case Node.Switch switch_ -> {
                 node(switch_.selector().node(), use, where);
                 switch_.arms().forEach(arm -> arm(arm, use, where));

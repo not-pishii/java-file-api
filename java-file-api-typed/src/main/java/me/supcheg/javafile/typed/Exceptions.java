@@ -478,6 +478,8 @@ final class Exceptions {
                     // The statements of a block lambda are checked as they are appended to its block.
                     case Node.LambdaBody.Block _ -> new Act.Computes();
                 };
+            // A method reference throws nothing where it stands: the method runs where the interface is called.
+            case Node.MethodRef _ -> new Act.Computes();
             case Node.Lit _ -> new Act.Computes();
             case Node.TextBlock _ -> new Act.Computes();
             case Node.Null _ -> new Act.Computes();
@@ -577,6 +579,8 @@ final class Exceptions {
             case Node.EnumConst _ -> Stream.empty();
             case Node.Raw _ -> Stream.empty();
             case Node.Lambda _ -> Stream.empty();
+            case Node.MethodRef(var receiver, var _, var _, var _) ->
+                receiver.stream().map(Node.Operand::node);
             case Node.Box(var _, var operand) -> Stream.of(operand);
             case Node.Unbox(var _, var operand) -> Stream.of(operand);
             case Node.Not(var operand) -> Stream.of(operand);

@@ -18,6 +18,7 @@ import me.supcheg.javafile.facts.StaticFieldRef;
 import me.supcheg.javafile.facts.TypeToken;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 /// The untyped expression IR of the typed layer. Unlike core expressions it
@@ -42,6 +43,8 @@ sealed interface Node {
             case ArrayClone(var array) -> isExact(array);
             // javac types the expression by what it is of, not by the supertype its token tells.
             case Upcast _ -> false;
+            // a method reference has no type of its own to javac, only that of its context.
+            case MethodRef _ -> false;
             case Exact _ -> true;
         };
     }
@@ -248,6 +251,17 @@ sealed interface Node {
     /// A lambda expression typed by a functional interface fact: `sam` is
     /// the single abstract method of the interface, its owner.
     record Lambda(Invocable sam, List<Var<?>> params, LambdaBody body) implements Exact {}
+
+    /// A method reference typed by a functional interface fact: `receiver::method` where `receiver` is
+    /// present, `type::method` where it is not. Like a lambda, it has no type of its own to javac, only
+    /// that of its context.
+    ///
+    /// @param receiver the bound receiver, or empty for a type-qualified reference
+    /// @param type the qualifying type, the owner of the method or a subtype of it
+    /// @param method the fact of the referenced method
+    /// @param sam the single abstract method of the functional interface the reference implements
+    record MethodRef(Optional<Operand> receiver, DeclaredToken<?> type, Invocable method, Invocable sam)
+            implements Node {}
 
     /// A `switch` expression over an enum, `switch (selector) { case A, B -> ...; default -> ... }`.
     /// Every result is of the type of the expression, see [Arm].

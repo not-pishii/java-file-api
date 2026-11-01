@@ -15,8 +15,11 @@ import me.supcheg.javafile.type.TypeRef;
 import me.supcheg.javafile.type.TypeVarRef;
 import me.supcheg.javafile.type.UnboundedTypeArg;
 
+import java.lang.constant.ClassDesc;
+import java.lang.constant.ConstantDescs;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 
 /// Internal helpers shared by the typed-layer combinators.
@@ -27,6 +30,32 @@ final class Tokens {
     /// generated code.
     static boolean sameType(TypeToken<?> a, TypeToken<?> b) {
         return a.typeRef().equals(b.typeRef());
+    }
+
+    /// Whether a value of the type `type` is assignable to `supertype`, as the facts record it: the
+    /// type itself, a class of its superclass chain, an interface it implements or inherits, `Object`
+    /// for every reference type, and `Cloneable` and `Serializable` for an array. A type variable is
+    /// known to be no other type.
+    ///
+    /// @param type the type of the value
+    /// @param supertype the type it is assignable to
+    /// @return whether it is
+    static boolean isSubtypeOf(TypeToken<?> type, ClassDesc supertype) {
+        TypeToken<?> token = annotated(type);
+        if (token instanceof DeclaredToken<?> declared) {
+            return Stream.concat(
+                            Stream.concat(Stream.of(declared.erasure()), declared.shape().superclasses().stream()),
+                            declared.shape().interfaces().stream())
+                    .anyMatch(supertype::equals);
+        }
+        if (token instanceof ArrayToken<?, ?>) {
+            return Set.of(
+                            ConstantDescs.CD_Object,
+                            ClassDesc.of("java.lang", "Cloneable"),
+                            ClassDesc.of("java.io", "Serializable"))
+                    .contains(supertype);
+        }
+        return false;
     }
 
     /// The token `type` is, without the type-use annotations it is written

@@ -713,6 +713,9 @@ final class Lowering {
             }
             // No target type is known here: the cast gives the lambda the one of its fact.
             case Node.Lambda lambda -> Exprs.cast(written(lambda.sam().owner()).typeRef(), lambda(lambda));
+            // A method reference has no type of its own either: the cast gives it the one of its fact.
+            case Node.MethodRef methodRef ->
+                Exprs.cast(written(methodRef.sam().owner()).typeRef(), methodRef(methodRef));
             case Node.Switch switch_ -> switchExpr(switch_);
             case Node.Assign ignored ->
                 throw new IllegalStateException(
@@ -768,10 +771,10 @@ final class Lowering {
     /// context for: a lambda of exactly that type stands as it is, where a
     /// cast to it would be redundant.
     private Expr targeted(Node node, TypeToken<?> targetType) {
-        return node instanceof Node.Lambda lambda
-                        && Tokens.sameType(lambda.sam().owner(), targetType)
-                ? lambda(lambda)
-                : expr(node);
+        return switch (node) {
+            case Node.Lambda lambda when Tokens.sameType(lambda.sam().owner(), targetType) -> lambda(lambda);
+            default -> expr(node);
+        };
     }
 
     /// An operand as javac sees it: the expression an [Upcast] witness was applied to, of the type it
@@ -1532,6 +1535,18 @@ final class Lowering {
     private Expr lambda(Node.Lambda lambda) {
         uses(lambda.sam());
         return new Lowering(this, lambda.sam().resultType()).lambdaBody(lambda);
+    }
+
+    /// `receiver::method` or `Type::method`, without the cast to the functional interface of its fact.
+    private Expr methodRef(Node.MethodRef reference) {
+        uses(reference.method());
+        if (reference.receiver().isPresent()) {
+            return expr(reference.receiver().get().node())
+                    .methodRef(reference.method().name());
+        }
+        mentions(reference.type());
+        return Exprs.methodRef(
+                written(reference.type()).typeRef(), reference.method().name());
     }
 
     /// The parameters and the body of a lambda, lowered by the lowering of its body.

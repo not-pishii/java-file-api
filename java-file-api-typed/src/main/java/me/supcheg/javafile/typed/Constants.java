@@ -107,6 +107,7 @@ final class Constants {
                     Node.NewArrayOf _,
                     Node.Upcast _,
                     Node.Lambda _,
+                    Node.MethodRef _,
                     Node.Switch _,
                     Node.Assign _,
                     Node.Raw _ -> NONE;
