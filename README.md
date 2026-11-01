@@ -96,7 +96,7 @@ The examples below assume `import static me.supcheg.javafile.code.Exprs.*;` and 
 - [Extending and implementing](#extending-and-implementing)
 - [Generic classes](#generic-classes)
 - [Typed method bodies: try/catch, lambdas, instanceof, enum switch](#typed-method-bodies-trycatch-lambdas-instanceof-enum-switch)
-- [Typed statements: text blocks, method references, assert, synchronized, resources, labels](#typed-statements-text-blocks-method-references-assert-synchronized-resources-labels)
+- [Typed statements: text blocks, method and constructor references, assert, synchronized, resources, labels, the empty statement](#typed-statements-text-blocks-method-and-constructor-references-assert-synchronized-resources-labels-the-empty-statement)
 - [Typed operators: unary, bitwise, shifts, increments and class literals](#typed-operators-unary-bitwise-shifts-increments-and-class-literals)
 - [Varargs and arrays](#varargs-and-arrays)
 - [Annotations](#annotations)
@@ -1092,7 +1092,7 @@ public final class Signals {
 }
 ```
 
-### Typed statements: text blocks, method references, assert, synchronized, resources, labels
+### Typed statements: text blocks, method and constructor references, assert, synchronized, resources, labels, the empty statement
 
 Six statements and expressions the core models are reached through facts, not names. `textBlock` is a `String`
 constant rendered with `"""` delimiters - or, where the value holds one of the three characters the white space check of
@@ -1104,6 +1104,20 @@ than leaving that to javac. `assert_` has the bare and the message form, and is 
 Expr<Supplier<String>> trim = s.methodRef(String_.trim, supplier.token, supplier.sam.method());
 b.assert_(gtInt(value, literal(0)), literal("value must be positive"));
 ```
+
+A constructor reference is the same combinator for `Type::new`: `constructorRef(Wide_.new_, supplier.token,
+supplier.sam.method())` takes the constructor fact, the functional interface and its SAM, and refuses a constructor whose
+parameters are not the SAM's, whose class is not the SAM's result, one of another class than the one named, and one of an
+interface or an abstract class, rather than leaving any of that to javac. It renders `Type::new`, with the type arguments
+of the fact; the overloads of the arity families take a `CtorRefN` and name its class.
+
+```java
+Expr<Supplier<Wide>> made = constructorRef(Wide_.new_, supplier.token, supplier.sam.method());
+Expr<BiFunction<String, String, Wide>> paired =
+        constructorRef(Wide_.new_String_String, function.token, function.sam.method());
+```
+
+`empty()` appends the bare `;`, which changes neither reachability nor scope.
 
 `synchronized_` takes a reference-typed monitor and a body - `synchronizedTerminated` when the body cannot complete
 normally - and `tryWithResources` declares `AutoCloseable` resources in its body, in declaration order, as a variable
