@@ -11,6 +11,7 @@ import me.supcheg.javafile.model.MethodDecl;
 import me.supcheg.javafile.model.Modifier;
 import me.supcheg.javafile.model.Param;
 import me.supcheg.javafile.model.RecordMember;
+import me.supcheg.javafile.model.StaticFieldDecl;
 import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.typed.TypeDeclarationSupport.Member;
 
@@ -114,5 +115,17 @@ public final class TypedRecordBodies<Self> extends TypedTypeBodies<Self, RecordM
     @Override
     RecordMember constant(Member.Constant declared, VariableInitializer initializer) {
         throw new IllegalStateException("a record declares no constant: " + declared.fact());
+    }
+
+    @Override
+    RecordMember staticField(Member.StaticField declared, VariableInitializer initializer) {
+        return new StaticFieldDecl(
+                declared.fact().name(),
+                declared.fact().type().typeRef(),
+                declared.annotations().stream()
+                        .map(me.supcheg.javafile.facts.AnnotationRef::toUse)
+                        .toList(),
+                initializer,
+                Optional.empty());
     }
 }

@@ -9,7 +9,9 @@ import me.supcheg.javafile.facts.Invocable;
 import me.supcheg.javafile.facts.InvocableKind;
 import me.supcheg.javafile.facts.MemberFact;
 import me.supcheg.javafile.facts.MutableFieldRef;
+import me.supcheg.javafile.facts.MutableStaticFieldRef;
 import me.supcheg.javafile.facts.Protected;
+import me.supcheg.javafile.facts.StaticFieldRef;
 import me.supcheg.javafile.facts.TypeToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.model.ClassMember;
@@ -26,14 +28,12 @@ import java.util.stream.Stream;
 /// with another superclass — have in common, which is everything but how the
 /// stage ends.
 ///
-/// **Every member is declared here, and none has a body.** A field, a method,
-/// a constructor, an override is declared, which gives its fact; the stage
-/// ends in the bodies of the class ([MemberBodies]), where each declared
-/// member is defined. The two are distinct types, so no member is declared
-/// after a body was built: when the first body is, the methods of the class
-/// and the names of its fields are all there, and the body is lowered where
-/// it is defined — what is wrong with it is rejected by the call that gave
-/// it.
+/// **Every member is declared here, and none has a body.** A field — instance or static —, a
+/// method, a constructor, an override is declared, which gives its fact; the stage ends in the
+/// bodies of the class ([MemberBodies]), where each declared member is defined. The two are distinct
+/// types, so no member is declared after a body was built: when the first body is, the methods of the
+/// class and the names of its fields are all there, and the body is lowered where it is defined — what
+/// is wrong with it is rejected by the call that gave it.
 ///
 /// A stage is a value a generator may keep: this one used after it ended is
 /// rejected, which the types cannot.
@@ -186,6 +186,79 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
         return declared(UnsafeFacts.mutableField(self, name, type), Set.of(Modifier.PUBLIC), List.of(annotations));
     }
 
+    /// Declares a `public static final` field, to be given its initializer by the bodies of the class
+    /// ([MemberBodies#initialize]).
+    ///
+    /// @param name the field name
+    /// @param type the field type
+    /// @param <T> the field type
+    /// @return the fact of the field, which can be read but not assigned
+    /// @throws IllegalArgumentException if a field of that name is declared already
+    /// @throws IllegalStateException if the type mentions a type parameter — of this class, which a static
+    ///     member does not have in scope (JLS 8.1.2), or of another —, or the declarations of the class
+    ///     have ended
+    public final <T> StaticFieldRef<T> declareStaticField(String name, TypeToken<T> type) {
+        return declareStaticField(name, type, new AnnotationRef<?>[0]);
+    }
+
+    /// Declares a `public static final` field that declares `annotations`, to be given its initializer
+    /// by the bodies of the class ([MemberBodies#initialize]).
+    ///
+    /// @param name the field name
+    /// @param type the field type
+    /// @param annotations the annotations, in order
+    /// @param <T> the field type
+    /// @return the fact of the field, which can be read but not assigned
+    /// @throws IllegalArgumentException if a field of that name is declared already, or an annotation
+    ///     type cannot annotate a field
+    /// @throws IllegalStateException if the type mentions a type parameter, see
+    ///     [#declareStaticField(String, TypeToken)], or the declarations of the class have ended
+    @SafeVarargs
+    @SuppressWarnings("varargs")
+    public final <T> StaticFieldRef<T> declareStaticField(
+            String name, TypeToken<T> type, AnnotationRef<?>... annotations) {
+        return declaredStatic(
+                UnsafeFacts.staticField(self, name, type),
+                Set.of(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL),
+                List.of(annotations));
+    }
+
+    /// Declares a `public static` field, not `final`, to be given its initializer by the bodies of the
+    /// class ([MemberBodies#initialize]).
+    ///
+    /// @param name the field name
+    /// @param type the field type
+    /// @param <T> the field type
+    /// @return the fact of the field, which can be read and assigned
+    /// @throws IllegalArgumentException if a field of that name is declared already
+    /// @throws IllegalStateException if the type mentions a type parameter, see
+    ///     [#declareStaticField(String, TypeToken)], or the declarations of the class have ended
+    public final <T> MutableStaticFieldRef<T> declareMutableStaticField(String name, TypeToken<T> type) {
+        return declareMutableStaticField(name, type, new AnnotationRef<?>[0]);
+    }
+
+    /// Declares a `public static` field, not `final`, that declares `annotations`, to be given its
+    /// initializer by the bodies of the class.
+    ///
+    /// @param name the field name
+    /// @param type the field type
+    /// @param annotations the annotations, in order
+    /// @param <T> the field type
+    /// @return the fact of the field, which can be read and assigned
+    /// @throws IllegalArgumentException if a field of that name is declared already, or an annotation
+    ///     type cannot annotate a field
+    /// @throws IllegalStateException if the type mentions a type parameter, see
+    ///     [#declareStaticField(String, TypeToken)], or the declarations of the class have ended
+    @SafeVarargs
+    @SuppressWarnings("varargs")
+    public final <T> MutableStaticFieldRef<T> declareMutableStaticField(
+            String name, TypeToken<T> type, AnnotationRef<?>... annotations) {
+        return declaredStatic(
+                UnsafeFacts.mutableStaticField(self, name, type),
+                Set.of(Modifier.PUBLIC, Modifier.STATIC),
+                List.of(annotations));
+    }
+
     private <F extends FieldRef<Self, ?>> F declared(
             F field, Set<Modifier> modifiers, List<AnnotationRef<?>> annotations) {
         String name = field.name();
@@ -198,6 +271,22 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
         annotations.forEach(
                 annotation -> owner.target().verify(annotation.type().token()));
         declared(new Member.Field(field, modifiers, annotations, site));
+        return field;
+    }
+
+    /// Declares a static field of the class: a static member mentions no type parameter (JLS 8.1.2), and
+    /// is serialized with no value of its own, so what it is of need not be `Serializable`.
+    private <F extends StaticFieldRef<?>> F declaredStatic(
+            F field, Set<Modifier> modifiers, List<AnnotationRef<?>> annotations) {
+        String name = field.name();
+        Site site = Site.here();
+        owner.requireDeclaring("static field " + name + " of " + described);
+        Tokens.requireNotRaw(field.type());
+        owner.staticScope("the type of static field " + name).require(field.type());
+        registry.field(name);
+        annotations.forEach(
+                annotation -> owner.target().verify(annotation.type().token()));
+        declared(new Member.StaticField(field, modifiers, annotations, site));
         return field;
     }
 
@@ -443,6 +532,21 @@ public abstract sealed class MemberBuilder<Self, S> extends Declarations<Self, S
         record Field(FieldRef<?, ?> fact, Set<Modifier> modifiers, List<AnnotationRef<?>> annotations, Site site)
                 implements Member {
             public Field {
+                modifiers = Set.copyOf(modifiers);
+                annotations = List.copyOf(annotations);
+            }
+        }
+
+        /// A static field, which the bodies of the class give its initializer.
+        ///
+        /// @param fact its fact
+        /// @param modifiers its modifiers
+        /// @param annotations the annotations it declares
+        /// @param site where it was declared
+        record StaticField(
+                StaticFieldRef<?> fact, Set<Modifier> modifiers, List<AnnotationRef<?>> annotations, Site site)
+                implements Member {
+            public StaticField {
                 modifiers = Set.copyOf(modifiers);
                 annotations = List.copyOf(annotations);
             }

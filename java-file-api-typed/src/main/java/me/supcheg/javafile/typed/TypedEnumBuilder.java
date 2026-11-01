@@ -40,7 +40,7 @@ import java.util.function.Consumer;
 /// ```
 ///
 /// @param <Self> the brand of the enum being declared
-public final class TypedEnumBuilder<Self> extends TypeMemberDeclarations<Self> {
+public final class TypedEnumBuilder<Self> extends StaticFieldDeclarations<Self> {
     private final List<Constant<Self>> constants = new ArrayList<>();
     private final List<Invocable> abstractMethods = new ArrayList<>();
     private final List<Constructor> constructors = new ArrayList<>();

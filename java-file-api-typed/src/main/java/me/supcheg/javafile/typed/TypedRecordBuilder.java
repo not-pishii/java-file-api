@@ -45,7 +45,7 @@ import java.util.List;
 /// ```
 ///
 /// @param <Self> the brand of the record being declared
-public final class TypedRecordBuilder<Self> extends TypeMemberDeclarations<Self> {
+public final class TypedRecordBuilder<Self> extends StaticFieldDeclarations<Self> {
     private static final ClassDesc CD_RECORD = ClassDesc.of("java.lang", "Record");
     private static final ClassDesc CD_OBJECT = ConstantDescs.CD_Object;
 
@@ -62,6 +62,11 @@ public final class TypedRecordBuilder<Self> extends TypeMemberDeclarations<Self>
     @Override
     MemberTraits instanceTraits() {
         return MemberTraits.FINAL;
+    }
+
+    @Override
+    boolean mutableStaticFields() {
+        return false;
     }
 
     /// Adds a component, in declaration order.

@@ -136,4 +136,9 @@ public final class TypedInterfaceBodies<Self> extends TypedTypeBodies<Self, Inte
                 initializer,
                 java.util.Optional.empty());
     }
+
+    @Override
+    InterfaceMember staticField(Member.StaticField declared, VariableInitializer initializer) {
+        throw new IllegalStateException("an interface declares constants, not static fields: " + declared.fact());
+    }
 }

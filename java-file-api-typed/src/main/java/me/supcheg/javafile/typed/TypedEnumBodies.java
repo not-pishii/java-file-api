@@ -113,6 +113,19 @@ public final class TypedEnumBodies<Self> extends TypedTypeBodies<Self, EnumMembe
     }
 
     @Override
+    EnumMember staticField(Member.StaticField declared, VariableInitializer initializer) {
+        return new FieldDecl(
+                declared.fact().name(),
+                declared.fact().type().typeRef(),
+                declared.annotations().stream()
+                        .map(me.supcheg.javafile.facts.AnnotationRef::toUse)
+                        .toList(),
+                declared.modifiers(),
+                Optional.of(initializer),
+                Optional.empty());
+    }
+
+    @Override
     List<EnumMember> extraMembers() {
         return List.copyOf(enumConstructors());
     }

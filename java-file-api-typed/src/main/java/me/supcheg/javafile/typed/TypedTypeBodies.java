@@ -90,6 +90,7 @@ abstract class TypedTypeBodies<Self, M> {
                                 : new Slot.Awaiting(callable);
                     case Member.Field field -> new Slot.Blank(field);
                     case Member.Constant constant -> new Slot.BlankConstant(constant);
+                    case Member.StaticField staticField -> new Slot.BlankStatic(staticField);
                 })
                 .toList();
     }
@@ -113,7 +114,7 @@ abstract class TypedTypeBodies<Self, M> {
                 .flatMap(slot -> switch (slot) {
                     case Slot.Awaiting awaiting when awaiting.declared().fact() == member -> Stream.of(awaiting);
                     case Slot.Awaiting _ -> Stream.<Slot.Awaiting>empty();
-                    case Slot.Blank _, Slot.BlankConstant _ -> Stream.<Slot.Awaiting>empty();
+                    case Slot.Blank _, Slot.BlankConstant _, Slot.BlankStatic _ -> Stream.<Slot.Awaiting>empty();
                     case Slot.Defined defined
                     when defined.declared() instanceof Member.Callable callable && callable.fact() == member ->
                         throw alreadyDefined(what);
@@ -130,7 +131,7 @@ abstract class TypedTypeBodies<Self, M> {
                 .flatMap(slot -> switch (slot) {
                     case Slot.Blank blank when blank.declared().fact() == field -> Stream.of(blank);
                     case Slot.Blank _ -> Stream.<Slot.Blank>empty();
-                    case Slot.Awaiting _, Slot.BlankConstant _ -> Stream.<Slot.Blank>empty();
+                    case Slot.Awaiting _, Slot.BlankConstant _, Slot.BlankStatic _ -> Stream.<Slot.Blank>empty();
                     case Slot.Defined defined
                     when defined.declared() instanceof Member.Field declared && declared.fact() == field ->
                         throw alreadyDefined(what);
@@ -140,18 +141,25 @@ abstract class TypedTypeBodies<Self, M> {
                 .orElseThrow(() -> undeclared(what));
     }
 
-    private Slot.BlankConstant initializable(StaticFieldRef<?> constant) {
-        String what = "constant " + constant;
+    /// The slot of a constant or of a static field that is declared and has no initializer yet.
+    private Slot.AwaitingInitializer initializable(StaticFieldRef<?> field) {
+        String what = "field " + field;
         owner.requireDefining(what);
         return slots.stream()
                 .flatMap(slot -> switch (slot) {
-                    case Slot.BlankConstant blank when blank.declared().fact() == constant -> Stream.of(blank);
-                    case Slot.BlankConstant _ -> Stream.<Slot.BlankConstant>empty();
-                    case Slot.Awaiting _, Slot.Blank _ -> Stream.<Slot.BlankConstant>empty();
+                    case Slot.BlankConstant blank
+                    when blank.declared().fact() == field -> Stream.<Slot.AwaitingInitializer>of(blank);
+                    case Slot.BlankStatic blank
+                    when blank.declared().fact() == field -> Stream.<Slot.AwaitingInitializer>of(blank);
+                    case Slot.BlankConstant _, Slot.BlankStatic _ -> Stream.<Slot.AwaitingInitializer>empty();
+                    case Slot.Awaiting _, Slot.Blank _ -> Stream.<Slot.AwaitingInitializer>empty();
                     case Slot.Defined defined
-                    when defined.declared() instanceof Member.Constant declared && declared.fact() == constant ->
+                    when defined.declared() instanceof Member.Constant constant && constant.fact() == field ->
                         throw alreadyDefined(what);
-                    case Slot.Defined _ -> Stream.<Slot.BlankConstant>empty();
+                    case Slot.Defined defined
+                    when defined.declared() instanceof Member.StaticField staticField && staticField.fact() == field ->
+                        throw alreadyDefined(what);
+                    case Slot.Defined _ -> Stream.<Slot.AwaitingInitializer>empty();
                 })
                 .findFirst()
                 .orElseThrow(() -> undeclared(what));
@@ -173,37 +181,90 @@ abstract class TypedTypeBodies<Self, M> {
     /// @param initializer the initializer
     /// @param <T> the field type
     public final <T> void initialize(FieldRef<Self, T> field, Expr<? extends T> initializer) {
-        Tokens.requireNoBoxing(initializer.type(), field.type(), "the initializer of field " + field.name());
+        String what = "field " + field.name();
+        Tokens.requireNoBoxing(initializer.type(), field.type(), "the initializer of " + what);
         Slot.Blank slot = initializable(field);
-        ScopeCheck.standalone(initializer.node(), "initializer of field " + field.name());
-        Exceptions.initializer(initializer.node(), "initializer of field " + field.name());
+        ScopeCheck.standalone(initializer.node(), "initializer of " + what);
+        Exceptions.initializer(initializer.node(), "initializer of " + what);
         Lowering lowering = new Lowering(
                 owner.target(),
-                new Lowering.Place.InClass(
-                        self, owner.scope("the initializer of field " + field.name()), owner.bounded()),
+                new Lowering.Place.InClass(self, owner.scope("the initializer of " + what), owner.bounded()),
                 java.util.Optional.empty());
         VariableInitializer lowered = lowering.lowerInitializer(initializer.node(), field.type());
-        defined(slot, field(slot.declared(), lowered), "the initializer of field " + field.name());
+        defined(slot, field(slot.declared(), lowered), "the initializer of " + what);
     }
 
-    /// Gives a declared constant its initializer.
+    /// Gives a declared constant or static field its initializer. A constant of an interface must be
+    /// initialized by a constant expression (JLS 9.3.1); a static field of a record or of an enum need not be,
+    /// and is no constant variable to the typed layer whatever its initializer: its fact carries no value, so a
+    /// read of it is no constant expression (JLS 4.12.4).
     ///
-    /// @param constant the declared constant
+    /// The initializer is static: it is in no body's scope and in the scope of no type parameter, so it can
+    /// neither use `this` nor a variable, nor throw a checked exception, and it reads only the static fields the
+    /// type declares before the one it initializes (JLS 8.3.3).
+    ///
+    /// @param field the declared constant or static field
     /// @param initializer the initializer
-    /// @param <T> the constant type
-    public final <T> void initialize(StaticFieldRef<T> constant, Expr<? extends T> initializer) {
-        Tokens.requireNoBoxing(initializer.type(), constant.type(), "the initializer of constant " + constant.name());
-        Slot.BlankConstant slot = initializable(constant);
-        ScopeCheck.standalone(initializer.node(), "initializer of constant " + constant.name());
-        Exceptions.initializer(initializer.node(), "initializer of constant " + constant.name());
-        requireConstant(slot.declared(), initializer.node());
-        Lowering lowering = new Lowering(
-                owner.target(),
-                new Lowering.Place.InClass(
-                        self, owner.staticScope("the initializer of constant " + constant.name()), owner.bounded()),
-                java.util.Optional.empty());
-        VariableInitializer lowered = lowering.lowerInitializer(initializer.node(), constant.type());
-        defined(slot, constant(slot.declared(), lowered), "the initializer of constant " + constant.name());
+    /// @param <T> the field type
+    /// @throws IllegalStateException if the field has its initializer already or was not declared by this
+    ///     type, or if the initializer can throw a checked exception
+    /// @throws IllegalArgumentException if the initializer of a constant is no constant expression, or reads a
+    ///     static field of the type declared at or after the field it initializes (JLS 8.3.3)
+    public final <T> void initialize(StaticFieldRef<T> field, Expr<? extends T> initializer) {
+        Slot.AwaitingInitializer slot = initializable(field);
+        String what = slot instanceof Slot.BlankConstant ? "constant " + field.name() : "static field " + field.name();
+        Tokens.requireNoBoxing(initializer.type(), field.type(), "the initializer of " + what);
+        ScopeCheck.standalone(initializer.node(), "initializer of " + what);
+        Exceptions.initializer(initializer.node(), "initializer of " + what);
+        requireConstant(slot, initializer.node());
+        VariableInitializer lowered = lower(slot, initializer, field.type());
+        defined(
+                slot,
+                switch (slot) {
+                    case Slot.BlankConstant constant -> constant(constant.declared(), lowered);
+                    case Slot.BlankStatic staticField -> staticField(staticField.declared(), lowered);
+                },
+                "the initializer of " + what);
+    }
+
+    /// The initializer of a constant or of a static field, lowered: one of a static field reads only the
+    /// fields of the type declared before the field it initializes (JLS 8.3.3).
+    private VariableInitializer lower(Slot.AwaitingInitializer slot, Expr<?> initializer, TypeToken<?> type) {
+        return switch (slot) {
+            case Slot.BlankConstant constant ->
+                new Lowering(
+                                owner.target(),
+                                new Lowering.Place.InClass(
+                                        self,
+                                        owner.staticScope("the initializer of constant "
+                                                + constant.declared().fact().name()),
+                                        owner.bounded()),
+                                java.util.Optional.empty())
+                        .lowerInitializer(initializer.node(), type);
+            case Slot.BlankStatic staticField ->
+                Lowering.staticInitializer(
+                                owner.target(),
+                                new Lowering.Place.InClass(
+                                        self,
+                                        owner.staticScope("the initializer of static field "
+                                                + staticField.declared().fact().name()),
+                                        owner.bounded()),
+                                staticField.declared().fact(),
+                                declaredFrom(staticField.declared().fact()))
+                        .lowerInitializer(initializer.node(), type);
+        };
+    }
+
+    /// The static fields of the type that the initializer of `field` may not read: `field` itself and each
+    /// declared after it, in the order of the declarations (JLS 8.3.3).
+    private List<StaticFieldRef<?>> declaredFrom(StaticFieldRef<?> field) {
+        List<StaticFieldRef<?>> declared = slots.stream()
+                .map(Slot::declared)
+                .flatMap(member -> member instanceof Member.StaticField staticField
+                        ? Stream.<StaticFieldRef<?>>of(staticField.fact())
+                        : Stream.<StaticFieldRef<?>>empty())
+                .toList();
+        return declared.subList(declared.indexOf(field), declared.size());
     }
 
     /// Whether an initializer of a constant has to be a constant expression (JLS 9.3.1): an interface
@@ -212,11 +273,14 @@ abstract class TypedTypeBodies<Self, M> {
         return false;
     }
 
-    private void requireConstant(Member.Constant constant, Node node) {
-        if (requireConstantExpression() && Constants.fold(node) instanceof Constants.Folded.None) {
-            throw new IllegalArgumentException("the initializer of constant " + constant.fact() + " of "
-                    + owner.described() + " is not a constant expression: a constant of an interface is"
-                    + " initialized by one (JLS 9.3.1)");
+    private void requireConstant(Slot.AwaitingInitializer slot, Node node) {
+        if (slot instanceof Slot.BlankConstant constant
+                && requireConstantExpression()
+                && Constants.fold(node) instanceof Constants.Folded.None) {
+            throw new IllegalArgumentException(
+                    "the initializer of constant " + constant.declared().fact() + " of "
+                            + owner.described() + " is not a constant expression: a constant of an interface is"
+                            + " initialized by one (JLS 9.3.1)");
         }
     }
 
@@ -623,6 +687,8 @@ abstract class TypedTypeBodies<Self, M> {
                         Stream.of(new Undefined("field " + declared.fact(), declared.site()));
                     case Slot.BlankConstant(var declared) ->
                         Stream.of(new Undefined("constant " + declared.fact(), declared.site()));
+                    case Slot.BlankStatic(var declared) ->
+                        Stream.of(new Undefined("field " + declared.fact(), declared.site()));
                     case Slot.Defined _ -> Stream.<Undefined>empty();
                 })
                 .toList();
@@ -683,15 +749,22 @@ abstract class TypedTypeBodies<Self, M> {
 
     /// A member of the type, in the order it was declared.
     sealed interface Slot {
-        sealed interface Open extends Slot {
-            Member declared();
-        }
+        /// The member as it was declared.
+        Member declared();
+
+        /// A slot that waits for what defines it.
+        sealed interface Open extends Slot {}
+
+        /// A slot of a constant or a static field, which waits for its initializer.
+        sealed interface AwaitingInitializer extends Open {}
 
         record Awaiting(Member.Callable declared) implements Open {}
 
         record Blank(Member.Field declared) implements Open {}
 
-        record BlankConstant(Member.Constant declared) implements Open {}
+        record BlankConstant(Member.Constant declared) implements AwaitingInitializer {}
+
+        record BlankStatic(Member.StaticField declared) implements AwaitingInitializer {}
 
         record Defined(Member declared, Object member) implements Slot {}
     }
@@ -720,4 +793,6 @@ abstract class TypedTypeBodies<Self, M> {
     abstract M field(Member.Field declared, VariableInitializer initializer);
 
     abstract M constant(Member.Constant declared, VariableInitializer initializer);
+
+    abstract M staticField(Member.StaticField declared, VariableInitializer initializer);
 }

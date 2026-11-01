@@ -299,6 +299,28 @@ abstract class TypeDeclarationSupport<Self> {
         return constant;
     }
 
+    /// Declares a static field of the type, which the bodies of the type give its initializer.
+    ///
+    /// @param field its fact
+    /// @param modifiers its modifiers
+    /// @param annotations the annotations it declares
+    /// @param <F> the fact
+    /// @return the fact, `field`
+    /// @throws IllegalArgumentException if a field of that name is declared already
+    /// @throws IllegalStateException if the type mentions a type parameter — which a `static` member has not
+    ///     in scope (JLS 8.1.2) —, or the declarations have ended
+    final <F extends StaticFieldRef<?>> F declaredStatic(
+            F field, Set<Modifier> modifiers, List<AnnotationRef<?>> annotations) {
+        String name = field.name();
+        requireDeclaring("static field " + name + " of " + described);
+        Tokens.requireNotRaw(field.type());
+        staticScope("the type of static field " + name).require(field.type());
+        registry().field(name);
+        annotations.forEach(annotation -> target().verify(annotation.type().token()));
+        declared(new Member.StaticField(field, Set.copyOf(modifiers), annotations, Site.here()));
+        return field;
+    }
+
     private void declared(Member member) {
         members = Stream.concat(members.stream(), Stream.of(member)).toList();
     }
@@ -430,6 +452,21 @@ abstract class TypeDeclarationSupport<Self> {
         /// @param site where it was declared
         record Constant(StaticFieldRef<?> fact, List<AnnotationRef<?>> annotations, Site site) implements Member {
             public Constant {
+                annotations = List.copyOf(annotations);
+            }
+        }
+
+        /// A static field of a record or an enum, which the bodies of the type give its initializer.
+        ///
+        /// @param fact its fact
+        /// @param modifiers its modifiers
+        /// @param annotations the annotations it declares
+        /// @param site where it was declared
+        record StaticField(
+                StaticFieldRef<?> fact, Set<Modifier> modifiers, List<AnnotationRef<?>> annotations, Site site)
+                implements Member {
+            public StaticField {
+                modifiers = Set.copyOf(modifiers);
                 annotations = List.copyOf(annotations);
             }
         }

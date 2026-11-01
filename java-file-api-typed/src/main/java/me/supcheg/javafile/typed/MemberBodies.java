@@ -13,6 +13,7 @@ import me.supcheg.javafile.facts.FinalClassToken;
 import me.supcheg.javafile.facts.Invocable;
 import me.supcheg.javafile.facts.MemberFact;
 import me.supcheg.javafile.facts.Protected;
+import me.supcheg.javafile.facts.StaticFieldRef;
 import me.supcheg.javafile.facts.TargetClasspath;
 import me.supcheg.javafile.facts.TypeToken;
 import me.supcheg.javafile.model.ClassMember;
@@ -112,6 +113,7 @@ public abstract sealed class MemberBodies<Self, S> extends MemberBodyArities<Sel
                 .<Slot>map(member -> switch (member) {
                     case Member.Callable callable -> new Slot.Awaiting(callable);
                     case Member.Field field -> new Slot.Blank(field);
+                    case Member.StaticField staticField -> new Slot.BlankStatic(staticField);
                     case Member.Given given -> new Slot.Defined(given, given.member());
                     case Member.SerialVersion serialVersion ->
                         new Slot.Defined(
@@ -172,6 +174,62 @@ public abstract sealed class MemberBodies<Self, S> extends MemberBodyArities<Sel
                                 .lowerInitializer(initializer.node(), field.type())),
                         Optional.empty()),
                 "the initializer of field " + name);
+    }
+
+    /// Gives a declared static field its initializer, immutable or mutable. The initializer is static: it is
+    /// in no body's scope and in the scope of no type parameter of the class (JLS 8.1.2), so it can neither use
+    /// `this` nor a variable, nor mention a type parameter, nor throw a checked exception; and it reads only the
+    /// static fields the class declares before the field it initializes (JLS 8.3.3).
+    ///
+    /// A static field is no constant variable to the typed layer, whatever its initializer: its fact carries no
+    /// value, so a read of it is no constant expression (JLS 4.12.4) and folding counts it as none.
+    ///
+    /// @param field the declared static field
+    /// @param initializer the initializer
+    /// @param <T> the field type
+    /// @throws IllegalStateException if the field has its initializer already or was not declared by this
+    ///     class, if the initializer can throw a checked exception, or cannot be lowered or written
+    ///     (see [#define(MethodRef0, InstanceBody0)])
+    /// @throws IllegalArgumentException if the initializer reads a static field of the class that is declared
+    ///     at or after the field it initializes (JLS 8.3.3)
+    public final <T> void initialize(StaticFieldRef<T> field, Expr<? extends T> initializer) {
+        String name = field.name();
+        Tokens.requireNoBoxing(initializer.type(), field.type(), "the initializer of static field " + name);
+        Slot.BlankStatic slot = staticInitializable(field);
+        ScopeCheck.standalone(initializer.node(), "initializer of static field " + name);
+        Exceptions.initializer(initializer.node(), "initializer of static field " + name);
+        defined(
+                slot,
+                new FieldDecl(
+                        name,
+                        field.type().typeRef(),
+                        slot.declared().annotations().stream()
+                                .map(AnnotationRef::toUse)
+                                .toList(),
+                        slot.declared().modifiers(),
+                        Optional.of(Lowering.staticInitializer(
+                                        target,
+                                        new Lowering.Place.InClass(
+                                                self,
+                                                owner.staticScope("the initializer of static field " + name),
+                                                owner.bounded()),
+                                        field,
+                                        declaredFrom(field))
+                                .lowerInitializer(initializer.node(), field.type())),
+                        Optional.empty()),
+                "the initializer of static field " + name);
+    }
+
+    /// The static fields of the class that the initializer of `field` may not read: `field` itself and each
+    /// declared after it, in the order of the declarations (JLS 8.3.3).
+    private List<StaticFieldRef<?>> declaredFrom(StaticFieldRef<?> field) {
+        List<StaticFieldRef<?>> declared = slots.stream()
+                .map(Slot::declared)
+                .flatMap(member -> member instanceof Member.StaticField staticField
+                        ? Stream.<StaticFieldRef<?>>of(staticField.fact())
+                        : Stream.<StaticFieldRef<?>>empty())
+                .toList();
+        return declared.subList(declared.indexOf(field), declared.size());
     }
 
     // ------------------------------------------------------------------
@@ -252,6 +310,8 @@ public abstract sealed class MemberBodies<Self, S> extends MemberBodyArities<Sel
                         Stream.of(new Undefined(declared.fact().toString(), declared.site()));
                     case Slot.Blank(var declared) ->
                         Stream.of(new Undefined("field " + declared.fact(), declared.site()));
+                    case Slot.BlankStatic(var declared) ->
+                        Stream.of(new Undefined("field " + declared.fact(), declared.site()));
                     case Slot.Defined _ -> Stream.<Undefined>empty();
                 })
                 .toList();
@@ -284,6 +344,16 @@ public abstract sealed class MemberBodies<Self, S> extends MemberBodyArities<Sel
                 .flatMap(slot -> switch (slot) {
                     case Slot.Awaiting _ -> Stream.<ClassMember>empty();
                     case Slot.Blank(var declared) ->
+                        Stream.of(new FieldDecl(
+                                declared.fact().name(),
+                                declared.fact().type().typeRef(),
+                                declared.annotations().stream()
+                                        .map(AnnotationRef::toUse)
+                                        .toList(),
+                                declared.modifiers(),
+                                Optional.empty(),
+                                Optional.empty()));
+                    case Slot.BlankStatic(var declared) ->
                         Stream.of(new FieldDecl(
                                 declared.fact().name(),
                                 declared.fact().type().typeRef(),
@@ -331,6 +401,7 @@ public abstract sealed class MemberBodies<Self, S> extends MemberBodyArities<Sel
                     case Slot.Awaiting awaiting when awaiting.declared().fact() == member -> Stream.of(awaiting);
                     case Slot.Awaiting _ -> Stream.<Slot.Awaiting>empty();
                     case Slot.Blank _ -> Stream.<Slot.Awaiting>empty();
+                    case Slot.BlankStatic _ -> Stream.<Slot.Awaiting>empty();
                     case Slot.Defined(Member.Callable declared, var _)
                     when declared.fact() == member -> throw alreadyDefined(what);
                     case Slot.Defined _ -> Stream.<Slot.Awaiting>empty();
@@ -348,9 +419,28 @@ public abstract sealed class MemberBodies<Self, S> extends MemberBodyArities<Sel
                     case Slot.Blank blank when blank.declared().fact() == field -> Stream.of(blank);
                     case Slot.Blank _ -> Stream.<Slot.Blank>empty();
                     case Slot.Awaiting _ -> Stream.<Slot.Blank>empty();
+                    case Slot.BlankStatic _ -> Stream.<Slot.Blank>empty();
                     case Slot.Defined(Member.Field declared, var _)
                     when declared.fact() == field -> throw alreadyDefined(what);
                     case Slot.Defined _ -> Stream.<Slot.Blank>empty();
+                })
+                .findFirst()
+                .orElseThrow(() -> undeclared(what));
+    }
+
+    /// The slot of a static field that is declared and has no initializer yet.
+    private Slot.BlankStatic staticInitializable(StaticFieldRef<?> field) {
+        String what = "field " + field;
+        owner.requireDefining(what);
+        return slots.stream()
+                .flatMap(slot -> switch (slot) {
+                    case Slot.BlankStatic blank when blank.declared().fact() == field -> Stream.of(blank);
+                    case Slot.BlankStatic _ -> Stream.<Slot.BlankStatic>empty();
+                    case Slot.Awaiting _ -> Stream.<Slot.BlankStatic>empty();
+                    case Slot.Blank _ -> Stream.<Slot.BlankStatic>empty();
+                    case Slot.Defined(Member.StaticField declared, var _)
+                    when declared.fact() == field -> throw alreadyDefined(what);
+                    case Slot.Defined _ -> Stream.<Slot.BlankStatic>empty();
                 })
                 .findFirst()
                 .orElseThrow(() -> undeclared(what));
@@ -557,11 +647,11 @@ public abstract sealed class MemberBodies<Self, S> extends MemberBodyArities<Sel
 
     /// A member of the class, in the order it was declared.
     sealed interface Slot {
+        /// The member as it was declared.
+        Member declared();
+
         /// A slot that waits for what defines it.
-        sealed interface Open extends Slot {
-            /// The member as it is declared.
-            Member declared();
-        }
+        sealed interface Open extends Slot {}
 
         /// A method or constructor that has no body yet.
         ///
@@ -572,6 +662,11 @@ public abstract sealed class MemberBodies<Self, S> extends MemberBodyArities<Sel
         ///
         /// @param declared the field as it was declared
         record Blank(Member.Field declared) implements Open {}
+
+        /// A static field that has no initializer yet.
+        ///
+        /// @param declared the static field as it was declared
+        record BlankStatic(Member.StaticField declared) implements Open {}
 
         /// A member that is there whole.
         ///

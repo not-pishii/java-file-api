@@ -186,16 +186,25 @@ me/supcheg/javafile/typed/Tokens.java :: case PrimitiveToken<?, ?, ?> _, TypeVar
 me/supcheg/javafile/typed/ClassDeclaration.java :: case Phase.Heading<Self> _, Phase.Members<Self> _, Phase.Bodies<Self> _, Phase.Complete<Self> _ ->
     a case of several type patterns: javac tests each label once more after it matched
 
-me/supcheg/javafile/typed/TypedTypeBodies.java :: case Slot.Blank _, Slot.BlankConstant _ -> Stream.<Slot.Awaiting>empty();
+me/supcheg/javafile/typed/TypedTypeBodies.java :: case Slot.Blank _, Slot.BlankConstant _, Slot.BlankStatic _ -> Stream.<Slot.Awaiting>empty();
+    a case of several type patterns: javac tests each label once more after it matched, and no kind of type has all
+    three at once — a record or an enum has fields and static fields, an interface constants
+
+me/supcheg/javafile/typed/TypedTypeBodies.java :: case Slot.Awaiting _, Slot.BlankConstant _, Slot.BlankStatic _ -> Stream.<Slot.Blank>empty();
+    a case of several type patterns: javac tests each label once more after it matched, and no kind of type has all
+    three at once — an instance field is that of an enum, which declares no constant
+
+me/supcheg/javafile/typed/TypedTypeBodies.java :: case Slot.BlankConstant _, Slot.BlankStatic _ -> Stream.<Slot.AwaitingInitializer>empty();
+    a case of several type patterns: javac tests each label once more after it matched, and a slot is of one kind
+    alone — an interface has constants, a record or an enum static fields
+
+me/supcheg/javafile/typed/TypedTypeBodies.java :: case Slot.Awaiting _, Slot.Blank _ -> Stream.<Slot.AwaitingInitializer>empty();
     a case of several type patterns: javac tests each label once more after it matched
 
-me/supcheg/javafile/typed/TypedTypeBodies.java :: case Slot.Awaiting _, Slot.BlankConstant _ -> Stream.<Slot.Blank>empty();
-    a case of several type patterns: javac tests each label once more after it matched
+me/supcheg/javafile/typed/TypedTypeBodies.java :: when defined.declared() instanceof Member.Constant constant && constant.fact() == field ->
+    a record pattern binds the member of a defined slot: javac tests that member for null, and no slot is defined with a null member
 
-me/supcheg/javafile/typed/TypedTypeBodies.java :: case Slot.Awaiting _, Slot.Blank _ -> Stream.<Slot.BlankConstant>empty();
-    a case of several type patterns: javac tests each label once more after it matched
-
-me/supcheg/javafile/typed/TypedTypeBodies.java :: when defined.declared() instanceof Member.Constant declared && declared.fact() == constant ->
+me/supcheg/javafile/typed/MemberBodies.java :: case Slot.Defined(Member.StaticField declared, var _)
     a record pattern binds the member of a defined slot: javac tests that member for null, and no slot is defined with a null member
 
 me/supcheg/javafile/typed/ScopeCheck.java :: switch (b.nesting()) {

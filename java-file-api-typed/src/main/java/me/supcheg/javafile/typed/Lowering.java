@@ -239,6 +239,10 @@ final class Lowering {
     /// `return` statements; empty for a `void` body or an expression.
     private final Optional<TypeToken<?>> result;
 
+    /// The static initializer being lowered, if the code is one: the field it initializes, and the static
+    /// fields of the class it may not read (JLS 8.3.3).
+    private final Optional<Forward> forward;
+
     /// The labels of the loops a `break` or a `continue` of an inner loop names.
     private static final class Labels {
         private final Map<LoopCtl, String> names = new HashMap<>();
@@ -264,21 +268,55 @@ final class Lowering {
     /// @param result the result type; empty for a `void` body
     /// @throws TargetClasspathMismatchException if a metamodel of `result` does not hold on `target`
     Lowering(TargetClasspath target, Place place, Optional<TypeToken<?>> result) {
-        this(target, place, new NameEnv(), new Labels(), result);
+        this(target, place, new NameEnv(), new Labels(), result, Optional.empty());
+    }
+
+    /// A lowering of the initializer of a static field: `field` is the field it initializes, and `later` the
+    /// static fields of the class that are declared at or after it — itself among them —, which the initializer
+    /// may not read (JLS 8.3.3).
+    ///
+    /// @param target the classpath the lowered code is compiled against
+    /// @param place the class whose initializer the code is
+    /// @param field the static field the code initializes
+    /// @param later the static fields the code may not read, `field` and those declared after it
+    /// @return the lowering
+    static Lowering staticInitializer(
+            TargetClasspath target, Place place, StaticFieldRef<?> field, List<StaticFieldRef<?>> later) {
+        return new Lowering(
+                target, place, new NameEnv(), new Labels(), Optional.empty(), Optional.of(new Forward(field, later)));
+    }
+
+    /// What a static initializer may not read: the field it initializes, and the static fields of the class that
+    /// are declared at or after it, in the order of the declarations (JLS 8.3.3).
+    ///
+    /// @param field the field the initializer initializes
+    /// @param later the fields it may not read, `field` first
+    private record Forward(StaticFieldRef<?> field, List<StaticFieldRef<?>> later) {
+        Forward {
+            later = List.copyOf(later);
+        }
     }
 
     /// The lowering of the body of a lambda of the body `enclosing` lowers, whose `return` statements
-    /// return `result`: in its names and its labels, with no loop around it.
+    /// return `result`: in its names and its labels, with no loop around it, and — the lambda being a body the
+    /// initializer runs — in the static initializer `enclosing` lowers, if it does.
     private Lowering(Lowering enclosing, Optional<TypeToken<?>> result) {
-        this(enclosing.target, enclosing.place, enclosing.names, enclosing.labels, result);
+        this(enclosing.target, enclosing.place, enclosing.names, enclosing.labels, result, enclosing.forward);
     }
 
-    private Lowering(TargetClasspath target, Place place, NameEnv names, Labels labels, Optional<TypeToken<?>> result) {
+    private Lowering(
+            TargetClasspath target,
+            Place place,
+            NameEnv names,
+            Labels labels,
+            Optional<TypeToken<?>> result,
+            Optional<Forward> forward) {
         this.target = target;
         this.place = place;
         this.names = names;
         this.labels = labels;
         this.result = result;
+        this.forward = forward;
         result.ifPresent(this::mentions);
     }
 
@@ -1347,7 +1385,22 @@ final class Lowering {
     /// The raw type qualifying a static field: its owner, whatever type the
     /// generator reached the fact through, so no field of a subtype hides
     /// it and no other supertype of one makes the name ambiguous.
+    ///
+    /// A static field read while a static initializer of the class is lowered is one of the fields that
+    /// initializer may not read if it is declared at or after the field initialized — itself among them —:
+    /// Java forbids reading such a field of the class being initialized by its simple name (JLS 8.3.3), and
+    /// the qualified name the typed layer writes has read no value yet, only the default one.
+    ///
+    /// @throws IllegalArgumentException if the code is a static initializer and reads a field it may not
     private ClassTypeRef staticOwner(StaticFieldRef<?> field) {
+        if (forward.isPresent() && forward.get().later().contains(field)) {
+            throw new IllegalArgumentException(
+                    "the initializer of " + forward.get().field() + " reads " + field
+                            + ", which is declared at or after it: a static initializer reads no static field of its own"
+                            + " class before that field is declared (JLS 8.3.3), and the read would be of the field's"
+                            + " default value — declare " + field.name() + " before the field it is read by, or read it"
+                            + " from the body of a method");
+        }
         subclassReaching(field.access(), field.owner(), field);
         mentions(field.owner());
         mentions(field.type());

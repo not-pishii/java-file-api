@@ -159,4 +159,10 @@ public final class TypedEnumConstantBodies<Self> extends TypedTypeBodies<Self, E
         throw new IllegalStateException(
                 "a constant body of the typed layer declares methods alone: " + declared.fact());
     }
+
+    @Override
+    EnumConstantMember staticField(Member.StaticField declared, VariableInitializer initializer) {
+        throw new IllegalStateException(
+                "a constant body of the typed layer declares methods alone: " + declared.fact());
+    }
 }
