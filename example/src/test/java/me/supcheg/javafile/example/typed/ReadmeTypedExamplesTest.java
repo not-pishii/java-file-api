@@ -90,6 +90,17 @@ class ReadmeTypedExamplesTest {
     }
 
     @Test
+    void theStaticFieldsAreWhatTheyRead() throws Throwable {
+        CompiledClasses counter = rendersAsShown("staticFields", ReadmeTypedExamples.staticFields());
+
+        assertThat(counter.generated().getField("ONE").getInt(null)).isEqualTo(1);
+        assertThat(counter.generated().getField("total").getInt(null)).isEqualTo(0);
+        assertThat(counter.invoke("bump")).isNull();
+        assertThat(counter.invoke("bump")).isNull();
+        assertThat(counter.generated().getField("total").getInt(null)).isEqualTo(2);
+    }
+
+    @Test
     void extendingAndImplementingIsACircleComparedByItsArea() throws Throwable {
         CompiledClasses circle = rendersAsShown("circle", ReadmeTypedExamples.circle());
 

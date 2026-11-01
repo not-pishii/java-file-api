@@ -28,7 +28,9 @@ import me.supcheg.javafile.typed.TypedJavaFile;
 
 import java.lang.constant.ClassDesc;
 
+import static me.supcheg.javafile.typed.Expressions.addInt;
 import static me.supcheg.javafile.typed.Expressions.assign;
+import static me.supcheg.javafile.typed.Expressions.assignStaticField;
 import static me.supcheg.javafile.typed.Expressions.at;
 import static me.supcheg.javafile.typed.Expressions.call;
 import static me.supcheg.javafile.typed.Expressions.concat;
@@ -71,6 +73,32 @@ final class ReadmeTypedExamples {
                                 greet,
                                 (b, self, name) -> b.return_(concat(
                                         concat(concat(field(self, greeting), literal(", ")), name), literal("!"))));
+                        return bodies;
+                    }
+                });
+        // endregion
+        return file;
+    }
+
+    static JavaFile staticFields() {
+        // region staticFields
+        JavaFile file = TypedJavaFile.class_(
+                UnsafeFacts.unverifiedClasspath(),
+                ClassDesc.of("com.example", "Counter"),
+                new TypedJavaFile.TypedClassSpec() {
+                    @Override
+                    public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
+                        var one = cb.declareStaticField("ONE", PrimitiveToken.INT);
+                        var total = cb.declareMutableStaticField("total", PrimitiveToken.INT);
+                        var bump = cb.declareVoidStaticMethod("bump");
+
+                        var bodies = cb.bodies();
+                        bodies.initialize(one, literal(1));
+                        bodies.initialize(total, literal(0));
+                        bodies.define(
+                                bump,
+                                b -> b.exec(assignStaticField(total, addInt(staticField(total), staticField(one))))
+                                        .end());
                         return bodies;
                     }
                 });

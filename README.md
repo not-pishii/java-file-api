@@ -769,6 +769,53 @@ public final class Greeter {
 }
 ```
 
+### Typed static fields
+
+A class, a record and an enum declare static fields too: `declareStaticField` makes a `public static final` one and
+`declareMutableStaticField` a `public static` one, which `assignStaticField` assigns like any other mutable field. Each
+is given its initializer by `initialize`, exactly once, by the fact its declaration returned. A static field is a static
+context to the typed layer: a type parameter of the class is in scope in neither its type nor its initializer (JLS
+8.1.2), and the initializer reads only the static fields declared before the one it initializes (JLS 8.3.3). An
+interface has `declareConstant` instead, since every field of an interface is a constant; and no static field is a
+constant variable to the typed layer, whatever initializes it. A record's static field is final alone.
+
+```java
+JavaFile file = TypedJavaFile.class_(
+        UnsafeFacts.unverifiedClasspath(),
+        ClassDesc.of("com.example", "Counter"),
+        new TypedJavaFile.TypedClassSpec() {
+            @Override
+            public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
+                var one = cb.declareStaticField("ONE", PrimitiveToken.INT);
+                var total = cb.declareMutableStaticField("total", PrimitiveToken.INT);
+                var bump = cb.declareVoidStaticMethod("bump");
+
+                var bodies = cb.bodies();
+                bodies.initialize(one, literal(1));
+                bodies.initialize(total, literal(0));
+                bodies.define(
+                        bump,
+                        b -> b.exec(assignStaticField(total, addInt(staticField(total), staticField(one))))
+                                .end());
+                return bodies;
+            }
+        });
+```
+
+```java
+package com.example;
+
+public final class Counter {
+    public static final int ONE = 1;
+
+    public static int total = 0;
+
+    public static void bump() {
+        Counter.total = Counter.total + Counter.ONE;
+    }
+}
+```
+
 ### Extending and implementing
 
 The typed class closest to [Records and sealed interfaces](#records-and-sealed-interfaces): it implements an existing
