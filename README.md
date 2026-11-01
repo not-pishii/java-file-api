@@ -1317,7 +1317,9 @@ public enum Op {
 
 A constant's body declares its fields with `declareField` and `declareStaticField`, gives each an initializer with
 `initialize`, declares helper methods with `declareMethod`, `declareVoidMethod`, `declareStaticMethod` and
-`declareVoidStaticMethod`, and defines them as any method of the enum does. A documented field or method takes
+`declareVoidStaticMethod`, and defines them as any method of the enum does. The helper forms reach twelve parameters,
+generated into the superclass of the body as the other arity families are, and so do the `define` overloads of a
+constant's body. A documented field or method takes
 `documented(...)` before its declaration, or a `DocComment` beside the field's annotations. A helper that names the
 signature of an abstract method the constant overrides is refused: that method is given by `override`.
 
@@ -1483,10 +1485,11 @@ var make = cb.declareMethod("make", inner.token());
 // return inner.new_(self, ctor) renders return this.new Inner();
 ```
 
-The three generic declaration paths agree at three type parameters: `declareClass`, `interface_` and `record` offer
-the same three stages, and a member class, interface and record offer the same. The member forms reach twelve because
-they are generated as arity families; the declaration stages are hand-written specifications of the three kinds, and
-three is the limit the three paths share rather than one of them standing at another number.
+The generic declaration paths reach twelve type parameters: `declareClass`, `interface_` and `record` offer the same
+twelve stages, one for each number from one to twelve, with the same bounds and the same refusals. The stages are
+generated into the superclass of [TypedJavaFile] as the member forms are arity families: `TypedJavaFile` extends it,
+so `declareClass(...)` is its static method and `new TypedJavaFile.TypedGenericClassSpec4<>()` is its nested type,
+while a class, an interface and a record of one to three type parameters read as they did before.
 
 ### Refusals at generation time
 
