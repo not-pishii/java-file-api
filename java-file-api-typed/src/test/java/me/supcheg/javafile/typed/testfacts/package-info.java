@@ -121,6 +121,8 @@
     Tag.class,
     Author.class,
     PackageTag.class,
+    Overridden.class,
+    Unconstrained.class,
     Retention.class,
     RetentionPolicy.class,
     Target.class,
@@ -211,6 +213,8 @@ import me.supcheg.javafile.typed.fixtures.VarargsBase;
 import me.supcheg.javafile.typed.fixtures.Tag;
 import me.supcheg.javafile.typed.fixtures.Author;
 import me.supcheg.javafile.typed.fixtures.PackageTag;
+import me.supcheg.javafile.typed.fixtures.Overridden;
+import me.supcheg.javafile.typed.fixtures.Unconstrained;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

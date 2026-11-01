@@ -186,6 +186,18 @@ me/supcheg/javafile/typed/Tokens.java :: case PrimitiveToken<?, ?, ?> _, TypeVar
 me/supcheg/javafile/typed/ClassDeclaration.java :: case Phase.Heading<Self> _, Phase.Members<Self> _, Phase.Bodies<Self> _, Phase.Complete<Self> _ ->
     a case of several type patterns: javac tests each label once more after it matched
 
+me/supcheg/javafile/typed/TypedTypeBodies.java :: case Slot.Blank _, Slot.BlankConstant _ -> Stream.<Slot.Awaiting>empty();
+    a case of several type patterns: javac tests each label once more after it matched
+
+me/supcheg/javafile/typed/TypedTypeBodies.java :: case Slot.Awaiting _, Slot.BlankConstant _ -> Stream.<Slot.Blank>empty();
+    a case of several type patterns: javac tests each label once more after it matched
+
+me/supcheg/javafile/typed/TypedTypeBodies.java :: case Slot.Awaiting _, Slot.Blank _ -> Stream.<Slot.BlankConstant>empty();
+    a case of several type patterns: javac tests each label once more after it matched
+
+me/supcheg/javafile/typed/TypedTypeBodies.java :: when defined.declared() instanceof Member.Constant declared && declared.fact() == constant ->
+    a record pattern binds the member of a defined slot: javac tests that member for null, and no slot is defined with a null member
+
 me/supcheg/javafile/typed/ScopeCheck.java :: switch (b.nesting()) {
     a switch statement over an enum: javac makes a branch for the value that is none of the constants, and every constant has an arm
 

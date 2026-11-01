@@ -1120,6 +1120,8 @@ class TypeDeclRendererTest {
                         "twice",
                         PrimitiveTypeRef.INT,
                         mb -> mb.withParam("x", PrimitiveTypeRef.INT).withBody(b -> b.return_(literal(1))))
+                .withVoidPrivateMethod("reset", mb -> mb.withBody(b -> {}))
+                .withPrivateStaticMethod("unit", PrimitiveTypeRef.INT, mb -> mb.withBody(b -> b.return_(literal(1))))
                 .withVoidPrivateStaticMethod("touch", mb -> mb.withBody(b -> {}));
 
         String rendered = TypeDeclRenderer.renderTypeDecl(
@@ -1128,6 +1130,13 @@ class TypeDeclRendererTest {
         assertThat(rendered).isEqualTo("""
                         public interface Helper {
                             private int twice(int x) {
+                                return 1;
+                            }
+
+                            private void reset() {
+                            }
+
+                            private static int unit() {
                                 return 1;
                             }
 

@@ -4,6 +4,7 @@ import me.supcheg.javafile.facts.source.MemberKind;
 import me.supcheg.javafile.facts.source.MemberQuery;
 import me.supcheg.javafile.facts.testfacts.java.lang.Integer_;
 import me.supcheg.javafile.facts.testfacts.java.lang.String_;
+import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.Types;
 import org.junit.jupiter.api.Test;
 
@@ -148,5 +149,36 @@ class FactValuesTest {
                         () -> List.of(ConstantDescs.CD_Object),
                         () -> MethodTableTemplate.EMPTY))
                 .withMessageStartingWith("a generic class has a token for each of its type parameters: [] and [");
+    }
+
+    @Test
+    void aDeclaredGenericInterfaceHasATokenForEachOfItsTypeParameters() {
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> UnsafeFacts.declaredInterfaceToken(
+                        ClassDesc.of("fixtures", "Sink"),
+                        List.of(),
+                        List.of(),
+                        List.of(),
+                        () -> MethodTableTemplate.EMPTY))
+                .withMessageStartingWith("a generic interface has a token for each of its type parameters: ");
+        // one token and no type parameter to be of
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> UnsafeFacts.declaredInterfaceToken(
+                        ClassDesc.of("fixtures", "Sink"),
+                        List.of(),
+                        List.of(UnsafeFacts.typeVarToken(Types.typeVar("T"), ConstantDescs.CD_Object)),
+                        List.of(),
+                        () -> MethodTableTemplate.EMPTY))
+                .withMessageStartingWith("a generic interface has a token for each of its type parameters: [] and [");
+
+        InterfaceToken<?> sink = UnsafeFacts.declaredInterfaceToken(
+                ClassDesc.of("fixtures", "Sink"),
+                List.of(new TypeParam("T", List.of())),
+                List.of(UnsafeFacts.typeVarToken(Types.typeVar("T"), ConstantDescs.CD_Object)),
+                List.of(),
+                () -> MethodTableTemplate.EMPTY);
+
+        assertThat(sink.typeArguments()).hasSize(1);
+        assertThat(sink.shape().desc()).isEqualTo(ClassDesc.of("fixtures", "Sink"));
     }
 }
