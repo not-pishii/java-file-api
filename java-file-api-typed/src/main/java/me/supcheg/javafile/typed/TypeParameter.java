@@ -2,7 +2,6 @@ package me.supcheg.javafile.typed;
 
 import me.supcheg.javafile.Identifiers;
 import me.supcheg.javafile.facts.DeclaredToken;
-import me.supcheg.javafile.typed.jdk.facts.java.lang.Object_;
 
 /// A type parameter of a class about to be declared: its name, and its
 /// leftmost bound — the bound the generator itself knows the type variable

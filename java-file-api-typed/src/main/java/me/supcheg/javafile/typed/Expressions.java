@@ -17,8 +17,6 @@ import me.supcheg.javafile.facts.StaticFieldRef;
 import me.supcheg.javafile.facts.TypeToken;
 import me.supcheg.javafile.type.ExactTypeArg;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
-import me.supcheg.javafile.typed.jdk.facts.java.lang.Math_;
-import me.supcheg.javafile.typed.jdk.facts.java.lang.String_;
 
 import java.util.List;
 import java.util.Locale;

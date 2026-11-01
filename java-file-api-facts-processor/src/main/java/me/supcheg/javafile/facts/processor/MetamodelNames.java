@@ -341,15 +341,27 @@ final class MetamodelNames {
 
     /// The metamodel class of a type: `<base>.p.q.T_` for `p.q.T`, with a
     /// nested type's enclosing types joined by `_` — `Map_Entry_` for
-    /// `java.util.Map.Entry`.
+    /// `java.util.Map.Entry`. Without the mirror packages it is `<base>.T_`,
+    /// whatever the package of the type, as the code of `<base>` names it.
     ///
     /// @param base the base of the mirror packages
     /// @param type the type
     /// @param elements the element utilities of the compilation
     /// @return the metamodel class
     static ClassDesc metamodel(String base, TypeElement type, Elements elements) {
+        return metamodel(base, true, type, elements);
+    }
+
+    /// The metamodel class of a type, in the package of its type under the base or in the base itself.
+    ///
+    /// @param base the base of the mirror packages
+    /// @param mirror whether the package of the type is mirrored under the base
+    /// @param type the type
+    /// @param elements the element utilities of the compilation
+    /// @return the metamodel class
+    static ClassDesc metamodel(String base, boolean mirror, TypeElement type, Elements elements) {
         PackageElement pkg = elements.getPackageOf(type);
-        String packageName = pkg.isUnnamed() ? base : base + "." + pkg.getQualifiedName();
+        String packageName = !mirror || pkg.isUnnamed() ? base : base + "." + pkg.getQualifiedName();
         return ClassDesc.of(packageName, nestedName(enclosing(type).toList()) + "_");
     }
 

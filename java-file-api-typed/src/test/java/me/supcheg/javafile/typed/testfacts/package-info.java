@@ -1,6 +1,7 @@
 /// The JDK types the tests of the typed layer need, as metamodels the `@Facts` processor generates: they are in
 /// `me.supcheg.javafile.typed.testfacts` (`-Ajavafile.facts.package`), apart from the ones the main code is built
-/// with (`me.supcheg.javafile.typed.jdk.facts`), and are not listed in the index (`-Ajavafile.facts.index=false`).
+/// with (`me.supcheg.javafile.typed`, package-private), and are not listed in the index
+/// (`-Ajavafile.facts.index=false`).
 /// The supertypes and the types of the signatures come with them: `Object`, `CharSequence`, `Collection`, ...
 ///
 /// With them the fixtures of the tests ([me.supcheg.javafile.typed.fixtures]): the functional interfaces of the

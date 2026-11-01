@@ -71,6 +71,7 @@ final class GraphProbe extends AbstractProcessor {
                     models,
                     new ReuseIndex(processingEnv.getFiler(), elements, Options.Index.PUBLISHED),
                     "gen.facts",
+                    true,
                     elements));
         }
         return false;

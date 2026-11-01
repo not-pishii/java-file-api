@@ -100,6 +100,7 @@ final class Closure {
     /// @param models the models of the round
     /// @param index the metamodels on the classpath
     /// @param base the base of the mirror packages
+    /// @param mirror whether the package of a type is mirrored under the base
     /// @param elements the element utilities of the compilation
     /// @return the graph
     static TypeGraph of(
@@ -109,6 +110,7 @@ final class Closure {
             Models models,
             ReuseIndex index,
             String base,
+            boolean mirror,
             Elements elements) {
         SortedMap<String, TypeElement> family = requested.values().stream()
                 .flatMap(type -> Stream.concat(Stream.of(type), Inheritance.supertypes(type, elements)))
@@ -192,7 +194,11 @@ final class Closure {
                         .map(supertype -> new Edge.Supertype(entry.getKey(), models.binaryName(supertype))));
         return TypeGraph.of(
                 Stream.concat(present.stream(), absent),
-                Stream.of(signatures, inheritance, missing.stream(), awaits(ready, waiting, models, base, elements))
+                Stream.of(
+                                signatures,
+                                inheritance,
+                                missing.stream(),
+                                awaits(ready, waiting, models, base, mirror, elements))
                         .flatMap(Function.identity()),
                 asked);
     }
@@ -350,6 +356,7 @@ final class Closure {
             SortedMap<String, String> waiting,
             Models models,
             String base,
+            boolean mirror,
             Elements elements) {
         if (waiting.isEmpty()) {
             return Stream.empty();
@@ -358,7 +365,8 @@ final class Closure {
                 .collect(
                         TreeMap::new,
                         (map, entry) -> map.put(
-                                entry.getKey(), factMentions(entry.getKey(), entry.getValue(), models, base, elements)),
+                                entry.getKey(),
+                                factMentions(entry.getKey(), entry.getValue(), models, base, mirror, elements)),
                         Map::putAll);
         // the types that wait: those that are not read, and every type a fact of which mentions one that waits
         Set<String> held = Stream.concat(
@@ -383,7 +391,7 @@ final class Closure {
     /// that get a fact, not of the ones left out whatever happens — a generic
     /// constructor, a member that mentions a type that is not public.
     private static Set<String> factMentions(
-            String name, Reading.Ready read, Models models, String base, Elements elements) {
+            String name, Reading.Ready read, Models models, String base, boolean mirror, Elements elements) {
         Map<String, ClassDesc> assumed = Stream.concat(
                         read.mentions().stream()
                                 .flatMap(mention ->
@@ -393,8 +401,8 @@ final class Closure {
                         Stream.of(Map.entry(name, read.type())))
                 .collect(
                         HashMap::new,
-                        (map, entry) ->
-                                map.put(entry.getKey(), MetamodelNames.metamodel(base, entry.getValue(), elements)),
+                        (map, entry) -> map.put(
+                                entry.getKey(), MetamodelNames.metamodel(base, mirror, entry.getValue(), elements)),
                         Map::putAll);
         Map<String, String> unavailable = read.mentions().stream()
                 .flatMap(mention -> mention instanceof Mention.Unavailable none ? Stream.of(none) : Stream.empty())

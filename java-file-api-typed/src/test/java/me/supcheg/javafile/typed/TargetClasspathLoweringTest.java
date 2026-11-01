@@ -56,12 +56,10 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 /// compilation answers is the business of `java-file-api-lang-model`.
 class TargetClasspathLoweringTest {
     /// The String metamodel of the typed layer itself, which a class is lowered with beside that of the test.
-    private static final TypeShape<?> TYPED_STRING =
-            me.supcheg.javafile.typed.jdk.facts.java.lang.String_.TOKEN.shape();
+    private static final TypeShape<?> TYPED_STRING = me.supcheg.javafile.typed.String_.TOKEN.shape();
 
     /// The Object metamodel of the typed layer itself: a class inherits what the target has of `Object`.
-    private static final TypeShape<?> TYPED_OBJECT =
-            me.supcheg.javafile.typed.jdk.facts.java.lang.Object_.TOKEN.shape();
+    private static final TypeShape<?> TYPED_OBJECT = me.supcheg.javafile.typed.Object_.TOKEN.shape();
 
     private static final String FINGERPRINT = "0123456789abcdef".repeat(4);
 

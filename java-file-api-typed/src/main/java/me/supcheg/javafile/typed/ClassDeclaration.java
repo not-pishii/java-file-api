@@ -29,7 +29,6 @@ import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.type.ClassTypeRef;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.TypeVarRef;
-import me.supcheg.javafile.typed.jdk.facts.java.lang.Object_;
 
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;

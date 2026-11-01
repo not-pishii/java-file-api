@@ -206,10 +206,16 @@ final class MetamodelEmitter {
     /// @param canonical the canonical form of `model`
     /// @param targets the types of the round, which tell a raw type in a bound of a type parameter
     /// @param about why the metamodel is token-only, for its comment
+    /// @param visibility whether the metamodel is `public` or package-private
     /// @return the source file
     static JavaFile tokenOnly(
-            ClassDesc metamodel, TypeModel model, Canonical canonical, Targets targets, MetamodelDocs.About about) {
-        return emit(metamodel, model, canonical, targets, Optional.empty(), about)
+            ClassDesc metamodel,
+            TypeModel model,
+            Canonical canonical,
+            Targets targets,
+            MetamodelDocs.About about,
+            Options.Visibility visibility) {
+        return emit(metamodel, model, canonical, targets, Optional.empty(), about, visibility)
                 .file();
     }
 
@@ -225,6 +231,7 @@ final class MetamodelEmitter {
     ///     parameter is named so
     /// @param about why the metamodel is there and where the inherited members are, for its comment
     /// @param entry whether a generated class can extend or implement the type, for its comment
+    /// @param visibility whether the metamodel is `public` or package-private
     /// @return the source file
     static JavaFile full(
             ClassDesc metamodel,
@@ -234,8 +241,16 @@ final class MetamodelEmitter {
             Targets targets,
             Set<String> taken,
             MetamodelDocs.About.Full about,
-            Entry entry) {
-        return emit(metamodel, model, canonical, targets, Optional.of(new Full.Real(plan, taken, entry)), about)
+            Entry entry,
+            Options.Visibility visibility) {
+        return emit(
+                        metamodel,
+                        model,
+                        canonical,
+                        targets,
+                        Optional.of(new Full.Real(plan, taken, entry)),
+                        about,
+                        visibility)
                 .file();
     }
 
@@ -264,6 +279,7 @@ final class MetamodelEmitter {
     /// @param probe every member that may get a fact, see [MemberPlan#probe]
     /// @param targets the metamodels of the types the signatures mention
     /// @param about why the metamodel is there, for its comment
+    /// @param visibility whether the metamodel is `public` or package-private
     /// @return the names
     static Set<String> takenNames(
             ClassDesc metamodel,
@@ -271,8 +287,10 @@ final class MetamodelEmitter {
             Canonical canonical,
             MemberPlan probe,
             Targets targets,
-            MetamodelDocs.About.Full about) {
-        Emitted emitted = emit(metamodel, model, canonical, targets, Optional.of(new Full.Probe(probe)), about);
+            MetamodelDocs.About.Full about,
+            Options.Visibility visibility) {
+        Emitted emitted =
+                emit(metamodel, model, canonical, targets, Optional.of(new Full.Probe(probe)), about, visibility);
         return SourceNames.inBodyOf(metamodel.displayName(), emitted.file().render(FORMAT))
                 .filter(name -> !name.startsWith(MemberPlan.PROBE))
                 .filter(name -> !emitted.typeParameters().contains(name))
@@ -346,13 +364,25 @@ final class MetamodelEmitter {
     /// @param typeParameters the type parameters of the metamodel class, as it names them
     private record Emitted(JavaFile file, List<String> typeParameters) {}
 
+    /// The modifiers of the class of a metamodel: `final`, and `public` unless it is for its package alone.
+    ///
+    /// @param visibility whether the metamodel is `public` or package-private
+    /// @return the modifiers
+    private static Set<Modifier> classModifiers(Options.Visibility visibility) {
+        return switch (visibility) {
+            case PUBLIC -> Set.of(Modifier.PUBLIC, Modifier.FINAL);
+            case PACKAGE -> Set.of(Modifier.FINAL);
+        };
+    }
+
     private static Emitted emit(
             ClassDesc metamodel,
             TypeModel model,
             Canonical canonical,
             Targets targets,
             Optional<Full> full,
-            MetamodelDocs.About about) {
+            MetamodelDocs.About about,
+            Options.Visibility visibility) {
         Token token = Token.of(model.kind());
         // without its bounds a type parameter would take a token of any type: no type parameters then
         List<ClassDesc> inBounds = Mentions.ofBounds(model.typeParams()).toList();
@@ -433,7 +463,7 @@ final class MetamodelEmitter {
                             full.flatMap(Full::offer)
                                     .map(entry ->
                                             new MetamodelDocs.EntryOf(MetamodelNames.heritage(metamodel), entry))))
-                    .withModifiers(Modifier.FINAL)
+                    .withExactModifiers(classModifiers(visibility))
                     .withAnnotation(CD_GENERATED, ab -> ab.withMember("value", AnnotationValues.literal(GENERATOR)))
                     .withAnnotation(
                             CD_GENERATED_METAMODEL,
@@ -823,15 +853,17 @@ final class MetamodelEmitter {
     /// @param metamodel the metamodel class
     /// @param model the type, read with its members
     /// @param entry whether a generated class can extend or implement the type
+    /// @param visibility whether the class is `public` or package-private
     /// @return the source file, if the type tells a heritage
-    static Optional<JavaFile> heritage(ClassDesc metamodel, TypeModel model, Entry entry) {
+    static Optional<JavaFile> heritage(
+            ClassDesc metamodel, TypeModel model, Entry entry, Options.Visibility visibility) {
         return switch (model.heritage()) {
             case Heritage.Told told -> {
                 ClassDesc holder = MetamodelNames.heritage(metamodel);
                 ClassDesc held = holder.nested(MetamodelNames.HELD);
                 yield Optional.of(JavaFile.class_(holder, cb -> {
                     cb.withDoc(MetamodelDocs.inherited(model.desc()))
-                            .withModifiers(Modifier.FINAL)
+                            .withExactModifiers(classModifiers(visibility))
                             .withAnnotation(
                                     CD_GENERATED, ab -> ab.withMember("value", AnnotationValues.literal(GENERATOR)))
                             .withAnnotation(CD_GENERATED_METAMODEL_PART)
@@ -878,7 +910,8 @@ final class MetamodelEmitter {
             case Entry.Refused refused -> refused;
             case Entry.Offered offered -> {
                 try {
-                    heritage(metamodel, model, offered).ifPresent(MetamodelEmitter::source);
+                    heritage(metamodel, model, offered, Options.Visibility.PUBLIC)
+                            .ifPresent(MetamodelEmitter::source);
                     yield offered;
                 } catch (IllegalStateException unnameable) {
                     yield new Entry.Refused("the steps of its proof cannot be written with its type parameters: "

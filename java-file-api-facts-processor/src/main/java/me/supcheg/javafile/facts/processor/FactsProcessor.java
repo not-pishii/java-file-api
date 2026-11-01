@@ -144,7 +144,7 @@ public final class FactsProcessor extends AbstractProcessor {
 
     @Override
     public Set<String> getSupportedOptions() {
-        return Set.of(Options.PACKAGE, Options.STRICT, Options.INDEX);
+        return Set.of(Options.PACKAGE, Options.STRICT, Options.INDEX, Options.VISIBILITY, Options.MIRROR);
     }
 
     @Override
@@ -205,7 +205,7 @@ public final class FactsProcessor extends AbstractProcessor {
         if (!requested.isEmpty()) {
             switch (BasePackage.of(
                     options, sites.stream().map(Site::packageName).collect(Collectors.toCollection(TreeSet::new)))) {
-                case BasePackage.Chosen(String base) -> generate(base, options.index(), when, elements, diagnostics);
+                case BasePackage.Chosen(String base) -> generate(base, options, when, elements, diagnostics);
                 case BasePackage.Ambiguous ambiguous -> {
                     diagnostics.error(sites.first().resolve(elements), ambiguous.message());
                     mode = new Mode.Stopped();
@@ -252,10 +252,9 @@ public final class FactsProcessor extends AbstractProcessor {
         return false;
     }
 
-    private void generate(
-            String base, Options.Index publishing, Round when, Elements elements, Diagnostics diagnostics) {
+    private void generate(String base, Options options, Round when, Elements elements, Diagnostics diagnostics) {
         Models models = new Models(elements, processingEnv.getTypeUtils());
-        ReuseIndex index = new ReuseIndex(processingEnv.getFiler(), elements, publishing);
+        ReuseIndex index = new ReuseIndex(processingEnv.getFiler(), elements, options.index());
         SortedMap<String, Asked> asked = requested.entrySet().stream()
                 .flatMap(entry -> Optional.ofNullable(elements.getTypeElement(entry.getKey()))
                         .map(type -> new Asked(models.binaryName(type), type, entry.getValue()))
@@ -269,6 +268,7 @@ public final class FactsProcessor extends AbstractProcessor {
                 models,
                 index,
                 base,
+                options.mirror(),
                 elements);
         // the `@Facts` a type is there for: those that ask for it, or else for the types that extend it
         Function<String, SortedSet<Site>> sitesOf = name -> Optional.ofNullable(asked.get(name))
@@ -306,9 +306,9 @@ public final class FactsProcessor extends AbstractProcessor {
         graph.held()
                 .forEach(name -> done.put(
                         name, new Done.Held(graph.mentioners(name).collect(Collectors.toCollection(TreeSet::new)))));
-        Targets targets = new Targets(models, metamodels(graph, base, elements), unavailable(graph));
-        List<Planned> planned =
-                planned(graph, sitesOf, when, base, elements, models).toList();
+        Targets targets = new Targets(models, metamodels(graph, base, options.mirror(), elements), unavailable(graph));
+        List<Planned> planned = planned(graph, sitesOf, when, base, options.mirror(), elements, models)
+                .toList();
         // a metamodel is of the first type that claims its name, among those written before and now
         Map<ClassDesc, String> owners = Stream.concat(
                         done.entrySet().stream().flatMap(entry -> switch (entry.getValue()) {
@@ -325,7 +325,15 @@ public final class FactsProcessor extends AbstractProcessor {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (first, second) -> first));
         planned.forEach(metamodel -> done.put(
                 metamodel.binaryName(),
-                write(metamodel, owners.get(metamodel.metamodel()), models, targets, index, elements, diagnostics)));
+                write(
+                        metamodel,
+                        owners.get(metamodel.metamodel()),
+                        models,
+                        targets,
+                        index,
+                        elements,
+                        diagnostics,
+                        options.visibility())));
         if (when == Round.LAST) {
             graph.nodes().values().stream()
                     .filter(node -> node.request().isPresent())
@@ -409,20 +417,22 @@ public final class FactsProcessor extends AbstractProcessor {
 
     /// The metamodel of every type of a round that has one: written already, reused, or to be
     /// written — by this round, or, for a type that waits, by a later one.
-    private static Map<String, ClassDesc> metamodels(TypeGraph graph, String base, Elements elements) {
+    private static Map<String, ClassDesc> metamodels(TypeGraph graph, String base, boolean mirror, Elements elements) {
         return graph.nodes().values().stream()
                 .flatMap(node ->
-                        metamodel(node, base, elements).map(metamodel -> Map.entry(node.name(), metamodel)).stream())
+                        metamodel(node, base, mirror, elements)
+                                .map(metamodel -> Map.entry(node.name(), metamodel))
+                                .stream())
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
-    private static Optional<ClassDesc> metamodel(TypeGraph.Node node, String base, Elements elements) {
+    private static Optional<ClassDesc> metamodel(TypeGraph.Node node, String base, boolean mirror, Elements elements) {
         return node.request()
                 .flatMap(request -> switch (request) {
                     case TypeGraph.Request.Settled(Done.Final settled) -> metamodel(settled);
                     case TypeGraph.Request.OnClasspath(ClassDesc metamodel) -> Optional.of(metamodel);
                     case TypeGraph.Request.Ready(TypeElement type, var _) ->
-                        Optional.of(MetamodelNames.metamodel(base, type, elements));
+                        Optional.of(MetamodelNames.metamodel(base, mirror, type, elements));
                     // the token-only metamodel an earlier round wrote stands, though the full one is refused
                     case TypeGraph.Request.Late(ClassDesc tokenOnly) -> Optional.of(tokenOnly);
                     case TypeGraph.Request.Waiting _,
@@ -433,9 +443,9 @@ public final class FactsProcessor extends AbstractProcessor {
                     case TypeGraph.Token.Settled(Done.Dealt settled) -> metamodel(settled);
                     case TypeGraph.Token.OnClasspath(ClassDesc metamodel, var _) -> Optional.of(metamodel);
                     case TypeGraph.Token.Planned(TypeElement type, var _) ->
-                        Optional.of(MetamodelNames.metamodel(base, type, elements));
+                        Optional.of(MetamodelNames.metamodel(base, mirror, type, elements));
                     case TypeGraph.Token.Held(TypeElement type, var _) ->
-                        Optional.of(MetamodelNames.metamodel(base, type, elements));
+                        Optional.of(MetamodelNames.metamodel(base, mirror, type, elements));
                     case TypeGraph.Token.Unavailable _ -> Optional.<ClassDesc>empty();
                 }));
     }
@@ -482,28 +492,30 @@ public final class FactsProcessor extends AbstractProcessor {
             Function<String, SortedSet<Site>> sitesOf,
             Round when,
             String base,
+            boolean mirror,
             Elements elements,
             Models models) {
         return Stream.concat(
                 graph.nodes().values().stream()
                         .flatMap(node -> node.request().stream()
-                                .flatMap(request ->
-                                        request instanceof TypeGraph.Request.Ready(TypeElement type, List<String> stale)
-                                                        && !graph.waits(node.name())
-                                                ? Stream.of(new Planned(
-                                                        type,
-                                                        node.name(),
-                                                        MetamodelNames.metamodel(base, type, elements),
-                                                        ReuseIndex.Completeness.FULL,
-                                                        sitesOf.apply(node.name()),
-                                                        stale,
-                                                        subject(graph, node.name()),
-                                                        new About.Full(
-                                                                graph.reasons(node.name())
-                                                                        .toList(),
-                                                                supertypes(graph, node.name(), base, elements, models),
-                                                                protectedMembers(type))))
-                                                : Stream.empty())),
+                                .flatMap(request -> request
+                                                        instanceof
+                                                        TypeGraph.Request.Ready(TypeElement type, List<String> stale)
+                                                && !graph.waits(node.name())
+                                        ? Stream.of(new Planned(
+                                                type,
+                                                node.name(),
+                                                MetamodelNames.metamodel(base, mirror, type, elements),
+                                                ReuseIndex.Completeness.FULL,
+                                                sitesOf.apply(node.name()),
+                                                stale,
+                                                subject(graph, node.name()),
+                                                new About.Full(
+                                                        graph.reasons(node.name())
+                                                                .toList(),
+                                                        supertypes(graph, node.name(), base, mirror, elements, models),
+                                                        protectedMembers(type))))
+                                        : Stream.empty())),
                 graph.nodes().values().stream()
                         .flatMap(node -> node.token().stream()
                                 .flatMap(token -> switch (token) {
@@ -522,7 +534,7 @@ public final class FactsProcessor extends AbstractProcessor {
                                 .map(tokenOnly -> new Planned(
                                         tokenOnly.left(),
                                         node.name(),
-                                        MetamodelNames.metamodel(base, tokenOnly.left(), elements),
+                                        MetamodelNames.metamodel(base, mirror, tokenOnly.left(), elements),
                                         ReuseIndex.Completeness.TOKEN,
                                         graph.mentioners(node.name())
                                                 .flatMap(mentioner -> sitesOf.apply(mentioner).stream())
@@ -544,11 +556,11 @@ public final class FactsProcessor extends AbstractProcessor {
     /// sorted by name: what the comment of the metamodel of the type tells of
     /// the members it inherits.
     private static List<About.Supertype> supertypes(
-            TypeGraph graph, String name, String base, Elements elements, Models models) {
+            TypeGraph graph, String name, String base, boolean mirror, Elements elements, Models models) {
         return nearestPublic(graph, name)
                 .distinct()
                 .sorted()
-                .map(supertype -> supertype(graph.nodes().get(supertype), base, elements, models))
+                .map(supertype -> supertype(graph.nodes().get(supertype), base, mirror, elements, models))
                 .toList();
     }
 
@@ -560,7 +572,8 @@ public final class FactsProcessor extends AbstractProcessor {
                         : Stream.of(supertype));
     }
 
-    private static About.Supertype supertype(TypeGraph.Node node, String base, Elements elements, Models models) {
+    private static About.Supertype supertype(
+            TypeGraph.Node node, String base, boolean mirror, Elements elements, Models models) {
         String name = node.name();
         if (node instanceof TypeGraph.Node.Declined(var _, String reason, var _)) {
             return new About.Supertype.None(name, reason);
@@ -578,11 +591,12 @@ public final class FactsProcessor extends AbstractProcessor {
                 };
             case TypeGraph.Request.OnClasspath(ClassDesc metamodel) -> new About.Supertype.Full(metamodel);
             case TypeGraph.Request.Ready(TypeElement type, var _) ->
-                new About.Supertype.Full(MetamodelNames.metamodel(base, type, elements));
+                new About.Supertype.Full(MetamodelNames.metamodel(base, mirror, type, elements));
             // a later round writes it, under the name it has now
             case TypeGraph.Request.Waiting _ ->
                 new About.Supertype.Full(MetamodelNames.metamodel(
                         base,
+                        mirror,
                         Invariants.present(
                                 models.element(ClassDesc.of(name)),
                                 "%s, which waits for a type of a later round, is a type of this one",
@@ -618,7 +632,8 @@ public final class FactsProcessor extends AbstractProcessor {
             Targets targets,
             ReuseIndex index,
             Elements elements,
-            Diagnostics diagnostics) {
+            Diagnostics diagnostics,
+            Options.Visibility visibility) {
         Optional<? extends Element> at = first(planned.requesters(), elements);
         ClassDesc metamodel = planned.metamodel();
         String name = Models.binaryName(metamodel);
@@ -660,7 +675,8 @@ public final class FactsProcessor extends AbstractProcessor {
                                 canonical,
                                 MemberPlan.probe(planned.type(), models, targets),
                                 targets,
-                                about);
+                                about,
+                                visibility);
                         MemberPlan plan = MemberPlan.of(planned.type(), models, targets, taken);
                         plan.skipped()
                                 .forEach(skip -> diagnostics.skipped(
@@ -670,16 +686,17 @@ public final class FactsProcessor extends AbstractProcessor {
                                         skip.origin()));
                         Entry entry = MetamodelEmitter.writable(metamodel, model, Entry.of(model, plan, elements));
                         yield new Written(
-                                MetamodelEmitter.full(metamodel, model, canonical, plan, targets, taken, about, entry),
-                                MetamodelEmitter.heritage(metamodel, model, entry));
+                                MetamodelEmitter.full(
+                                        metamodel, model, canonical, plan, targets, taken, about, entry, visibility),
+                                MetamodelEmitter.heritage(metamodel, model, entry, visibility));
                     }
                     case About.Mentioned about ->
                         new Written(
-                                MetamodelEmitter.tokenOnly(metamodel, model, canonical, targets, about),
+                                MetamodelEmitter.tokenOnly(metamodel, model, canonical, targets, about, visibility),
                                 Optional.empty());
                     case About.Declined about ->
                         new Written(
-                                MetamodelEmitter.tokenOnly(metamodel, model, canonical, targets, about),
+                                MetamodelEmitter.tokenOnly(metamodel, model, canonical, targets, about, visibility),
                                 Optional.empty());
                 };
         JavaFile file = written.metamodel();

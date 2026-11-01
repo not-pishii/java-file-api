@@ -12,7 +12,6 @@ import me.supcheg.javafile.facts.TargetClasspath;
 import me.supcheg.javafile.facts.TypeToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.model.Modifier;
-import me.supcheg.javafile.typed.jdk.facts.java.lang.Object_;
 
 import java.lang.constant.ClassDesc;
 import java.util.List;

@@ -72,9 +72,11 @@ spotless {
 }
 
 // The typed layer builds the metamodels of the JDK types it needs with the `@Facts` processor (Q12), and keeps them
-// to itself: `-Ajavafile.facts.index=false` lists none of them for the processors of other modules. The processor
-// takes `java-file-api-typed` on its own test classpath, which is no cycle: that is its tests' dependency, and the
-// processor jar does not depend on the tests.
+// to itself: `-Ajavafile.facts.index=false` lists none of them for the processors of other modules, and they are
+// package-private in the package of the typed layer itself (`-Ajavafile.facts.visibility=package`, no mirror
+// packages), so that no user of the library names them either. The processor takes `java-file-api-typed` on its own
+// test classpath, which is no cycle: that is its tests' dependency, and the processor jar does not depend on the
+// tests.
 dependencies {
     annotationProcessor(project(":java-file-api-facts-processor"))
     testAnnotationProcessor(project(":java-file-api-facts-processor"))
@@ -82,7 +84,12 @@ dependencies {
 
 tasks.compileJava {
     options.compilerArgs.addAll(
-        listOf("-Ajavafile.facts.package=me.supcheg.javafile.typed.jdk.facts", "-Ajavafile.facts.index=false")
+        listOf(
+            "-Ajavafile.facts.package=me.supcheg.javafile.typed",
+            "-Ajavafile.facts.visibility=package",
+            "-Ajavafile.facts.mirror=false",
+            "-Ajavafile.facts.index=false"
+        )
     )
 }
 

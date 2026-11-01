@@ -25,8 +25,15 @@ reporting {
 // The metamodels the `@Facts` processor generates are no code of this project to cover: JaCoCo leaves out a class
 // annotated `@GeneratedMetamodel` or `@GeneratedMetamodelPart` by the name of the annotation, and the classes nested
 // in one, which carry no annotation of their own, are left out here — those of the one module whose main code is
-// built with generated metamodels. What the processor generates is tested by its own fixtures.
-val generatedMetamodels = listOf("me/supcheg/javafile/typed/jdk/facts/**")
+// built with generated metamodels. The typed layer's own metamodels are package-private in its package, flat
+// (`-Ajavafile.facts.mirror=false`), and each is named `T_` or `T_Heritage` beside its nested classes. What the
+// processor generates is tested by its own fixtures.
+val generatedMetamodels = listOf(
+    "me/supcheg/javafile/typed/*_.class",
+    "me/supcheg/javafile/typed/*_$*.class",
+    "me/supcheg/javafile/typed/*_Heritage.class",
+    "me/supcheg/javafile/typed/*_Heritage$*.class",
+)
 
 tasks {
     val testCodeCoverageReport = named<JacocoReport>("testCodeCoverageReport") {
