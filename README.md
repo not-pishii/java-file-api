@@ -1027,6 +1027,20 @@ var id = ib.declareGenericMethod(
         });
 ```
 
+The stage reaches the same arities as the one of a class: `declareMethod`, `declareVoidMethod`, `declareAbstractMethod`,
+`declareVoidAbstractMethod`, `declareDefaultMethod`, `declareVoidDefaultMethod`, `declareStaticMethod`,
+`declareVoidStaticMethod`, `declarePrivateMethod` and `declareVoidPrivateMethod` take none to sixteen parameters. The
+members a kind may have are the ones it declares: an interface has the abstract, `default`, `private` and `static`
+forms, and a record and an enum the method and `static` ones, of which a record's method is not `native` (JLS 8.10.3).
+
+What the stage of a class adds to a member is added here too, and in any order: `throwing(...)` gives the `throws`
+clause of the member, as a checked exception the body may throw; `documented(...)` gives it a documentation comment;
+`annotated(...)` and `annotatedParameter(...)` give it annotations, of the member and of a parameter;
+`modified(...)` renders it `synchronized` or `native`, where the kind allows it, an abstract method being neither; and
+`variableArity()` makes its last parameter the array of the arguments that are left, `T...`, as a member of a class
+does — `@SafeVarargs` where the elements are not reifiable, which an instance method of a record or an enum is
+declared `final` for, and refused of a `default` or an abstract method of an interface, which cannot carry it.
+
 ```java
 JavaFile file = TypedJavaFile.class_(
         UnsafeFacts.unverifiedClasspath(),
