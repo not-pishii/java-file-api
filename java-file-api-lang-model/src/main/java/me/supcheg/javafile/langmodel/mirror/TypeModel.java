@@ -5,6 +5,7 @@ import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.Heritage;
 import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.Overridability;
+import me.supcheg.javafile.facts.RecordShape;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.type.TypeParam;
 
@@ -40,6 +41,8 @@ import java.util.Optional;
 /// @param sealed whether the type is `sealed`
 /// @param permitted the subtypes the type permits, in declaration order; empty unless it is `sealed`,
 ///                  and for a sealed enum whose permitted subtypes have no name
+/// @param recordShape the components of the record, in declaration order, or that the type is no
+///                    record, see [RecordShape]
 /// @param sam the single abstract method of a functional interface as a member of it, declared or
 ///            inherited, as [MirrorTranslator#sam(javax.lang.model.element.TypeElement)] finds it;
 ///            empty if the type is not functional or the method has no model
@@ -65,6 +68,7 @@ public record TypeModel(
         List<String> enumConstants,
         boolean sealed,
         List<ClassDesc> permitted,
+        RecordShape recordShape,
         Optional<MethodModel> sam,
         Heritage heritage,
         MemberFilter filter,
@@ -73,7 +77,7 @@ public record TypeModel(
         List<AnnotationUse> annotations,
         Optional<AnnotationModel> annotation) {
 
-    /// A model of a type that declares no annotation and is no annotation type.
+    /// A model of a type that is no record and declares no annotation and is no annotation type.
     ///
     /// @param desc the class or interface
     /// @param kind the kind of the type
@@ -125,6 +129,7 @@ public record TypeModel(
                 enumConstants,
                 sealed,
                 permitted,
+                RecordShape.NONE,
                 sam,
                 heritage,
                 filter,
@@ -152,6 +157,10 @@ public record TypeModel(
         members = List.copyOf(members);
         skipped = List.copyOf(skipped);
         annotations = List.copyOf(annotations);
+        if (!(recordShape instanceof RecordShape.None) && !(kind instanceof DeclaredKind.FinalClass)) {
+            throw new IllegalArgumentException("a record is a final class, got a " + kind + ": " + desc.displayName()
+                    + " declares components " + recordShape.components());
+        }
         if (sam.isPresent()) {
             MethodModel method = sam.get();
             if (!(kind instanceof DeclaredKind.Interface) || sealed) {
@@ -199,6 +208,7 @@ public record TypeModel(
                 enumConstants,
                 sealed,
                 permitted,
+                recordShape,
                 sam,
                 Heritage.UNTOLD,
                 MemberFilter.NONE,

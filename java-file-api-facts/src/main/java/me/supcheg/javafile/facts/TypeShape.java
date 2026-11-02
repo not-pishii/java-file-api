@@ -59,6 +59,7 @@ public final class TypeShape<K extends DeclaredKind> {
     private final List<ClassDesc> permitted;
     private final List<AnnotationUse> annotations;
     private final Supplier<? extends Heritage> heritage;
+    private final RecordShape recordShape;
 
     TypeShape(
             ShapeOrigin origin,
@@ -148,7 +149,40 @@ public final class TypeShape<K extends DeclaredKind> {
                 sealed,
                 permitted,
                 annotations,
-                heritage);
+                heritage,
+                RecordShape.NONE);
+    }
+
+    TypeShape(
+            ShapeOrigin origin,
+            K kind,
+            ClassDesc desc,
+            List<TypeParam> typeParameters,
+            List<ClassDesc> superclasses,
+            List<ClassDesc> interfaces,
+            Supertypes supertypes,
+            Supplier<MethodTableTemplate> methods,
+            List<String> enumConstants,
+            boolean sealed,
+            List<ClassDesc> permitted,
+            List<AnnotationUse> annotations,
+            Supplier<? extends Heritage> heritage,
+            RecordShape recordShape) {
+        this(
+                origin,
+                kind,
+                desc,
+                typeParameters,
+                new Superclasses.Known(List.copyOf(superclasses)),
+                interfaces,
+                supertypes,
+                methods,
+                enumConstants,
+                sealed,
+                permitted,
+                annotations,
+                heritage,
+                recordShape);
     }
 
     private TypeShape(
@@ -164,7 +198,8 @@ public final class TypeShape<K extends DeclaredKind> {
             boolean sealed,
             List<ClassDesc> permitted,
             List<AnnotationUse> annotations,
-            Supplier<? extends Heritage> heritage) {
+            Supplier<? extends Heritage> heritage,
+            RecordShape recordShape) {
         this.origin = origin;
         this.kind = kind;
         if (!desc.isClassOrInterface()) {
@@ -182,6 +217,7 @@ public final class TypeShape<K extends DeclaredKind> {
         this.permitted = List.copyOf(permitted);
         this.annotations = List.copyOf(annotations);
         this.heritage = heritage;
+        this.recordShape = recordShape;
         requireSupertypesOfTheTypeParameters();
         switch (superclasses) {
             case Superclasses.Known(var chain) -> requireSuperclasses(chain);
@@ -190,6 +226,7 @@ public final class TypeShape<K extends DeclaredKind> {
         requireInterfaces();
         requireKindData();
         requirePermitted();
+        requireRecord();
     }
 
     /// A shape vouched for by a legacy factory of [UnsafeFacts] that takes a
@@ -264,7 +301,8 @@ public final class TypeShape<K extends DeclaredKind> {
                 false,
                 List.of(),
                 List.of(),
-                () -> Heritage.UNTOLD);
+                () -> Heritage.UNTOLD,
+                RecordShape.NONE);
     }
 
     /// The shape of an interface that is being declared: its superinterfaces are known when it names
@@ -437,6 +475,15 @@ public final class TypeShape<K extends DeclaredKind> {
     /// @return the annotations
     public List<AnnotationUse> annotations() {
         return annotations;
+    }
+
+    /// What the declaration of a record tells beyond the facts of a class:
+    /// its components, in declaration order, or that the type is no record
+    /// ([RecordShape#NONE]).
+    ///
+    /// @return the record shape
+    public RecordShape recordShape() {
+        return recordShape;
     }
 
     /// What a class that extends or implements the type has to know of it:
@@ -621,6 +668,17 @@ public final class TypeShape<K extends DeclaredKind> {
         Identifiers.requireValid(enumConstants);
         if (Set.copyOf(enumConstants).size() != enumConstants.size()) {
             throw new IllegalArgumentException("duplicate enum constants in " + this + ": " + enumConstants);
+        }
+    }
+
+    /// A record is a final class (JLS 8.10); no other kind of type is a record.
+    private void requireRecord() {
+        if (recordShape instanceof RecordShape.None) {
+            return;
+        }
+        if (!(kind instanceof DeclaredKind.FinalClass)) {
+            throw new IllegalArgumentException(
+                    "a record is a final class: " + this + " is a " + kind + " and declares components");
         }
     }
 

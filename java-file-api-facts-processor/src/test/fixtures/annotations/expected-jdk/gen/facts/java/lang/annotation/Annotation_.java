@@ -44,7 +44,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// A generated class extends or implements [Annotation] by the proof its metamodel starts, with the stages of `Annotation_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Annotation.class, fingerprint = "ff4d3b3598ef95248d722a9472519259c8084daf60e7d1c5e00255b5a83596e1", complete = true, format = 19)
+@GeneratedMetamodel(of = Annotation.class, fingerprint = "367d7d239a73378cacdaf86df43011fdf573714a4ff5e2bc38c87b744b0d41b3", complete = true, format = 20)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -55,7 +55,7 @@ public final class Annotation_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Annotation] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.annotation.Annotation_"), "ff4d3b3598ef95248d722a9472519259c8084daf60e7d1c5e00255b5a83596e1", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("java.lang.annotation.Annotation"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("annotationType")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of(), Map.ofEntries(Map.entry(Signature.of("wait"), List.of(new Thrown(ClassDesc.of("java.lang.InterruptedException"), List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))), Map.entry(Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), List.of(new Thrown(ClassDesc.of("java.lang.InterruptedException"), List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))), Map.entry(Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), List.of(new Thrown(ClassDesc.of("java.lang.InterruptedException"), List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))))), false, List.of(), List.of(), new Annotation_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.annotation.Annotation_"), "367d7d239a73378cacdaf86df43011fdf573714a4ff5e2bc38c87b744b0d41b3", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("java.lang.annotation.Annotation"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("annotationType")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of(), Map.ofEntries(Map.entry(Signature.of("wait"), List.of(new Thrown(ClassDesc.of("java.lang.InterruptedException"), List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))), Map.entry(Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), List.of(new Thrown(ClassDesc.of("java.lang.InterruptedException"), List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))), Map.entry(Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), List.of(new Thrown(ClassDesc.of("java.lang.InterruptedException"), List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))))), false, List.of(), List.of(), new Annotation_Heritage());
 
         private Data() {
         }
@@ -66,7 +66,7 @@ public final class Annotation_ {
     static final class Canonical {
         /// The canonical form of [Annotation].
         static final String TEXT = """
-        javafile-facts-canonical 12
+        javafile-facts-canonical 13
         type java.lang.annotation.Annotation interface sealed=no nesting=top
         annotations -
         annotation -
@@ -75,6 +75,7 @@ public final class Annotation_ {
         interfaces -
         supertypes -
         enum -
+        record -
         members declared-accessible
         member method public abstract annotationType() -> java.lang.Class<? extends java.lang.annotation.Annotation> throws -
         member method public abstract equals(java.lang.Object) -> boolean throws -

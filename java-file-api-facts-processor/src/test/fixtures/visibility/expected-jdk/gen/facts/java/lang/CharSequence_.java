@@ -15,6 +15,7 @@ import me.supcheg.javafile.facts.InterfaceToken;
 import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.MethodTableTemplate.Param;
 import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
+import me.supcheg.javafile.facts.RecordShape;
 import me.supcheg.javafile.facts.ShapeOrigin.Metamodel;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.Thrown;
@@ -28,7 +29,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// `@Facts` does not ask for [CharSequence]: it is only mentioned in the signatures of [Integer]. For the facts of its members add `CharSequence.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = CharSequence.class, fingerprint = "b8ccc445149fcf4fe44d605273f550d0888337af35cc890f10e66b3786e78099", complete = false, format = 19)
+@GeneratedMetamodel(of = CharSequence.class, fingerprint = "78d453ef6496ce51ddbe163ad2cddfa7034cf63e18ea6369345d69c2b2aa2cac", complete = false, format = 20)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -39,7 +40,7 @@ public final class CharSequence_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [CharSequence] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.CharSequence_"), "b8ccc445149fcf4fe44d605273f550d0888337af35cc890f10e66b3786e78099", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("java.lang.CharSequence"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("charAt", Param.fixed(ConstantDescs.CD_int)), Signature.of("length"), Signature.of("subSequence", Param.fixed(ConstantDescs.CD_int), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("chars"), Signature.of("codePoints"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getChars", Param.fixed(ConstantDescs.CD_int), Param.fixed(ConstantDescs.CD_int), Param.fixed(ClassDesc.ofDescriptor("[C")), Param.fixed(ConstantDescs.CD_int)), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("isEmpty"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("compare", Param.fixed(ClassDesc.of("java.lang.CharSequence")), Param.fixed(ClassDesc.of("java.lang.CharSequence")))), Set.of(), Set.of(), Map.ofEntries(Map.entry(Signature.of("wait"), List.of(new Thrown(ClassDesc.of("java.lang.InterruptedException"), List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))), Map.entry(Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), List.of(new Thrown(ClassDesc.of("java.lang.InterruptedException"), List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))), Map.entry(Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), List.of(new Thrown(ClassDesc.of("java.lang.InterruptedException"), List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))))), List.of(), false, List.of(), List.of());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.java.lang.CharSequence_"), "78d453ef6496ce51ddbe163ad2cddfa7034cf63e18ea6369345d69c2b2aa2cac", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("java.lang.CharSequence"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("charAt", Param.fixed(ConstantDescs.CD_int)), Signature.of("length"), Signature.of("subSequence", Param.fixed(ConstantDescs.CD_int), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("chars"), Signature.of("codePoints"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getChars", Param.fixed(ConstantDescs.CD_int), Param.fixed(ConstantDescs.CD_int), Param.fixed(ClassDesc.ofDescriptor("[C")), Param.fixed(ConstantDescs.CD_int)), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("isEmpty"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(Signature.of("compare", Param.fixed(ClassDesc.of("java.lang.CharSequence")), Param.fixed(ClassDesc.of("java.lang.CharSequence")))), Set.of(), Set.of(), Map.ofEntries(Map.entry(Signature.of("wait"), List.of(new Thrown(ClassDesc.of("java.lang.InterruptedException"), List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))), Map.entry(Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), List.of(new Thrown(ClassDesc.of("java.lang.InterruptedException"), List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))), Map.entry(Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), List.of(new Thrown(ClassDesc.of("java.lang.InterruptedException"), List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))))), List.of(), false, List.of(), List.of(), RecordShape.NONE);
 
         private Data() {
         }
@@ -50,7 +51,7 @@ public final class CharSequence_ {
     static final class Canonical {
         /// The canonical form of [CharSequence].
         static final String TEXT = """
-        javafile-facts-canonical 12
+        javafile-facts-canonical 13
         type java.lang.CharSequence interface sealed=no nesting=top
         annotations -
         annotation -
@@ -59,6 +60,7 @@ public final class CharSequence_ {
         interfaces -
         supertypes -
         enum -
+        record -
         members none
         table abstract charAt(int); length(); subSequence(int, int)
         table concrete chars(); codePoints(); equals(java.lang.Object); getChars(int, int, char[], int); getClass(); hashCode(); isEmpty(); notify(); notifyAll(); toString(); wait(); wait(long); wait(long, int)

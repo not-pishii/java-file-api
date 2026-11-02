@@ -19,6 +19,7 @@ import me.supcheg.javafile.facts.Arity;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.Heritage;
 import me.supcheg.javafile.facts.MethodTableTemplate;
+import me.supcheg.javafile.facts.RecordShape;
 import me.supcheg.javafile.langmodel.mirror.FieldModel.Mutability;
 import me.supcheg.javafile.type.ArrayTypeRef;
 import me.supcheg.javafile.type.ClassTypeRef;
@@ -137,7 +138,7 @@ public final class Canonical {
     /// The first line of every canonical form: the name and version of the
     /// format. A new version changes every fingerprint, so a metamodel of
     /// another version never passes as matching.
-    public static final String HEADER = "javafile-facts-canonical 12";
+    public static final String HEADER = "javafile-facts-canonical 13";
 
     private static final Scope NO_VARIABLES = new Scope(List.of(), List.of());
 
@@ -193,6 +194,7 @@ public final class Canonical {
                                                 .sorted()
                                                 .toList()),
                                 "enum " + items(model.enumConstants()),
+                                "record " + record(model.recordShape(), scope),
                                 "members "
                                         + switch (model.filter()) {
                                             case NONE -> "none";
@@ -666,6 +668,22 @@ public final class Canonical {
 
     private static String items(List<String> items) {
         return items.isEmpty() ? "-" : String.join("; ", items);
+    }
+
+    /// The components of a record, in declaration order, as `name type`; `-` for a type that is no record, and
+    /// `()` for a record that declares no component.
+    private static String record(RecordShape shape, Scope scope) {
+        return switch (shape) {
+            case RecordShape.None _ -> "-";
+            case RecordShape.Of(var components) ->
+                components.isEmpty()
+                        ? "()"
+                        : String.join(
+                                "; ",
+                                components.stream()
+                                        .map(component -> component.name() + " " + scope.type(component.type()))
+                                        .toList());
+        };
     }
 
     /// The digest of a text, in hex: by SHA-256, which every Java platform supports.

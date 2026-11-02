@@ -71,12 +71,15 @@ package me.supcheg.javafile.facts.meta;
 /// - 19: the method table tells the exceptions each method and constructor
 ///   declares, by signature, with the erasure and superclass chain of each,
 ///   so that a resource's `close()` is known as javac knows it.
+/// - 20: the shape of a record tells its components, in declaration order,
+///   with their names and types, so that a record deconstruction pattern
+///   knows what javac deconstructs; the canonical form tells them too.
 public final class MetamodelFormat {
 
     /// The current format version. A compile-time constant, so that the
     /// processor reads it from the class file with `getConstantValue()`
     /// without loading the class.
-    public static final int VERSION = 19;
+    public static final int VERSION = 20;
 
     private MetamodelFormat() {}
 }

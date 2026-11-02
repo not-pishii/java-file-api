@@ -40,7 +40,7 @@ import p.List;
 ///
 /// A generated class extends or implements [List] by the proof its metamodel starts, with the stages of `List_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = List.class, fingerprint = "5fbf81fc3b0bf19607118c9d5c085865b23350063d7111b32bdae93d90b1974f", complete = true, format = 19)
+@GeneratedMetamodel(of = List.class, fingerprint = "ea0e17379f7953c42bf2c71eebf0d24a2f88fe383f38709f099a351edb0b0bb0", complete = true, format = 20)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -51,7 +51,7 @@ public final class List_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [List] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.List_"), "5fbf81fc3b0bf19607118c9d5c085865b23350063d7111b32bdae93d90b1974f", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.List"), java.util.List.of(), java.util.List.of(ClassDesc.of("java.lang.Object")), java.util.List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("canonical", Param.fixed(ClassDesc.of("p.Data"))), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("load"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("List")), Set.of(), Map.ofEntries(Map.entry(Signature.of("clone"), java.util.List.of(new Thrown(ClassDesc.of("java.lang.CloneNotSupportedException"), java.util.List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))), Map.entry(Signature.of("finalize"), java.util.List.of(new Thrown(ClassDesc.of("java.lang.Throwable"), java.util.List.of(ClassDesc.of("java.lang.Object")), Optional.empty()))), Map.entry(Signature.of("wait"), java.util.List.of(new Thrown(ClassDesc.of("java.lang.InterruptedException"), java.util.List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))), Map.entry(Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), java.util.List.of(new Thrown(ClassDesc.of("java.lang.InterruptedException"), java.util.List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))), Map.entry(Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), java.util.List.of(new Thrown(ClassDesc.of("java.lang.InterruptedException"), java.util.List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))))), false, java.util.List.of(), java.util.List.of(), new List_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.List_"), "ea0e17379f7953c42bf2c71eebf0d24a2f88fe383f38709f099a351edb0b0bb0", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.List"), java.util.List.of(), java.util.List.of(ClassDesc.of("java.lang.Object")), java.util.List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(), Set.of(Signature.of("canonical", Param.fixed(ClassDesc.of("p.Data"))), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("load"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("List")), Set.of(), Map.ofEntries(Map.entry(Signature.of("clone"), java.util.List.of(new Thrown(ClassDesc.of("java.lang.CloneNotSupportedException"), java.util.List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))), Map.entry(Signature.of("finalize"), java.util.List.of(new Thrown(ClassDesc.of("java.lang.Throwable"), java.util.List.of(ClassDesc.of("java.lang.Object")), Optional.empty()))), Map.entry(Signature.of("wait"), java.util.List.of(new Thrown(ClassDesc.of("java.lang.InterruptedException"), java.util.List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))), Map.entry(Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), java.util.List.of(new Thrown(ClassDesc.of("java.lang.InterruptedException"), java.util.List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))), Map.entry(Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), java.util.List.of(new Thrown(ClassDesc.of("java.lang.InterruptedException"), java.util.List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))))), false, java.util.List.of(), java.util.List.of(), new List_Heritage());
 
         private Data() {
         }
@@ -62,7 +62,7 @@ public final class List_ {
     static final class Canonical {
         /// The canonical form of [List].
         static final String TEXT = """
-        javafile-facts-canonical 12
+        javafile-facts-canonical 13
         type p.List open-class sealed=no nesting=top
         annotations -
         annotation -
@@ -71,6 +71,7 @@ public final class List_ {
         interfaces -
         supertypes -
         enum -
+        record -
         members declared-accessible
         member ctor public () throws -
         member field public instance mutable int Supertypes

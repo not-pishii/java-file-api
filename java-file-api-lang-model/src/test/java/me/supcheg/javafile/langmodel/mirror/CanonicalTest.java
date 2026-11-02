@@ -6,6 +6,8 @@ import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.Heritage;
 import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.Overridability;
+import me.supcheg.javafile.facts.RecordComponent;
+import me.supcheg.javafile.facts.RecordShape;
 import me.supcheg.javafile.facts.ShapeOrigin;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.type.TypeParam;
@@ -79,7 +81,7 @@ class CanonicalTest {
                                 + " -> void throws -",
                         "table abstract -");
         assertThat(withoutHeritage(canonical.text())).isEqualTo("""
-                        javafile-facts-canonical 12
+                        javafile-facts-canonical 13
                         type p.T open-class sealed=no nesting=top
                         annotations -
                         annotation -
@@ -88,6 +90,7 @@ class CanonicalTest {
                         interfaces java.lang.Comparable; java.lang.Runnable
                         supertypes java.lang.Comparable<p.T<#0>>
                         enum -
+                        record -
                         members declared-accessible
                         member ctor public (#0) throws java.io.IOException, java.lang.InterruptedException
                         member field public instance mutable #0 value
@@ -187,7 +190,7 @@ class CanonicalTest {
 
         assertThat(canonical.text())
                 .startsWith("""
-                        javafile-facts-canonical 12
+                        javafile-facts-canonical 13
                         type p.Day enum sealed=no nesting=top
                         annotations -
                         annotation -
@@ -198,6 +201,7 @@ class CanonicalTest {
                         supertypes java.lang.Comparable<p.Day>; java.lang.Enum<p.Day>; \
                         java.util.function.Supplier<java.lang.String>
                         enum MONDAY; SUNDAY
+                        record -
                         members none
                         table abstract -
                         """)
@@ -436,7 +440,7 @@ class CanonicalTest {
     void theSamOfAFunctionalInterfaceIsALineOfItsOwn() {
         assertThat(functional(MemberFilter.NONE, FUNCTIONAL[0], FUNCTIONAL[1]).text())
                 .isEqualTo("""
-                        javafile-facts-canonical 12
+                        javafile-facts-canonical 13
                         type p.T interface sealed=no nesting=top
                         annotations -
                         annotation -
@@ -445,6 +449,7 @@ class CanonicalTest {
                         interfaces p.A; p.B
                         supertypes -
                         enum -
+                        record -
                         members none
                         sam m() -> java.lang.Object throws java.io.IOException
                         table abstract m()
@@ -613,5 +618,60 @@ class CanonicalTest {
                 .contains(
                         "member ctor public <^0, ^1 extends ^0>(^0, ^1) throws -\n",
                         "member method public final <^0> m() -> ^0 throws -\n");
+    }
+
+    @Test
+    void aRecordTellsItsComponentsInDeclarationOrder() {
+        Canonical record =
+                canonical("p.Point", MemberFilter.NONE, "package p; public record Point(int x, String label) {}");
+        Canonical class_ = canonical("p.Plain", MemberFilter.NONE, "package p; public final class Plain {}");
+
+        assertThat(record.text()).contains("record x int; label java.lang.String\n");
+        assertThat(class_.text()).contains("record -\n");
+    }
+
+    @Test
+    void aRecordThatDeclaresNoComponentTellsSo() {
+        assertThat(canonical("p.Nothing", MemberFilter.NONE, "package p; public record Nothing() {}")
+                        .text())
+                .contains("record ()\n");
+    }
+
+    @Test
+    void theComponentsOfARecordAreInItsFingerprint() {
+        String x = canonical("p.Point", MemberFilter.NONE, "package p; public record Point(int x) {}")
+                .fingerprint();
+        String y = canonical("p.Point", MemberFilter.NONE, "package p; public record Point(int y) {}")
+                .fingerprint();
+
+        assertThat(x).isNotEqualTo(y);
+    }
+
+    @Test
+    void onlyAFinalClassIsARecord() {
+        assertThatThrownBy(() -> new TypeModel(
+                        ClassDesc.of("p.T"),
+                        DeclaredKind.INTERFACE,
+                        Nesting.TOP_LEVEL,
+                        List.of(),
+                        List.of(),
+                        List.of(),
+                        List.of(),
+                        Supertypes.NONE,
+                        MethodTableTemplate.EMPTY,
+                        List.of(),
+                        false,
+                        List.of(),
+                        new RecordShape.Of(List.of(new RecordComponent("x", Types.INT))),
+                        Optional.empty(),
+                        Heritage.UNTOLD,
+                        MemberFilter.NONE,
+                        List.of(),
+                        List.of(),
+                        List.of(),
+                        Optional.empty()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("a record is a final class, got a interface: T declares components"
+                        + " [RecordComponent[name=x, type=INT]]");
     }
 }

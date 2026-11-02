@@ -36,7 +36,7 @@ import p.Disjoint;
 ///
 /// A generated class extends or implements [Disjoint] by the proof its metamodel starts, with the stages of `Disjoint_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Disjoint.class, fingerprint = "d9054dd87fe8259b8114f47475a000cf5c3e4ddad10c5451c8893629971f7d3e", complete = true, format = 19)
+@GeneratedMetamodel(of = Disjoint.class, fingerprint = "caba55be8b419d18098a39b2888d2ba62348c469885194113019865f82b78dbf", complete = true, format = 20)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -47,7 +47,7 @@ public final class Disjoint_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Disjoint] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Disjoint_"), "d9054dd87fe8259b8114f47475a000cf5c3e4ddad10c5451c8893629971f7d3e", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Disjoint"), List.of(), List.of(), List.of(ClassDesc.of("p.IoA"), ClassDesc.of("p.SqlB")), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("m")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of(), Map.ofEntries(Map.entry(Signature.of("m"), List.of(new Thrown(ClassDesc.of("java.sql.SQLException"), List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()), new Thrown(ClassDesc.of("java.io.IOException"), List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))), Map.entry(Signature.of("wait"), List.of(new Thrown(ClassDesc.of("java.lang.InterruptedException"), List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))), Map.entry(Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), List.of(new Thrown(ClassDesc.of("java.lang.InterruptedException"), List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))), Map.entry(Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), List.of(new Thrown(ClassDesc.of("java.lang.InterruptedException"), List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))))), false, List.of(), List.of(), new Disjoint_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Disjoint_"), "caba55be8b419d18098a39b2888d2ba62348c469885194113019865f82b78dbf", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("p.Disjoint"), List.of(), List.of(), List.of(ClassDesc.of("p.IoA"), ClassDesc.of("p.SqlB")), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("m")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of(), Map.ofEntries(Map.entry(Signature.of("m"), List.of(new Thrown(ClassDesc.of("java.sql.SQLException"), List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()), new Thrown(ClassDesc.of("java.io.IOException"), List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))), Map.entry(Signature.of("wait"), List.of(new Thrown(ClassDesc.of("java.lang.InterruptedException"), List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))), Map.entry(Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), List.of(new Thrown(ClassDesc.of("java.lang.InterruptedException"), List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))), Map.entry(Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), List.of(new Thrown(ClassDesc.of("java.lang.InterruptedException"), List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))))), false, List.of(), List.of(), new Disjoint_Heritage());
 
         private Data() {
         }
@@ -58,7 +58,7 @@ public final class Disjoint_ {
     static final class Canonical {
         /// The canonical form of [Disjoint].
         static final String TEXT = """
-        javafile-facts-canonical 12
+        javafile-facts-canonical 13
         type p.Disjoint interface sealed=no nesting=top
         annotations -
         annotation -
@@ -67,6 +67,7 @@ public final class Disjoint_ {
         interfaces p.IoA; p.SqlB
         supertypes -
         enum -
+        record -
         members declared-accessible
         sam m() -> void throws -
         inherit method m() erased () overrides - by interface abstract p.IoA () -> void throws java.io.IOException | interface abstract p.SqlB () -> void throws java.sql.SQLException
