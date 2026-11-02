@@ -42,7 +42,7 @@ import p.WithObject;
 ///
 /// A generated class extends or implements [WithObject] by the proof its metamodel starts, with the stages of `WithObject_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = WithObject.class, fingerprint = "00addda7368669f01c7d1b2e293d8ffc2d0e094cafa44a57d1cfc4141aebea08", complete = true, format = 20)
+@GeneratedMetamodel(of = WithObject.class, fingerprint = "00addda7368669f01c7d1b2e293d8ffc2d0e094cafa44a57d1cfc4141aebea08", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

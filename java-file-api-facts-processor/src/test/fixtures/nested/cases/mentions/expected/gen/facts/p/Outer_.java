@@ -40,7 +40,7 @@ import p.Outer.NonStatic;
 ///
 /// A generated class extends or implements [Outer] by the proof its metamodel starts, with the stages of `Outer_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Outer.class, fingerprint = "a16d18f291214612ab5a31b106250713dca29ac9adb1fd62cbfe9d0e6d78f7c2", complete = true, format = 20)
+@GeneratedMetamodel(of = Outer.class, fingerprint = "a16d18f291214612ab5a31b106250713dca29ac9adb1fd62cbfe9d0e6d78f7c2", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

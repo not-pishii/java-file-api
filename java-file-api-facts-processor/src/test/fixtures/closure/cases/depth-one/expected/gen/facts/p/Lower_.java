@@ -30,7 +30,7 @@ import p.Lower;
 ///
 /// `@Facts` does not ask for [Lower]: it is only mentioned in the signatures of [p.A]. For the facts of its members add `Lower.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Lower.class, fingerprint = "394de59e6d5fb996d14ac6d8ee79603eee29ae7376986fbea4d61f583dc9989f", complete = false, format = 20)
+@GeneratedMetamodel(of = Lower.class, fingerprint = "394de59e6d5fb996d14ac6d8ee79603eee29ae7376986fbea4d61f583dc9989f", complete = false, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

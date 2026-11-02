@@ -39,7 +39,7 @@ import p.GoneApi;
 ///
 /// A generated class extends or implements [GoneApi] by the proof its metamodel starts, with the stages of `GoneApi_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = GoneApi.class, fingerprint = "3724c41b4a44c505b8202517571b615c7b10a6924d32dcb1c244dd7fd87ebaa6", complete = true, format = 20)
+@GeneratedMetamodel(of = GoneApi.class, fingerprint = "3724c41b4a44c505b8202517571b615c7b10a6924d32dcb1c244dd7fd87ebaa6", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

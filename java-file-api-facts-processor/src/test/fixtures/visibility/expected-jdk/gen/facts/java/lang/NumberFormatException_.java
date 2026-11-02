@@ -29,7 +29,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// `@Facts` does not ask for [NumberFormatException]: it is only mentioned in the signatures of [Integer]. For the facts of its members add `NumberFormatException.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = NumberFormatException.class, fingerprint = "3dc16e32a57f693a51d409d2f131e9662011ae48dca79ff8fc46169af1a7d79d", complete = false, format = 20)
+@GeneratedMetamodel(of = NumberFormatException.class, fingerprint = "3dc16e32a57f693a51d409d2f131e9662011ae48dca79ff8fc46169af1a7d79d", complete = false, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

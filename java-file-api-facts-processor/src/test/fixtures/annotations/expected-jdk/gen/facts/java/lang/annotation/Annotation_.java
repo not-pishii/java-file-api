@@ -44,7 +44,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// A generated class extends or implements [Annotation] by the proof its metamodel starts, with the stages of `Annotation_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Annotation.class, fingerprint = "367d7d239a73378cacdaf86df43011fdf573714a4ff5e2bc38c87b744b0d41b3", complete = true, format = 20)
+@GeneratedMetamodel(of = Annotation.class, fingerprint = "367d7d239a73378cacdaf86df43011fdf573714a4ff5e2bc38c87b744b0d41b3", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

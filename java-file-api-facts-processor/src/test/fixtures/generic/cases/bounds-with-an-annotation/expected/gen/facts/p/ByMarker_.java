@@ -42,7 +42,7 @@ import p.Marker;
 ///
 /// @param <T> a type argument of [ByMarker]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = ByMarker.class, fingerprint = "0a2971c054240dec2522ba518dd21e12b2f4b95fd4d931d998ac4e4c198ef7fd", complete = true, format = 20)
+@GeneratedMetamodel(of = ByMarker.class, fingerprint = "0a2971c054240dec2522ba518dd21e12b2f4b95fd4d931d998ac4e4c198ef7fd", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

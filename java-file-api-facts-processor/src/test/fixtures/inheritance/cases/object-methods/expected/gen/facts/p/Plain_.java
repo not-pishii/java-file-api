@@ -37,7 +37,7 @@ import p.Plain;
 ///
 /// A generated class extends or implements [Plain] by the proof its metamodel starts, with the stages of `Plain_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Plain.class, fingerprint = "de621188d41214af9d95c52e122cc2594522ce2fc09d478f72942128fb226b23", complete = true, format = 20)
+@GeneratedMetamodel(of = Plain.class, fingerprint = "de621188d41214af9d95c52e122cc2594522ce2fc09d478f72942128fb226b23", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

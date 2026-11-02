@@ -43,7 +43,7 @@ import p.Svc;
 ///
 /// A generated class extends or implements [Svc] by the proof its metamodel starts, with the stages of `Svc_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Svc.class, fingerprint = "872f8ccfcf227450ae29b0c92c059def2b9adacfc8bc1f1dd17b9f7e8ae60a5e", complete = true, format = 20)
+@GeneratedMetamodel(of = Svc.class, fingerprint = "872f8ccfcf227450ae29b0c92c059def2b9adacfc8bc1f1dd17b9f7e8ae60a5e", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

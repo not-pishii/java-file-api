@@ -44,7 +44,7 @@ import p.Sorted;
 ///
 /// @param <T> a type argument of [Sorted]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Sorted.class, fingerprint = "14f3288014f2c61e15f9e88ba9272b285a3c0308e43671abc6cb1f89711be953", complete = true, format = 20)
+@GeneratedMetamodel(of = Sorted.class, fingerprint = "14f3288014f2c61e15f9e88ba9272b285a3c0308e43671abc6cb1f89711be953", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

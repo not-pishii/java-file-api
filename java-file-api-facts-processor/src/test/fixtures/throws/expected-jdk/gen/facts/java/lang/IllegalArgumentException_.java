@@ -29,7 +29,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// `@Facts` does not ask for [IllegalArgumentException]: it is only mentioned in the signatures of [p.Io]. For the facts of its members add `IllegalArgumentException.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = IllegalArgumentException.class, fingerprint = "709c6d484d40f6d37edb15ef38669ee3a0c8fc7c87d578af7727299705164e20", complete = false, format = 20)
+@GeneratedMetamodel(of = IllegalArgumentException.class, fingerprint = "709c6d484d40f6d37edb15ef38669ee3a0c8fc7c87d578af7727299705164e20", complete = false, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

@@ -36,7 +36,7 @@ import p.Def;
 ///
 /// A generated class extends or implements [Def] by the proof its metamodel starts, with the stages of `Def_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Def.class, fingerprint = "8ddf61139f48b231a1c7e1c127f7b373122b97cea992188f72b3c72fffbb690f", complete = true, format = 20)
+@GeneratedMetamodel(of = Def.class, fingerprint = "8ddf61139f48b231a1c7e1c127f7b373122b97cea992188f72b3c72fffbb690f", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

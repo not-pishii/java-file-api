@@ -43,7 +43,7 @@ import p.Mid;
 ///
 /// A generated class extends or implements [Mid] by the proof its metamodel starts, with the stages of `Mid_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Mid.class, fingerprint = "204d1c223e693be2673d96a4f4441956abe8b8d1d535e97ab5208d1f3d4b970b", complete = true, format = 20)
+@GeneratedMetamodel(of = Mid.class, fingerprint = "204d1c223e693be2673d96a4f4441956abe8b8d1d535e97ab5208d1f3d4b970b", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

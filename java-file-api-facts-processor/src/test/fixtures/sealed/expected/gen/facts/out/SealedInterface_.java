@@ -38,7 +38,7 @@ import out.SealedInterface;
 ///
 /// A generated class extends or implements [SealedInterface] by the proof its metamodel starts, with the stages of `SealedInterface_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = SealedInterface.class, fingerprint = "73fa7554a7e95cc8c28dd442cfe2af5be91bfd2e649f13f1dc9c854f51365a4e", complete = true, format = 20)
+@GeneratedMetamodel(of = SealedInterface.class, fingerprint = "73fa7554a7e95cc8c28dd442cfe2af5be91bfd2e649f13f1dc9c854f51365a4e", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

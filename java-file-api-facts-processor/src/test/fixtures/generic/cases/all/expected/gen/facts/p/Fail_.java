@@ -42,7 +42,7 @@ import p.Fail;
 ///
 /// @param <X> a type argument of [Fail]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Fail.class, fingerprint = "9f0949302c85ff95c3a016c5ab58d249864f26282c2247369669921ca6d3553c", complete = true, format = 20)
+@GeneratedMetamodel(of = Fail.class, fingerprint = "9f0949302c85ff95c3a016c5ab58d249864f26282c2247369669921ca6d3553c", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

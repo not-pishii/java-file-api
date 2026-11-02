@@ -36,7 +36,7 @@ import p.Gen.St;
 ///
 /// A generated class extends or implements [St] by the proof its metamodel starts, with the stages of `Gen_St_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = St.class, fingerprint = "517292edf8418e909e042c81ae524b77a059e2fd01574a1cf54427bb0beb7481", complete = true, format = 20)
+@GeneratedMetamodel(of = St.class, fingerprint = "517292edf8418e909e042c81ae524b77a059e2fd01574a1cf54427bb0beb7481", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

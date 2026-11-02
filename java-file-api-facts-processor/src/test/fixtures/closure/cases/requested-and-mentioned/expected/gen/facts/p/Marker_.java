@@ -35,7 +35,7 @@ import p.Marker;
 ///
 /// `@Facts` does not ask for [Marker]: it is only mentioned in the signatures of [p.A]. For the facts of its members add `Marker.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Marker.class, fingerprint = "aa4a8e45d55c0323828f5d8a98360b7eab2fb0d58c704d14f5d1932db0cffe50", complete = false, format = 20)
+@GeneratedMetamodel(of = Marker.class, fingerprint = "aa4a8e45d55c0323828f5d8a98360b7eab2fb0d58c704d14f5d1932db0cffe50", complete = false, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

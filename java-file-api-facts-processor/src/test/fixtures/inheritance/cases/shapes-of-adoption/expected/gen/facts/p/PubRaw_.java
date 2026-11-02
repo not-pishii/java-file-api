@@ -44,7 +44,7 @@ import p.PubRaw;
 ///
 /// A generated class extends or implements [PubRaw] by the proof its metamodel starts, with the stages of `PubRaw_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = PubRaw.class, fingerprint = "50f865d931ea4e0b3033d3e9f1fb767d5cb533a139efb40415275b6599b6ea34", complete = true, format = 20)
+@GeneratedMetamodel(of = PubRaw.class, fingerprint = "50f865d931ea4e0b3033d3e9f1fb767d5cb533a139efb40415275b6599b6ea34", complete = true, format = 21)
 @SuppressWarnings({
     "rawtypes",
     "deprecation",

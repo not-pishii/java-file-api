@@ -44,7 +44,7 @@ import p.Impl;
 ///
 /// A generated class extends or implements [Impl] by the proof its metamodel starts, with the stages of `Impl_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Impl.class, fingerprint = "bbf6e710856574b28dab3c21242d347c6d007b1fa93794ff12e1158ca2596f9b", complete = true, format = 20)
+@GeneratedMetamodel(of = Impl.class, fingerprint = "bbf6e710856574b28dab3c21242d347c6d007b1fa93794ff12e1158ca2596f9b", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

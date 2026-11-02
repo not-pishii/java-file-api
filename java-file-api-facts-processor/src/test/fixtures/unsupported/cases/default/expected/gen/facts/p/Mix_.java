@@ -51,7 +51,7 @@ import p.Mix;
 ///
 /// A generated class extends or implements [Mix] by the proof its metamodel starts, with the stages of `Mix_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Mix.class, fingerprint = "b01ee0966783e7f98d309734086cd1f22664e2a44c3ec857d4b416b0626160f6", complete = true, format = 20)
+@GeneratedMetamodel(of = Mix.class, fingerprint = "b01ee0966783e7f98d309734086cd1f22664e2a44c3ec857d4b416b0626160f6", complete = true, format = 21)
 @SuppressWarnings({
     "rawtypes",
     "deprecation",

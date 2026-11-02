@@ -36,7 +36,7 @@ import p.Disjoint;
 ///
 /// A generated class extends or implements [Disjoint] by the proof its metamodel starts, with the stages of `Disjoint_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Disjoint.class, fingerprint = "caba55be8b419d18098a39b2888d2ba62348c469885194113019865f82b78dbf", complete = true, format = 20)
+@GeneratedMetamodel(of = Disjoint.class, fingerprint = "caba55be8b419d18098a39b2888d2ba62348c469885194113019865f82b78dbf", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

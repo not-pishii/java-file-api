@@ -36,7 +36,7 @@ import out.SealedClass;
 ///
 /// A generated class extends or implements [SealedClass] by the proof its metamodel starts, with the stages of `SealedClass_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = SealedClass.class, fingerprint = "ef31df27755cfe5a9ab4d20d6c427da623c5c010bbd54569558c5355e84c3379", complete = true, format = 20)
+@GeneratedMetamodel(of = SealedClass.class, fingerprint = "ef31df27755cfe5a9ab4d20d6c427da623c5c010bbd54569558c5355e84c3379", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

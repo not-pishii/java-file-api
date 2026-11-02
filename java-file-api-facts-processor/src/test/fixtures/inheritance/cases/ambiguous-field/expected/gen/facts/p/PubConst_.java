@@ -36,7 +36,7 @@ import p.PubConst;
 ///
 /// A generated class extends or implements [PubConst] by the proof its metamodel starts, with the stages of `PubConst_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = PubConst.class, fingerprint = "b55d1b9174324b32d3d2f290856f0665c86a7539b873e481d359bdf8f1837f02", complete = true, format = 20)
+@GeneratedMetamodel(of = PubConst.class, fingerprint = "b55d1b9174324b32d3d2f290856f0665c86a7539b873e481d359bdf8f1837f02", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

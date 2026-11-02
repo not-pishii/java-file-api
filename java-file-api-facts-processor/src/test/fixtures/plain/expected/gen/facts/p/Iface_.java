@@ -42,7 +42,7 @@ import p.Iface;
 ///
 /// A generated class extends or implements [Iface] by the proof its metamodel starts, with the stages of `Iface_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Iface.class, fingerprint = "05ef23f129394806e54f43dc83b2e8ae717638c3d9a59f8270ec143cce5fa8f2", complete = true, format = 20)
+@GeneratedMetamodel(of = Iface.class, fingerprint = "05ef23f129394806e54f43dc83b2e8ae717638c3d9a59f8270ec143cce5fa8f2", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

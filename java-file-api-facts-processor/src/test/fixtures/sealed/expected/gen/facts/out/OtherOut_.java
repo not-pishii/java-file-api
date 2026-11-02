@@ -35,7 +35,7 @@ import out.OtherOut;
 ///
 /// No generated class extends or implements [OtherOut]: it is a final class, which no class extends.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = OtherOut.class, fingerprint = "09e97a457bb1f1b1b6c21146a5323c404a506b2a3e410c2b2483608bf428778c", complete = true, format = 20)
+@GeneratedMetamodel(of = OtherOut.class, fingerprint = "09e97a457bb1f1b1b6c21146a5323c404a506b2a3e410c2b2483608bf428778c", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

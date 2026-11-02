@@ -31,7 +31,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// `@Facts` does not ask for [String]: it is only mentioned in the signatures of [Object], [p.Impl], [p.PubBase] and 1 more type. For the facts of its members add `String.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = String.class, fingerprint = "90976eb236d9fce262daac78bb7c15e930531cb236c3bc3623d12c937119ce74", complete = false, format = 20)
+@GeneratedMetamodel(of = String.class, fingerprint = "90976eb236d9fce262daac78bb7c15e930531cb236c3bc3623d12c937119ce74", complete = false, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

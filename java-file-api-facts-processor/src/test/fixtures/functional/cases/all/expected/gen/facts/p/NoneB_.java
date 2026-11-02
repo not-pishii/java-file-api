@@ -39,7 +39,7 @@ import p.NoneB;
 ///
 /// A generated class extends or implements [NoneB] by the proof its metamodel starts, with the stages of `NoneB_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = NoneB.class, fingerprint = "f358534a7535526199204778d1bc3e7c44e485dd9e6d7978d290d039075f9ff6", complete = true, format = 20)
+@GeneratedMetamodel(of = NoneB.class, fingerprint = "f358534a7535526199204778d1bc3e7c44e485dd9e6d7978d290d039075f9ff6", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

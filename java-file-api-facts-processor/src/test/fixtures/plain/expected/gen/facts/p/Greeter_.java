@@ -59,7 +59,7 @@ import p.Greeter;
 ///
 /// A generated class extends or implements [Greeter] by the proof its metamodel starts, with the stages of `Greeter_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Greeter.class, fingerprint = "cbffdb301c177035a75e8d54aa5e27cdc6d157efb15813b2abd971d76af2d7a1", complete = true, format = 20)
+@GeneratedMetamodel(of = Greeter.class, fingerprint = "cbffdb301c177035a75e8d54aa5e27cdc6d157efb15813b2abd971d76af2d7a1", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

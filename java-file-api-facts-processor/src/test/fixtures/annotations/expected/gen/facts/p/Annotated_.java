@@ -43,7 +43,7 @@ import p.Tag;
 ///
 /// A generated class extends or implements [Annotated] by the proof its metamodel starts, with the stages of `Annotated_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Annotated.class, fingerprint = "df3aa0bed2648993d59416d54b29ff589e019874e1f9e8e7bbc873c30df8c49b", complete = true, format = 20)
+@GeneratedMetamodel(of = Annotated.class, fingerprint = "df3aa0bed2648993d59416d54b29ff589e019874e1f9e8e7bbc873c30df8c49b", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

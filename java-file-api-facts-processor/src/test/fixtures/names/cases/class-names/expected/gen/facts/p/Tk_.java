@@ -41,7 +41,7 @@ import p.Tk;
 ///
 /// A generated class extends or implements [Tk] by the proof its metamodel starts, with the stages of `Tk_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Tk.class, fingerprint = "8bde88922c3db3f1fa3aea0693a13e09614d4e3b3c3780347552459ddd5034fd", complete = true, format = 20)
+@GeneratedMetamodel(of = Tk.class, fingerprint = "8bde88922c3db3f1fa3aea0693a13e09614d4e3b3c3780347552459ddd5034fd", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

@@ -42,7 +42,7 @@ import p.Diamond;
 ///
 /// A generated class extends or implements [Diamond] by the proof its metamodel starts, with the stages of `Diamond_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Diamond.class, fingerprint = "261ccf1dbf72d751775b919d22f0e432af95bec75fe5a27b86c40fc461d8c056", complete = true, format = 20)
+@GeneratedMetamodel(of = Diamond.class, fingerprint = "261ccf1dbf72d751775b919d22f0e432af95bec75fe5a27b86c40fc461d8c056", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

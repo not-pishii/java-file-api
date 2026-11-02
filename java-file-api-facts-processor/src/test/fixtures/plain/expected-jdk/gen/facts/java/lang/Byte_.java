@@ -32,7 +32,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// `@Facts` does not ask for [Byte]: it is only mentioned in the signatures of [p.Boxes]. For the facts of its members add `Byte.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Byte.class, fingerprint = "9c3e074c8f3820babaa6d1478c6feb485daf38be8af616def7f1403691659b6e", complete = false, format = 20)
+@GeneratedMetamodel(of = Byte.class, fingerprint = "9c3e074c8f3820babaa6d1478c6feb485daf38be8af616def7f1403691659b6e", complete = false, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

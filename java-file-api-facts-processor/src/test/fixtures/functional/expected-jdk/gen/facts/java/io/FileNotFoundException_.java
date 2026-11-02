@@ -30,7 +30,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// `@Facts` does not ask for [FileNotFoundException]: it is only mentioned in the signatures of [p.Nested] and [p.NotFoundB]. For the facts of its members add `FileNotFoundException.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = FileNotFoundException.class, fingerprint = "62124e28d09bf1867e503ead385551b44a4817cc7ecbdd5e44f19dfb033f53ab", complete = false, format = 20)
+@GeneratedMetamodel(of = FileNotFoundException.class, fingerprint = "62124e28d09bf1867e503ead385551b44a4817cc7ecbdd5e44f19dfb033f53ab", complete = false, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

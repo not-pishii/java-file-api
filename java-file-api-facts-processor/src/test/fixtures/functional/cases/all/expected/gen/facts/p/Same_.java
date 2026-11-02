@@ -37,7 +37,7 @@ import p.Same;
 ///
 /// A generated class extends or implements [Same] by the proof its metamodel starts, with the stages of `Same_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Same.class, fingerprint = "839d9d98e32aa34098a0ab1c0cf051c1f19ef9621039c303e2a4443d83713708", complete = true, format = 20)
+@GeneratedMetamodel(of = Same.class, fingerprint = "839d9d98e32aa34098a0ab1c0cf051c1f19ef9621039c303e2a4443d83713708", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

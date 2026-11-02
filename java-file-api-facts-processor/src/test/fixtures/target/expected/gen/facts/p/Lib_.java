@@ -36,7 +36,7 @@ import p.Marker;
 ///
 /// No generated class extends or implements [Lib]: it is a final class, which no class extends.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Lib.class, fingerprint = "3622ac98124296ef787ff37fbc65464918d8b64df7e84e7df9a9e2082a593107", complete = true, format = 20)
+@GeneratedMetamodel(of = Lib.class, fingerprint = "3622ac98124296ef787ff37fbc65464918d8b64df7e84e7df9a9e2082a593107", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

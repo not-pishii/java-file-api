@@ -39,7 +39,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// A generated class extends or implements [ConstantDesc] by the proof its metamodel starts, with the stages of `ConstantDesc_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = ConstantDesc.class, fingerprint = "c01e90a6a2510166e6372750421dbe778a451a4edc6dbb246557b62013885c8f", complete = true, format = 20)
+@GeneratedMetamodel(of = ConstantDesc.class, fingerprint = "c01e90a6a2510166e6372750421dbe778a451a4edc6dbb246557b62013885c8f", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

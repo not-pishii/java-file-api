@@ -31,7 +31,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// `@Facts` does not ask for [StringBuilder]: it is only mentioned in the signatures of [p.Ov2]. For the facts of its members add `StringBuilder.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = StringBuilder.class, fingerprint = "6ccedc6f3ed10cc021253402b679ff9d8f5a998f14e6f5a7263d1482f1338001", complete = false, format = 20)
+@GeneratedMetamodel(of = StringBuilder.class, fingerprint = "6ccedc6f3ed10cc021253402b679ff9d8f5a998f14e6f5a7263d1482f1338001", complete = false, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

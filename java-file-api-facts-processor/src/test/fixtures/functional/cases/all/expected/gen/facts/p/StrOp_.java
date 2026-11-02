@@ -38,7 +38,7 @@ import p.StrOp;
 ///
 /// A generated class extends or implements [StrOp] by the proof its metamodel starts, with the stages of `StrOp_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = StrOp.class, fingerprint = "777a2fb3291a73f4c599c3a8aeccf0b61ab7a04b87250151bbd4ae89550e6285", complete = true, format = 20)
+@GeneratedMetamodel(of = StrOp.class, fingerprint = "777a2fb3291a73f4c599c3a8aeccf0b61ab7a04b87250151bbd4ae89550e6285", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

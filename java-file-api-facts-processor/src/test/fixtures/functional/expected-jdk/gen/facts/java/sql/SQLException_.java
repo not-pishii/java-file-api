@@ -32,7 +32,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// `@Facts` does not ask for [SQLException]: it is only mentioned in the signatures of [p.SqlB]. For the facts of its members add `SQLException.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = SQLException.class, fingerprint = "5548df73fd20241924fc3f789ebce32c041b345eed6f9b70e8964fba38c0b4e0", complete = false, format = 20)
+@GeneratedMetamodel(of = SQLException.class, fingerprint = "5548df73fd20241924fc3f789ebce32c041b345eed6f9b70e8964fba38c0b4e0", complete = false, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

@@ -2,6 +2,7 @@ package gen.facts.p;
 
 import gen.facts.p.PolyFn_.Canonical;
 import gen.facts.p.PolyFn_.Data;
+import gen.facts.p.PolyFn_Heritage.Implement;
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
 import java.util.List;
@@ -33,9 +34,9 @@ import p.PolyFn;
 ///
 /// A member [PolyFn] inherits has its fact in the metamodel of the supertype that declares it: [gen.facts.java.lang.Object_].
 ///
-/// No generated class extends or implements [PolyFn]: its abstract method apply(java.lang.Object) is generic, and a generated method has no type parameters yet.
+/// A generated class extends or implements [PolyFn] by the proof its metamodel starts, with the stages of `PolyFn_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = PolyFn.class, fingerprint = "f69b1c5090833d51c7fec35d945a4de0552a3c65025ebb33f4da870adea3665f", complete = true, format = 20)
+@GeneratedMetamodel(of = PolyFn.class, fingerprint = "f69b1c5090833d51c7fec35d945a4de0552a3c65025ebb33f4da870adea3665f", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -93,5 +94,14 @@ public final class PolyFn_ {
     /// @return the fact
     public static <T> MethodRef1<PolyFn, T, T> apply_T(RefToken<T> t) {
         return UnsafeInvocables.method(TOKEN, "apply", t, UnsafeFacts.param(t, Param.fixed(ClassDesc.of("java.lang.Object"))), MemberTraits.ABSTRACT.withTypeArgs(t));
+    }
+
+    /// Starts the proof that a class being declared implements [PolyFn]: a step per abstract method of the type follows, and the declaration of the class takes the proof after the last.
+    ///
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the proof, or the stage of its first step
+    public static <Self> Implement<Self> implement(RefToken<Self> self) {
+        return new PolyFn_Heritage().implement(TOKEN, self);
     }
 }

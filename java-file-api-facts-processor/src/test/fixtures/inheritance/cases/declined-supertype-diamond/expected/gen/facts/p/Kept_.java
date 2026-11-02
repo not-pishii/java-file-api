@@ -44,7 +44,7 @@ import p.Kept;
 ///
 /// A generated class extends or implements [Kept] by the proof its metamodel starts, with the stages of `Kept_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Kept.class, fingerprint = "b2b040aeb460de065f2b74633a06dece748bcd7ac87ea3e256bc4f8fdbce2fb0", complete = true, format = 20)
+@GeneratedMetamodel(of = Kept.class, fingerprint = "b2b040aeb460de065f2b74633a06dece748bcd7ac87ea3e256bc4f8fdbce2fb0", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

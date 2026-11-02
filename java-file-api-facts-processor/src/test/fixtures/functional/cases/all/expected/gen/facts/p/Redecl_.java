@@ -37,7 +37,7 @@ import p.Redecl;
 ///
 /// A generated class extends or implements [Redecl] by the proof its metamodel starts, with the stages of `Redecl_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Redecl.class, fingerprint = "fdfbbc7ef8c9b3011b01d5a15afdba4a6ffd2f2e70b888d65583a7dd64da3203", complete = true, format = 20)
+@GeneratedMetamodel(of = Redecl.class, fingerprint = "fdfbbc7ef8c9b3011b01d5a15afdba4a6ffd2f2e70b888d65583a7dd64da3203", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

@@ -33,7 +33,7 @@ import p.SealedSub;
 ///
 /// A generated class extends or implements [SealedSub] by the proof its metamodel starts, with the stages of `SealedSub_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = SealedSub.class, fingerprint = "513a4501076988ca40c81ef3855614a52c94bf4aa96b0e87bd1c034296ec0d24", complete = true, format = 20)
+@GeneratedMetamodel(of = SealedSub.class, fingerprint = "513a4501076988ca40c81ef3855614a52c94bf4aa96b0e87bd1c034296ec0d24", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

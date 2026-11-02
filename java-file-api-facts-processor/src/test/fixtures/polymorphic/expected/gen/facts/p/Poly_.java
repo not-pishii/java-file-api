@@ -55,7 +55,7 @@ import p.Poly;
 ///
 /// A generated class extends or implements [Poly] by the proof its metamodel starts, with the stages of `Poly_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Poly.class, fingerprint = "8c6dd13bd9fca6a68d2386e6cb072e333f6892029e1fbdcfcb3ed08bc20af761", complete = true, format = 20)
+@GeneratedMetamodel(of = Poly.class, fingerprint = "8c6dd13bd9fca6a68d2386e6cb072e333f6892029e1fbdcfcb3ed08bc20af761", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

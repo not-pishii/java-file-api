@@ -36,7 +36,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// A generated class extends or implements [p.Canonical] by the proof its metamodel starts, with the stages of `Canonical_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = p.Canonical.class, fingerprint = "ddbee0c99531d47919e4f4ea2743769066256eae2bb514215d993a5a71a6a1fa", complete = true, format = 20)
+@GeneratedMetamodel(of = p.Canonical.class, fingerprint = "ddbee0c99531d47919e4f4ea2743769066256eae2bb514215d993a5a71a6a1fa", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

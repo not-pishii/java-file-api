@@ -40,7 +40,7 @@ import p.Comp;
 ///
 /// A generated class extends or implements [Comp] by the proof its metamodel starts, with the stages of `Comp_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Comp.class, fingerprint = "270d4f2fd9a0ce4bcc126678f9b46f120d0773253485ce2ebfe952ffbb7dfc7c", complete = true, format = 20)
+@GeneratedMetamodel(of = Comp.class, fingerprint = "270d4f2fd9a0ce4bcc126678f9b46f120d0773253485ce2ebfe952ffbb7dfc7c", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"
