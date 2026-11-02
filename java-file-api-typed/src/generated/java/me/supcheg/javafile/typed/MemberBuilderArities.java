@@ -4,6 +4,7 @@ import java.util.List;
 import javax.annotation.processing.Generated;
 import me.supcheg.javafile.facts.FinalClassToken;
 import me.supcheg.javafile.facts.InterfaceToken;
+import me.supcheg.javafile.facts.Invocable;
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericClassSpec10;
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericClassSpec11;
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericClassSpec12;
@@ -43,11 +44,28 @@ import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericRecordSpe
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericRecordSpec7;
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericRecordSpec8;
 import me.supcheg.javafile.typed.GenericDeclarationArities.TypedGenericRecordSpec9;
+import me.supcheg.javafile.typed.GenericMethodArities.MethodSpec1;
+import me.supcheg.javafile.typed.GenericMethodArities.MethodSpec10;
+import me.supcheg.javafile.typed.GenericMethodArities.MethodSpec11;
+import me.supcheg.javafile.typed.GenericMethodArities.MethodSpec12;
+import me.supcheg.javafile.typed.GenericMethodArities.MethodSpec13;
+import me.supcheg.javafile.typed.GenericMethodArities.MethodSpec14;
+import me.supcheg.javafile.typed.GenericMethodArities.MethodSpec15;
+import me.supcheg.javafile.typed.GenericMethodArities.MethodSpec16;
+import me.supcheg.javafile.typed.GenericMethodArities.MethodSpec2;
+import me.supcheg.javafile.typed.GenericMethodArities.MethodSpec3;
+import me.supcheg.javafile.typed.GenericMethodArities.MethodSpec4;
+import me.supcheg.javafile.typed.GenericMethodArities.MethodSpec5;
+import me.supcheg.javafile.typed.GenericMethodArities.MethodSpec6;
+import me.supcheg.javafile.typed.GenericMethodArities.MethodSpec7;
+import me.supcheg.javafile.typed.GenericMethodArities.MethodSpec8;
+import me.supcheg.javafile.typed.GenericMethodArities.MethodSpec9;
 import me.supcheg.javafile.typed.NestedDeclarations.ClassBodies;
 import me.supcheg.javafile.typed.NestedDeclarations.InterfaceBodies;
 import me.supcheg.javafile.typed.NestedDeclarations.RecordBodies;
 
 @Generated("me.supcheg.javafile.typed.codegen.TypedCodegen")
+@SuppressWarnings("TypeParameterUnusedInFormals")
 abstract sealed class MemberBuilderArities<Self, S> extends Declarations<Self, S> permits MemberBuilder {
     abstract <N> FinalClassToken<N> nestedClassToken(String name, List<TypeParameter<?>> parameters, ClassBodies spec);
 
@@ -1572,6 +1590,552 @@ abstract sealed class MemberBuilderArities<Self, S> extends Declarations<Self, S
             @Override
             public <R2> TypedRecordBodies<R2> build(TypedRecordBuilder<R2> rb) {
                 return spec.build(rb, NestedDeclarations.variable(rb, 0), NestedDeclarations.variable(rb, 1), NestedDeclarations.variable(rb, 2), NestedDeclarations.variable(rb, 3), NestedDeclarations.variable(rb, 4), NestedDeclarations.variable(rb, 5), NestedDeclarations.variable(rb, 6), NestedDeclarations.variable(rb, 7), NestedDeclarations.variable(rb, 8), NestedDeclarations.variable(rb, 9), NestedDeclarations.variable(rb, 10), NestedDeclarations.variable(rb, 11), NestedDeclarations.variable(rb, 12), NestedDeclarations.variable(rb, 13), NestedDeclarations.variable(rb, 14), NestedDeclarations.variable(rb, 15));
+            }
+        });
+    }
+
+    abstract <F extends Invocable> F genericMethod(List<TypeParameter<?>> parameters, GenericMethodBodies<Self, S, F> spec);
+
+    /**
+     * Declares a generic member of the class with one type parameter: a method, a `static` one, a `void` one, or a constructor, whose type parameters are in scope in the signature and the body of that member alone (JLS 6.3). The fact of the member is the `F` of the specification, which no type of the call below tells: name it, `new MethodSpec1&lt;Self, S, MethodRef1&lt;Self, B1, B1&gt;, B1&gt;()`, where a diamond would leave it an `Invocable`.
+     *
+     * @return the fact of the member declared
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the class, or its bound names a type parameter of the class
+     * @throws IllegalStateException if the declarations of the class have ended, or the type of the member is out of scope
+     * @param spec declares the member, given the declarations of the members and the token of its type parameter
+     * @param p1 the type parameter
+     * @param <B1> the leftmost bound of the type parameter, `Object` for none
+     */
+    public <F extends Invocable, B1> F declareGenericMethod(TypeParameter<B1> p1, MethodSpec1<Self, S, F, B1> spec) {
+        return genericMethod(List.of(p1), new GenericMethodBodies<Self, S, F>() {
+            @Override
+            public F build(GenericMethodDeclaration<Self, S> declaration) {
+                return spec.build(declaration, declaration.variable(0));
+            }
+        });
+    }
+
+    /**
+     * Declares a generic member of the class with two type parameters: a method, a `static` one, a `void` one, or a constructor, whose type parameters are in scope in the signature and the body of that member alone (JLS 6.3). The fact of the member is the `F` of the specification, which no type of the call below tells: name it, `new MethodSpec1&lt;Self, S, MethodRef1&lt;Self, B1, B1&gt;, B1&gt;()`, where a diamond would leave it an `Invocable`.
+     *
+     * @return the fact of the member declared
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the class, or its bound names a type parameter of the class
+     * @throws IllegalStateException if the declarations of the class have ended, or the type of the member is out of scope
+     * @param spec declares the member, given the declarations of the members and the tokens of its type parameters
+     * @param p1 the first type parameter
+     * @param <B1> the leftmost bound of the first type parameter, `Object` for none
+     * @param p2 the second type parameter
+     * @param <B2> the leftmost bound of the second type parameter, `Object` for none
+     */
+    public <F extends Invocable, B1, B2> F declareGenericMethod(TypeParameter<B1> p1, TypeParameter<B2> p2, MethodSpec2<Self, S, F, B1, B2> spec) {
+        return genericMethod(List.of(p1, p2), new GenericMethodBodies<Self, S, F>() {
+            @Override
+            public F build(GenericMethodDeclaration<Self, S> declaration) {
+                return spec.build(declaration, declaration.variable(0), declaration.variable(1));
+            }
+        });
+    }
+
+    /**
+     * Declares a generic member of the class with three type parameters: a method, a `static` one, a `void` one, or a constructor, whose type parameters are in scope in the signature and the body of that member alone (JLS 6.3). The fact of the member is the `F` of the specification, which no type of the call below tells: name it, `new MethodSpec1&lt;Self, S, MethodRef1&lt;Self, B1, B1&gt;, B1&gt;()`, where a diamond would leave it an `Invocable`.
+     *
+     * @return the fact of the member declared
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the class, or its bound names a type parameter of the class
+     * @throws IllegalStateException if the declarations of the class have ended, or the type of the member is out of scope
+     * @param spec declares the member, given the declarations of the members and the tokens of its type parameters
+     * @param p1 the first type parameter
+     * @param <B1> the leftmost bound of the first type parameter, `Object` for none
+     * @param p2 the second type parameter
+     * @param <B2> the leftmost bound of the second type parameter, `Object` for none
+     * @param p3 the third type parameter
+     * @param <B3> the leftmost bound of the third type parameter, `Object` for none
+     */
+    public <F extends Invocable, B1, B2, B3> F declareGenericMethod(TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, MethodSpec3<Self, S, F, B1, B2, B3> spec) {
+        return genericMethod(List.of(p1, p2, p3), new GenericMethodBodies<Self, S, F>() {
+            @Override
+            public F build(GenericMethodDeclaration<Self, S> declaration) {
+                return spec.build(declaration, declaration.variable(0), declaration.variable(1), declaration.variable(2));
+            }
+        });
+    }
+
+    /**
+     * Declares a generic member of the class with four type parameters: a method, a `static` one, a `void` one, or a constructor, whose type parameters are in scope in the signature and the body of that member alone (JLS 6.3). The fact of the member is the `F` of the specification, which no type of the call below tells: name it, `new MethodSpec1&lt;Self, S, MethodRef1&lt;Self, B1, B1&gt;, B1&gt;()`, where a diamond would leave it an `Invocable`.
+     *
+     * @return the fact of the member declared
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the class, or its bound names a type parameter of the class
+     * @throws IllegalStateException if the declarations of the class have ended, or the type of the member is out of scope
+     * @param spec declares the member, given the declarations of the members and the tokens of its type parameters
+     * @param p1 the first type parameter
+     * @param <B1> the leftmost bound of the first type parameter, `Object` for none
+     * @param p2 the second type parameter
+     * @param <B2> the leftmost bound of the second type parameter, `Object` for none
+     * @param p3 the third type parameter
+     * @param <B3> the leftmost bound of the third type parameter, `Object` for none
+     * @param p4 the fourth type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter, `Object` for none
+     */
+    public <F extends Invocable, B1, B2, B3, B4> F declareGenericMethod(TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, MethodSpec4<Self, S, F, B1, B2, B3, B4> spec) {
+        return genericMethod(List.of(p1, p2, p3, p4), new GenericMethodBodies<Self, S, F>() {
+            @Override
+            public F build(GenericMethodDeclaration<Self, S> declaration) {
+                return spec.build(declaration, declaration.variable(0), declaration.variable(1), declaration.variable(2), declaration.variable(3));
+            }
+        });
+    }
+
+    /**
+     * Declares a generic member of the class with five type parameters: a method, a `static` one, a `void` one, or a constructor, whose type parameters are in scope in the signature and the body of that member alone (JLS 6.3). The fact of the member is the `F` of the specification, which no type of the call below tells: name it, `new MethodSpec1&lt;Self, S, MethodRef1&lt;Self, B1, B1&gt;, B1&gt;()`, where a diamond would leave it an `Invocable`.
+     *
+     * @return the fact of the member declared
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the class, or its bound names a type parameter of the class
+     * @throws IllegalStateException if the declarations of the class have ended, or the type of the member is out of scope
+     * @param spec declares the member, given the declarations of the members and the tokens of its type parameters
+     * @param p1 the first type parameter
+     * @param <B1> the leftmost bound of the first type parameter, `Object` for none
+     * @param p2 the second type parameter
+     * @param <B2> the leftmost bound of the second type parameter, `Object` for none
+     * @param p3 the third type parameter
+     * @param <B3> the leftmost bound of the third type parameter, `Object` for none
+     * @param p4 the fourth type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter, `Object` for none
+     * @param p5 the fifth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter, `Object` for none
+     */
+    public <F extends Invocable, B1, B2, B3, B4, B5> F declareGenericMethod(TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, MethodSpec5<Self, S, F, B1, B2, B3, B4, B5> spec) {
+        return genericMethod(List.of(p1, p2, p3, p4, p5), new GenericMethodBodies<Self, S, F>() {
+            @Override
+            public F build(GenericMethodDeclaration<Self, S> declaration) {
+                return spec.build(declaration, declaration.variable(0), declaration.variable(1), declaration.variable(2), declaration.variable(3), declaration.variable(4));
+            }
+        });
+    }
+
+    /**
+     * Declares a generic member of the class with six type parameters: a method, a `static` one, a `void` one, or a constructor, whose type parameters are in scope in the signature and the body of that member alone (JLS 6.3). The fact of the member is the `F` of the specification, which no type of the call below tells: name it, `new MethodSpec1&lt;Self, S, MethodRef1&lt;Self, B1, B1&gt;, B1&gt;()`, where a diamond would leave it an `Invocable`.
+     *
+     * @return the fact of the member declared
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the class, or its bound names a type parameter of the class
+     * @throws IllegalStateException if the declarations of the class have ended, or the type of the member is out of scope
+     * @param spec declares the member, given the declarations of the members and the tokens of its type parameters
+     * @param p1 the first type parameter
+     * @param <B1> the leftmost bound of the first type parameter, `Object` for none
+     * @param p2 the second type parameter
+     * @param <B2> the leftmost bound of the second type parameter, `Object` for none
+     * @param p3 the third type parameter
+     * @param <B3> the leftmost bound of the third type parameter, `Object` for none
+     * @param p4 the fourth type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter, `Object` for none
+     * @param p5 the fifth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter, `Object` for none
+     * @param p6 the sixth type parameter
+     * @param <B6> the leftmost bound of the sixth type parameter, `Object` for none
+     */
+    public <F extends Invocable, B1, B2, B3, B4, B5, B6> F declareGenericMethod(TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, TypeParameter<B6> p6, MethodSpec6<Self, S, F, B1, B2, B3, B4, B5, B6> spec) {
+        return genericMethod(List.of(p1, p2, p3, p4, p5, p6), new GenericMethodBodies<Self, S, F>() {
+            @Override
+            public F build(GenericMethodDeclaration<Self, S> declaration) {
+                return spec.build(declaration, declaration.variable(0), declaration.variable(1), declaration.variable(2), declaration.variable(3), declaration.variable(4), declaration.variable(5));
+            }
+        });
+    }
+
+    /**
+     * Declares a generic member of the class with seven type parameters: a method, a `static` one, a `void` one, or a constructor, whose type parameters are in scope in the signature and the body of that member alone (JLS 6.3). The fact of the member is the `F` of the specification, which no type of the call below tells: name it, `new MethodSpec1&lt;Self, S, MethodRef1&lt;Self, B1, B1&gt;, B1&gt;()`, where a diamond would leave it an `Invocable`.
+     *
+     * @return the fact of the member declared
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the class, or its bound names a type parameter of the class
+     * @throws IllegalStateException if the declarations of the class have ended, or the type of the member is out of scope
+     * @param spec declares the member, given the declarations of the members and the tokens of its type parameters
+     * @param p1 the first type parameter
+     * @param <B1> the leftmost bound of the first type parameter, `Object` for none
+     * @param p2 the second type parameter
+     * @param <B2> the leftmost bound of the second type parameter, `Object` for none
+     * @param p3 the third type parameter
+     * @param <B3> the leftmost bound of the third type parameter, `Object` for none
+     * @param p4 the fourth type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter, `Object` for none
+     * @param p5 the fifth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter, `Object` for none
+     * @param p6 the sixth type parameter
+     * @param <B6> the leftmost bound of the sixth type parameter, `Object` for none
+     * @param p7 the seventh type parameter
+     * @param <B7> the leftmost bound of the seventh type parameter, `Object` for none
+     */
+    public <F extends Invocable, B1, B2, B3, B4, B5, B6, B7> F declareGenericMethod(TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, TypeParameter<B6> p6, TypeParameter<B7> p7, MethodSpec7<Self, S, F, B1, B2, B3, B4, B5, B6, B7> spec) {
+        return genericMethod(List.of(p1, p2, p3, p4, p5, p6, p7), new GenericMethodBodies<Self, S, F>() {
+            @Override
+            public F build(GenericMethodDeclaration<Self, S> declaration) {
+                return spec.build(declaration, declaration.variable(0), declaration.variable(1), declaration.variable(2), declaration.variable(3), declaration.variable(4), declaration.variable(5), declaration.variable(6));
+            }
+        });
+    }
+
+    /**
+     * Declares a generic member of the class with eight type parameters: a method, a `static` one, a `void` one, or a constructor, whose type parameters are in scope in the signature and the body of that member alone (JLS 6.3). The fact of the member is the `F` of the specification, which no type of the call below tells: name it, `new MethodSpec1&lt;Self, S, MethodRef1&lt;Self, B1, B1&gt;, B1&gt;()`, where a diamond would leave it an `Invocable`.
+     *
+     * @return the fact of the member declared
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the class, or its bound names a type parameter of the class
+     * @throws IllegalStateException if the declarations of the class have ended, or the type of the member is out of scope
+     * @param spec declares the member, given the declarations of the members and the tokens of its type parameters
+     * @param p1 the first type parameter
+     * @param <B1> the leftmost bound of the first type parameter, `Object` for none
+     * @param p2 the second type parameter
+     * @param <B2> the leftmost bound of the second type parameter, `Object` for none
+     * @param p3 the third type parameter
+     * @param <B3> the leftmost bound of the third type parameter, `Object` for none
+     * @param p4 the fourth type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter, `Object` for none
+     * @param p5 the fifth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter, `Object` for none
+     * @param p6 the sixth type parameter
+     * @param <B6> the leftmost bound of the sixth type parameter, `Object` for none
+     * @param p7 the seventh type parameter
+     * @param <B7> the leftmost bound of the seventh type parameter, `Object` for none
+     * @param p8 the eighth type parameter
+     * @param <B8> the leftmost bound of the eighth type parameter, `Object` for none
+     */
+    public <F extends Invocable, B1, B2, B3, B4, B5, B6, B7, B8> F declareGenericMethod(TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, TypeParameter<B6> p6, TypeParameter<B7> p7, TypeParameter<B8> p8, MethodSpec8<Self, S, F, B1, B2, B3, B4, B5, B6, B7, B8> spec) {
+        return genericMethod(List.of(p1, p2, p3, p4, p5, p6, p7, p8), new GenericMethodBodies<Self, S, F>() {
+            @Override
+            public F build(GenericMethodDeclaration<Self, S> declaration) {
+                return spec.build(declaration, declaration.variable(0), declaration.variable(1), declaration.variable(2), declaration.variable(3), declaration.variable(4), declaration.variable(5), declaration.variable(6), declaration.variable(7));
+            }
+        });
+    }
+
+    /**
+     * Declares a generic member of the class with nine type parameters: a method, a `static` one, a `void` one, or a constructor, whose type parameters are in scope in the signature and the body of that member alone (JLS 6.3). The fact of the member is the `F` of the specification, which no type of the call below tells: name it, `new MethodSpec1&lt;Self, S, MethodRef1&lt;Self, B1, B1&gt;, B1&gt;()`, where a diamond would leave it an `Invocable`.
+     *
+     * @return the fact of the member declared
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the class, or its bound names a type parameter of the class
+     * @throws IllegalStateException if the declarations of the class have ended, or the type of the member is out of scope
+     * @param spec declares the member, given the declarations of the members and the tokens of its type parameters
+     * @param p1 the first type parameter
+     * @param <B1> the leftmost bound of the first type parameter, `Object` for none
+     * @param p2 the second type parameter
+     * @param <B2> the leftmost bound of the second type parameter, `Object` for none
+     * @param p3 the third type parameter
+     * @param <B3> the leftmost bound of the third type parameter, `Object` for none
+     * @param p4 the fourth type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter, `Object` for none
+     * @param p5 the fifth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter, `Object` for none
+     * @param p6 the sixth type parameter
+     * @param <B6> the leftmost bound of the sixth type parameter, `Object` for none
+     * @param p7 the seventh type parameter
+     * @param <B7> the leftmost bound of the seventh type parameter, `Object` for none
+     * @param p8 the eighth type parameter
+     * @param <B8> the leftmost bound of the eighth type parameter, `Object` for none
+     * @param p9 the ninth type parameter
+     * @param <B9> the leftmost bound of the ninth type parameter, `Object` for none
+     */
+    public <F extends Invocable, B1, B2, B3, B4, B5, B6, B7, B8, B9> F declareGenericMethod(TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, TypeParameter<B6> p6, TypeParameter<B7> p7, TypeParameter<B8> p8, TypeParameter<B9> p9, MethodSpec9<Self, S, F, B1, B2, B3, B4, B5, B6, B7, B8, B9> spec) {
+        return genericMethod(List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9), new GenericMethodBodies<Self, S, F>() {
+            @Override
+            public F build(GenericMethodDeclaration<Self, S> declaration) {
+                return spec.build(declaration, declaration.variable(0), declaration.variable(1), declaration.variable(2), declaration.variable(3), declaration.variable(4), declaration.variable(5), declaration.variable(6), declaration.variable(7), declaration.variable(8));
+            }
+        });
+    }
+
+    /**
+     * Declares a generic member of the class with ten type parameters: a method, a `static` one, a `void` one, or a constructor, whose type parameters are in scope in the signature and the body of that member alone (JLS 6.3). The fact of the member is the `F` of the specification, which no type of the call below tells: name it, `new MethodSpec1&lt;Self, S, MethodRef1&lt;Self, B1, B1&gt;, B1&gt;()`, where a diamond would leave it an `Invocable`.
+     *
+     * @return the fact of the member declared
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the class, or its bound names a type parameter of the class
+     * @throws IllegalStateException if the declarations of the class have ended, or the type of the member is out of scope
+     * @param spec declares the member, given the declarations of the members and the tokens of its type parameters
+     * @param p1 the first type parameter
+     * @param <B1> the leftmost bound of the first type parameter, `Object` for none
+     * @param p2 the second type parameter
+     * @param <B2> the leftmost bound of the second type parameter, `Object` for none
+     * @param p3 the third type parameter
+     * @param <B3> the leftmost bound of the third type parameter, `Object` for none
+     * @param p4 the fourth type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter, `Object` for none
+     * @param p5 the fifth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter, `Object` for none
+     * @param p6 the sixth type parameter
+     * @param <B6> the leftmost bound of the sixth type parameter, `Object` for none
+     * @param p7 the seventh type parameter
+     * @param <B7> the leftmost bound of the seventh type parameter, `Object` for none
+     * @param p8 the eighth type parameter
+     * @param <B8> the leftmost bound of the eighth type parameter, `Object` for none
+     * @param p9 the ninth type parameter
+     * @param <B9> the leftmost bound of the ninth type parameter, `Object` for none
+     * @param p10 the tenth type parameter
+     * @param <B10> the leftmost bound of the tenth type parameter, `Object` for none
+     */
+    public <F extends Invocable, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10> F declareGenericMethod(TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, TypeParameter<B6> p6, TypeParameter<B7> p7, TypeParameter<B8> p8, TypeParameter<B9> p9, TypeParameter<B10> p10, MethodSpec10<Self, S, F, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10> spec) {
+        return genericMethod(List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10), new GenericMethodBodies<Self, S, F>() {
+            @Override
+            public F build(GenericMethodDeclaration<Self, S> declaration) {
+                return spec.build(declaration, declaration.variable(0), declaration.variable(1), declaration.variable(2), declaration.variable(3), declaration.variable(4), declaration.variable(5), declaration.variable(6), declaration.variable(7), declaration.variable(8), declaration.variable(9));
+            }
+        });
+    }
+
+    /**
+     * Declares a generic member of the class with eleven type parameters: a method, a `static` one, a `void` one, or a constructor, whose type parameters are in scope in the signature and the body of that member alone (JLS 6.3). The fact of the member is the `F` of the specification, which no type of the call below tells: name it, `new MethodSpec1&lt;Self, S, MethodRef1&lt;Self, B1, B1&gt;, B1&gt;()`, where a diamond would leave it an `Invocable`.
+     *
+     * @return the fact of the member declared
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the class, or its bound names a type parameter of the class
+     * @throws IllegalStateException if the declarations of the class have ended, or the type of the member is out of scope
+     * @param spec declares the member, given the declarations of the members and the tokens of its type parameters
+     * @param p1 the first type parameter
+     * @param <B1> the leftmost bound of the first type parameter, `Object` for none
+     * @param p2 the second type parameter
+     * @param <B2> the leftmost bound of the second type parameter, `Object` for none
+     * @param p3 the third type parameter
+     * @param <B3> the leftmost bound of the third type parameter, `Object` for none
+     * @param p4 the fourth type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter, `Object` for none
+     * @param p5 the fifth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter, `Object` for none
+     * @param p6 the sixth type parameter
+     * @param <B6> the leftmost bound of the sixth type parameter, `Object` for none
+     * @param p7 the seventh type parameter
+     * @param <B7> the leftmost bound of the seventh type parameter, `Object` for none
+     * @param p8 the eighth type parameter
+     * @param <B8> the leftmost bound of the eighth type parameter, `Object` for none
+     * @param p9 the ninth type parameter
+     * @param <B9> the leftmost bound of the ninth type parameter, `Object` for none
+     * @param p10 the tenth type parameter
+     * @param <B10> the leftmost bound of the tenth type parameter, `Object` for none
+     * @param p11 the eleventh type parameter
+     * @param <B11> the leftmost bound of the eleventh type parameter, `Object` for none
+     */
+    public <F extends Invocable, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11> F declareGenericMethod(TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, TypeParameter<B6> p6, TypeParameter<B7> p7, TypeParameter<B8> p8, TypeParameter<B9> p9, TypeParameter<B10> p10, TypeParameter<B11> p11, MethodSpec11<Self, S, F, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11> spec) {
+        return genericMethod(List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11), new GenericMethodBodies<Self, S, F>() {
+            @Override
+            public F build(GenericMethodDeclaration<Self, S> declaration) {
+                return spec.build(declaration, declaration.variable(0), declaration.variable(1), declaration.variable(2), declaration.variable(3), declaration.variable(4), declaration.variable(5), declaration.variable(6), declaration.variable(7), declaration.variable(8), declaration.variable(9), declaration.variable(10));
+            }
+        });
+    }
+
+    /**
+     * Declares a generic member of the class with twelve type parameters: a method, a `static` one, a `void` one, or a constructor, whose type parameters are in scope in the signature and the body of that member alone (JLS 6.3). The fact of the member is the `F` of the specification, which no type of the call below tells: name it, `new MethodSpec1&lt;Self, S, MethodRef1&lt;Self, B1, B1&gt;, B1&gt;()`, where a diamond would leave it an `Invocable`.
+     *
+     * @return the fact of the member declared
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the class, or its bound names a type parameter of the class
+     * @throws IllegalStateException if the declarations of the class have ended, or the type of the member is out of scope
+     * @param spec declares the member, given the declarations of the members and the tokens of its type parameters
+     * @param p1 the first type parameter
+     * @param <B1> the leftmost bound of the first type parameter, `Object` for none
+     * @param p2 the second type parameter
+     * @param <B2> the leftmost bound of the second type parameter, `Object` for none
+     * @param p3 the third type parameter
+     * @param <B3> the leftmost bound of the third type parameter, `Object` for none
+     * @param p4 the fourth type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter, `Object` for none
+     * @param p5 the fifth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter, `Object` for none
+     * @param p6 the sixth type parameter
+     * @param <B6> the leftmost bound of the sixth type parameter, `Object` for none
+     * @param p7 the seventh type parameter
+     * @param <B7> the leftmost bound of the seventh type parameter, `Object` for none
+     * @param p8 the eighth type parameter
+     * @param <B8> the leftmost bound of the eighth type parameter, `Object` for none
+     * @param p9 the ninth type parameter
+     * @param <B9> the leftmost bound of the ninth type parameter, `Object` for none
+     * @param p10 the tenth type parameter
+     * @param <B10> the leftmost bound of the tenth type parameter, `Object` for none
+     * @param p11 the eleventh type parameter
+     * @param <B11> the leftmost bound of the eleventh type parameter, `Object` for none
+     * @param p12 the twelfth type parameter
+     * @param <B12> the leftmost bound of the twelfth type parameter, `Object` for none
+     */
+    public <F extends Invocable, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12> F declareGenericMethod(TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, TypeParameter<B6> p6, TypeParameter<B7> p7, TypeParameter<B8> p8, TypeParameter<B9> p9, TypeParameter<B10> p10, TypeParameter<B11> p11, TypeParameter<B12> p12, MethodSpec12<Self, S, F, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12> spec) {
+        return genericMethod(List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12), new GenericMethodBodies<Self, S, F>() {
+            @Override
+            public F build(GenericMethodDeclaration<Self, S> declaration) {
+                return spec.build(declaration, declaration.variable(0), declaration.variable(1), declaration.variable(2), declaration.variable(3), declaration.variable(4), declaration.variable(5), declaration.variable(6), declaration.variable(7), declaration.variable(8), declaration.variable(9), declaration.variable(10), declaration.variable(11));
+            }
+        });
+    }
+
+    /**
+     * Declares a generic member of the class with thirteen type parameters: a method, a `static` one, a `void` one, or a constructor, whose type parameters are in scope in the signature and the body of that member alone (JLS 6.3). The fact of the member is the `F` of the specification, which no type of the call below tells: name it, `new MethodSpec1&lt;Self, S, MethodRef1&lt;Self, B1, B1&gt;, B1&gt;()`, where a diamond would leave it an `Invocable`.
+     *
+     * @return the fact of the member declared
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the class, or its bound names a type parameter of the class
+     * @throws IllegalStateException if the declarations of the class have ended, or the type of the member is out of scope
+     * @param spec declares the member, given the declarations of the members and the tokens of its type parameters
+     * @param p1 the first type parameter
+     * @param <B1> the leftmost bound of the first type parameter, `Object` for none
+     * @param p2 the second type parameter
+     * @param <B2> the leftmost bound of the second type parameter, `Object` for none
+     * @param p3 the third type parameter
+     * @param <B3> the leftmost bound of the third type parameter, `Object` for none
+     * @param p4 the fourth type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter, `Object` for none
+     * @param p5 the fifth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter, `Object` for none
+     * @param p6 the sixth type parameter
+     * @param <B6> the leftmost bound of the sixth type parameter, `Object` for none
+     * @param p7 the seventh type parameter
+     * @param <B7> the leftmost bound of the seventh type parameter, `Object` for none
+     * @param p8 the eighth type parameter
+     * @param <B8> the leftmost bound of the eighth type parameter, `Object` for none
+     * @param p9 the ninth type parameter
+     * @param <B9> the leftmost bound of the ninth type parameter, `Object` for none
+     * @param p10 the tenth type parameter
+     * @param <B10> the leftmost bound of the tenth type parameter, `Object` for none
+     * @param p11 the eleventh type parameter
+     * @param <B11> the leftmost bound of the eleventh type parameter, `Object` for none
+     * @param p12 the twelfth type parameter
+     * @param <B12> the leftmost bound of the twelfth type parameter, `Object` for none
+     * @param p13 the thirteenth type parameter
+     * @param <B13> the leftmost bound of the thirteenth type parameter, `Object` for none
+     */
+    public <F extends Invocable, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13> F declareGenericMethod(TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, TypeParameter<B6> p6, TypeParameter<B7> p7, TypeParameter<B8> p8, TypeParameter<B9> p9, TypeParameter<B10> p10, TypeParameter<B11> p11, TypeParameter<B12> p12, TypeParameter<B13> p13, MethodSpec13<Self, S, F, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13> spec) {
+        return genericMethod(List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13), new GenericMethodBodies<Self, S, F>() {
+            @Override
+            public F build(GenericMethodDeclaration<Self, S> declaration) {
+                return spec.build(declaration, declaration.variable(0), declaration.variable(1), declaration.variable(2), declaration.variable(3), declaration.variable(4), declaration.variable(5), declaration.variable(6), declaration.variable(7), declaration.variable(8), declaration.variable(9), declaration.variable(10), declaration.variable(11), declaration.variable(12));
+            }
+        });
+    }
+
+    /**
+     * Declares a generic member of the class with fourteen type parameters: a method, a `static` one, a `void` one, or a constructor, whose type parameters are in scope in the signature and the body of that member alone (JLS 6.3). The fact of the member is the `F` of the specification, which no type of the call below tells: name it, `new MethodSpec1&lt;Self, S, MethodRef1&lt;Self, B1, B1&gt;, B1&gt;()`, where a diamond would leave it an `Invocable`.
+     *
+     * @return the fact of the member declared
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the class, or its bound names a type parameter of the class
+     * @throws IllegalStateException if the declarations of the class have ended, or the type of the member is out of scope
+     * @param spec declares the member, given the declarations of the members and the tokens of its type parameters
+     * @param p1 the first type parameter
+     * @param <B1> the leftmost bound of the first type parameter, `Object` for none
+     * @param p2 the second type parameter
+     * @param <B2> the leftmost bound of the second type parameter, `Object` for none
+     * @param p3 the third type parameter
+     * @param <B3> the leftmost bound of the third type parameter, `Object` for none
+     * @param p4 the fourth type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter, `Object` for none
+     * @param p5 the fifth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter, `Object` for none
+     * @param p6 the sixth type parameter
+     * @param <B6> the leftmost bound of the sixth type parameter, `Object` for none
+     * @param p7 the seventh type parameter
+     * @param <B7> the leftmost bound of the seventh type parameter, `Object` for none
+     * @param p8 the eighth type parameter
+     * @param <B8> the leftmost bound of the eighth type parameter, `Object` for none
+     * @param p9 the ninth type parameter
+     * @param <B9> the leftmost bound of the ninth type parameter, `Object` for none
+     * @param p10 the tenth type parameter
+     * @param <B10> the leftmost bound of the tenth type parameter, `Object` for none
+     * @param p11 the eleventh type parameter
+     * @param <B11> the leftmost bound of the eleventh type parameter, `Object` for none
+     * @param p12 the twelfth type parameter
+     * @param <B12> the leftmost bound of the twelfth type parameter, `Object` for none
+     * @param p13 the thirteenth type parameter
+     * @param <B13> the leftmost bound of the thirteenth type parameter, `Object` for none
+     * @param p14 the fourteenth type parameter
+     * @param <B14> the leftmost bound of the fourteenth type parameter, `Object` for none
+     */
+    public <F extends Invocable, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14> F declareGenericMethod(TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, TypeParameter<B6> p6, TypeParameter<B7> p7, TypeParameter<B8> p8, TypeParameter<B9> p9, TypeParameter<B10> p10, TypeParameter<B11> p11, TypeParameter<B12> p12, TypeParameter<B13> p13, TypeParameter<B14> p14, MethodSpec14<Self, S, F, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14> spec) {
+        return genericMethod(List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14), new GenericMethodBodies<Self, S, F>() {
+            @Override
+            public F build(GenericMethodDeclaration<Self, S> declaration) {
+                return spec.build(declaration, declaration.variable(0), declaration.variable(1), declaration.variable(2), declaration.variable(3), declaration.variable(4), declaration.variable(5), declaration.variable(6), declaration.variable(7), declaration.variable(8), declaration.variable(9), declaration.variable(10), declaration.variable(11), declaration.variable(12), declaration.variable(13));
+            }
+        });
+    }
+
+    /**
+     * Declares a generic member of the class with fifteen type parameters: a method, a `static` one, a `void` one, or a constructor, whose type parameters are in scope in the signature and the body of that member alone (JLS 6.3). The fact of the member is the `F` of the specification, which no type of the call below tells: name it, `new MethodSpec1&lt;Self, S, MethodRef1&lt;Self, B1, B1&gt;, B1&gt;()`, where a diamond would leave it an `Invocable`.
+     *
+     * @return the fact of the member declared
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the class, or its bound names a type parameter of the class
+     * @throws IllegalStateException if the declarations of the class have ended, or the type of the member is out of scope
+     * @param spec declares the member, given the declarations of the members and the tokens of its type parameters
+     * @param p1 the first type parameter
+     * @param <B1> the leftmost bound of the first type parameter, `Object` for none
+     * @param p2 the second type parameter
+     * @param <B2> the leftmost bound of the second type parameter, `Object` for none
+     * @param p3 the third type parameter
+     * @param <B3> the leftmost bound of the third type parameter, `Object` for none
+     * @param p4 the fourth type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter, `Object` for none
+     * @param p5 the fifth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter, `Object` for none
+     * @param p6 the sixth type parameter
+     * @param <B6> the leftmost bound of the sixth type parameter, `Object` for none
+     * @param p7 the seventh type parameter
+     * @param <B7> the leftmost bound of the seventh type parameter, `Object` for none
+     * @param p8 the eighth type parameter
+     * @param <B8> the leftmost bound of the eighth type parameter, `Object` for none
+     * @param p9 the ninth type parameter
+     * @param <B9> the leftmost bound of the ninth type parameter, `Object` for none
+     * @param p10 the tenth type parameter
+     * @param <B10> the leftmost bound of the tenth type parameter, `Object` for none
+     * @param p11 the eleventh type parameter
+     * @param <B11> the leftmost bound of the eleventh type parameter, `Object` for none
+     * @param p12 the twelfth type parameter
+     * @param <B12> the leftmost bound of the twelfth type parameter, `Object` for none
+     * @param p13 the thirteenth type parameter
+     * @param <B13> the leftmost bound of the thirteenth type parameter, `Object` for none
+     * @param p14 the fourteenth type parameter
+     * @param <B14> the leftmost bound of the fourteenth type parameter, `Object` for none
+     * @param p15 the fifteenth type parameter
+     * @param <B15> the leftmost bound of the fifteenth type parameter, `Object` for none
+     */
+    public <F extends Invocable, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15> F declareGenericMethod(TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, TypeParameter<B6> p6, TypeParameter<B7> p7, TypeParameter<B8> p8, TypeParameter<B9> p9, TypeParameter<B10> p10, TypeParameter<B11> p11, TypeParameter<B12> p12, TypeParameter<B13> p13, TypeParameter<B14> p14, TypeParameter<B15> p15, MethodSpec15<Self, S, F, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15> spec) {
+        return genericMethod(List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15), new GenericMethodBodies<Self, S, F>() {
+            @Override
+            public F build(GenericMethodDeclaration<Self, S> declaration) {
+                return spec.build(declaration, declaration.variable(0), declaration.variable(1), declaration.variable(2), declaration.variable(3), declaration.variable(4), declaration.variable(5), declaration.variable(6), declaration.variable(7), declaration.variable(8), declaration.variable(9), declaration.variable(10), declaration.variable(11), declaration.variable(12), declaration.variable(13), declaration.variable(14));
+            }
+        });
+    }
+
+    /**
+     * Declares a generic member of the class with sixteen type parameters: a method, a `static` one, a `void` one, or a constructor, whose type parameters are in scope in the signature and the body of that member alone (JLS 6.3). The fact of the member is the `F` of the specification, which no type of the call below tells: name it, `new MethodSpec1&lt;Self, S, MethodRef1&lt;Self, B1, B1&gt;, B1&gt;()`, where a diamond would leave it an `Invocable`.
+     *
+     * @return the fact of the member declared
+     * @throws IllegalArgumentException if a type parameter has the name of another or of the class, or its bound names a type parameter of the class
+     * @throws IllegalStateException if the declarations of the class have ended, or the type of the member is out of scope
+     * @param spec declares the member, given the declarations of the members and the tokens of its type parameters
+     * @param p1 the first type parameter
+     * @param <B1> the leftmost bound of the first type parameter, `Object` for none
+     * @param p2 the second type parameter
+     * @param <B2> the leftmost bound of the second type parameter, `Object` for none
+     * @param p3 the third type parameter
+     * @param <B3> the leftmost bound of the third type parameter, `Object` for none
+     * @param p4 the fourth type parameter
+     * @param <B4> the leftmost bound of the fourth type parameter, `Object` for none
+     * @param p5 the fifth type parameter
+     * @param <B5> the leftmost bound of the fifth type parameter, `Object` for none
+     * @param p6 the sixth type parameter
+     * @param <B6> the leftmost bound of the sixth type parameter, `Object` for none
+     * @param p7 the seventh type parameter
+     * @param <B7> the leftmost bound of the seventh type parameter, `Object` for none
+     * @param p8 the eighth type parameter
+     * @param <B8> the leftmost bound of the eighth type parameter, `Object` for none
+     * @param p9 the ninth type parameter
+     * @param <B9> the leftmost bound of the ninth type parameter, `Object` for none
+     * @param p10 the tenth type parameter
+     * @param <B10> the leftmost bound of the tenth type parameter, `Object` for none
+     * @param p11 the eleventh type parameter
+     * @param <B11> the leftmost bound of the eleventh type parameter, `Object` for none
+     * @param p12 the twelfth type parameter
+     * @param <B12> the leftmost bound of the twelfth type parameter, `Object` for none
+     * @param p13 the thirteenth type parameter
+     * @param <B13> the leftmost bound of the thirteenth type parameter, `Object` for none
+     * @param p14 the fourteenth type parameter
+     * @param <B14> the leftmost bound of the fourteenth type parameter, `Object` for none
+     * @param p15 the fifteenth type parameter
+     * @param <B15> the leftmost bound of the fifteenth type parameter, `Object` for none
+     * @param p16 the sixteenth type parameter
+     * @param <B16> the leftmost bound of the sixteenth type parameter, `Object` for none
+     */
+    public <F extends Invocable, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15, B16> F declareGenericMethod(TypeParameter<B1> p1, TypeParameter<B2> p2, TypeParameter<B3> p3, TypeParameter<B4> p4, TypeParameter<B5> p5, TypeParameter<B6> p6, TypeParameter<B7> p7, TypeParameter<B8> p8, TypeParameter<B9> p9, TypeParameter<B10> p10, TypeParameter<B11> p11, TypeParameter<B12> p12, TypeParameter<B13> p13, TypeParameter<B14> p14, TypeParameter<B15> p15, TypeParameter<B16> p16, MethodSpec16<Self, S, F, B1, B2, B3, B4, B5, B6, B7, B8, B9, B10, B11, B12, B13, B14, B15, B16> spec) {
+        return genericMethod(List.of(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16), new GenericMethodBodies<Self, S, F>() {
+            @Override
+            public F build(GenericMethodDeclaration<Self, S> declaration) {
+                return spec.build(declaration, declaration.variable(0), declaration.variable(1), declaration.variable(2), declaration.variable(3), declaration.variable(4), declaration.variable(5), declaration.variable(6), declaration.variable(7), declaration.variable(8), declaration.variable(9), declaration.variable(10), declaration.variable(11), declaration.variable(12), declaration.variable(13), declaration.variable(14), declaration.variable(15));
             }
         });
     }

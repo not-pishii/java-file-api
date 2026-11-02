@@ -68,8 +68,10 @@ public final class FactsCodegen {
     private static final ClassDesc GENERATED = ClassDesc.of("javax.annotation.processing.Generated");
     private static final ClassDesc OPTIONAL = ClassDesc.of("java.util.Optional");
     private static final ClassDesc LIST = ClassDesc.of("java.util.List");
+    private static final ClassDesc ILLEGAL_ARGUMENT = ClassDesc.of("java.lang.IllegalArgumentException");
 
     private static final ClassDesc TYPE_TOKEN = ClassDesc.of(FACTS, "TypeToken");
+    private static final ClassDesc REF_TOKEN = ClassDesc.of(FACTS, "RefToken");
     private static final ClassDesc DECLARED_TOKEN = ClassDesc.of(FACTS, "DeclaredToken");
     private static final ClassDesc CONCRETE_CLASS_TOKEN = ClassDesc.of(FACTS, "ConcreteClassToken");
     private static final ClassDesc EXTENDABLE_CLASS_TOKEN = ClassDesc.of(FACTS, "ExtendableClassToken");
@@ -442,6 +444,36 @@ public final class FactsCodegen {
                     "toString",
                     Types.STRING,
                     staticCall(INVOCABLES, family == Family.SUPER_CTOR ? "describeSuper" : "describe", this_()));
+            if (!family.isCtor()) {
+                witnessed(cb, family, n, slots);
+            }
+        });
+    }
+
+    /// `withTypeArgs(a1, ..., an)`: the fact of a call of the generic method with explicit witnesses.
+    ///
+    /// A constructor is called with no type arguments of its own by the layer, whose `new` names the
+    /// class; a generic constructor is instantiated by javac from its arguments.
+    private static void witnessed(ClassBuilder cb, Family family, int n, List<Slot> slots) {
+        cb.withMethod("withTypeArgs", family.type(n), mb -> {
+            mb.withDoc(doc -> doc.paragraph(
+                            "The fact of a call of this method with the explicit type arguments `typeArgs`, which"
+                                    + " javac takes for the type parameters of the declaration instead of inferring"
+                                    + " them from the arguments.")
+                    .param("typeArgs", "the type arguments of the call, one per type parameter of the method")
+                    .returns("the fact of the call")
+                    .throws_(
+                            ILLEGAL_ARGUMENT,
+                            "if the method is not generic, or has another number of type" + " parameters"));
+            mb.withModifiers(Modifier.PUBLIC);
+            mb.withVarargsParam("typeArgs", Types.parameterized(REF_TOKEN, Types.unbounded()));
+            List<Expr> args = slots.stream()
+                    .map(slot -> slot.name().equals("traits")
+                            ? (Expr) staticCall(
+                                    INVOCABLES, "withTypeArgs", this_(), this_().field("traits"), field("typeArgs"))
+                            : this_().field(slot.name()))
+                    .toList();
+            mb.withBody(b -> b.return_(instantiate(family.desc(n), family.typeVars(n), args)));
         });
     }
 
@@ -801,6 +833,29 @@ public final class FactsCodegen {
                     .call(
                             "containsExactly",
                             staticCall(MEMBER_QUERY, family.isCtor() ? "constructor" : family.factory, signature)));
+            if (!family.isCtor()) {
+                // the fact of a call of a generic member, with the explicit type argument of the call
+                b.localVar(
+                        "generic",
+                        type,
+                        staticCall(
+                                UNSAFE_INVOCABLES,
+                                family.factory,
+                                Stream.of(
+                                                Stream.of(fixture("OWNER")),
+                                                signature(family, fixture("RESULT"), n).stream(),
+                                                Stream.of(fixture("GENERIC_TRAITS")))
+                                        .flatMap(parts -> parts)
+                                        .toList()));
+                assertSame(
+                        b,
+                        fixture("WITNESS"),
+                        field("generic")
+                                .call("withTypeArgs", fixture("WITNESS"))
+                                .call("traits")
+                                .call("typeArgs")
+                                .call("getFirst"));
+            }
         });
     }
 

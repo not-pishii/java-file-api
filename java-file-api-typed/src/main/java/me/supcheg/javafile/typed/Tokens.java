@@ -32,6 +32,31 @@ import java.util.stream.Stream;
 final class Tokens {
     private Tokens() {}
 
+    /// The type parameters a member declares, as the core model writes them: `<T extends A & B>`.
+    ///
+    /// A type parameter whose only bound is `Object` is written `<T>`: the bound is no bound, as the
+    /// declaration of a class writes it.
+    ///
+    /// @param parameters the type parameters, in declaration order
+    /// @return the core type parameters
+    static List<me.supcheg.javafile.type.TypeParam> typeParams(
+            List<me.supcheg.javafile.facts.MethodTypeParameter> parameters) {
+        return parameters.stream()
+                .map(parameter -> new me.supcheg.javafile.type.TypeParam(
+                        parameter.name(),
+                        parameter.bounds().size() == 1
+                                        && parameter
+                                                .bounds()
+                                                .getFirst()
+                                                .equals(new me.supcheg.javafile.type.ClassTypeRef(
+                                                        java.lang.constant.ConstantDescs.CD_Object))
+                                ? List.of()
+                                : parameter.bounds().stream()
+                                        .<me.supcheg.javafile.type.ClassOrInterfaceTypeRef>map(bound -> bound)
+                                        .toList()))
+                .toList();
+    }
+
     /// Whether `a` and `b` stand for the same Java type, as written in
     /// generated code.
     static boolean sameType(TypeToken<?> a, TypeToken<?> b) {

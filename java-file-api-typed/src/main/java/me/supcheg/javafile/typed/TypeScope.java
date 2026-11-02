@@ -26,6 +26,16 @@ import java.util.stream.Stream;
 /// the generator says it is.
 sealed interface TypeScope {
 
+    /// This scope, and the type parameters a member declares of its own, which are in scope in the
+    /// signature and the body of that member alone (JLS 6.3).
+    ///
+    /// @param variables the tokens of the type parameters of the member
+    /// @param where the place, for messages
+    /// @return the scope of the member
+    default TypeScope method(List<TypeVarToken<?>> variables, String where) {
+        return variables.isEmpty() ? this : new Method(this, variables, where);
+    }
+
     /// Holds a type to the scope: every type variable it mentions, at any depth, is in scope.
     ///
     /// @param type the type
@@ -43,6 +53,11 @@ sealed interface TypeScope {
     private void require(TypeToken<?> type, TypeVarToken<?> variable, DeclarationIdentity declaration) {
         String mentioned = type == variable ? "" : ", which " + type + " mentions,";
         switch (this) {
+            case Method(TypeScope enclosing, List<TypeVarToken<?>> variables, String where) -> {
+                if (!variables.contains(variable)) {
+                    enclosing.require(type);
+                }
+            }
             case Standalone _ ->
                 throw new IllegalStateException("the type parameter " + variable + mentioned + " is in scope in"
                         + " the class that declares it alone (JLS 6.3), and this code is in the body of no class");
@@ -68,13 +83,13 @@ sealed interface TypeScope {
             DeclarationIdentity mine, DeclarationIdentity declaration, String variable, String where) {
         if (mine != declaration) {
             throw new IllegalStateException("the type parameter " + variable + " is not in scope in " + where
-                    + ": it is a type parameter of another class, in scope in the declaration of that class"
-                    + " alone (JLS 6.3)");
+                    + ": it is a type parameter of another declaration, of a class or of a method or constructor,"
+                    + " in scope in the declaration of that one alone (JLS 6.3)");
         }
     }
 
     /// The type variables `type` mentions: itself, its component, its type arguments and their bounds.
-    private static Stream<TypeVarToken<?>> variables(TypeToken<?> type) {
+    static Stream<TypeVarToken<?>> variables(TypeToken<?> type) {
         return switch (type) {
             case PrimitiveToken<?, ?, ?> _ -> Stream.empty();
             case me.supcheg.javafile.facts.AnnotatedRefToken<?> annotated -> variables(annotated.token());
@@ -113,6 +128,22 @@ sealed interface TypeScope {
     record Nested(List<DeclarationIdentity> declarations, String where) implements TypeScope {
         public Nested {
             declarations = List.copyOf(declarations);
+        }
+    }
+
+    /// In the signature or the body of a generic method or constructor: the type parameters of the
+    /// member itself are in scope, and those of the classes it is declared in as they were
+    /// ([Instance] or [Static]), which the signature and the body of the member are held to as well.
+    ///
+    /// A type parameter of a member is in scope nowhere else: not in another member of the class, not
+    /// in a field, and not in a member type (JLS 6.3).
+    ///
+    /// @param enclosing the scope the member is declared in
+    /// @param variables the tokens of the type parameters of the member
+    /// @param where the place, for messages
+    record Method(TypeScope enclosing, List<TypeVarToken<?>> variables, String where) implements TypeScope {
+        public Method {
+            variables = List.copyOf(variables);
         }
     }
 }

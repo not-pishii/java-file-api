@@ -202,7 +202,10 @@ final class TypeDeclRenderer {
     private static String renderConstructor(ConstructorDecl c, Context ctx, String ownerSimpleName) {
         return DocRenderer.render(c.doc(), ctx)
                 + AnnotationRenderer.renderAnnotations(c.annotations(), ctx)
-                + ctx.pad() + TypeRefRenderer.renderModifiers(c.modifiers()) + ownerSimpleName
+                + ctx.pad()
+                + TypeRefRenderer.renderModifiers(c.modifiers())
+                + (c.typeParams().isEmpty() ? "" : TypeRefRenderer.renderTypeParams(c.typeParams(), ctx) + " ")
+                + ownerSimpleName
                 + '('
                 + TypeRefRenderer.renderParams(c.params(), ctx)
                 + ')'

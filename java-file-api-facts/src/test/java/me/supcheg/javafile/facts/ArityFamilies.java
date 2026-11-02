@@ -89,6 +89,18 @@ final class ArityFamilies {
     /// The traits of every member: not the default ones, so that a fact which lost its traits would show.
     static final MemberTraits TRAITS = MemberTraits.FINAL;
 
+    /// The token of the type parameter `T` of a generic member, of the leftmost bound `Object`.
+    static final TypeVarToken<Object> TYPE_PARAMETER =
+            UnsafeFacts.typeVarToken(Types.typeVar("T"), ConstantDescs.CD_Object);
+
+    /// The traits of a generic member: one type parameter, whose bound is `Object`, so that a fact made with
+    /// them takes one explicit type argument ([MemberTraits#typeParams()]).
+    static final MemberTraits GENERIC_TRAITS = MemberTraits.FINAL.withTypeParams(new MethodTypeParameter(
+            TYPE_PARAMETER, List.of(new me.supcheg.javafile.type.ClassTypeRef(ConstantDescs.CD_Object))));
+
+    /// The type argument a call of a generic member of the tests names, and the witness of its fact.
+    static final RefToken<Result> WITNESS = RESULT;
+
     private static <T> FinalClassToken<T> type(String name) {
         return UnsafeFacts.finalClassToken(
                 Types.of(ClassDesc.of("arity", name)), List.of(ConstantDescs.CD_Object), MethodTable.EMPTY);

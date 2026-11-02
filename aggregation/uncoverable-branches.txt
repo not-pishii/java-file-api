@@ -18,6 +18,12 @@ me/supcheg/javafile/facts/Heritage.java :: case OfType _, OfMember _, Array _, P
 me/supcheg/javafile/facts/Heritage.java :: case OfType(int index) -> {
     a record pattern with a primitive component: javac tests the component, and no value fails the test
 
+me/supcheg/javafile/facts/Heritage.java :: case OfMember(int index) -> member.apply(index);
+    the default arm of an exhaustive switch over the sealed type: no other value reaches it
+
+me/supcheg/javafile/facts/Heritage.java :: case OfType(int index) ->
+    the default arm of an exhaustive switch over the sealed type: no other value reaches it
+
 me/supcheg/javafile/facts/MethodTableTemplate.java :: case Var(int index, var _) -> index + 1;
     a record pattern with a primitive component: javac tests the component, and no value fails the test
 

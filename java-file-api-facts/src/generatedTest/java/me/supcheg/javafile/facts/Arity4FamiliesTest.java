@@ -33,6 +33,8 @@ class Arity4FamiliesTest {
             ArityFamilies.assertFact(fact, InvocableKind.INSTANCE_METHOD, ArityFamilies.OWNER, "run", Optional.of(ArityFamilies.RESULT), List.of(ArityFamilies.PARAM1, ArityFamilies.PARAM2, ArityFamilies.PARAM3, ArityFamilies.PARAM4), "arity.Result arity.Subject.run(arity.A1, arity.A2, arity.A3, arity.A4)");
         }
         org.assertj.core.api.Assertions.assertThat(asked.queries()).containsExactly(MemberQuery.method("run", ArityFamilies.RESULT, ArityFamilies.PARAM1, ArityFamilies.PARAM2, ArityFamilies.PARAM3, ArityFamilies.PARAM4));
+        MethodRef4<Subject, Result, A1, A2, A3, A4> generic = UnsafeInvocables.method(ArityFamilies.OWNER, "run", ArityFamilies.RESULT, ArityFamilies.PARAM1, ArityFamilies.PARAM2, ArityFamilies.PARAM3, ArityFamilies.PARAM4, ArityFamilies.GENERIC_TRAITS);
+        Assertions.assertSame(ArityFamilies.WITNESS, generic.withTypeArgs(ArityFamilies.WITNESS).traits().typeArgs().getFirst());
     }
 
     @Test
@@ -48,6 +50,8 @@ class Arity4FamiliesTest {
             ArityFamilies.assertFact(fact, InvocableKind.INSTANCE_METHOD, ArityFamilies.OWNER, "run", Optional.empty(), List.of(ArityFamilies.PARAM1, ArityFamilies.PARAM2, ArityFamilies.PARAM3, ArityFamilies.PARAM4), "void arity.Subject.run(arity.A1, arity.A2, arity.A3, arity.A4)");
         }
         org.assertj.core.api.Assertions.assertThat(asked.queries()).containsExactly(MemberQuery.voidMethod("run", ArityFamilies.PARAM1, ArityFamilies.PARAM2, ArityFamilies.PARAM3, ArityFamilies.PARAM4));
+        VoidMethodRef4<Subject, A1, A2, A3, A4> generic = UnsafeInvocables.voidMethod(ArityFamilies.OWNER, "run", ArityFamilies.PARAM1, ArityFamilies.PARAM2, ArityFamilies.PARAM3, ArityFamilies.PARAM4, ArityFamilies.GENERIC_TRAITS);
+        Assertions.assertSame(ArityFamilies.WITNESS, generic.withTypeArgs(ArityFamilies.WITNESS).traits().typeArgs().getFirst());
     }
 
     @Test
@@ -64,6 +68,8 @@ class Arity4FamiliesTest {
             ArityFamilies.assertFact(fact, InvocableKind.STATIC_METHOD, ArityFamilies.OWNER, "run", Optional.of(ArityFamilies.RESULT), List.of(ArityFamilies.PARAM1, ArityFamilies.PARAM2, ArityFamilies.PARAM3, ArityFamilies.PARAM4), "static arity.Result arity.Subject.run(arity.A1, arity.A2, arity.A3, arity.A4)");
         }
         org.assertj.core.api.Assertions.assertThat(asked.queries()).containsExactly(MemberQuery.staticMethod("run", ArityFamilies.RESULT, ArityFamilies.PARAM1, ArityFamilies.PARAM2, ArityFamilies.PARAM3, ArityFamilies.PARAM4));
+        StaticMethodRef4<Result, A1, A2, A3, A4> generic = UnsafeInvocables.staticMethod(ArityFamilies.OWNER, "run", ArityFamilies.RESULT, ArityFamilies.PARAM1, ArityFamilies.PARAM2, ArityFamilies.PARAM3, ArityFamilies.PARAM4, ArityFamilies.GENERIC_TRAITS);
+        Assertions.assertSame(ArityFamilies.WITNESS, generic.withTypeArgs(ArityFamilies.WITNESS).traits().typeArgs().getFirst());
     }
 
     @Test
@@ -79,6 +85,8 @@ class Arity4FamiliesTest {
             ArityFamilies.assertFact(fact, InvocableKind.STATIC_METHOD, ArityFamilies.OWNER, "run", Optional.empty(), List.of(ArityFamilies.PARAM1, ArityFamilies.PARAM2, ArityFamilies.PARAM3, ArityFamilies.PARAM4), "static void arity.Subject.run(arity.A1, arity.A2, arity.A3, arity.A4)");
         }
         org.assertj.core.api.Assertions.assertThat(asked.queries()).containsExactly(MemberQuery.voidStaticMethod("run", ArityFamilies.PARAM1, ArityFamilies.PARAM2, ArityFamilies.PARAM3, ArityFamilies.PARAM4));
+        VoidStaticMethodRef4<A1, A2, A3, A4> generic = UnsafeInvocables.voidStaticMethod(ArityFamilies.OWNER, "run", ArityFamilies.PARAM1, ArityFamilies.PARAM2, ArityFamilies.PARAM3, ArityFamilies.PARAM4, ArityFamilies.GENERIC_TRAITS);
+        Assertions.assertSame(ArityFamilies.WITNESS, generic.withTypeArgs(ArityFamilies.WITNESS).traits().typeArgs().getFirst());
     }
 
     @Test

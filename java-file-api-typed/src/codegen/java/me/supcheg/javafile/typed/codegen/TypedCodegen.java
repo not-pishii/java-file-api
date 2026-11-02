@@ -162,6 +162,9 @@ public final class TypedCodegen {
             typed("TypeDeclarationSupport").nested("Member").nested("Kind");
     private static final ClassDesc GENERIC_DECLARATIONS = typed("GenericDeclarations");
     private static final ClassDesc GENERIC_DECLARATION_ARITIES = typed("GenericDeclarationArities");
+    private static final ClassDesc GENERIC_METHOD_ARITIES = typed("GenericMethodArities");
+    private static final ClassDesc GENERIC_METHOD_DECLARATION = typed("GenericMethodDeclaration");
+    private static final ClassDesc GENERIC_METHOD_BODIES = typed("GenericMethodBodies");
     private static final ClassDesc TYPE_PARAMETER = typed("TypeParameter");
     private static final ClassDesc CLASS_HEADER = typed("ClassHeader");
     private static final ClassDesc TYPE_DECLARATION_SUPPORT = typed("TypeDeclarationSupport");
@@ -182,6 +185,7 @@ public final class TypedCodegen {
     private static final ClassDesc TYPED_ANNOTATION_TYPE_SPEC = TYPED_JAVA_FILE.nested("TypedAnnotationTypeSpec");
     private static final ClassDesc TYPED_ENUM_SPEC = TYPED_JAVA_FILE.nested("TypedEnumSpec");
     private static final ClassDesc OVERRIDE = ClassDesc.of("java.lang", "Override");
+    private static final ClassDesc SUPPRESS_WARNINGS = ClassDesc.of("java.lang", "SuppressWarnings");
     private static final ClassDesc TARGET_CLASSPATH = facts("TargetClasspath");
     private static final ClassDesc CLASS_DESC = ClassDesc.of("java.lang.constant", "ClassDesc");
     private static final ClassDesc DOC_COMMENT = ClassDesc.of("me.supcheg.javafile.doc", "DocComment");
@@ -253,6 +257,7 @@ public final class TypedCodegen {
                                 recordConstructorArities(),
                                 enumConstructorArities(),
                                 genericDeclarationArities(),
+                                genericMethodArities(),
                                 memberBuilderNestedArities(),
                                 typeMemberDeclarationArities(),
                                 annotationTypeBuilderArities(),
@@ -2960,6 +2965,139 @@ public final class TypedCodegen {
     }
 
     // ------------------------------------------------------------------
+    // The generic members of a class
+    // ------------------------------------------------------------------
+
+    /// `GenericMethodArities`: the specification of a generic method or constructor of a class being
+    /// declared, for one to [MAX_ARITY] type parameters. A class of its own, which `MemberBuilderArities`
+    /// names, so that a generator outside the package names the stage of the member it declares.
+    private static JavaFile genericMethodArities() {
+        return JavaFile.class_(GENERIC_METHOD_ARITIES, cb -> {
+            generated(cb);
+            cb.withModifiers(Modifier.FINAL);
+            cb.withConstructor(ctor -> ctor.withModifiers(Modifier.PRIVATE));
+            cb.withDoc(d -> d.paragraph("The specification of a generic method or constructor of a class, for one to "
+                    + count(MAX_ARITY)
+                    + " type parameters: the stage [GenericMethodDeclaration] the type parameters of the member are"
+                    + " in scope in, and the tokens of those type parameters."));
+            IntStream.rangeClosed(1, MAX_ARITY).forEach(n -> genericMethodSpec(cb, n));
+        });
+    }
+
+    /// `MethodSpec{n}`: what a generator writes to declare a generic member of `n` type parameters.
+    private static void genericMethodSpec(ClassBuilder cb, int n) {
+        cb.withNestedInterface(GENERIC_METHOD_ARITIES.nested("MethodSpec" + n), ib -> {
+            generated(ib);
+            ib.withTypeParam("Self");
+            ib.withTypeParam("S");
+            ib.withTypeParam("F", bound(Types.of(INVOCABLE)));
+            IntStream.rangeClosed(1, n).forEach(i -> ib.withTypeParam("B" + i));
+            ib.withDoc(d -> {
+                d.paragraph("The specification of a generic member of " + count(n) + " type parameter"
+                        + (n == 1 ? "" : "s") + ", whose leftmost "
+                        + (n == 1 ? "bound is `B1`" : "bounds are " + bounds(n))
+                        + ": the fact of the member is `F`, which the declaration of the specification says.");
+                String none = "`Object` for none";
+                IntStream.rangeClosed(1, n)
+                        .forEach(i -> d.typeParam(
+                                "B" + i, "the leftmost bound of the " + ordinal(i, n) + "type parameter, " + none));
+                d.typeParam("F", "the fact of the member declared, e.g. `MethodRef1<Self, B1, B1>`");
+            });
+            ib.withAbstractMethod("build", tv("F"), amb -> {
+                amb.withDoc(d -> {
+                    d.paragraph("Declares the member through `declaration`, with the "
+                            + (n == 1 ? "token of its type parameter" : "tokens of its type parameters")
+                            + " in scope in its signature and its body.");
+                    d.param("declaration", "the declarations of the members, the type parameters of this one in scope");
+                    IntStream.rangeClosed(1, n)
+                            .forEach(i -> d.param("t" + i, "the token of the " + ordinal(i, n) + "type parameter"));
+                    d.returns("the fact of the member declared");
+                });
+                amb.withParam("declaration", appliedTo(GENERIC_METHOD_DECLARATION, "Self", "S"));
+                IntStream.rangeClosed(1, n).forEach(i -> amb.withParam("t" + i, appliedTo(TYPE_VAR_TOKEN, "B" + i)));
+            });
+        });
+    }
+
+    /// `declareGenericMethod(p1, ..., pn, spec)`: the entry point of a generic member, on `MemberBuilder`.
+    private static void genericMethodEntry(ClassBuilder cb, int n) {
+        List<String> bs = IntStream.rangeClosed(1, n).mapToObj(i -> "B" + i).toList();
+        List<Param> params = listOf(
+                IntStream.rangeClosed(1, n)
+                        .mapToObj(i -> param("p" + i, appliedTo(TYPE_PARAMETER, "B" + i)))
+                        .toList(),
+                List.of(param(
+                        "spec",
+                        applied(
+                                GENERIC_METHOD_ARITIES.nested("MethodSpec" + n),
+                                Stream.concat(Stream.of(exact("Self"), exact("S"), exact("F")), exacts(bs).stream())
+                                        .toList()))));
+        Doc doc = IntStream.rangeClosed(1, n)
+                .boxed()
+                .reduce(
+                        Doc.of("Declares a generic member of the class with " + count(n) + " type parameter"
+                                        + (n == 1 ? "" : "s")
+                                        + ": a method, a `static` one, a `void` one, or a constructor, whose type"
+                                        + " parameters are in scope in the signature and the body of that member"
+                                        + " alone (JLS 6.3). The fact of the member is the `F` of the"
+                                        + " specification, which no type of the call below tells: name it,"
+                                        + " `new MethodSpec1<Self, S, MethodRef1<Self, B1, B1>, B1>()`, where a"
+                                        + " diamond would leave it an `Invocable`.")
+                                .returns("the fact of the member declared")
+                                .throws_(
+                                        ILLEGAL_ARGUMENT,
+                                        "if a type parameter has the name of another or of the class, or its bound"
+                                                + " names a type parameter of the class")
+                                .throws_(
+                                        ILLEGAL_STATE,
+                                        "if the declarations of the class have ended, or the type of the member is out"
+                                                + " of scope")
+                                .param(
+                                        "spec",
+                                        "declares the member, given the declarations of the members and the "
+                                                + (n == 1 ? "token" : "tokens")
+                                                + " of its type parameter" + (n == 1 ? "" : "s")),
+                        (d, i) -> d.param("p" + i, "the " + ordinal(i, n) + "type parameter")
+                                .typeParam(
+                                        "B" + i,
+                                        "the leftmost bound of the " + ordinal(i, n) + "type parameter, `Object` for"
+                                                + " none"),
+                        (_, last) -> last);
+        List<TypeVar> vars = new java.util.ArrayList<>();
+        vars.add(TypeVar.of("F", Types.of(INVOCABLE)));
+        vars.addAll(typeVars(bs));
+        method(
+                cb,
+                PUBLIC,
+                vars,
+                tv("F"),
+                "declareGenericMethod",
+                params,
+                doc,
+                b -> b.return_(call(
+                        "genericMethod",
+                        staticCall(LIST, "of", names("p", n)),
+                        Exprs.newAnonymous(
+                                bound(appliedTo(GENERIC_METHOD_BODIES, "Self", "S", "F")),
+                                List.of(),
+                                acb -> acb.withMethod("build", tv("F"), mb -> {
+                                    mb.withAnnotation(OVERRIDE);
+                                    mb.withParam("declaration", appliedTo(GENERIC_METHOD_DECLARATION, "Self", "S"));
+                                    mb.withBody(b2 -> b2.return_(field("spec")
+                                            .call(
+                                                    "build",
+                                                    Stream.concat(
+                                                                    Stream.of((Expr) field("declaration")),
+                                                                    IntStream.rangeClosed(1, n)
+                                                                            .mapToObj(i -> (Expr) field("declaration")
+                                                                                    .call("variable", literal(i - 1)))
+                                                                            .toList()
+                                                                            .stream())
+                                                            .toArray(Expr[]::new))));
+                                })))));
+    }
+
+    // ------------------------------------------------------------------
     // The stages of the member types of four to twelve type parameters
     // ------------------------------------------------------------------
 
@@ -3059,9 +3197,20 @@ public final class TypedCodegen {
                 Optional.of(bound(appliedTo(DECLARATIONS, "Self", "S"))),
                 MEMBER_BUILDER,
                 cb -> {
+                    cb.withAnnotation(
+                            SUPPRESS_WARNINGS,
+                            ab -> ab.withMember("value", AnnotationValues.literal("TypeParameterUnusedInFormals")));
                     nestedHooks(cb);
                     IntStream.rangeClosed(4, MAX_ARITY)
                             .forEach(n -> NESTED_KINDS.forEach(kind -> nestedOverload(cb, kind, n, false)));
+                    hook(
+                            cb,
+                            List.of(TypeVar.of("F", Types.of(INVOCABLE))),
+                            tv("F"),
+                            "genericMethod",
+                            param("parameters", applied(LIST, exactType(applied(TYPE_PARAMETER, unbounded())))),
+                            param("spec", appliedTo(GENERIC_METHOD_BODIES, "Self", "S", "F")));
+                    IntStream.rangeClosed(1, MAX_ARITY).forEach(n -> genericMethodEntry(cb, n));
                 });
     }
 

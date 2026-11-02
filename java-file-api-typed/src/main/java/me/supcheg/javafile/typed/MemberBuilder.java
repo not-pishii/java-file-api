@@ -24,6 +24,7 @@ import me.supcheg.javafile.facts.MethodRef6;
 import me.supcheg.javafile.facts.MethodRef7;
 import me.supcheg.javafile.facts.MethodRef8;
 import me.supcheg.javafile.facts.MethodRef9;
+import me.supcheg.javafile.facts.MethodTypeParameter;
 import me.supcheg.javafile.facts.MutableFieldRef;
 import me.supcheg.javafile.facts.MutableStaticFieldRef;
 import me.supcheg.javafile.facts.Overridability;
@@ -527,14 +528,55 @@ public abstract sealed class MemberBuilder<Self, S> extends MemberBuilderArities
         return this;
     }
 
+    /// Declares a generic member from the `parameters` of a generated stage ([GenericMethodArities]):
+    /// the specification declares the member itself, in a [GenericMethodDeclaration] the type parameters
+    /// of the member are in scope in.
+    ///
+    /// @param parameters the type parameters, in order
+    /// @param spec declares the member
+    /// @param <F> the fact of the member
+    /// @return the fact of the member
+    /// @throws IllegalArgumentException if two type parameters are named alike, or one has the name of a
+    ///     type parameter of the class
+    /// @throws IllegalStateException if the declarations of the class have ended
+    @Override
+    final <F extends Invocable> F genericMethod(
+            List<TypeParameter<?>> parameters, GenericMethodBodies<Self, S, F> spec) {
+        owner.requireDeclaring("a generic member of " + described);
+        Scopes.requireNoneOpen("a generic member of " + described);
+        requireTypeParameterNames(parameters);
+        return spec.build(new GenericMethodDeclaration<>(this, parameters));
+    }
+
+    /// Holds the names of the type parameters of a generic member to what javac accepts, and to what the
+    /// layer can render: no two of one name (<T, T>), and none of the name of a type parameter of the
+    /// class, which the rendered code cannot tell from it.
+    private void requireTypeParameterNames(List<TypeParameter<?>> parameters) {
+        List<String> names = parameters.stream().map(TypeParameter::name).toList();
+        for (int i = 0; i < names.size(); i++) {
+            String name = names.get(i);
+            if (names.indexOf(name) != i) {
+                throw new IllegalArgumentException("the generic member of " + described + " declares the type"
+                        + " parameter " + name + " twice: a type parameter is named once in a declaration"
+                        + " (JLS 8.1.2, 8.4.4)");
+            }
+            owner.bounded().stream()
+                    .filter(variable -> variable.variable().typeRef().name().equals(name))
+                    .findFirst()
+                    .ifPresent(variable -> {
+                        throw new IllegalArgumentException("the generic member of " + described + " cannot"
+                                + " declare the type parameter " + name + ": the class declares a type parameter"
+                                + " of that name, and the rendered code cannot tell the two apart — javac hides"
+                                + " one behind the other (JLS 6.4.1), which the typed layer never means; name"
+                                + " the type parameter of the member otherwise");
+                    });
+        }
+    }
+
     @Override
     final List<ClassToken<? extends Throwable>> thrown() {
         return List.of();
     }
-
-    // ------------------------------------------------------------------
-    // The throws clause
-    // ------------------------------------------------------------------
 
     /// The declarations of the methods and constructors of this class
     /// that declare `exceptions` in their `throws` clause:
@@ -1080,9 +1122,17 @@ public abstract sealed class MemberBuilder<Self, S> extends MemberBuilderArities
         };
     }
 
+    /// The scope of the signature or the body of `member`: that of its form, and the type parameters the
+    /// member declares of its own, which are in scope there alone (JLS 6.3).
+    private TypeScope memberScope(Invocable member, List<MethodTypeParameter> typeParams, String where) {
+        return scope(member.kind(), where)
+                .method(typeParams.stream().map(MethodTypeParameter::token).toList(), where);
+    }
+
     /// Holds the types of the signature of a member to its scope, where it is declared.
     private void requireInScope(Invocable member) {
-        TypeScope scope = scope(member.kind(), "the signature of " + member);
+        List<MethodTypeParameter> typeParams = member.traits().typeParams();
+        TypeScope scope = memberScope(member, typeParams, "the signature of " + member);
         Stream.concat(member.params().stream(), member.resultType().stream()).forEach(type -> {
             Tokens.requireNotRaw(type);
             scope.require(type);
@@ -1132,6 +1182,7 @@ public abstract sealed class MemberBuilder<Self, S> extends MemberBuilderArities
                 .toList();
         Set<Modifier> rendered = requireModifiers(member, modifiers);
         registry.member(member);
+        List<MethodTypeParameter> typeParams = member.traits().typeParams();
         if (rendered.contains(Modifier.NATIVE)) {
             declared(new Member.Given(nativeMethod(member, thrown, annotations, parameters, rendered, doc)));
             return member;
@@ -1143,7 +1194,13 @@ public abstract sealed class MemberBuilder<Self, S> extends MemberBuilderArities
                 parameters,
                 Member.Kind.DECLARES,
                 member.arity(),
-                scope(member.kind(), "the body of " + member),
+                typeParams,
+                scope(member.kind(), "the body of " + member)
+                        .method(
+                                typeParams.stream()
+                                        .map(MethodTypeParameter::token)
+                                        .toList(),
+                                "the body of " + member),
                 rendered,
                 doc,
                 site));
@@ -1209,7 +1266,7 @@ public abstract sealed class MemberBuilder<Self, S> extends MemberBuilderArities
         return new NativeMethodDecl(
                 member.name(),
                 member.resultType().map(TypeToken::typeRef),
-                List.of(),
+                Tokens.typeParams(member.traits().typeParams()),
                 params,
                 annotations.stream().map(AnnotationRef::toUse).toList(),
                 rendered,
@@ -2030,7 +2087,7 @@ public abstract sealed class MemberBuilder<Self, S> extends MemberBuilderArities
         return new AbstractMethodDecl(
                 method.name(),
                 method.resultType().map(TypeToken::typeRef),
-                List.of(),
+                Tokens.typeParams(method.traits().typeParams()),
                 params,
                 List.of(),
                 Set.of(Modifier.PUBLIC, Modifier.ABSTRACT),
@@ -2065,6 +2122,9 @@ public abstract sealed class MemberBuilder<Self, S> extends MemberBuilderArities
         requireInScope(own);
         // What a result is a subtype of is told by its metamodel, which has to hold on the target.
         own.resultType().ifPresent(owner.target()::verify);
+        SignatureRegistry.Overridden overridden = registry.override(own);
+        List<MethodTypeParameter> typeParams = overridden.typeParams();
+        String where = "the body of " + own;
         declared(new Member.Callable(
                 own,
                 thrown,
@@ -2073,8 +2133,14 @@ public abstract sealed class MemberBuilder<Self, S> extends MemberBuilderArities
                         .mapToObj(_ -> List.<AnnotationRef<?>>of())
                         .toList(),
                 Member.Kind.OVERRIDES,
-                registry.override(own),
-                scope(own.kind(), "the body of " + own),
+                overridden.arity(),
+                typeParams,
+                scope(own.kind(), where)
+                        .method(
+                                typeParams.stream()
+                                        .map(MethodTypeParameter::token)
+                                        .toList(),
+                                where),
                 Set.of(),
                 doc,
                 site));
@@ -2132,6 +2198,9 @@ public abstract sealed class MemberBuilder<Self, S> extends MemberBuilderArities
         /// @param arity whether its last parameter is of variable arity, and whether it vouches for the array
         ///     (`@SafeVarargs`): as that of the method it overrides is, and for a member declared by its name,
         ///     what `variableArity()` derives of the type of its elements
+        /// @param typeParams the type parameters it declares of its own: those of its fact, or, for an
+        ///     override of a generic method, those of the method it overrides, which the fact of the
+        ///     target tells
         /// @param modifiers the modifiers it is rendered with beside those its form fixes, `synchronized` or
         ///     `native`
         /// @param scope the scope of the types its body mentions
@@ -2143,6 +2212,7 @@ public abstract sealed class MemberBuilder<Self, S> extends MemberBuilderArities
                 List<List<AnnotationRef<?>>> parameterAnnotations,
                 Kind kind,
                 Arity arity,
+                List<MethodTypeParameter> typeParams,
                 TypeScope scope,
                 Set<Modifier> modifiers,
                 Optional<me.supcheg.javafile.doc.DocComment> doc,
@@ -2153,6 +2223,7 @@ public abstract sealed class MemberBuilder<Self, S> extends MemberBuilderArities
                 annotations = List.copyOf(annotations);
                 parameterAnnotations =
                         parameterAnnotations.stream().map(List::copyOf).toList();
+                typeParams = List.copyOf(typeParams);
                 modifiers = Set.copyOf(modifiers);
             }
         }

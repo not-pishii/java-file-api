@@ -15,6 +15,7 @@ import java.lang.constant.ClassDesc;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.IntFunction;
 import java.util.stream.Stream;
 
 /// What a class that extends a type, or implements it, has to know of the
@@ -255,6 +256,30 @@ public sealed interface Heritage permits Heritage.Untold, Heritage.Told {
     /// see to.
     sealed interface Type permits Type.Fixed, Type.OfType, Type.OfMember, Type.Array, Type.Parameterized {
 
+        /// The type as written, a type parameter of the member by position from `member`.
+        ///
+        /// @param member the type of the member's type parameter at a position
+        /// @return the type
+        /// @throws IllegalArgumentException if the type names a type parameter of the type it is a member of,
+        ///     which an applied heritage replaces
+        default TypeRef toRef(IntFunction<TypeRef> member) {
+            return switch (this) {
+                case Fixed(TypeRef ref) -> ref;
+                case OfMember(int index) -> member.apply(index);
+                case OfType(int index) ->
+                    throw new IllegalArgumentException("a bound or a type of a member names the"
+                            + " type parameter " + index + " of the type it is a member of, which the heritage"
+                            + " instantiates");
+                case Array(Type component) -> new ArrayTypeRef(component.toRef(member));
+                case Parameterized(var raw, var arguments) ->
+                    new ParameterizedTypeRef(
+                            raw,
+                            arguments.stream()
+                                    .map(argument -> argument.toRef(member))
+                                    .toList());
+            };
+        }
+
         /// An array of `component`, in normal form.
         ///
         /// @param component the component type
@@ -384,6 +409,19 @@ public sealed interface Heritage permits Heritage.Untold, Heritage.Told {
         /// @return the type or bound; empty for `?`
         Optional<Type> type();
 
+        /// The argument as written, a type parameter of the member by position from `member`.
+        ///
+        /// @param member the type of the member's type parameter at a position
+        /// @return the type argument
+        default TypeArg toRef(IntFunction<TypeRef> member) {
+            return switch (this) {
+                case Exact(Type exact) -> new ExactTypeArg(exact.toRef(member));
+                case Extends(Type upper) -> new ExtendsTypeArg(upper.toRef(member));
+                case Super(Type lower) -> new SuperTypeArg(lower.toRef(member));
+                case Unbounded _ -> me.supcheg.javafile.type.Types.unbounded();
+            };
+        }
+
         /// The argument as one that mentions no type parameter, if it mentions none.
         ///
         /// @return the type argument
@@ -456,6 +494,25 @@ public sealed interface Heritage permits Heritage.Untold, Heritage.Told {
     record Variable(List<Type> bounds) {
         public Variable {
             bounds = List.copyOf(bounds);
+        }
+
+        /// The bounds as written, the leftmost first, `Object` for none.
+        ///
+        /// @param member the type of the member's type parameter at a position
+        /// @return the bounds
+        /// @throws IllegalArgumentException if a bound is not a class or an interface
+        public List<ClassOrInterfaceTypeRef> boundsAsWritten(IntFunction<TypeRef> member) {
+            if (bounds.isEmpty()) {
+                return List.of(new me.supcheg.javafile.type.ClassTypeRef(java.lang.constant.ConstantDescs.CD_Object));
+            }
+            return bounds.stream()
+                    .map(bound -> switch (bound.toRef(member)) {
+                        case ClassOrInterfaceTypeRef written -> written;
+                        case TypeRef other ->
+                            throw new IllegalArgumentException("a bound of a type parameter is no"
+                                    + " class or interface: " + TypeNames.describe(other));
+                    })
+                    .toList();
         }
     }
 

@@ -18,6 +18,11 @@ import java.util.List;
 /// - Explicit type arguments of a generic method (§3.4): the witnesses the
 ///   fact was instantiated with, rendered as `recv.<A, B>m(...)` so that the
 ///   compiler never infers something else.
+/// - The type parameters a generic method or constructor of the generated code
+///   declares (§8g): their tokens, names and bounds, which the declaration
+///   writes, `<T extends Number>`, and which the body of the member uses as its
+///   types. A fact of a target method carries none: the metamodel of its type
+///   tells them by position ([Heritage.Declaration#typeParams()]).
 ///
 /// @param throwsTypes the exception types in the `throws` clause: classes, or type variables bounded by `Throwable`
 /// @param overridability whether the method can be overridden
@@ -28,6 +33,7 @@ import java.util.List;
 /// @param annotations the annotations the member declares, in declaration order
 /// @param parameterAnnotations the annotations of each parameter, in parameter order; an empty list for a
 ///                             parameter without one
+/// @param typeParams the type parameters the member declares; empty unless the member is generic
 public record MemberTraits(
         List<RefToken<? extends Throwable>> throwsTypes,
         Overridability overridability,
@@ -35,13 +41,21 @@ public record MemberTraits(
         Access access,
         Arity arity,
         List<AnnotationUse> annotations,
-        List<List<AnnotationUse>> parameterAnnotations) {
+        List<List<AnnotationUse>> parameterAnnotations,
+        List<MethodTypeParameter> typeParams) {
 
     /// No `throws` clause, overridable, not generic, `public`, of fixed arity.
     public static final MemberTraits DEFAULT = new MemberTraits(
-            List.of(), Overridability.OVERRIDABLE, List.of(), Access.PUBLIC, Arity.FIXED, List.of(), List.of());
+            List.of(),
+            Overridability.OVERRIDABLE,
+            List.of(),
+            Access.PUBLIC,
+            Arity.FIXED,
+            List.of(),
+            List.of(),
+            List.of());
 
-    /// The traits of a member that declares no annotation.
+    /// The traits of a member that declares no annotation and no type parameter.
     ///
     /// @param throwsTypes the exception types in the `throws` clause
     /// @param overridability whether the method can be overridden
@@ -54,7 +68,7 @@ public record MemberTraits(
             List<RefToken<?>> typeArgs,
             Access access,
             Arity arity) {
-        this(throwsTypes, overridability, typeArgs, access, arity, List.of(), List.of());
+        this(throwsTypes, overridability, typeArgs, access, arity, List.of(), List.of(), List.of());
     }
 
     /// No `throws` clause, overridable, not generic, `public`; the same as [#DEFAULT].
@@ -71,6 +85,7 @@ public record MemberTraits(
         typeArgs = List.copyOf(typeArgs);
         annotations = List.copyOf(annotations);
         parameterAnnotations = parameterAnnotations.stream().map(List::copyOf).toList();
+        typeParams = List.copyOf(typeParams);
         for (RefToken<? extends Throwable> type : throwsTypes) {
             if (type instanceof ClassToken<?> cls && !cls.isSubclassOf(ConstantDescs.CD_Throwable)) {
                 throw new IllegalArgumentException("not a Throwable: " + type);
@@ -86,7 +101,7 @@ public record MemberTraits(
     @SuppressWarnings("varargs")
     public final MemberTraits throwing(RefToken<? extends Throwable>... types) {
         return new MemberTraits(
-                List.of(types), overridability, typeArgs, access, arity, annotations, parameterAnnotations);
+                List.of(types), overridability, typeArgs, access, arity, annotations, parameterAnnotations, typeParams);
     }
 
     /// Returns these traits with the given overridability.
@@ -95,7 +110,7 @@ public record MemberTraits(
     /// @return the new traits
     public MemberTraits with(Overridability overridability) {
         return new MemberTraits(
-                throwsTypes, overridability, typeArgs, access, arity, annotations, parameterAnnotations);
+                throwsTypes, overridability, typeArgs, access, arity, annotations, parameterAnnotations, typeParams);
     }
 
     /// Returns these traits with the given access.
@@ -104,7 +119,7 @@ public record MemberTraits(
     /// @return the new traits
     public MemberTraits with(Access access) {
         return new MemberTraits(
-                throwsTypes, overridability, typeArgs, access, arity, annotations, parameterAnnotations);
+                throwsTypes, overridability, typeArgs, access, arity, annotations, parameterAnnotations, typeParams);
     }
 
     /// Returns these traits with the given arity.
@@ -113,7 +128,7 @@ public record MemberTraits(
     /// @return the new traits
     public MemberTraits with(Arity arity) {
         return new MemberTraits(
-                throwsTypes, overridability, typeArgs, access, arity, annotations, parameterAnnotations);
+                throwsTypes, overridability, typeArgs, access, arity, annotations, parameterAnnotations, typeParams);
     }
 
     /// Returns these traits with explicit type arguments.
@@ -122,7 +137,30 @@ public record MemberTraits(
     /// @return the new traits
     public MemberTraits withTypeArgs(RefToken<?>... typeArgs) {
         return new MemberTraits(
-                throwsTypes, overridability, List.of(typeArgs), access, arity, annotations, parameterAnnotations);
+                throwsTypes,
+                overridability,
+                List.of(typeArgs),
+                access,
+                arity,
+                annotations,
+                parameterAnnotations,
+                typeParams);
+    }
+
+    /// Returns these traits with the type parameters the member declares.
+    ///
+    /// @param typeParams the type parameters, in declaration order
+    /// @return the new traits
+    public MemberTraits withTypeParams(MethodTypeParameter... typeParams) {
+        return new MemberTraits(
+                throwsTypes,
+                overridability,
+                typeArgs,
+                access,
+                arity,
+                annotations,
+                parameterAnnotations,
+                List.of(typeParams));
     }
 
     /// Returns these traits with the annotations the member declares.
@@ -131,7 +169,14 @@ public record MemberTraits(
     /// @return the new traits
     public MemberTraits annotated(AnnotationUse... annotations) {
         return new MemberTraits(
-                throwsTypes, overridability, typeArgs, access, arity, List.of(annotations), parameterAnnotations);
+                throwsTypes,
+                overridability,
+                typeArgs,
+                access,
+                arity,
+                List.of(annotations),
+                parameterAnnotations,
+                typeParams);
     }
 
     /// Returns these traits with the annotations of each parameter.
@@ -140,6 +185,6 @@ public record MemberTraits(
     /// @return the new traits
     public MemberTraits annotatedParameters(List<List<AnnotationUse>> parameterAnnotations) {
         return new MemberTraits(
-                throwsTypes, overridability, typeArgs, access, arity, annotations, parameterAnnotations);
+                throwsTypes, overridability, typeArgs, access, arity, annotations, parameterAnnotations, typeParams);
     }
 }

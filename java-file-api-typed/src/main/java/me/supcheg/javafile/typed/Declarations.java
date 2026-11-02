@@ -38,7 +38,8 @@ public abstract sealed class Declarations<Self, S> extends DeclarationArities<Se
                 ThrowingDeclarations,
                 AnnotatedDeclarations,
                 ModifiedDeclarations,
-                DocumentedDeclarations {
+                DocumentedDeclarations,
+                GenericMethodDeclaration {
 
     Declarations() {}
 
@@ -70,6 +71,15 @@ public abstract sealed class Declarations<Self, S> extends DeclarationArities<Se
     /// @return the modifiers
     Set<Modifier> modifiers() {
         return Set.of();
+    }
+
+    /// The type parameters a member declared here declares of its own: those of
+    /// the generic method or constructor whose declaration this is a stage of
+    /// ([MemberBuilder#declareGenericMethod]), and none elsewhere.
+    ///
+    /// @return the type parameters, in declaration order
+    List<me.supcheg.javafile.facts.MethodTypeParameter> typeParams() {
+        return List.of();
     }
 
     // The declarations of constructors, methods and static methods by name and types (`declareConstructor`,
@@ -164,11 +174,19 @@ public abstract sealed class Declarations<Self, S> extends DeclarationArities<Se
         return builder().declareOverride(own, thrown(), doc());
     }
 
-    /// The traits of a member declared here: `traits`, with the `throws` clause.
+    /// The traits of a member declared here: `traits`, with the `throws` clause and the type parameters
+    /// of its own.
     @Override
     MemberTraits traits(MemberTraits traits) {
         return new MemberTraits(
-                List.copyOf(thrown()), traits.overridability(), traits.typeArgs(), traits.access(), traits.arity());
+                List.copyOf(thrown()),
+                traits.overridability(),
+                traits.typeArgs(),
+                traits.access(),
+                traits.arity(),
+                traits.annotations(),
+                traits.parameterAnnotations(),
+                typeParams());
     }
 
     // ------------------------------------------------------------------

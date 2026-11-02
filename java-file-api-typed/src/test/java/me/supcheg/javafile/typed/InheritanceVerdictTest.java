@@ -281,35 +281,31 @@ class InheritanceVerdictTest {
     class StricterThanJavac {
 
         @Test
-        void aGenericMethodIsNotOverridden() {
-            // javac takes the erasure of <T> T pick(T) for an override
-            classUnlikeJavac(
-                    AT_THE_PLACE,
-                    () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
-                        @Override
-                        public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
-                            var oh = h.extendsObject();
-                            Upcast<Self, Joiner> asJoiner = oh.implements_(Joiner_.implement(h.self()));
-                            var cb = oh.members();
-                            var pick = cb.declareOverride(asJoiner, Joiner_.pick_T(Object_.TOKEN));
-                            var bodies = cb.bodies();
-                            bodies.define(pick, (b, _, picked) -> b.return_(picked));
-                            return bodies;
-                        }
-                    }),
-                    "the method is generic, and the typed layer declares no generic method",
-                    "implements Joiner",
-                    "@Override public Object pick(Object picked) { return picked; }");
-            assertThatIllegalArgumentException()
-                    .isThrownBy(() -> file(new TypedJavaFile.TypedClassHeaderSpec() {
-                        @Override
-                        public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
-                            h.overriding(Joiner_.pick_T(Object_.TOKEN));
-                            return Unreached.here();
-                        }
-                    }))
-                    .withMessageContaining("the method is generic");
-            // nor is a method of its erased signature declared by its name: to javac that one overrides it
+        void aGenericMethodIsOverriddenByTheFactOfItsWitness() throws Throwable {
+            // javac takes the erasure of <T> T pick(T) for an override, and so does the typed layer now
+            var k = UnsafeFacts.<Object>typeVarToken(
+                    me.supcheg.javafile.type.Types.typeVar("T"), java.lang.constant.ConstantDescs.CD_Object);
+            CompiledClasses compiled = CompiledClasses.of(file(new TypedJavaFile.TypedClassHeaderSpec() {
+                @Override
+                public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
+                    var oh = h.extendsObject();
+                    Upcast<Self, Joiner> asJoiner = oh.implements_(Joiner_.implement(h.self()));
+                    var cb = oh.members();
+                    var pick = cb.declareOverride(asJoiner, Joiner_.pick_T(k));
+                    var bodies = cb.bodies();
+                    bodies.define(pick, (b, self, picked) -> b.return_(picked));
+                    return bodies;
+                }
+            }));
+
+            assertThat(compiled.source()).contains("public <T> T pick(T v0) {");
+            assertThat(compiled.invoke("pick", "held")).isEqualTo("held");
+        }
+
+        @Test
+        void aGenericMethodIsNotDeclaredByItsErasedName() {
+            // to javac a method of the erased signature overrides the generic one; the typed layer declares
+            // it by the fact alone
             classUnlikeJavac(
                     AT_THE_PLACE,
                     () -> file(new TypedJavaFile.TypedClassHeaderSpec() {
@@ -324,8 +320,8 @@ class InheritanceVerdictTest {
                             return bodies;
                         }
                     }),
-                    "The inherited method is generic, and the typed layer declares no generic method: the class"
-                            + " neither overrides it nor has another method of its erased signature",
+                    "The inherited method is generic: declare the class's method generic by its own type"
+                            + " parameters (declareGenericMethod) and override it by its fact",
                     "implements Joiner",
                     "public Object pick(Object picked) { return picked; }");
         }

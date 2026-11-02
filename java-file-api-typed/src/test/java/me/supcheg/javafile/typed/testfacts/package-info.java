@@ -130,6 +130,7 @@
     Author.class,
     PackageTag.class,
     Overridden.class,
+    Generic.class,
     Unconstrained.class,
     Retention.class,
     RetentionPolicy.class,
@@ -225,6 +226,7 @@ import me.supcheg.javafile.typed.fixtures.Spreading;
 import me.supcheg.javafile.typed.fixtures.Scattering;
 import me.supcheg.javafile.typed.fixtures.Taking;
 import me.supcheg.javafile.typed.fixtures.Gathered;
+import me.supcheg.javafile.typed.fixtures.Generic;
 import me.supcheg.javafile.typed.fixtures.VarargsArray;
 import me.supcheg.javafile.typed.fixtures.VarargsBase;
 import me.supcheg.javafile.typed.fixtures.Tag;

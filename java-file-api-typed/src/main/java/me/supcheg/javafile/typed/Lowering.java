@@ -1561,8 +1561,14 @@ final class Lowering {
     }
 
     /// A method or constructor fact the lowered code calls: the types of
-    /// its signature are ones javac resolves the call by.
+    /// its signature are ones javac resolves the call by. A type parameter the member declares of its own
+    /// is what a call instantiates, and is in the signature of the declaration and the body of the member
+    /// alone: the call names it by the type arguments it passes
+    /// ([me.supcheg.javafile.facts.MemberTraits#typeArgs()]).
     private void uses(Invocable member) {
+        Set<TypeToken<?>> own = member.traits().typeParams().stream()
+                .<TypeToken<?>>map(parameter -> parameter.token())
+                .collect(java.util.stream.Collectors.toSet());
         Stream.of(
                         Stream.of(member.owner()),
                         member.params().stream(),
@@ -1570,6 +1576,7 @@ final class Lowering {
                         member.traits().throwsTypes().stream(),
                         member.traits().typeArgs().stream())
                 .<TypeToken<?>>flatMap(types -> types)
+                .filter(type -> !own.contains(type))
                 .forEach(this::mentions);
     }
 

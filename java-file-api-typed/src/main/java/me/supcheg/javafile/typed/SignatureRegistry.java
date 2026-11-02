@@ -8,6 +8,7 @@ import me.supcheg.javafile.facts.Invocable;
 import me.supcheg.javafile.facts.InvocableKind;
 import me.supcheg.javafile.facts.MethodSignature;
 import me.supcheg.javafile.facts.MethodTableTemplate;
+import me.supcheg.javafile.facts.MethodTypeParameter;
 import me.supcheg.javafile.facts.Overridability;
 import me.supcheg.javafile.facts.TypeNames;
 import me.supcheg.javafile.facts.TypeToken;
@@ -180,11 +181,11 @@ final class SignatureRegistry {
     /// Registers a method that overrides the methods of its signature the class inherits.
     ///
     /// @param own the method the class declares
-    /// @return whether the last parameter of the method is of variable arity, as that of the methods
-    ///     it overrides is
+    /// @return the form of the method it overrides, and the type parameters the method declares: none, or
+    ///     the ones of the generic method it overrides
     /// @throws IllegalArgumentException if the class inherits no method of that signature, or the
     ///     method cannot override one it inherits
-    Arity override(Invocable own) {
+    Overridden override(Invocable own) {
         MethodSignature signature = own.signature();
         requireUndeclared(own, signature);
         requireUnambiguous(own);
@@ -197,7 +198,33 @@ final class SignatureRegistry {
                         + " members()"));
         requireOverrides(owner, own, group, inherited.declaring(own.owner()).knowing(variables));
         members = members.withOverride(own);
-        return group.arity();
+        return new Overridden(group.arity(), typeParams(own, group));
+    }
+
+    /// The form of the methods a method overrides, and the type parameters it declares.
+    ///
+    /// @param arity whether the last parameter of the methods is of variable arity
+    /// @param typeParams the type parameters the override declares, in declaration order
+    record Overridden(Arity arity, List<MethodTypeParameter> typeParams) {
+        public Overridden {
+            typeParams = List.copyOf(typeParams);
+        }
+    }
+
+    /// The type parameters the method `own` declares, which are those of the generic method it overrides,
+    /// if it overrides one.
+    ///
+    /// @param own the method the class declares
+    /// @param group the methods of its signature the class inherits
+    /// @return the type parameters, in declaration order; empty if no method of the signature is generic
+    private static List<MethodTypeParameter> typeParams(Invocable own, Inheritance.Group group) {
+        return group.entries().stream()
+                .map(entry -> entry.method().declared())
+                .filter(Heritage.Generic.class::isInstance)
+                .map(Heritage.Generic.class::cast)
+                .findFirst()
+                .map(generic -> GenericOverrides.typeParams(own, generic))
+                .orElseGet(List::of);
     }
 
     /// Rejects a method that javac warns of as potentially ambiguous with another of its name and number
@@ -325,9 +352,10 @@ final class SignatureRegistry {
                                 "Override it by its fact — declareOverride(fact), or overriding(fact) in the"
                                         + " header of the class for a method a supertype leaves abstract";
                             case Heritage.Generic _ ->
-                                "The inherited method is generic, and the typed layer declares no generic"
-                                        + " method: the class neither overrides it nor has another method of"
-                                        + " its erased signature";
+                                "The inherited method is generic: declare the class's method generic by its own"
+                                        + " type parameters (declareGenericMethod) and override it by its fact —"
+                                        + " declareOverride(fact), or overriding(fact) in the header of the"
+                                        + " class for a method a supertype leaves abstract.";
                         };
         };
     }
@@ -399,8 +427,7 @@ final class SignatureRegistry {
         Inheritance.Member method = entry.method();
         return Stream.<Supplier<Optional<String>>>of(
                         () -> byDispatch(method), () -> byVisibility(method), () -> switch (method.declared()) {
-                            case Heritage.Generic _ ->
-                                Optional.of("the method is generic, and the typed layer declares no generic method");
+                            case Heritage.Generic generic -> GenericOverrides.refusal(own, generic);
                             case Heritage.Plain plain ->
                                 Stream.<Supplier<Optional<String>>>of(
                                                 () -> byForm(plain),

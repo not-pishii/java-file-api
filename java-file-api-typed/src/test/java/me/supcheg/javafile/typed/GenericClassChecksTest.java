@@ -297,7 +297,8 @@ class GenericClassChecksTest {
                     }))
                     .withMessageContaining("the type parameter T is not in scope in the signature of T"
                             + " me.supcheg.example.Other<T>.m() of class me.supcheg.example.Other: it is a type"
-                            + " parameter of another class, in scope in the declaration of that class alone"
+                            + " parameter of another declaration, of a class or of a method or constructor, in scope in the"
+                            + " declaration of that one alone"
                             + " (JLS 6.3)");
         }
 
@@ -316,7 +317,7 @@ class GenericClassChecksTest {
                     .isThrownBy(() -> withALocalOf(kept[0]))
                     .withMessageContaining("the type parameter T is not in scope in the body of void"
                             + " me.supcheg.example.Probe.m() of class me.supcheg.example.Probe: it is a type"
-                            + " parameter of another class");
+                            + " parameter of another declaration");
         }
 
         @Test

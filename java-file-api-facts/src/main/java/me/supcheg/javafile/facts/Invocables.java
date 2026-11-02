@@ -98,6 +98,34 @@ final class Invocables {
         };
     }
 
+    /// The traits of a call of `member` with the explicit type arguments `typeArgs`.
+    ///
+    /// A fact of a declared generic method says how many type parameters it has
+    /// ([MemberTraits#typeParams()]); one of a target generic method says it by the type arguments it
+    /// was instantiated with ([MemberTraits#typeArgs()]). A call of any other member takes none.
+    ///
+    /// @param member the member the call is of, for messages
+    /// @param traits the traits of its fact
+    /// @param typeArgs the explicit type arguments of the call, in order
+    /// @return `traits` with `typeArgs`
+    /// @throws IllegalArgumentException if the member is not generic, or has another number of type parameters
+    static MemberTraits withTypeArgs(Invocable member, MemberTraits traits, RefToken<?>[] typeArgs) {
+        int declared = traits.typeParams().isEmpty()
+                ? traits.typeArgs().size()
+                : traits.typeParams().size();
+        if (declared == 0) {
+            throw new IllegalArgumentException("cannot call " + describe(member) + " with the explicit type"
+                    + " arguments " + java.util.Arrays.toString(typeArgs) + ": the method has no type parameter"
+                    + " of its own, and a call of it takes none");
+        }
+        if (typeArgs.length != declared) {
+            throw new IllegalArgumentException("cannot call " + describe(member) + " with " + typeArgs.length
+                    + " explicit type arguments: the method declares " + declared + " type parameter"
+                    + (declared == 1 ? "" : "s") + ", and a call of it takes one type argument per one of them");
+        }
+        return traits.withTypeArgs(typeArgs);
+    }
+
     private static String result(Invocable invocable) {
         return invocable.resultType().map(Object::toString).orElse("void");
     }

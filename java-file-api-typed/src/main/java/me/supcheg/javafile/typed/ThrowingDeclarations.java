@@ -16,21 +16,26 @@ import java.util.List;
 /// @param <Self> the brand of the class being declared
 /// @param <S> the superclass of the class
 public final class ThrowingDeclarations<Self, S> extends Declarations<Self, S> {
-    private final MemberBuilder<Self, S> builder;
+    private final Declarations<Self, S> declarations;
     private final List<ClassToken<? extends Throwable>> thrown;
 
-    ThrowingDeclarations(MemberBuilder<Self, S> builder, List<ClassToken<? extends Throwable>> thrown) {
-        this.builder = builder;
+    ThrowingDeclarations(Declarations<Self, S> declarations, List<ClassToken<? extends Throwable>> thrown) {
+        this.declarations = declarations;
         this.thrown = List.copyOf(thrown);
     }
 
     @Override
     MemberBuilder<Self, S> builder() {
-        return builder;
+        return declarations.builder();
     }
 
     @Override
     List<ClassToken<? extends Throwable>> thrown() {
         return thrown;
+    }
+
+    @Override
+    List<me.supcheg.javafile.facts.MethodTypeParameter> typeParams() {
+        return declarations.typeParams();
     }
 }

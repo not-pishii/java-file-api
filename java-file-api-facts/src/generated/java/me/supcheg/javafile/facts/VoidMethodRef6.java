@@ -103,4 +103,15 @@ public final class VoidMethodRef6<O, A1, A2, A3, A4, A5, A6> implements Invocabl
     public String toString() {
         return Invocables.describe(this);
     }
+
+    /**
+     * The fact of a call of this method with the explicit type arguments `typeArgs`, which javac takes for the type parameters of the declaration instead of inferring them from the arguments.
+     *
+     * @param typeArgs the type arguments of the call, one per type parameter of the method
+     * @return the fact of the call
+     * @throws IllegalArgumentException if the method is not generic, or has another number of type parameters
+     */
+    public VoidMethodRef6<O, A1, A2, A3, A4, A5, A6> withTypeArgs(RefToken<?>... typeArgs) {
+        return new VoidMethodRef6<>(this.owner, this.name, this.param1, this.param2, this.param3, this.param4, this.param5, this.param6, Invocables.withTypeArgs(this, this.traits, typeArgs), this.declaredParams);
+    }
 }

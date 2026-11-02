@@ -48,6 +48,11 @@ public final class ModifiedDeclarations<Self, S> extends Declarations<Self, S> {
     }
 
     @Override
+    List<me.supcheg.javafile.facts.MethodTypeParameter> typeParams() {
+        return declarations.typeParams();
+    }
+
+    @Override
     java.util.Optional<me.supcheg.javafile.doc.DocComment> doc() {
         return declarations.doc();
     }

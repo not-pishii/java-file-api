@@ -14,6 +14,11 @@ import me.supcheg.javafile.facts.Heritage.Variable;
 import me.supcheg.javafile.facts.Heritage.Visibility;
 import me.supcheg.javafile.facts.MethodTableTemplate.Param;
 import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
+import me.supcheg.javafile.type.ArrayTypeRef;
+import me.supcheg.javafile.type.ExactTypeArg;
+import me.supcheg.javafile.type.ExtendsTypeArg;
+import me.supcheg.javafile.type.ParameterizedTypeRef;
+import me.supcheg.javafile.type.SuperTypeArg;
 import me.supcheg.javafile.type.TypeRef;
 import me.supcheg.javafile.type.Types;
 import org.junit.jupiter.api.Test;
@@ -475,5 +480,66 @@ class HeritageTest {
 
         assertThat(unverified.heritage(withHeritage("Told"))).isSameAs(GENERATED);
         assertThat(unverified.heritage(withoutHeritage("Untold"))).isSameAs(Heritage.UNTOLD);
+    }
+
+    @Test
+    void aTypeIsWrittenWithTheTypesOfTheTypeParametersOfTheMember() {
+        assertThat(new Heritage.Type.OfMember(1).toRef(HeritageTest::member)).isEqualTo(Types.typeVar("T1"));
+        assertThat(new Heritage.Type.Fixed(Types.of(ConstantDescs.CD_Object)).toRef(HeritageTest::member))
+                .isEqualTo(Types.of(ConstantDescs.CD_Object));
+        assertThat(Heritage.Type.array(new Heritage.Type.OfMember(0)).toRef(HeritageTest::member))
+                .isEqualTo(new ArrayTypeRef(Types.typeVar("T0")));
+        assertThat(Heritage.Type.parameterized(
+                                ClassDesc.of("java.lang", "Comparable"),
+                                List.of(
+                                        new Argument.Exact(new Heritage.Type.OfMember(0)),
+                                        new Argument.Extends(
+                                                new Heritage.Type.Fixed(Types.of(ConstantDescs.CD_Object))),
+                                        new Argument.Super(new Heritage.Type.OfMember(2)),
+                                        new Argument.Unbounded()))
+                        .toRef(HeritageTest::member))
+                .isEqualTo(new ParameterizedTypeRef(
+                        ClassDesc.of("java.lang", "Comparable"),
+                        List.of(
+                                new ExactTypeArg(Types.typeVar("T0")),
+                                new ExtendsTypeArg(Types.of(ConstantDescs.CD_Object)),
+                                new SuperTypeArg(Types.typeVar("T2")),
+                                Types.unbounded())));
+    }
+
+    private static TypeRef member(int index) {
+        return Types.typeVar("T" + index);
+    }
+
+    @Test
+    void aTypeParameterOfTheTypeIsOfTheArgumentTheHeritageApplies() {
+        // an applied heritage replaces the type parameters of the type, and leaves none of them to write
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> new Heritage.Type.OfType(0).toRef(HeritageTest::member))
+                .withMessageContaining("which the heritage instantiates");
+    }
+
+    @Test
+    void aTypeParameterHasItsBoundsAsWritten() {
+        ClassDesc comparable = ClassDesc.of("java.lang", "Comparable");
+        assertThat(new Variable(List.of()).boundsAsWritten(HeritageTest::member))
+                .containsExactly(new me.supcheg.javafile.type.ClassTypeRef(ConstantDescs.CD_Object));
+        assertThat(new Variable(List.of(
+                                new Heritage.Type.Fixed(Types.of(comparable)),
+                                Heritage.Type.parameterized(
+                                        comparable, List.of(new Argument.Exact(new Heritage.Type.OfMember(0))))))
+                        .boundsAsWritten(HeritageTest::member))
+                .containsExactly(
+                        Types.of(comparable),
+                        new ParameterizedTypeRef(comparable, List.of(new ExactTypeArg(Types.typeVar("T0")))));
+    }
+
+    @Test
+    void aBoundIsNoPrimitive() {
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> new Variable(
+                                List.of(new Heritage.Type.Fixed(me.supcheg.javafile.type.PrimitiveTypeRef.INT)))
+                        .boundsAsWritten(HeritageTest::member))
+                .withMessageContaining("is no class or interface");
     }
 }

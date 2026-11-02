@@ -54,6 +54,11 @@ public final class DocumentedDeclarations<Self, S> extends Declarations<Self, S>
     }
 
     @Override
+    List<me.supcheg.javafile.facts.MethodTypeParameter> typeParams() {
+        return declarations.typeParams();
+    }
+
+    @Override
     Optional<DocComment> doc() {
         return Optional.of(doc);
     }

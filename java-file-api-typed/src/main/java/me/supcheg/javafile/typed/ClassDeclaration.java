@@ -617,10 +617,6 @@ final class ClassDeclaration<Self> {
             throw new IllegalArgumentException(
                     described + " cannot override " + overridden + ": the method is final, or static (JLS 8.4.3.3)");
         }
-        if (!overridden.traits().typeArgs().isEmpty()) {
-            throw new IllegalArgumentException(described + " cannot override " + overridden
-                    + ": the method is generic, and the typed layer declares no generic method");
-        }
         MethodSignature signature = own.signature();
         said.intentions().stream()
                 .filter(intention -> intention.own().signature().equals(signature))

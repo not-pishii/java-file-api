@@ -19,8 +19,11 @@ final class Overrides extends OverrideArities {
         return new MemberTraits(
                 List.copyOf(thrown),
                 MemberTraits.FINAL.overridability(),
-                MemberTraits.FINAL.typeArgs(),
+                method.traits().typeArgs(),
                 MemberTraits.FINAL.access(),
-                method.traits().arity());
+                method.traits().arity(),
+                MemberTraits.FINAL.annotations(),
+                MemberTraits.FINAL.parameterAnnotations(),
+                method.traits().typeParams());
     }
 }

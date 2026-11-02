@@ -75,4 +75,15 @@ public final class StaticMethodRef1<R, A1> implements InvocableFamily {
     public String toString() {
         return Invocables.describe(this);
     }
+
+    /**
+     * The fact of a call of this method with the explicit type arguments `typeArgs`, which javac takes for the type parameters of the declaration instead of inferring them from the arguments.
+     *
+     * @param typeArgs the type arguments of the call, one per type parameter of the method
+     * @return the fact of the call
+     * @throws IllegalArgumentException if the method is not generic, or has another number of type parameters
+     */
+    public StaticMethodRef1<R, A1> withTypeArgs(RefToken<?>... typeArgs) {
+        return new StaticMethodRef1<>(this.owner, this.name, this.result, this.param1, Invocables.withTypeArgs(this, this.traits, typeArgs), this.declaredParams);
+    }
 }

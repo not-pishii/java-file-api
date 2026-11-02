@@ -13,6 +13,7 @@ import me.supcheg.javafile.model.ConstructorDecl;
 import me.supcheg.javafile.model.Modifier;
 import me.supcheg.javafile.model.Param;
 import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
+import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.TypeRef;
 import me.supcheg.javafile.type.Types;
 import org.jspecify.annotations.Nullable;
@@ -37,6 +38,7 @@ public final class ConstructorBuilder {
     private @Nullable DocComment doc;
     private final List<AnnotationUse> annotations = new ArrayList<>();
     private final Set<Modifier> modifiers = new LinkedHashSet<>();
+    private final List<TypeParam> typeParams = new ArrayList<>();
     private final List<Param> params = new ArrayList<>();
     private final List<ClassOrInterfaceTypeRef> throwsTypes = new ArrayList<>();
     private CodeBody prologue = CodeBody.EMPTY;
@@ -99,6 +101,25 @@ public final class ConstructorBuilder {
     /// @return this builder
     public ConstructorBuilder withModifiers(Modifier... mods) {
         modifiers.addAll(List.of(mods));
+        return this;
+    }
+
+    /// Adds a type parameter to the constructor's declaration, e.g. `<T> Box(T value)`.
+    ///
+    /// @param name the type parameter's name
+    /// @param bounds its upper bounds, joined with `&`; empty for none
+    /// @return this builder
+    public ConstructorBuilder withTypeParam(String name, ClassOrInterfaceTypeRef... bounds) {
+        typeParams.add(new TypeParam(name, List.of(bounds)));
+        return this;
+    }
+
+    /// Adds a pre-built type parameter to the constructor's declaration.
+    ///
+    /// @param typeParam the type parameter to add
+    /// @return this builder
+    public ConstructorBuilder withTypeParam(TypeParam typeParam) {
+        typeParams.add(typeParam);
         return this;
     }
 
@@ -212,6 +233,7 @@ public final class ConstructorBuilder {
         return new ConstructorDecl(
                 List.copyOf(annotations),
                 effectiveModifiers,
+                List.copyOf(typeParams),
                 List.copyOf(params),
                 invocation == null
                         ? new ConstructorBody.Implicit(body)

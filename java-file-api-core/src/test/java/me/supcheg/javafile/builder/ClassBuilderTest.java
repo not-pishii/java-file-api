@@ -88,6 +88,23 @@ class ClassBuilderTest {
     }
 
     @Test
+    void aConstructorDeclaresTypeParametersOfItsOwn() {
+        ClassBuilder builder = new ClassBuilder(ClassDesc.of("me.supcheg.example", "Box"));
+        builder.withConstructor(cb -> cb.withTypeParam("T")
+                .withTypeParam(new me.supcheg.javafile.type.TypeParam("U", java.util.List.of(Types.of(STRING))))
+                .withParam("value", Types.OBJECT)
+                .withBody(b -> b.exprStatement(this_().field("value").call("hashCode"))));
+
+        ClassDecl decl = builder.build();
+
+        ConstructorDecl ctor = (ConstructorDecl) decl.members().get(0);
+        assertThat(ctor.typeParams())
+                .extracting(me.supcheg.javafile.type.TypeParam::name)
+                .containsExactly("T", "U");
+        assertThat(ctor.typeParams().get(1).bounds()).containsExactly(Types.of(STRING));
+    }
+
+    @Test
     void superclassAndInterfacesAreCarriedOver() {
         ClassBuilder builder = new ClassBuilder(ClassDesc.of("me.supcheg.example", "Impl"));
         ClassDesc iface = ClassDesc.of("me.supcheg.example", "Greeter");
