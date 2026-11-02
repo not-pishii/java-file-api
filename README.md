@@ -96,6 +96,7 @@ The examples below assume `import static me.supcheg.javafile.code.Exprs.*;` and 
 - [Extending and implementing](#extending-and-implementing)
 - [Generic classes](#generic-classes)
 - [Typed method bodies: try/catch, lambdas, instanceof, enum switch](#typed-method-bodies-trycatch-lambdas-instanceof-enum-switch)
+- [Typed patterns: record deconstruction and a pattern switch](#typed-patterns-record-deconstruction-and-a-pattern-switch)
 - [Typed statements: text blocks, method and constructor references, assert, synchronized, resources, labels, the empty statement](#typed-statements-text-blocks-method-and-constructor-references-assert-synchronized-resources-labels-the-empty-statement)
 - [Typed operators: unary, bitwise, shifts, increments and class literals](#typed-operators-unary-bitwise-shifts-increments-and-class-literals)
 - [Varargs and arrays](#varargs-and-arrays)
@@ -995,8 +996,8 @@ the body `b`. One that ends a block (`return_`, `throw_`) returns the proof that
 and a `switch_` over an enum has a case for every constant or a `default_`. A lambda is built from the functional
 method (`sam`) of its interface, and a checked exception is caught by `catch_` or declared by `throwing`. A
 `tryWithResources` declares resources the body uses, and a label of a loop or of a block is a `Label` that `break_` and
-`continue_` name, as the next section tells. There is no pattern `switch` in the typed layer yet: `ifInstanceOf` tests a
-type, and a guard is an `if_` inside.
+`continue_` name, as the next section tells. A pattern — a type test, a record deconstruction, and the `switch` over
+them — is written with `Patterns` and `switchPattern`, as the next section tells.
 
 ```java
 JavaFile file = TypedJavaFile.class_(
@@ -1091,6 +1092,90 @@ public final class Signals {
     }
 }
 ```
+
+### Typed patterns: record deconstruction and a pattern switch
+
+A pattern is a value of the typed layer, made by `Patterns` and checked against the facts of the types it names before
+any code is rendered. `Patterns.binding(type)` is the binding of a type pattern, `Patterns.type(binding)` the type
+pattern itself, and `Patterns.record(record, components...)` a record deconstruction, one pattern per component, in
+declaration order. A record pattern is checked where it is made: the type is a record, it declares one component per
+pattern, and each pattern matches the type of its component or a subtype of it. A record that is generic is refused, as
+the types of its components are the ones its type arguments give them and the typed layer does not substitute them yet.
+
+A binding is in scope in the branch its pattern opens alone: `binding.var()` is the variable, made when the pattern is
+matched, and a statement that uses it anywhere else is refused where it is appended, as a variable smuggled out of its
+`let` is. A binding is the binding of one pattern: a pattern used twice is refused.
+
+`ifInstanceOf` and its terminated form `ifInstanceOfElse` take a pattern, and a record pattern binds each component in
+the then-branch with the type of that component:
+
+```java
+var x = Patterns.binding(PrimitiveToken.INT);
+var y = Patterns.binding(PrimitiveToken.INT);
+b.ifInstanceOf(
+        value,
+        Patterns.record(Point_.TOKEN, Patterns.type(x), Patterns.type(y)),
+        then -> then.return_(addInt(x.var(), y.var())));
+```
+
+`switchPattern` is a `switch` expression over a sealed type — or over an enum — whose cases are patterns, `null` and,
+over an enum, its constants. A case of a pattern is a block that yields the value of the case, so the bindings of the
+pattern are in scope in the block alone; `caseNull`, an enum constant and `default_` are a value or a block. A guard
+is the `when` of the case, which javac accepts in this language level:
+
+```java
+switchPattern(Figure_.TOKEN, figure, String_.TOKEN, c -> c
+        .case_(Patterns.record(Disc_.TOKEN, radius),
+                body -> gtInt(radius.var(), literal(1)),
+                body -> body.yield_(literal("big disc")))
+        .case_(Disc_.TOKEN, (body, disc) -> body.yield_(literal("small disc")))
+        .case_(Patterns.record(Square_.TOKEN, side), body -> body.yield_(concat(
+                literal("square "), staticCall(Integer_.toString_int, side.var()))))
+        .caseNull(body -> body.yield_(literal("nothing")))
+        .default_(body -> body.yield_(literal("other"))));
+```
+
+The cases are checked as they are added and when the `switch` is made, in the style of `EnumSwitchCases`: a case is a
+pattern of a subtype of the selector's type; no case is dominated by one before it — a second `case null` or constant,
+a case of a subtype of a pattern before it, or a case after an unconditional pattern is refused at its call; a
+`default_` is the last case and a `switch` with an unconditional pattern has none; and, without a `default_`, the cases
+cover every permitted subtype of a sealed selector, as the facts of its type name them, or every constant of an enum.
+A `switch` over a type that is neither sealed nor an enum is refused where it is built, as its cases cannot be proven
+to cover the selector; javac accepts one with a `default`, and the typed layer does not write it.
+
+```java
+public final class Describe {
+    public static int sum(Object v0) {
+        if (v0 instanceof Point(int v1, int v2)) {
+            return v1 + v2;
+        }
+        return 0;
+    }
+
+    public static String describe(Figure v0) {
+        return switch (v0) {
+            case Disc(int v1) when v1 > 1 -> {
+                yield "big disc";
+            }
+            case Disc v2 -> {
+                yield "small disc";
+            }
+            case Square(int v3) -> {
+                yield "square " + Integer.toString(v3);
+            }
+            case null -> {
+                yield "nothing";
+            }
+            default -> {
+                yield "other";
+            }
+        };
+    }
+}
+```
+
+A record deconstruction in an `instanceof`, and a `switch` over the records a sealed interface permits, are the two
+forms; the core's `Patterns` and `PatternLabel` render them, and the typed layer binds no raw node of its own.
 
 ### Typed statements: text blocks, method and constructor references, assert, synchronized, resources, labels, the empty statement
 
@@ -1784,7 +1869,12 @@ end there instead of holding the text; the typed layer renders no broken source.
 What follows is not a hole waiting to be filled: the typed layer does not express it on purpose.
 
 - **`switch` statements.** The typed layer models the same choices as a `switch` expression ([`switch_`](#typed-method-bodies-trycatch-lambdas-instanceof-enum-switch)), which yields a value or ends the body it is in and carries the terminality rules; a statement form would add no choice.
-- **A pattern `switch` over a sealed hierarchy.** `switch_` is exhaustive over the constants of an enum. A switch over types, with record or type patterns, is written as `ifInstanceOf` chains in the typed layer; the core's `SwitchBuilder` has the pattern forms, but the typed layer does not bind them.
+- **A record pattern of a generic record.** `Patterns.record` deconstructs a record, and the types of its components
+  are the types its type arguments give them. The typed layer does not substitute them yet, so a pattern of a generic
+  record is refused rather than rendered with `Object` or a raw type. A pattern `switch` over a sealed hierarchy is
+  expressible ([`switchPattern`](#typed-patterns-record-deconstruction-and-a-pattern-switch)), with two limits: a case
+  of a pattern is a block, since that block is what owns the bindings, and a switch over a type that is neither sealed
+  nor an enum has no form, since its cases cannot be proven to cover it.
 - **Local and anonymous classes.** The core API declares them (`LocalTypeDeclStmt`, an anonymous class body in `new`); the typed layer has no form for a type declared inside a body. The one anonymous class it writes is the body of an enum constant, which is no declaration the generator names.
 - **Compound assignment with narrowing.** `int += long` makes Java convert implicitly (JLS 15.26.2); the typed layer writes no implicit conversion, so the call does not type-check in the generator and is refused. Write the conversion out: `assign(x, AssignOp.ADD_ASSIGN, narrowTruncatingLongToInt(y))`.
 - **A resource whose `close()` throws out of the `try`.** A try-with-resources closes its resource on every way out, so a checked exception `close()` declares and the `try` catches nowhere and the member does not declare is refused when the resource is declared (JLS 14.20.3), rather than rendered into code javac rejects and that fails at run time.
