@@ -85,6 +85,9 @@
     BaseTwin.class,
     SubTwin.class,
     Picked.class,
+    Picking.class,
+    PlainPicking.class,
+    WrongBound.class,
     Linked.class,
     Chained.class,
     Following.class,
@@ -216,6 +219,9 @@ import me.supcheg.javafile.typed.fixtures.Resetting;
 import me.supcheg.javafile.typed.fixtures.BaseTwin;
 import me.supcheg.javafile.typed.fixtures.SubTwin;
 import me.supcheg.javafile.typed.fixtures.Picked;
+import me.supcheg.javafile.typed.fixtures.Picking;
+import me.supcheg.javafile.typed.fixtures.PlainPicking;
+import me.supcheg.javafile.typed.fixtures.WrongBound;
 import me.supcheg.javafile.typed.fixtures.Linked;
 import me.supcheg.javafile.typed.fixtures.Chained;
 import me.supcheg.javafile.typed.fixtures.Following;
