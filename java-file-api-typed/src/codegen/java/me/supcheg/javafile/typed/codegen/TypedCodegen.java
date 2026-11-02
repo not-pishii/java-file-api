@@ -166,6 +166,9 @@ public final class TypedCodegen {
     private static final ClassDesc GENERIC_METHOD_DECLARATION = typed("GenericMethodDeclaration");
     private static final ClassDesc GENERIC_METHOD_BODIES = typed("GenericMethodBodies");
     private static final ClassDesc TYPE_GENERIC_METHOD_DECLARATION = typed("TypeGenericMethodDeclaration");
+    private static final ClassDesc TYPE_GENERIC_DECLARATIONS = typed("TypeGenericDeclarations");
+    private static final ClassDesc TYPE_GENERIC_VARIABLE_ARITY_DECLARATIONS =
+            typed("TypeGenericVariableArityDeclarations");
     private static final ClassDesc TYPE_GENERIC_METHOD_BODIES = typed("TypeGenericMethodBodies");
     private static final ClassDesc TYPE_PARAMETER = typed("TypeParameter");
     private static final ClassDesc CLASS_HEADER = typed("ClassHeader");
@@ -194,6 +197,11 @@ public final class TypedCodegen {
 
     private static final ClassDesc INVOCABLE = facts("Invocable");
     private static final ClassDesc MEMBER_TRAITS = facts("MemberTraits");
+    private static final ClassDesc ANNOTATION_REF = facts("AnnotationRef");
+    private static final ClassDesc METHOD_TYPE_PARAMETER = facts("MethodTypeParameter");
+    private static final ClassDesc MODIFIER = ClassDesc.of("me.supcheg.javafile.model", "Modifier");
+    private static final ClassDesc OPTIONAL = ClassDesc.of("java.util", "Optional");
+    private static final ClassDesc SET = ClassDesc.of("java.util", "Set");
     private static final ClassDesc TYPE_TOKEN = facts("TypeToken");
     private static final ClassDesc REF_TOKEN = facts("RefToken");
     private static final ClassDesc ARRAY_TOKEN = facts("ArrayToken");
@@ -262,6 +270,8 @@ public final class TypedCodegen {
                                 genericMethodArities(),
                                 memberBuilderNestedArities(),
                                 typeMemberDeclarationArities(),
+                                typeGenericMethodDeclarationArities(),
+                                typeGenericVariableArityDeclarationArities(),
                                 annotationTypeBuilderArities(),
                                 enumConstantBodyArities()),
                         IntStream.rangeClosed(3, REACH.lambdas() + 1).mapToObj(TypedCodegen::function))
@@ -3355,6 +3365,280 @@ public final class TypedCodegen {
                             param("spec", appliedTo(TYPE_GENERIC_METHOD_BODIES, "Self", "F")));
                     IntStream.rangeClosed(1, MAX_ARITY).forEach(n -> typeGenericMethodEntry(cb, n));
                 });
+    }
+
+    // ------------------------------------------------------------------
+    // The forms of a generic member of an interface, a record or an enum
+    // ------------------------------------------------------------------
+
+    /// A kind of method that a generic member of an interface, a record or an enum is declared as: the
+    /// name of the declaration, the factory of its fact and its traits, and the kind its rendering is.
+    ///
+    /// The fields are the name of the declaration, the factory in `UnsafeInvocables`, whether the member is
+    /// `static`, whether it returns a result, the constant of `MemberTraits` its form fixes, the constant
+    /// of `Member.Kind` it is rendered as, and what it is for the documentation of the form.
+    private enum TypeMemberForm {
+        METHOD("declareMethod", "method", false, true, "FINAL", "METHOD", "a `public` method returning `R`"),
+        VOID_METHOD("declareVoidMethod", "voidMethod", false, false, "FINAL", "METHOD", "a `public void` method"),
+        ABSTRACT(
+                "declareAbstractMethod",
+                "method",
+                false,
+                true,
+                "ABSTRACT",
+                "ABSTRACT",
+                "a `public abstract` method returning `R`"),
+        VOID_ABSTRACT(
+                "declareVoidAbstractMethod",
+                "voidMethod",
+                false,
+                false,
+                "ABSTRACT",
+                "ABSTRACT",
+                "a `public abstract void` method"),
+        DEFAULT(
+                "declareDefaultMethod",
+                "method",
+                false,
+                true,
+                "DEFAULT",
+                "DEFAULT",
+                "a `default` method returning `R`"),
+        VOID_DEFAULT(
+                "declareVoidDefaultMethod",
+                "voidMethod",
+                false,
+                false,
+                "DEFAULT",
+                "DEFAULT",
+                "a `default void` method"),
+        STATIC(
+                "declareStaticMethod",
+                "staticMethod",
+                true,
+                true,
+                "FINAL",
+                "STATIC",
+                "a `public static` method returning `R`"),
+        VOID_STATIC(
+                "declareVoidStaticMethod",
+                "voidStaticMethod",
+                true,
+                false,
+                "FINAL",
+                "STATIC",
+                "a `public static void` method"),
+        PRIVATE("declarePrivateMethod", "method", false, true, "FINAL", "PRIVATE", "a `private` method returning `R`"),
+        VOID_PRIVATE(
+                "declareVoidPrivateMethod", "voidMethod", false, false, "FINAL", "PRIVATE", "a `private void` method");
+
+        final String name;
+        final String factory;
+        final boolean isStatic;
+        final boolean hasResult;
+        final String traits;
+        final String kind;
+        final String summary;
+
+        TypeMemberForm(
+                String name,
+                String factory,
+                boolean isStatic,
+                boolean hasResult,
+                String traits,
+                String kind,
+                String summary) {
+            this.name = name;
+            this.factory = factory;
+            this.isStatic = isStatic;
+            this.hasResult = hasResult;
+            this.traits = traits;
+            this.kind = kind;
+            this.summary = summary;
+        }
+
+        /// The type of the fact, of `Self` for a member of the type and of the type variables `as`.
+        TypeRef fact(List<String> as) {
+            String family = (hasResult ? "" : "Void") + (isStatic ? "Static" : "") + "MethodRef" + as.size();
+            return applied(
+                    facts(family),
+                    Stream.concat(
+                                    Stream.of(exact("Self")).filter(_ -> !isStatic),
+                                    Stream.concat(Stream.of(exact("R")).filter(_ -> hasResult), exacts(as).stream()))
+                            .toList());
+        }
+
+        /// The parameters before those of the member: its name, its result.
+        List<Param> leading() {
+            return listOf(
+                    List.of(param("name", Types.STRING)),
+                    hasResult ? List.of(param("result", typeToken("R"))) : List.<Param>of());
+        }
+
+        Doc doc() {
+            Doc base = Doc.of("Declares " + summary + " with the type parameters of this member.");
+            Doc named = base.param("name", "the method name");
+            return hasResult ? named.param("result", "the result type").typeParam("R", "the result type") : named;
+        }
+
+        Expr traits() {
+            return staticField(MEMBER_TRAITS, traits);
+        }
+    }
+
+    /// The forms of the generic member of an interface, a record or an enum, at every arity, which
+    /// `TypeGenericDeclarations` inherits: each declares the member of its kind, with the type
+    /// parameters of the member in scope, and leaves the aspects of the stage to the hooks.
+    private static JavaFile typeGenericMethodDeclarationArities() {
+        return arities("TypeGenericMethodDeclarationArities", List.of("Self"), TYPE_GENERIC_DECLARATIONS, cb -> {
+            hook(cb, List.of(), appliedTo(TYPE_MEMBER_DECLARATIONS, "Self"), "declarations");
+            hook(cb, List.of(), thrownType(), "thrown");
+            hook(cb, List.of(), annotationsType(), "annotations");
+            hook(cb, List.of(), parameterAnnotationsType(), "parameterAnnotations");
+            hook(cb, List.of(), applied(OPTIONAL, exactType(Types.of(DOC_COMMENT))), "doc");
+            hook(cb, List.of(), applied(SET, exactType(Types.of(MODIFIER))), "modifiers");
+            hook(cb, List.of(), applied(LIST, exactType(Types.of(METHOD_TYPE_PARAMETER))), "typeParams");
+            hook(cb, List.of(), Types.of(MEMBER_TRAITS), "traits", param("traits", Types.of(MEMBER_TRAITS)));
+            hook(
+                    cb,
+                    List.of(TypeVar.of("F", Types.of(INVOCABLE))),
+                    tv("F"),
+                    "declared",
+                    param("member", tv("F")),
+                    param("kind", Types.of(MEMBER_KIND)));
+            for (TypeMemberForm form : TypeMemberForm.values()) {
+                IntStream.rangeClosed(0, REACH.declared()).forEach(n -> typeMemberForm(cb, n, form));
+            }
+        });
+    }
+
+    /// `declareMethod(name, result, p1, ..., pn)` and its like: the declaration of the generic member, whose
+    /// fact is built with the type parameters of the stage.
+    private static void typeMemberForm(ClassBuilder cb, int n, TypeMemberForm form) {
+        List<String> as = as(n);
+        List<Param> params = listOf(
+                form.leading(),
+                IntStream.rangeClosed(1, n)
+                        .mapToObj(i -> param("p" + i, typeToken("A" + i)))
+                        .toList());
+        List<Expr> args = listOf(
+                List.of(call("declarations").call("self")),
+                List.of((Expr) field("name")),
+                form.hasResult ? List.of((Expr) field("result")) : List.<Expr>of(),
+                names("p", n),
+                List.of(call("traits", form.traits())));
+        Doc documented = IntStream.rangeClosed(1, n)
+                .boxed()
+                .reduce(
+                        form.doc(),
+                        (d, i) -> d.param("p" + i, "the " + ordinal(i, n) + "parameter type")
+                                .typeParam("A" + i, "the " + ordinal(i, n) + "parameter type"),
+                        (_, last) -> last)
+                .returns("the fact of the method")
+                .throws_(
+                        ILLEGAL_ARGUMENT,
+                        "if javac would reject the method (see [TypeSignatureRegistry]), or the modifiers the"
+                                + " stage gives it cannot be added to it")
+                .throws_(ILLEGAL_STATE, "if the declarations of the type have ended");
+        method(
+                cb,
+                PUBLIC,
+                typeVars(concat(form.hasResult ? List.of("R") : List.of(), as)),
+                form.fact(as),
+                form.name,
+                params,
+                documented,
+                b -> b.return_(call(
+                        "declared",
+                        staticCall(UNSAFE_INVOCABLES, form.factory, args),
+                        staticField(MEMBER_KIND, form.kind))));
+    }
+
+    /// The forms of a generic member of variable arity, at every arity, which
+    /// `TypeGenericVariableArityDeclarations` inherits: the last parameter is the array of the one of
+    /// variable arity, and the traits of the member tell the safety its elements have.
+    private static JavaFile typeGenericVariableArityDeclarationArities() {
+        return arities(
+                "TypeGenericVariableArityDeclarationArities",
+                List.of("Self"),
+                TYPE_GENERIC_VARIABLE_ARITY_DECLARATIONS,
+                cb -> {
+                    hook(cb, List.of(), appliedTo(TYPE_MEMBER_DECLARATIONS, "Self"), "declarations");
+                    hook(
+                            cb,
+                            List.of(TypeVar.of("F", Types.of(INVOCABLE))),
+                            tv("F"),
+                            "declared",
+                            param("member", tv("F")),
+                            param("kind", Types.of(MEMBER_KIND)));
+                    hook(
+                            cb,
+                            List.of(),
+                            Types.of(MEMBER_TRAITS),
+                            "traits",
+                            param("traits", Types.of(MEMBER_TRAITS)),
+                            param("last", applied(ARRAY_TOKEN, unbounded(), unbounded())));
+                    for (TypeMemberForm form : TypeMemberForm.values()) {
+                        IntStream.rangeClosed(1, REACH.variableArity())
+                                .forEach(n -> typeVariableArityForm(cb, n, form));
+                    }
+                });
+    }
+
+    /// `declareMethod(name, result, p1, ..., last)` and its like: the declaration of the generic member
+    /// whose last parameter is of variable arity.
+    private static void typeVariableArityForm(ClassBuilder cb, int n, TypeMemberForm form) {
+        List<String> before = as(n - 1);
+        List<String> as = concat(before, List.of("A"));
+        List<Param> params = listOf(
+                form.leading(),
+                before.stream()
+                        .map(a -> param("p" + a.substring(1), typeToken(a)))
+                        .toList(),
+                List.of(param("last", arrayToken())));
+        List<Expr> args = listOf(
+                List.of(call("declarations").call("self")),
+                List.of((Expr) field("name")),
+                form.hasResult ? List.of((Expr) field("result")) : List.<Expr>of(),
+                names("p", n - 1),
+                List.of(field("last"), call("traits", form.traits(), field("last"))));
+        Doc doc = form.doc()
+                .param("last", "the array type of the last parameter, which is of variable arity")
+                .typeParam("A", "the array type");
+        Doc documented = IntStream.rangeClosed(1, n - 1)
+                .boxed()
+                .reduce(
+                        doc,
+                        (d, i) -> d.param("p" + i, "the " + ordinal(i, n - 1) + "parameter type")
+                                .typeParam("A" + i, "the " + ordinal(i, n - 1) + "parameter type"),
+                        (_, last) -> last)
+                .returns("the fact of the method")
+                .throws_(
+                        ILLEGAL_ARGUMENT,
+                        "if javac would reject the method (see [TypeSignatureRegistry]), or the elements of the"
+                                + " last parameter cannot be vouched for by `@SafeVarargs` where the member cannot"
+                                + " carry it")
+                .throws_(ILLEGAL_STATE, "if the declarations of the type have ended");
+        method(
+                cb,
+                PUBLIC,
+                typeVars(concat(form.hasResult ? List.of("R") : List.of(), as)),
+                form.fact(as),
+                form.name,
+                params,
+                documented,
+                b -> b.return_(call(
+                        "declared",
+                        staticCall(UNSAFE_INVOCABLES, form.factory, args),
+                        staticField(MEMBER_KIND, form.kind))));
+    }
+
+    private static TypeRef annotationsType() {
+        return applied(LIST, exactType(applied(ANNOTATION_REF, unbounded())));
+    }
+
+    private static TypeRef parameterAnnotationsType() {
+        return applied(LIST, exactType(annotationsType()));
     }
 
     /// The stages of the member types of an annotation type, four to twelve type parameters, which

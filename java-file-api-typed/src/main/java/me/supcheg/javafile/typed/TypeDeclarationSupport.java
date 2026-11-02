@@ -3,6 +3,7 @@ package me.supcheg.javafile.typed;
 import me.supcheg.javafile.Invariants;
 import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.facts.AnnotationRef;
+import me.supcheg.javafile.facts.Arity;
 import me.supcheg.javafile.facts.ClassToken;
 import me.supcheg.javafile.facts.DeclarationIdentity;
 import me.supcheg.javafile.facts.DeclaredToken;
@@ -457,7 +458,7 @@ abstract class TypeDeclarationSupport<Self> {
             Set<Modifier> modifiers,
             Optional<me.supcheg.javafile.doc.DocComment> doc) {
         requireDeclaring(member.toString());
-        Set<Modifier> rendered = requireModifiers(modifiers);
+        Set<Modifier> rendered = requireModifiers(kind, member, modifiers);
         TypeScope scope = scope(kind, "the signature of " + member);
         List<me.supcheg.javafile.facts.MethodTypeParameter> typeParams =
                 member.traits().typeParams();
@@ -487,6 +488,32 @@ abstract class TypeDeclarationSupport<Self> {
         declared(declared);
         declaredMember(declared);
         return member;
+    }
+
+    /// The modifiers a method of the kind is rendered with beside those its kind fixes, held to what
+    /// Java allows: an abstract method has neither `synchronized` nor `native`, and a member of variable
+    /// arity whose elements are not reifiable is `@SafeVarargs`, which a `default` or an abstract method
+    /// of an interface cannot carry — an instance method of a record or an enum is declared `final` for
+    /// it, as one of a class is.
+    private Set<Modifier> requireModifiers(Member.Kind kind, Invocable member, Set<Modifier> modifiers) {
+        Set<Modifier> held = requireModifiers(modifiers);
+        if (!held.isEmpty() && kind == Member.Kind.ABSTRACT) {
+            throw new IllegalArgumentException("the abstract method " + member + " cannot be " + held
+                    + ": an abstract method is neither synchronized nor native (JLS 8.4.3.6)");
+        }
+        if (!(member.arity() instanceof Arity.Variable(var safety)) || safety != Arity.Safety.SAFE_VARARGS) {
+            return held;
+        }
+        return switch (kind) {
+            case STATIC, PRIVATE, PRIVATE_STATIC, CONSTRUCTOR, CANONICAL, COMPACT -> held;
+            case METHOD ->
+                Stream.concat(held.stream(), Stream.of(Modifier.FINAL)).collect(Collectors.toUnmodifiableSet());
+            case ABSTRACT, DEFAULT, ACCESSOR ->
+                throw new IllegalArgumentException("the method " + member + " of " + described
+                        + " cannot be of variable arity with elements that are not reifiable: it would be"
+                        + " `@SafeVarargs`, which javac accepts of a static, private or final method alone"
+                        + " (JLS 9.6.4.7), and " + kind + " is none");
+        };
     }
 
     /// The modifiers a method of the kind is rendered with beside those its kind fixes, held to what

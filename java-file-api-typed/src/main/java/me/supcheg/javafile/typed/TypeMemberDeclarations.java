@@ -1,5 +1,8 @@
 package me.supcheg.javafile.typed;
 
+import me.supcheg.javafile.doc.DocComment;
+import me.supcheg.javafile.facts.AnnotationRef;
+import me.supcheg.javafile.facts.ClassToken;
 import me.supcheg.javafile.facts.EnumToken;
 import me.supcheg.javafile.facts.FinalClassToken;
 import me.supcheg.javafile.facts.InterfaceToken;
@@ -47,6 +50,7 @@ import me.supcheg.javafile.model.Modifier;
 import me.supcheg.javafile.typed.TypeDeclarationSupport.Member.Kind;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 /// The declarations of the methods of a type that is not a `final` class (§6.5): an interface, a record
@@ -436,6 +440,17 @@ abstract non-sealed class TypeMemberDeclarations<Self> extends TypeMemberDeclara
     /// @throws IllegalStateException if the declarations have ended
     public final TypeModifiedDeclarations<Self> modified(Modifier... modifiers) {
         requireDeclaring("the modifiers of a method of " + described());
+        return new TypeModifiedDeclarations<>(this, requireMethodModifiers(modifiers));
+    }
+
+    /// Holds the modifiers of a method of the type to what Java allows of it, wherever the method is
+    /// declared: by [TypeModifiedDeclarations] and by the stage of a generic member
+    /// ([TypeGenericDeclarations#modified]).
+    ///
+    /// @param modifiers the modifiers to add, in any order
+    /// @return the modifiers
+    /// @throws IllegalArgumentException if the kind or the method cannot be one, naming it
+    final Set<Modifier> requireMethodModifiers(Modifier... modifiers) {
         if (!allowSynchronizedAndNative()) {
             throw new IllegalArgumentException("cannot declare a method of " + described() + " " + Set.of(modifiers)
                     + ": an interface has no synchronized or native method — its methods are abstract,"
@@ -455,29 +470,41 @@ abstract non-sealed class TypeMemberDeclarations<Self> extends TypeMemberDeclara
                     + " rejects a native method of a record (JLS 8.10.3), and the typed layer declares only what"
                     + " javac accepts");
         }
-        return new TypeModifiedDeclarations<>(this, Set.of(modifiers));
+        return Set.of(modifiers);
     }
 
     final <F extends Invocable> F declare(F fact, Kind kind, Set<Modifier> modifiers) {
         return declare(fact, kind, List.of(), List.of(), List.of(), modifiers);
     }
 
-    /// Declares a member whose fact is whole already, as a generic method of the type is when its
-    /// stage builds it: the type parameters the fact carries are in scope in its signature and its
-    /// body, and the kind fixes the modifiers it is rendered with.
+    /// Declares a member whose fact is whole already, with every aspect the stage of a generic member
+    /// gives it ([TypeGenericDeclarations#declared]): the `throws` clause, the annotations, the modifiers
+    /// and the documentation comment of the stage.
     ///
     /// @param fact the fact of the member
     /// @param kind how the member is rendered
+    /// @param thrown the exception classes of its `throws` clause
+    /// @param annotations the annotations it declares
+    /// @param parameterAnnotations the annotations of each parameter
+    /// @param modifiers the modifiers it is rendered with, `synchronized` or `native`
+    /// @param doc the documentation comment, if any
     /// @param <F> the fact
     /// @return the fact
     /// @throws IllegalArgumentException if javac would reject the member
     /// @throws IllegalStateException if the declarations have ended
-    final <F extends Invocable> F declaredAs(F fact, Kind kind) {
-        return declared(fact, kind);
+    final <F extends Invocable> F declaredAs(
+            F fact,
+            Kind kind,
+            List<ClassToken<? extends Throwable>> thrown,
+            List<AnnotationRef<?>> annotations,
+            List<List<AnnotationRef<?>>> parameterAnnotations,
+            Set<Modifier> modifiers,
+            Optional<DocComment> doc) {
+        return declare(fact, kind, thrown, annotations, parameterAnnotations, modifiers, doc);
     }
 
     /// Declares a generic method of the type from the `parameters` of a generated stage
-    /// ([TypeGenericMethodArities]): the specification declares the member itself, in a
+    /// ([TypeGenericMethodDeclarationArities]): the specification declares the member itself, in a
     /// [TypeGenericMethodDeclaration] the type parameters of the member are in scope in.
     ///
     /// @param parameters the type parameters, in order

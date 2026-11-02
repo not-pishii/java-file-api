@@ -1,9 +1,11 @@
 package me.supcheg.javafile.typed;
 
+import me.supcheg.javafile.Invariants;
 import me.supcheg.javafile.code.CodeBody;
 import me.supcheg.javafile.code.ConstructorBody;
 import me.supcheg.javafile.code.ConstructorInvocation;
 import me.supcheg.javafile.code.VariableInitializer;
+import me.supcheg.javafile.facts.Arity;
 import me.supcheg.javafile.facts.CtorRef0;
 import me.supcheg.javafile.facts.CtorRef1;
 import me.supcheg.javafile.facts.CtorRef10;
@@ -48,6 +50,7 @@ import me.supcheg.javafile.facts.VoidStaticMethodRef4;
 import me.supcheg.javafile.model.InitializerBlock;
 import me.supcheg.javafile.model.Modifier;
 import me.supcheg.javafile.model.Param;
+import me.supcheg.javafile.type.ArrayTypeRef;
 import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody0;
 import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody1;
 import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody10;
@@ -69,6 +72,8 @@ import me.supcheg.javafile.typed.TypeDeclarationSupport.Member;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -1253,16 +1258,23 @@ abstract class TypedTypeBodies<Self, M> {
                     return new Param(declaredName, param.type().typeRef(), annotations);
                 })
                 .toList();
-        List<Param> coreParams = named;
+        List<Param> coreParams =
+                switch (declared.fact().arity()) {
+                    case Arity.Fixed _ -> named;
+                    case Arity.Variable _ ->
+                        Stream.concat(named.stream().limit(named.size() - 1L), Stream.of(variable(named.getLast())))
+                                .toList();
+                };
         List<me.supcheg.javafile.annotation.AnnotationUse> annotations = Stream.of(
                         declared.annotations().stream().map(me.supcheg.javafile.facts.AnnotationRef::toUse),
                         declared.overrides()
                                 ? Stream.of(new me.supcheg.javafile.annotation.AnnotationUse(
                                         java.lang.constant.ClassDesc.of("java.lang", "Override"), List.of()))
-                                : Stream.<me.supcheg.javafile.annotation.AnnotationUse>empty())
+                                : Stream.<me.supcheg.javafile.annotation.AnnotationUse>empty(),
+                        safeVarargs(declared.fact().arity()))
                 .flatMap(Function.identity())
                 .toList();
-        List<me.supcheg.javafile.type.ClassOrInterfaceTypeRef> throwsClause = List.of();
+        List<me.supcheg.javafile.type.ClassOrInterfaceTypeRef> throwsClause = throwsClause(declared);
         return switch (declared.kind()) {
             case CONSTRUCTOR, CANONICAL, COMPACT -> {
                 ConstructorBody body =
@@ -1293,26 +1305,74 @@ abstract class TypedTypeBodies<Self, M> {
     }
 
     private M abstractMethod(Member.Callable declared) {
-        List<Param> params = IntStream.range(0, declared.fact().params().size())
-                .mapToObj(index -> new Param(
-                        "v" + index, declared.fact().params().get(index).typeRef()))
-                .toList();
+        List<Param> params = declaredParams(declared.fact());
         List<me.supcheg.javafile.annotation.AnnotationUse> annotations = List.of();
-        List<me.supcheg.javafile.type.ClassOrInterfaceTypeRef> throwsClause = List.of();
+        List<me.supcheg.javafile.type.ClassOrInterfaceTypeRef> throwsClause = throwsClause(declared);
         return abstractMethod(declared, params, throwsClause, annotations);
     }
 
     /// The declaration of a `native` method of the type: it has no body, and is there whole when it
     /// is declared, as an abstract method is. Its kind's `method` renders it without a body.
     private M nativeMethod(Member.Callable declared) {
-        List<Param> params = IntStream.range(0, declared.fact().params().size())
-                .mapToObj(index -> new Param(
-                        "v" + index, declared.fact().params().get(index).typeRef()))
+        List<Param> params = declaredParams(declared.fact());
+        List<me.supcheg.javafile.annotation.AnnotationUse> annotations = Stream.concat(
+                        declared.annotations().stream().map(me.supcheg.javafile.facts.AnnotationRef::toUse),
+                        safeVarargs(declared.fact().arity()))
                 .toList();
-        List<me.supcheg.javafile.annotation.AnnotationUse> annotations = declared.annotations().stream()
-                .map(me.supcheg.javafile.facts.AnnotationRef::toUse)
+        return method(declared, CodeBody.EMPTY, params, throwsClause(declared), annotations);
+    }
+
+    /// The `throws` clause of a member, written where it is declared: each exception is verified against
+    /// the classpath of the type, as one of a member of a class is ([MemberBodies]).
+    private List<me.supcheg.javafile.type.ClassOrInterfaceTypeRef> throwsClause(Member.Callable declared) {
+        Lowering lowering = new Lowering(
+                owner.target(),
+                new Lowering.Place.InClass(self, declared.scope(), owner.bounded(), Set.of()),
+                declared.fact().resultType());
+        return declared.thrown().stream()
+                .<me.supcheg.javafile.type.ClassOrInterfaceTypeRef>map(
+                        type -> lowering.named(type).typeRef())
                 .toList();
-        return method(declared, CodeBody.EMPTY, params, List.of(), annotations);
+    }
+
+    /// The parameters of a member, as its rendering writes them: the last, where the member is of
+    /// variable arity, is the array of its component, `T...`.
+    private static List<Param> declaredParams(Invocable member) {
+        List<Param> params = IntStream.range(0, member.params().size())
+                .mapToObj(index ->
+                        new Param("v" + index, member.params().get(index).typeRef()))
+                .toList();
+        return switch (member.arity()) {
+            case Arity.Fixed _ -> params;
+            case Arity.Variable _ ->
+                Stream.concat(params.stream().limit(params.size() - 1L), Stream.of(variable(params.getLast())))
+                        .toList();
+        };
+    }
+
+    /// The last parameter of a member of variable arity, `T... v`: its type is the array `T[]` to the
+    /// body, and is written by its component.
+    private static Param variable(Param last) {
+        ArrayTypeRef array = Invariants.present(
+                Optional.of(last.type()).filter(ArrayTypeRef.class::isInstance).map(ArrayTypeRef.class::cast),
+                "the last parameter of a member of variable arity is an array, got %s",
+                last.type());
+        return new Param(last.name(), array.component(), last.annotations(), true);
+    }
+
+    /// `@SafeVarargs`, of a member of variable arity that vouches for the array of its last parameter: the
+    /// one with a type that is not reifiable, which javac would warn of (JLS 9.6.4.7).
+    private static Stream<me.supcheg.javafile.annotation.AnnotationUse> safeVarargs(Arity arity) {
+        return switch (arity) {
+            case Arity.Fixed _ -> Stream.empty();
+            case Arity.Variable(var safety) ->
+                switch (safety) {
+                    case UNCHECKED -> Stream.empty();
+                    case SAFE_VARARGS ->
+                        Stream.of(new me.supcheg.javafile.annotation.AnnotationUse(
+                                java.lang.constant.ClassDesc.of("java.lang", "SafeVarargs"), List.of()));
+                };
+        };
     }
 
     // ------------------------------------------------------------------
