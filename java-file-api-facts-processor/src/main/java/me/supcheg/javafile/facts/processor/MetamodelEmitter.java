@@ -60,7 +60,9 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
@@ -180,7 +182,6 @@ final class MetamodelEmitter {
     private static final ClassDesc CD_ANNOTATION_VALUES =
             ClassDesc.of("me.supcheg.javafile.annotation.AnnotationValues");
     private static final ClassDesc CD_ANNOTATION_TYPE = ClassDesc.of(FACTS, "AnnotationType");
-    private static final ClassDesc CD_ANNOTATION_ELEMENT = ClassDesc.of(FACTS, "AnnotationElement");
     private static final ClassDesc CD_FACT_ANNOTATION_MEMBER = ClassDesc.of(FACTS, "AnnotationMember");
     private static final ClassDesc CD_ANNOTATION_REF = ClassDesc.of(FACTS, "AnnotationRef");
     private static final ClassDesc CD_ANNOTATION_VALUE = ClassDesc.of(FACTS, "AnnotationValue");
@@ -318,7 +319,7 @@ final class MetamodelEmitter {
             if (c < 0x7f) {
                 ascii.append(c);
             } else {
-                ascii.append(String.format("\\u%04x", (int) c));
+                ascii.append(String.format(Locale.ROOT, "\\u%04x", (int) c));
             }
         }
         return ascii.toString();
@@ -484,7 +485,8 @@ final class MetamodelEmitter {
             cb.withAnnotation(CD_NULL_MARKED);
             for (TypeParam param : typeParams) {
                 cb.withTypeParam(new TypeParam(
-                        renaming.get(param.name()),
+                        // every type parameter of the type is renamed
+                        Objects.requireNonNull(renaming.get(param.name())),
                         param.bounds().stream()
                                 .map(b -> (ClassOrInterfaceTypeRef) rename(b, renaming))
                                 .toList()));
@@ -1629,7 +1631,7 @@ final class MetamodelEmitter {
 
     /// The simple names a class may be written by: its own and those of the classes it is nested in.
     private static Stream<String> simpleNames(ClassDesc desc) {
-        return Pattern.compile("\\$").splitAsStream(desc.displayName());
+        return NESTING.splitAsStream(desc.displayName());
     }
 
     /// The token family of a kind of type.

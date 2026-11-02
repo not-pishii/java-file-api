@@ -20,10 +20,10 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
+import static me.supcheg.javafile.typed.ExpressionArities.new_;
 import static me.supcheg.javafile.typed.Expressions.assignField;
 import static me.supcheg.javafile.typed.Expressions.eqInt;
 import static me.supcheg.javafile.typed.Expressions.literal;
-import static me.supcheg.javafile.typed.Expressions.new_;
 import static me.supcheg.javafile.typed.Expressions.subInt;
 import static org.assertj.core.api.Assertions.assertThat;
 

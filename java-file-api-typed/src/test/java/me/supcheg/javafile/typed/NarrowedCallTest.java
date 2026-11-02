@@ -19,12 +19,12 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;
 
+import static me.supcheg.javafile.typed.ExpressionArities.new_;
 import static me.supcheg.javafile.typed.Expressions.addInt;
 import static me.supcheg.javafile.typed.Expressions.assign;
 import static me.supcheg.javafile.typed.Expressions.cond;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.literalNull;
-import static me.supcheg.javafile.typed.Expressions.new_;
 import static me.supcheg.javafile.typed.JavacVerdict.classUnlikeJavac;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;

@@ -28,12 +28,12 @@ import java.util.function.BiFunction;
 import java.util.stream.Stream;
 
 import static com.google.testing.compile.Compiler.javac;
+import static me.supcheg.javafile.typed.ExpressionArities.new_;
 import static me.supcheg.javafile.typed.Expressions.addInt;
 import static me.supcheg.javafile.typed.Expressions.assign;
 import static me.supcheg.javafile.typed.Expressions.eqRef;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.ltInt;
-import static me.supcheg.javafile.typed.Expressions.new_;
 import static me.supcheg.javafile.typed.Expressions.staticField;
 import static me.supcheg.javafile.typed.Expressions.switch_;
 import static org.assertj.core.api.Assertions.assertThat;

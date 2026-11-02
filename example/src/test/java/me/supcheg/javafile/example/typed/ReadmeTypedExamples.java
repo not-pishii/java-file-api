@@ -275,6 +275,8 @@ final class ReadmeTypedExamples {
         return file;
     }
 
+    // the README shows the declaration alone: the call it makes is what the example is about
+    @SuppressWarnings("UnusedVariable")
     static void division() {
         // region division
         Expr<Prim.Int> ratio = divInt(literal(10), subInt(literal(1), literal(1)));

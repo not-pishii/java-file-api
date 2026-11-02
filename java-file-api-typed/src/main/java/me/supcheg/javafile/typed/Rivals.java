@@ -10,6 +10,7 @@ import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.IntStream;
 
@@ -68,7 +69,8 @@ final class Rivals {
             return false;
         }
         int leading = rival.size() - 1;
-        ClassDesc element = rival.getLast().componentType();
+        // the last rival is an array, and only an array has a component type
+        ClassDesc element = Objects.requireNonNull(rival.getLast().componentType());
         return IntStream.range(0, types.size())
                 .allMatch(i -> mayConvert(types.get(i), i < leading ? rival.get(i) : element));
     }
@@ -85,13 +87,14 @@ final class Rivals {
             // boxing, then widening of the reference: any reference but an array
             case PrimitiveToken<?, ?, ?> primitive ->
                 param.isPrimitive()
-                        ? WIDENED.get(primitive.erasure().descriptorString()).contains(param.descriptorString())
+                        ? WIDENED.getOrDefault(primitive.erasure().descriptorString(), Set.of())
+                                .contains(param.descriptorString())
                         : !param.isArray();
             case ArrayToken<?, ?> array ->
                 param.isArray()
                         ? (array.component() instanceof PrimitiveToken<?, ?, ?>
-                                ? array.component().erasure().equals(param.componentType())
-                                : mayConvert(array.component(), param.componentType()))
+                                ? array.component().erasure().equals(Objects.requireNonNull(param.componentType()))
+                                : mayConvert(array.component(), Objects.requireNonNull(param.componentType())))
                         : ARRAY_SUPERTYPES.contains(param);
             case TypeVarToken<?> _ -> !param.isArray();
             case DeclaredToken<?> declared ->

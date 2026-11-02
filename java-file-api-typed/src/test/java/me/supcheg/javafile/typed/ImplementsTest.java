@@ -107,6 +107,7 @@ class ImplementsTest {
             Object other = compiled.generated().getConstructor().newInstance();
             assertThat(probe).isInstanceOf(Comparable.class).isInstanceOf(Runnable.class);
             ((Runnable) probe).run();
+            // the generated class is comparable with the class itself, which the test compares as one of Object
             @SuppressWarnings("unchecked")
             Comparable<Object> comparable = (Comparable<Object>) probe;
             assertThat(comparable.compareTo(other)).isEqualTo(6);

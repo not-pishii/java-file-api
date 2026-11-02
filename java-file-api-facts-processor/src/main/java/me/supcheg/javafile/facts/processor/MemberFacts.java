@@ -358,7 +358,7 @@ final class MemberFacts {
 
     /// A field for a member without type parameters of its own: assigned by
     /// the constructor for an instance member of a generic type.
-    private Spec value(String name, TypeRef type, Expr init, Scope scope, DocComment doc) {
+    private static Spec value(String name, TypeRef type, Expr init, Scope scope, DocComment doc) {
         return scope.instance() ? new Spec.Assigned(name, type, init, doc) : new Spec.Constant(name, type, init, doc);
     }
 
@@ -875,7 +875,7 @@ final class MemberFacts {
 
     /// A type as the metamodel writes it: its type variables under their
     /// names in the metamodel.
-    private TypeRef javaType(TypeRef type, Scope scope) {
+    private static TypeRef javaType(TypeRef type, Scope scope) {
         return switch (type) {
             case PrimitiveTypeRef primitive -> primitive;
             case ArrayTypeRef array -> Types.array(javaType(array.component(), scope));
@@ -890,7 +890,7 @@ final class MemberFacts {
         };
     }
 
-    private TypeArg javaTypeArg(TypeArg arg, Scope scope) {
+    private static TypeArg javaTypeArg(TypeArg arg, Scope scope) {
         return switch (arg) {
             case ExactTypeArg exact -> Types.exact(javaType(exact.type(), scope));
             case ExtendsTypeArg bound -> Types.extendsBound(javaType(bound.bound(), scope));

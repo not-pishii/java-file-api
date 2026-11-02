@@ -1,5 +1,7 @@
 package me.supcheg.javafile.facts;
 
+import org.jspecify.annotations.Nullable;
+
 /// A constant of an enum, obtained from [EnumToken#constant(String)].
 ///
 /// @param <E> the enum type
@@ -27,7 +29,7 @@ public final class EnumConstant<E> {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable Object o) {
         return o instanceof EnumConstant<?> other && owner.equals(other.owner) && name.equals(other.name);
     }
 

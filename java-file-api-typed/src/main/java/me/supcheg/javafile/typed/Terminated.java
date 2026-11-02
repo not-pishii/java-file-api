@@ -17,6 +17,8 @@ package me.supcheg.javafile.typed;
 ///
 /// @param <R> the result type of the enclosing method or lambda, or the type of the `switch` expression
 ///     the block is of
+// the parameter is the phantom of the result of the method or block, which the token is held to
+@SuppressWarnings("UnusedTypeParameter")
 public final class Terminated<R> {
     private final Block<?, ?> issuer;
     private final boolean completesNormally;

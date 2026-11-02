@@ -38,7 +38,7 @@ class MultipleBoundsTest {
                 UnsafeFacts.unverifiedClasspath(),
                 DESC,
                 typeParam("T", COMPARABLE.token),
-                new TypedJavaFile.TypedGenericClassSpec1<Comparable<String>>() {
+                new GenericDeclarationArities.TypedGenericClassSpec1<Comparable<String>>() {
                     @Override
                     public <Self, T extends Comparable<String>> MemberBodies<Self, ?> build(
                             ClassHeader<Self> h, TypeVarToken<T> t) {
@@ -70,7 +70,7 @@ class MultipleBoundsTest {
                 DESC,
                 typeParam("T", COMPARABLE.token),
                 typeParam("U"),
-                new TypedJavaFile.TypedGenericClassSpec2<Comparable<String>, Object>() {
+                new GenericDeclarationArities.TypedGenericClassSpec2<Comparable<String>, Object>() {
                     @Override
                     public <Self, T extends Comparable<String>, U> MemberBodies<Self, ?> build(
                             ClassHeader<Self> h, TypeVarToken<T> t, TypeVarToken<U> u) {
@@ -99,7 +99,7 @@ class MultipleBoundsTest {
                 UnsafeFacts.unverifiedClasspath(),
                 DESC,
                 typeParam("T", COMPARABLE.token),
-                new TypedJavaFile.TypedGenericClassSpec1<Comparable<String>>() {
+                new GenericDeclarationArities.TypedGenericClassSpec1<Comparable<String>>() {
                     @Override
                     public <Self, T extends Comparable<String>> MemberBodies<Self, ?> build(
                             ClassHeader<Self> h, TypeVarToken<T> t) {
@@ -124,7 +124,7 @@ class MultipleBoundsTest {
                         UnsafeFacts.unverifiedClasspath(),
                         DESC,
                         typeParam("T", COMPARABLE.token),
-                        new TypedJavaFile.TypedGenericClassSpec1<Comparable<String>>() {
+                        new GenericDeclarationArities.TypedGenericClassSpec1<Comparable<String>>() {
                             @Override
                             public <Self, T extends Comparable<String>> MemberBodies<Self, ?> build(
                                     ClassHeader<Self> h, TypeVarToken<T> t) {
@@ -157,7 +157,7 @@ class MultipleBoundsTest {
                         UnsafeFacts.unverifiedClasspath(),
                         DESC,
                         typeParam("T", tagged.token),
-                        new TypedJavaFile.TypedGenericClassSpec1<Tagged<String>>() {
+                        new GenericDeclarationArities.TypedGenericClassSpec1<Tagged<String>>() {
                             @Override
                             public <Self, T extends Tagged<String>> MemberBodies<Self, ?> build(
                                     ClassHeader<Self> h, TypeVarToken<T> t) {
@@ -186,7 +186,7 @@ class MultipleBoundsTest {
                 UnsafeFacts.unverifiedClasspath(),
                 DESC,
                 typeParam("T", Mid_.TOKEN),
-                new TypedJavaFile.TypedGenericClassSpec1<Mid>() {
+                new GenericDeclarationArities.TypedGenericClassSpec1<Mid>() {
                     @Override
                     public <Self, T extends Mid> MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<T> t) {
                         var cb = h.extendsObject().members();
@@ -218,7 +218,7 @@ class MultipleBoundsTest {
                 UnsafeFacts.unverifiedClasspath(),
                 DESC,
                 typeParam("T", tagged.token),
-                new TypedJavaFile.TypedGenericClassSpec1<Tagged<String>>() {
+                new GenericDeclarationArities.TypedGenericClassSpec1<Tagged<String>>() {
                     @Override
                     public <Self, T extends Tagged<String>> MemberBodies<Self, ?> build(
                             ClassHeader<Self> h, TypeVarToken<T> t) {
@@ -244,7 +244,7 @@ class MultipleBoundsTest {
                         UnsafeFacts.unverifiedClasspath(),
                         DESC,
                         typeParam("T", COMPARABLE.token),
-                        new TypedJavaFile.TypedGenericClassSpec1<Comparable<String>>() {
+                        new GenericDeclarationArities.TypedGenericClassSpec1<Comparable<String>>() {
                             @Override
                             public <Self, T extends Comparable<String>> MemberBodies<Self, ?> build(
                                     ClassHeader<Self> h, TypeVarToken<T> t) {

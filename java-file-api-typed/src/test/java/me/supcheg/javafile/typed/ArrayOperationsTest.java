@@ -17,15 +17,15 @@ import org.junit.jupiter.api.Test;
 import java.lang.constant.ClassDesc;
 import java.util.function.Function;
 
+import static me.supcheg.javafile.typed.ExpressionArities.lambdaBlock;
+import static me.supcheg.javafile.typed.ExpressionArities.new_;
 import static me.supcheg.javafile.typed.Expressions.addInt;
 import static me.supcheg.javafile.typed.Expressions.assign;
 import static me.supcheg.javafile.typed.Expressions.assignAt;
 import static me.supcheg.javafile.typed.Expressions.cloneArray;
-import static me.supcheg.javafile.typed.Expressions.lambdaBlock;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.newArray;
 import static me.supcheg.javafile.typed.Expressions.newArrayOf;
-import static me.supcheg.javafile.typed.Expressions.new_;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /// The operations on arrays beside `at`, `length` and `assignAt`: the creation of an array of arrays with the

@@ -37,6 +37,8 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 /// the declaration or its bodies ended. The paths the public builders cannot reach — a constructor
 /// of an interface or an enum declared as a method fact, and a constant body's field, constant,
 /// constructor or abstract method — are held directly.
+// the guard is tested by building deliberately invalid and raw values, which javac warns of
+@SuppressWarnings({"rawtypes", "unchecked"})
 class TypedDeclarationGuardTest {
 
     private static final ClassDesc DESC = ClassDesc.of("me.supcheg.example", "Guard");
@@ -388,6 +390,7 @@ class TypedDeclarationGuardTest {
                 .isThrownBy(() -> TypedJavaFile.interface_(
                         UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedInterfaceSpec() {
                             @Override
+                            // the bodies are those an earlier stage of this builder gave, which the test holds
                             @SuppressWarnings("unchecked")
                             public <Self> TypedInterfaceBodies<Self> build(TypedInterfaceBuilder<Self> ib) {
                                 return (TypedInterfaceBodies<Self>) first[0];
@@ -418,9 +421,11 @@ class TypedDeclarationGuardTest {
                 .isThrownBy(() -> TypedJavaFile.record(
                         UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedRecordSpec() {
                             @Override
+                            // the witness is deliberately of another type than the record's, which is what the test
+                            // proves is refused: the raw cast is how it is made
                             @SuppressWarnings({"unchecked", "rawtypes"})
                             public <Self> TypedRecordBodies<Self> build(TypedRecordBuilder<Self> rb) {
-                                rb.declareOverride((Upcast) witness[0], Named_.label);
+                                rb.declareOverride(witness[0], Named_.label);
                                 return rb.bodies();
                             }
                         }))

@@ -36,7 +36,7 @@ class ObscuredNamesTest {
     private static final ClassDesc OPTIONAL = ClassDesc.of("java.util", "Optional");
 
     private static JavaFile probe(Consumer<ClassBuilder> spec) {
-        return JavaFile.class_(PROBE, spec::accept);
+        return JavaFile.class_(PROBE, spec);
     }
 
     /// The errors javac has of a rendered file.
@@ -45,7 +45,7 @@ class ObscuredNamesTest {
         JavaFileObject file =
                 new SimpleJavaFileObject(URI.create("string:///gen/Probe.java"), JavaFileObject.Kind.SOURCE) {
                     @Override
-                    public CharSequence getCharContent(boolean ignoreEncodingErrors) {
+                    public String getCharContent(boolean ignoreEncodingErrors) {
                         return source;
                     }
                 };

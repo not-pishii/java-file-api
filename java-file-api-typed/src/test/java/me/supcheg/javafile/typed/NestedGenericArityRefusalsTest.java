@@ -119,8 +119,8 @@ class NestedGenericArityRefusalsTest {
         return UnsafeFacts.<T>interfaceToken(Comparable_.Data.SHAPE);
     }
 
-    private static TypedJavaFile.TypedGenericClassSpec4<Object, Object, Object, Object> classSpec4() {
-        return new TypedJavaFile.TypedGenericClassSpec4<>() {
+    private static GenericDeclarationArities.TypedGenericClassSpec4<Object, Object, Object, Object> classSpec4() {
+        return new GenericDeclarationArities.TypedGenericClassSpec4<>() {
             @Override
             public <Box, T1, T2, T3, T4> MemberBodies<Box, ?> build(
                     ClassHeader<Box> h,
@@ -133,10 +133,10 @@ class NestedGenericArityRefusalsTest {
         };
     }
 
-    private static TypedJavaFile.TypedGenericClassSpec12<
+    private static GenericDeclarationArities.TypedGenericClassSpec12<
                     Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object>
             classSpec12() {
-        return new TypedJavaFile.TypedGenericClassSpec12<>() {
+        return new GenericDeclarationArities.TypedGenericClassSpec12<>() {
             @Override
             public <Box, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> MemberBodies<Box, ?> build(
                     ClassHeader<Box> h,
@@ -157,10 +157,10 @@ class NestedGenericArityRefusalsTest {
         };
     }
 
-    private static TypedJavaFile.TypedGenericInterfaceSpec12<
+    private static GenericDeclarationArities.TypedGenericInterfaceSpec12<
                     Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object>
             interfaceSpec12() {
-        return new TypedJavaFile.TypedGenericInterfaceSpec12<>() {
+        return new GenericDeclarationArities.TypedGenericInterfaceSpec12<>() {
             @Override
             public <One, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> TypedInterfaceBodies<One> build(
                     TypedInterfaceBuilder<One> ib,
@@ -181,8 +181,8 @@ class NestedGenericArityRefusalsTest {
         };
     }
 
-    private static TypedJavaFile.TypedGenericRecordSpec4<Object, Object, Object, Object> recordSpec4() {
-        return new TypedJavaFile.TypedGenericRecordSpec4<>() {
+    private static GenericDeclarationArities.TypedGenericRecordSpec4<Object, Object, Object, Object> recordSpec4() {
+        return new GenericDeclarationArities.TypedGenericRecordSpec4<>() {
             @Override
             public <Pair, T1, T2, T3, T4> TypedRecordBodies<Pair> build(
                     TypedRecordBuilder<Pair> rb,

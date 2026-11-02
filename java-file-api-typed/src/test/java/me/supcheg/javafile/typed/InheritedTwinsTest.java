@@ -111,7 +111,7 @@ class InheritedTwinsTest {
                         UnsafeFacts.unverifiedClasspath(),
                         DESC,
                         typeParam("T", Runnable_.TOKEN),
-                        new TypedJavaFile.TypedGenericClassSpec1<Runnable>() {
+                        new GenericDeclarationArities.TypedGenericClassSpec1<Runnable>() {
                             @Override
                             public <Self, T extends Runnable> MemberBodies<Self, ?> build(
                                     ClassHeader<Self> h, TypeVarToken<T> t) {
@@ -132,7 +132,7 @@ class InheritedTwinsTest {
                         UnsafeFacts.unverifiedClasspath(),
                         DESC,
                         typeParam("T", Runnable_.TOKEN),
-                        new TypedJavaFile.TypedGenericClassSpec1<Runnable>() {
+                        new GenericDeclarationArities.TypedGenericClassSpec1<Runnable>() {
                             @Override
                             public <Self, T extends Runnable> MemberBodies<Self, ?> build(
                                     ClassHeader<Self> h, TypeVarToken<T> t) {

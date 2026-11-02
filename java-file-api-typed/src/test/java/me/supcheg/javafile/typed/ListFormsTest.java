@@ -20,10 +20,10 @@ import java.lang.constant.ClassDesc;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static me.supcheg.javafile.typed.ExpressionArities.new_;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.newArray;
 import static me.supcheg.javafile.typed.Expressions.newArrayOf;
-import static me.supcheg.javafile.typed.Expressions.new_;
 import static me.supcheg.javafile.typed.Expressions.varargs;
 import static org.assertj.core.api.Assertions.assertThat;
 

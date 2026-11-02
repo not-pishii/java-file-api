@@ -11,14 +11,14 @@ import org.junit.jupiter.api.Test;
 import java.lang.constant.ClassDesc;
 import java.util.function.Function;
 
+import static me.supcheg.javafile.typed.ExpressionArities.lambda;
+import static me.supcheg.javafile.typed.ExpressionArities.staticCall;
 import static me.supcheg.javafile.typed.Expressions.assign;
 import static me.supcheg.javafile.typed.Expressions.assignAt;
 import static me.supcheg.javafile.typed.Expressions.eqRef;
-import static me.supcheg.javafile.typed.Expressions.lambda;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.literalNull;
 import static me.supcheg.javafile.typed.Expressions.newArray;
-import static me.supcheg.javafile.typed.Expressions.staticCall;
 import static me.supcheg.javafile.typed.JavacVerdict.unlikeJavac;
 
 /// A value of a primitive type is refused where a reference is taken: Java would box it implicitly, and the

@@ -46,7 +46,7 @@ class BoundsAsAClassTest {
                 UnsafeFacts.unverifiedClasspath(),
                 DESC,
                 typeParam("T", first),
-                new TypedJavaFile.TypedGenericClassSpec1<B>() {
+                new GenericDeclarationArities.TypedGenericClassSpec1<B>() {
                     @Override
                     public <Self, T extends B> MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<T> t) {
                         h.bound(t, further);
@@ -135,7 +135,7 @@ class BoundsAsAClassTest {
                 UnsafeFacts.unverifiedClasspath(),
                 DESC,
                 typeParam("T", Base_.TOKEN),
-                new TypedJavaFile.TypedGenericClassSpec1<Base>() {
+                new GenericDeclarationArities.TypedGenericClassSpec1<Base>() {
                     @Override
                     public <Self, T extends Base> MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<T> t) {
                         Upcast<T, Sealing> asSealing = h.bound(t, Sealing_.TOKEN);

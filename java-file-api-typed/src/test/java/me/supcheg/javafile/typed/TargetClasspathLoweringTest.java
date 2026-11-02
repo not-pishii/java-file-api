@@ -151,7 +151,7 @@ class TargetClasspathLoweringTest {
                 import java.lang.constant.ClassDesc;
                 import me.supcheg.javafile.JavaFile;
                 import me.supcheg.javafile.facts.UnsafeFacts;
-import me.supcheg.javafile.facts.UnsafeInvocables;
+                import me.supcheg.javafile.facts.UnsafeInvocables;
                 import me.supcheg.javafile.typed.TypedClassBodies;
                 import me.supcheg.javafile.typed.TypedClassBuilder;
                 import me.supcheg.javafile.typed.TypedJavaFile;
@@ -250,9 +250,10 @@ import me.supcheg.javafile.facts.UnsafeInvocables;
 
         assertThatExceptionOfType(TargetClasspathMismatchException.class)
                 .isThrownBy(() -> render(target, SVC_TOKEN, TargetClasspathLoweringTest::callM))
-                .withMessageStartingWith(
-                        "metamodel gen.facts.fixtures.Svc_ does not match fixtures.Svc on the target classpath:\n"
-                                + "  missing: method overridable m(java.lang.String) -> java.lang.String throws -\n")
+                .withMessageStartingWith("""
+                        metamodel gen.facts.fixtures.Svc_ does not match fixtures.Svc on the target classpath:
+                          missing: method overridable m(java.lang.String) -> java.lang.String throws -
+                        """)
                 .satisfies(e -> assertThat(e.type()).isEqualTo(ClassDesc.of("fixtures", "Svc")));
     }
 

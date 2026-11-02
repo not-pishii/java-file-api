@@ -14,6 +14,7 @@ import me.supcheg.javafile.model.RecordMember;
 import me.supcheg.javafile.model.StaticFieldDecl;
 import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.typed.TypeDeclarationSupport.Member;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.Set;
@@ -35,6 +36,7 @@ public final class TypedRecordBodies<Self> extends TypedTypeBodies<Self, RecordM
     }
 
     @Override
+    @Nullable
     String compactParameterName(Member.Callable declared, int index) {
         return switch (declared.kind()) {
             case COMPACT, CANONICAL -> components.get(index).name();

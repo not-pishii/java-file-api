@@ -1,7 +1,6 @@
 package me.supcheg.javafile.facts.codegen;
 
 import me.supcheg.javafile.JavaFile;
-import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.annotation.AnnotationValues;
 import me.supcheg.javafile.builder.ClassBuilder;
 import me.supcheg.javafile.code.CodeBuilder;
@@ -24,6 +23,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
@@ -58,7 +58,9 @@ public final class FactsCodegen {
     /// The largest generated arity, unless the build passes another as the fourth argument.
     /// The generator writes it into [FactsArity] so that another module reads it instead of
     /// repeating the number.
-    public static int MAX_ARITY = 16;
+    // read from the build's argument and written into `FactsArity`: it is the one number the generator carries
+    @SuppressWarnings("NonFinalStaticField")
+    private static int maxArity = 16;
 
     private static final String FACTS = "me.supcheg.javafile.facts";
 
@@ -90,7 +92,7 @@ public final class FactsCodegen {
     /// @param args the output directory of the families, that of their tests, and the mode, `write` or `check`
     public static void main(String[] args) {
         if (args.length > 3) {
-            MAX_ARITY = Integer.parseInt(args[3]);
+            maxArity = Integer.parseInt(args[3]);
         }
         Stream.of(new Generated(Path.of(args[0]), generate()), new Generated(Path.of(args[1]), generateTests()))
                 .forEach(args[2].equals("write") ? Generated::write : Generated::check);
@@ -118,12 +120,12 @@ public final class FactsCodegen {
     /// @return the files
     public static List<JavaFile> generate() {
         List<JavaFile> files = new ArrayList<>();
-        for (int n = 0; n <= MAX_ARITY; n++) {
+        for (int n = 0; n <= maxArity; n++) {
             for (Family family : Family.values()) {
                 files.add(family.isSam() ? sam(family, n) : ref(family, n));
             }
         }
-        for (int n = 0; n <= MAX_ARITY; n++) {
+        for (int n = 0; n <= maxArity; n++) {
             for (boolean hasResult : List.of(true, false)) {
                 files.add(implementation(hasResult, n));
                 for (Had had : Had.of(hasResult).toList()) {
@@ -150,7 +152,7 @@ public final class FactsCodegen {
                     "MAX_ARITY",
                     Types.INT,
                     fb -> fb.withModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-                            .withInitializer(Exprs.literal(MAX_ARITY)));
+                            .withInitializer(Exprs.literal(maxArity)));
         });
     }
 
@@ -164,7 +166,7 @@ public final class FactsCodegen {
                 }
             }
             for (Map.Entry<Path, String> file : files.entrySet()) {
-                Files.createDirectories(file.getKey().getParent());
+                Files.createDirectories(Objects.requireNonNull(file.getKey().getParent()));
                 Files.writeString(file.getKey(), file.getValue(), StandardCharsets.UTF_8);
             }
         } catch (IOException e) {
@@ -264,7 +266,7 @@ public final class FactsCodegen {
             return Types.of(raw);
         }
         return Types.parameterized(
-                raw, vars.stream().map(v -> Types.exact(var(v))).toList(), new AnnotationUse[0]);
+                raw, vars.stream().map(v -> Types.exact(var(v))).toList());
     }
 
     private static Expr instantiate(ClassDesc desc, List<String> typeVars, List<Expr> args) {
@@ -369,7 +371,7 @@ public final class FactsCodegen {
                     GENERATED, ab -> ab.withMember("value", AnnotationValues.literal(FactsCodegen.class.getName())));
             ib.withExactModifiers(Set.of());
             ib.withExtends(INVOCABLE);
-            ib.withPermits(IntStream.rangeClosed(0, MAX_ARITY)
+            ib.withPermits(IntStream.rangeClosed(0, maxArity)
                     .boxed()
                     .flatMap(n -> Stream.of(Family.values())
                             .filter(family -> !family.isSam())
@@ -497,12 +499,12 @@ public final class FactsCodegen {
             generated(cb);
             cb.withModifiers(Modifier.FINAL);
             cb.withConstructor(ctor -> ctor.withModifiers(Modifier.PRIVATE));
-            for (int n = 0; n <= MAX_ARITY; n++) {
+            for (int n = 0; n <= maxArity; n++) {
                 for (Family family : Family.values()) {
                     factory(cb, family, n);
                 }
             }
-            for (int n = 0; n <= MAX_ARITY; n++) {
+            for (int n = 0; n <= maxArity; n++) {
                 for (boolean hasResult : List.of(true, false)) {
                     for (Had had : Had.of(hasResult).toList()) {
                         implementationFactory(cb, had, hasResult, n);
@@ -526,6 +528,8 @@ public final class FactsCodegen {
     }
 
     /// How a class has a method of a supertype: the two classes of an implementation family.
+    // the tokens a family names are constant nominal descriptors, which nothing can change
+    @SuppressWarnings("ImmutableEnumChecker")
     private enum Had {
         /// By a method of its own that overrides it: `OverridingN`, which gives the fact of that method.
         OVERRIDING("Overriding", "ByOverride"),
@@ -654,7 +658,7 @@ public final class FactsCodegen {
     ///
     /// @return the files
     public static List<JavaFile> generateTests() {
-        return IntStream.rangeClosed(0, MAX_ARITY)
+        return IntStream.rangeClosed(0, maxArity)
                 .mapToObj(FactsCodegen::familiesTest)
                 .toList();
     }
@@ -690,7 +694,7 @@ public final class FactsCodegen {
         return vars.isEmpty()
                 ? Types.of(raw)
                 : Types.parameterized(
-                        raw, vars.stream().map(v -> Types.exact(phantom(v))).toList(), new AnnotationUse[0]);
+                        raw, vars.stream().map(v -> Types.exact(phantom(v))).toList());
     }
 
     private static Expr fixture(String name) {
@@ -881,7 +885,7 @@ public final class FactsCodegen {
             packagePrivateAbstract(cb, "resolve", Types.of(RESOLUTION), new Param("query", Types.of(MEMBER_QUERY)));
             packagePrivateAbstract(cb, "concreteClassToken", Types.parameterized(CONCRETE_CLASS_TOKEN, var("O")));
             packagePrivateAbstract(cb, "extendableClassToken", Types.parameterized(EXTENDABLE_CLASS_TOKEN, var("O")));
-            for (int n = 0; n <= MAX_ARITY; n++) {
+            for (int n = 0; n <= maxArity; n++) {
                 lookupMethod(cb, Family.METHOD, "method", n);
                 lookupMethod(cb, Family.VOID_METHOD, "voidMethod", n);
                 lookupMethod(cb, Family.STATIC_METHOD, "staticMethod", n);

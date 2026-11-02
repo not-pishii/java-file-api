@@ -6,6 +6,7 @@ import me.supcheg.javafile.type.ClassTypeRef;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
 import me.supcheg.javafile.type.TypeRef;
 import me.supcheg.javafile.type.TypeVarRef;
+import org.jspecify.annotations.Nullable;
 
 import java.lang.constant.ClassDesc;
 import java.util.List;
@@ -69,7 +70,7 @@ public final class AnnotatedRefToken<T> implements RefToken<T> {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable Object o) {
         return o instanceof AnnotatedRefToken<?> other
                 && token.equals(other.token)
                 && annotations.equals(other.annotations);

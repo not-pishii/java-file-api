@@ -113,7 +113,7 @@ final class LineDiff {
             return Optional.of(new Line.Same(expected.get(i), i + 1, j + 1));
         }
         return Optional.of(
-                j == m || i < n && common[i + 1][j] >= common[i][j + 1]
+                (j == m || (i < n && common[i + 1][j] >= common[i][j + 1]))
                         ? new Line.Removed(expected.get(i), i + 1, j + 1)
                         : new Line.Added(actual.get(j), i + 1, j + 1));
     }

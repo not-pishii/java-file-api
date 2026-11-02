@@ -32,6 +32,8 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import static me.supcheg.javafile.typed.ExpressionArities.new_;
+import static me.supcheg.javafile.typed.ExpressionArities.staticCall;
 import static me.supcheg.javafile.typed.Expressions.assignField;
 import static me.supcheg.javafile.typed.Expressions.assignStaticField;
 import static me.supcheg.javafile.typed.Expressions.box;
@@ -41,8 +43,6 @@ import static me.supcheg.javafile.typed.Expressions.eqRef;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.literalNull;
 import static me.supcheg.javafile.typed.Expressions.newArray;
-import static me.supcheg.javafile.typed.Expressions.new_;
-import static me.supcheg.javafile.typed.Expressions.staticCall;
 import static me.supcheg.javafile.typed.Expressions.staticField;
 import static me.supcheg.javafile.typed.Expressions.unbox;
 import static me.supcheg.javafile.typed.Fixtures.BASE;

@@ -103,9 +103,9 @@ class FactValuesTest {
     }
 
     @Test
+    // the type parameter of `throwing` rules it out; an unchecked cast gets past it
     @SuppressWarnings("unchecked")
     void noMemberThrowsWhatIsNoThrowable() {
-        // the type parameter of `throwing` rules it out; an unchecked cast gets past it
         RefToken<? extends Throwable> string = (RefToken<? extends Throwable>) (RefToken<?>) String_.TOKEN;
 
         assertThatIllegalArgumentException()

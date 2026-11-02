@@ -74,7 +74,10 @@ abstract class DeclaredTokenData {
     }
 
     @Override
-    public final boolean equals(Object o) {
+    // the class is part of what the token is: an array token and a declared token of the same type differ,
+    // so `getClass` compares what `instanceof` would not
+    @SuppressWarnings("EqualsGetClass")
+    public final boolean equals(@Nullable Object o) {
         return o != null && o.getClass() == getClass() && typeRef.equals(((DeclaredTokenData) o).typeRef);
     }
 

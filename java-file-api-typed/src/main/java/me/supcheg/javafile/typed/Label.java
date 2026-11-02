@@ -1,12 +1,14 @@
 package me.supcheg.javafile.typed;
 
+import org.jspecify.annotations.Nullable;
+
 /// The label of a statement being built (6.3): a `break` or a `continue` of the
 /// block inside it names it. Obtained from [Block#label()] and attached by the
 /// statement the label names - [Block#labeled(Label, java.util.function.Consumer)],
 /// a loop, or [Block#loopForever(Label, java.util.function.Consumer)]. A label
 /// names exactly one statement, and is in scope only inside it.
 public final class Label {
-    private Block<?, ?> owner;
+    private @Nullable Block<?, ?> owner;
     private boolean loop;
 
     Label() {}

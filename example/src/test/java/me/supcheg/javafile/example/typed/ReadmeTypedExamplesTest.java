@@ -108,6 +108,7 @@ class ReadmeTypedExamplesTest {
         Object other = circle.generated().getConstructor().newInstance();
         assertThat(circle.invoke("area")).isEqualTo(Math.PI * 1.5 * 1.5);
         assertThat(one).isInstanceOf(Comparable.class);
+        // the generated class is `Comparable` of the class itself, which the test knows and javac does not
         @SuppressWarnings("unchecked")
         Comparable<Object> comparable = (Comparable<Object>) one;
         assertThat(comparable.compareTo(other)).isZero();
@@ -134,6 +135,7 @@ class ReadmeTypedExamplesTest {
         assertThat(signals.invoke("describe", -5)).isEqualTo("something else");
         assertThat(signals.invoke("describe", "abc")).isEqualTo("string of 3");
         assertThat(signals.invoke("describe", 1.5)).isEqualTo("something else");
+        // the generated class is the predicate the test asks for, and the reflection call gives an object
         @SuppressWarnings("unchecked")
         Predicate<String> startingWithA = (Predicate<String>) signals.invoke("startingWith", "a");
         assertThat(startingWithA.test("abc")).isTrue();

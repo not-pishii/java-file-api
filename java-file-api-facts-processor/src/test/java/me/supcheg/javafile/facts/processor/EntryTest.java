@@ -94,11 +94,6 @@ class EntryTest {
         });
     }
 
-    /// A class `Probe` that extends or implements a type with a method for each of `steps`.
-    private static String probe(String type, Read read, List<Entry.Step> steps) {
-        return probe("Probe", type, read, steps);
-    }
-
     /// A class that extends or implements a type with a method for each of `steps`.
     private static String probe(String name, String type, Read read, List<Entry.Step> steps) {
         return probe(
@@ -121,7 +116,7 @@ class EntryTest {
         String applied = read.typeParams().isEmpty()
                 ? ""
                 : read.typeParams().stream()
-                        .map(param -> param.split(" ")[0])
+                        .map(param -> param.split(" ", 2)[0])
                         .collect(Collectors.joining(", ", "<", ">"));
         return "class " + name + declared + (read.isInterface() ? " implements " : " extends ") + type + applied
                 + " {\n" + String.join("", methods) + "}\n";
@@ -198,7 +193,6 @@ class EntryTest {
         Read read = read(type);
 
         assertThat(read.entry()).isInstanceOf(Entry.Offered.class);
-        List<Entry.Step> steps = ((Entry.Offered) read.entry()).steps();
         // with every step the class compiles: there is no abstract method the steps do not tell
         requireTheStepsAreWhatJavacAsksFor(type, read, Javac.plain());
     }

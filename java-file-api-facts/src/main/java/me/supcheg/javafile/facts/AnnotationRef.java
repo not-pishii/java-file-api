@@ -1,6 +1,7 @@
 package me.supcheg.javafile.facts;
 
 import me.supcheg.javafile.annotation.AnnotationUse;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 
@@ -54,7 +55,7 @@ public final class AnnotationRef<A> {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable Object o) {
         return o instanceof AnnotationRef<?> other
                 && type.token().equals(other.type.token())
                 && members.equals(other.members);

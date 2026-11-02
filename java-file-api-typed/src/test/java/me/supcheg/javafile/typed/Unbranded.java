@@ -17,6 +17,7 @@ final class Unbranded {
     static TypedJavaFile.TypedClassSpec spec(Function<TypedClassBuilder<Object>, TypedClassBodies<Object>> members) {
         return new TypedJavaFile.TypedClassSpec() {
             @Override
+            // the specification of the test is of Object, which the brand of the class is given up for
             @SuppressWarnings("unchecked")
             public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
                 return (TypedClassBodies<Self>) members.apply((TypedClassBuilder<Object>) cb);

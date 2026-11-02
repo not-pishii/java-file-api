@@ -15,9 +15,9 @@ import org.junit.jupiter.api.Test;
 import java.lang.constant.ClassDesc;
 import java.util.List;
 
+import static me.supcheg.javafile.typed.ExpressionArities.new_;
+import static me.supcheg.javafile.typed.ExpressionArities.staticCall;
 import static me.supcheg.javafile.typed.Expressions.literal;
-import static me.supcheg.javafile.typed.Expressions.new_;
-import static me.supcheg.javafile.typed.Expressions.staticCall;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

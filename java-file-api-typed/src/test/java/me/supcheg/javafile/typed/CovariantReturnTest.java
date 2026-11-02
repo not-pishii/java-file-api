@@ -32,12 +32,11 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;
 
-import static com.google.testing.compile.CompilationSubject.assertThat;
+import static me.supcheg.javafile.typed.ExpressionArities.new_;
 import static me.supcheg.javafile.typed.Expressions.assignAt;
 import static me.supcheg.javafile.typed.Expressions.eqRef;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.newArray;
-import static me.supcheg.javafile.typed.Expressions.new_;
 import static me.supcheg.javafile.typed.JavacVerdict.classAsJavac;
 import static me.supcheg.javafile.typed.JavacVerdict.classUnlikeJavac;
 import static org.assertj.core.api.Assertions.assertThat;

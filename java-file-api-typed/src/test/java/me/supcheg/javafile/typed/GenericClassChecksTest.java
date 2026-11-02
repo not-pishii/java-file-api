@@ -21,11 +21,11 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;
 
-import static me.supcheg.javafile.typed.Expressions.lambda;
+import static me.supcheg.javafile.typed.ExpressionArities.lambda;
+import static me.supcheg.javafile.typed.ExpressionArities.new_;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.literalNull;
 import static me.supcheg.javafile.typed.Expressions.newArray;
-import static me.supcheg.javafile.typed.Expressions.new_;
 import static me.supcheg.javafile.typed.JavacVerdict.classAsJavac;
 import static me.supcheg.javafile.typed.JavacVerdict.classUnlikeJavac;
 import static me.supcheg.javafile.typed.TypedJavaFile.typeParam;
@@ -42,7 +42,7 @@ class GenericClassChecksTest {
     private static final Class<IllegalStateException> OUT_OF_SCOPE = IllegalStateException.class;
     private static final Class<IllegalArgumentException> AT_THE_PLACE = IllegalArgumentException.class;
 
-    private static JavaFile probe(TypedJavaFile.TypedGenericClassSpec1<Object> spec) {
+    private static JavaFile probe(GenericDeclarationArities.TypedGenericClassSpec1<Object> spec) {
         return TypedJavaFile.declareClass(UnsafeFacts.unverifiedClasspath(), DESC, typeParam("T"), spec);
     }
 
@@ -53,7 +53,7 @@ class GenericClassChecksTest {
 
     /// The class `Probe<T>` with a constructor and a `static void m()` of `body`.
     private static JavaFile withStatic(StaticBody body) {
-        return probe(new TypedJavaFile.TypedGenericClassSpec1<>() {
+        return probe(new GenericDeclarationArities.TypedGenericClassSpec1<>() {
             @Override
             public <Self, T> MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<T> t) {
                 var cb = h.extendsObject().members();
@@ -75,7 +75,7 @@ class GenericClassChecksTest {
         void theResultOfAStaticMethodIsNoTypeParameter() {
             classAsJavac(
                     OUT_OF_SCOPE,
-                    () -> probe(new TypedJavaFile.TypedGenericClassSpec1<>() {
+                    () -> probe(new GenericDeclarationArities.TypedGenericClassSpec1<>() {
                         @Override
                         public <Self, T> MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<T> t) {
                             h.extendsObject().members().declareStaticMethod("make", t);
@@ -95,7 +95,7 @@ class GenericClassChecksTest {
         void aParameterOfAStaticMethodIsOfNoTypeThatMentionsATypeParameter() {
             classAsJavac(
                     OUT_OF_SCOPE,
-                    () -> probe(new TypedJavaFile.TypedGenericClassSpec1<>() {
+                    () -> probe(new GenericDeclarationArities.TypedGenericClassSpec1<>() {
                         @Override
                         public <Self, T> MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<T> t) {
                             h.extendsObject()
@@ -114,7 +114,7 @@ class GenericClassChecksTest {
         void theClassWithItsTypeParametersIsNoTypeOfAStaticMethod() {
             classAsJavac(
                     OUT_OF_SCOPE,
-                    () -> probe(new TypedJavaFile.TypedGenericClassSpec1<>() {
+                    () -> probe(new GenericDeclarationArities.TypedGenericClassSpec1<>() {
                         @Override
                         public <Self, T> MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<T> t) {
                             var cb = h.extendsObject().members();
@@ -175,7 +175,7 @@ class GenericClassChecksTest {
             // but the one of its type parameters
             classUnlikeJavac(
                     OUT_OF_SCOPE,
-                    () -> probe(new TypedJavaFile.TypedGenericClassSpec1<>() {
+                    () -> probe(new GenericDeclarationArities.TypedGenericClassSpec1<>() {
                         @Override
                         public <Self, T> MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<T> t) {
                             var cb = h.extendsObject().members();
@@ -238,7 +238,7 @@ class GenericClassChecksTest {
 
         @Test
         void anInstanceMemberMentionsTheTypeParametersFreely() {
-            assertThat(probe(new TypedJavaFile.TypedGenericClassSpec1<>() {
+            assertThat(probe(new GenericDeclarationArities.TypedGenericClassSpec1<>() {
                                 @Override
                                 public <Self, T> MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<T> t) {
                                     var cb = h.extendsObject().members();
@@ -277,14 +277,14 @@ class GenericClassChecksTest {
         void aTypeParameterOfAnotherClassIsNotInScope() {
             // both classes have a type parameter T: the name is the same, the variable is not
             assertThatIllegalStateException()
-                    .isThrownBy(() -> probe(new TypedJavaFile.TypedGenericClassSpec1<>() {
+                    .isThrownBy(() -> probe(new GenericDeclarationArities.TypedGenericClassSpec1<>() {
                         @Override
                         public <Self, T> MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<T> outer) {
                             TypedJavaFile.declareClass(
                                     UnsafeFacts.unverifiedClasspath(),
                                     ClassDesc.of("me.supcheg.example", "Other"),
                                     typeParam("T", new Comparable_<>(String_.TOKEN).token),
-                                    new TypedJavaFile.TypedGenericClassSpec1<>() {
+                                    new GenericDeclarationArities.TypedGenericClassSpec1<>() {
                                         @Override
                                         public <Self2, T2 extends Comparable<String>> MemberBodies<Self2, ?> build(
                                                 ClassHeader<Self2> h2, TypeVarToken<T2> inner) {
@@ -304,7 +304,7 @@ class GenericClassChecksTest {
         @Test
         void aTypeParameterIsNotInScopeInAClassDeclaredAfterItsOwn() {
             TypeVarToken<?>[] kept = new TypeVarToken<?>[1];
-            probe(new TypedJavaFile.TypedGenericClassSpec1<>() {
+            probe(new GenericDeclarationArities.TypedGenericClassSpec1<>() {
                 @Override
                 public <Self, T> MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<T> t) {
                     kept[0] = t;
@@ -322,7 +322,7 @@ class GenericClassChecksTest {
         @Test
         void aTypeParameterIsNotInScopeInTheBodyOfNoClass() {
             TypeVarToken<?>[] kept = new TypeVarToken<?>[1];
-            probe(new TypedJavaFile.TypedGenericClassSpec1<>() {
+            probe(new GenericDeclarationArities.TypedGenericClassSpec1<>() {
                 @Override
                 public <Self, T> MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<T> t) {
                     kept[0] = t;
@@ -339,7 +339,7 @@ class GenericClassChecksTest {
         @Test
         void aSupertypeAndABoundMentionNoTypeParameterOfAnotherClass() {
             assertThatIllegalStateException()
-                    .isThrownBy(() -> probe(new TypedJavaFile.TypedGenericClassSpec1<>() {
+                    .isThrownBy(() -> probe(new GenericDeclarationArities.TypedGenericClassSpec1<>() {
                         @Override
                         public <Self, T> MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<T> outer) {
                             TypedJavaFile.declareClass(
@@ -358,14 +358,14 @@ class GenericClassChecksTest {
                     .withMessageContaining("which me.supcheg.javafile.typed.fixtures.Carrier<T> mentions, is not in"
                             + " scope in the header of class me.supcheg.example.Other");
             assertThatIllegalStateException()
-                    .isThrownBy(() -> probe(new TypedJavaFile.TypedGenericClassSpec1<>() {
+                    .isThrownBy(() -> probe(new GenericDeclarationArities.TypedGenericClassSpec1<>() {
                         @Override
                         public <Self, T> MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<T> outer) {
                             TypedJavaFile.declareClass(
                                     UnsafeFacts.unverifiedClasspath(),
                                     ClassDesc.of("me.supcheg.example", "Other"),
                                     typeParam("U", new Comparable_<>(outer).token),
-                                    new TypedJavaFile.TypedGenericClassSpec1<>() {
+                                    new GenericDeclarationArities.TypedGenericClassSpec1<>() {
                                         @Override
                                         public <Self2, U extends Comparable<T>> MemberBodies<Self2, ?> build(
                                                 ClassHeader<Self2> h2, TypeVarToken<U> u) {
@@ -387,7 +387,7 @@ class GenericClassChecksTest {
         void anInterfaceIsABoundOnce() {
             classAsJavac(
                     AT_THE_PLACE,
-                    () -> probe(new TypedJavaFile.TypedGenericClassSpec1<>() {
+                    () -> probe(new GenericDeclarationArities.TypedGenericClassSpec1<>() {
                         @Override
                         public <Self, T> MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<T> t) {
                             h.bound(t, Runnable_.TOKEN);
@@ -406,7 +406,7 @@ class GenericClassChecksTest {
         void aGenericInterfaceIsNoBoundWithTwoTypeArguments() {
             classAsJavac(
                     AT_THE_PLACE,
-                    () -> probe(new TypedJavaFile.TypedGenericClassSpec1<>() {
+                    () -> probe(new GenericDeclarationArities.TypedGenericClassSpec1<>() {
                         @Override
                         public <Self, T> MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<T> t) {
                             h.bound(t, new Comparable_<>(String_.TOKEN).token);
@@ -429,7 +429,7 @@ class GenericClassChecksTest {
                             UnsafeFacts.unverifiedClasspath(),
                             DESC,
                             typeParam("T", Numbered_.TOKEN),
-                            new TypedJavaFile.TypedGenericClassSpec1<>() {
+                            new GenericDeclarationArities.TypedGenericClassSpec1<>() {
                                 @Override
                                 public <Self, T extends me.supcheg.javafile.typed.fixtures.Numbered>
                                         MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<T> t) {
@@ -456,7 +456,7 @@ class GenericClassChecksTest {
                                     "T",
                                     me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Origin_
                                             .TOKEN),
-                            new TypedJavaFile.TypedGenericClassSpec1<>() {
+                            new GenericDeclarationArities.TypedGenericClassSpec1<>() {
                                 @Override
                                 public <Self, T extends me.supcheg.javafile.typed.fixtures.Origin>
                                         MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<T> t) {
@@ -472,7 +472,7 @@ class GenericClassChecksTest {
         @Test
         void aBoundIsNoRawType() {
             assertThatIllegalArgumentException()
-                    .isThrownBy(() -> probe(new TypedJavaFile.TypedGenericClassSpec1<>() {
+                    .isThrownBy(() -> probe(new GenericDeclarationArities.TypedGenericClassSpec1<>() {
                         @Override
                         public <Self, T> MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<T> t) {
                             h.bound(t, UnsafeFacts.<Comparable<?>>interfaceToken(Comparable_.Data.SHAPE));
@@ -486,7 +486,7 @@ class GenericClassChecksTest {
                             UnsafeFacts.unverifiedClasspath(),
                             DESC,
                             typeParam("T", UnsafeFacts.<Comparable<?>>interfaceToken(Comparable_.Data.SHAPE)),
-                            new TypedJavaFile.TypedGenericClassSpec1<>() {
+                            new GenericDeclarationArities.TypedGenericClassSpec1<>() {
                                 @Override
                                 public <Self, T extends Comparable<?>> MemberBodies<Self, ?> build(
                                         ClassHeader<Self> h, TypeVarToken<T> t) {
@@ -501,7 +501,7 @@ class GenericClassChecksTest {
             // stricter than javac: what the bounds give together is told by their heritage
             classUnlikeJavac(
                     AT_THE_PLACE,
-                    () -> probe(new TypedJavaFile.TypedGenericClassSpec1<>() {
+                    () -> probe(new GenericDeclarationArities.TypedGenericClassSpec1<>() {
                         @Override
                         public <Self, T> MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<T> t) {
                             h.bound(t, Comparable_.ANY);
@@ -517,7 +517,7 @@ class GenericClassChecksTest {
                             UnsafeFacts.unverifiedClasspath(),
                             DESC,
                             typeParam("T", String_.TOKEN),
-                            new TypedJavaFile.TypedGenericClassSpec1<>() {
+                            new GenericDeclarationArities.TypedGenericClassSpec1<>() {
                                 @Override
                                 public <Self, T extends String> MemberBodies<Self, ?> build(
                                         ClassHeader<Self> h, TypeVarToken<T> t) {
@@ -534,7 +534,7 @@ class GenericClassChecksTest {
         @Test
         void aBoundIsSaidBeforeTheSuperclassAndOfATypeParameterOfTheClass() {
             assertThatIllegalStateException()
-                    .isThrownBy(() -> probe(new TypedJavaFile.TypedGenericClassSpec1<>() {
+                    .isThrownBy(() -> probe(new GenericDeclarationArities.TypedGenericClassSpec1<>() {
                         @Override
                         public <Self, T> MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<T> t) {
                             h.extendsObject();
@@ -544,14 +544,14 @@ class GenericClassChecksTest {
                     }))
                     .withMessageContaining("has its superclass already");
             assertThatIllegalArgumentException()
-                    .isThrownBy(() -> probe(new TypedJavaFile.TypedGenericClassSpec1<>() {
+                    .isThrownBy(() -> probe(new GenericDeclarationArities.TypedGenericClassSpec1<>() {
                         @Override
                         public <Self, T> MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<T> outer) {
                             TypedJavaFile.declareClass(
                                     UnsafeFacts.unverifiedClasspath(),
                                     ClassDesc.of("me.supcheg.example", "Other"),
                                     typeParam("T"),
-                                    new TypedJavaFile.TypedGenericClassSpec1<>() {
+                                    new GenericDeclarationArities.TypedGenericClassSpec1<>() {
                                         @Override
                                         public <Self2, T2> MemberBodies<Self2, ?> build(
                                                 ClassHeader<Self2> h2, TypeVarToken<T2> inner) {
@@ -574,7 +574,7 @@ class GenericClassChecksTest {
                             DESC,
                             typeParam("T"),
                             typeParam("T"),
-                            new TypedJavaFile.TypedGenericClassSpec2<>() {
+                            new GenericDeclarationArities.TypedGenericClassSpec2<>() {
                                 @Override
                                 public <Self, T1, T2> MemberBodies<Self, ?> build(
                                         ClassHeader<Self> h, TypeVarToken<T1> t1, TypeVarToken<T2> t2) {
@@ -592,7 +592,7 @@ class GenericClassChecksTest {
                             UnsafeFacts.unverifiedClasspath(),
                             DESC,
                             typeParam("Probe"),
-                            new TypedJavaFile.TypedGenericClassSpec1<>() {
+                            new GenericDeclarationArities.TypedGenericClassSpec1<>() {
                                 @Override
                                 public <Self, T> MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<T> t) {
                                     return Unreached.here();
@@ -614,7 +614,7 @@ class GenericClassChecksTest {
         void aGenericClassIsNoThrowable() {
             classAsJavac(
                     AT_THE_PLACE,
-                    () -> probe(new TypedJavaFile.TypedGenericClassSpec1<>() {
+                    () -> probe(new GenericDeclarationArities.TypedGenericClassSpec1<>() {
                         @Override
                         public <Self, T> MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<T> t) {
                             h.extends_(Exception_.extend(h.self()));
@@ -632,7 +632,7 @@ class GenericClassChecksTest {
         void noArrayOfATypeParameterIsCreated() {
             JavacVerdict.asJavac(
                     AT_THE_PLACE,
-                    () -> probe(new TypedJavaFile.TypedGenericClassSpec1<>() {
+                    () -> probe(new GenericDeclarationArities.TypedGenericClassSpec1<>() {
                         @Override
                         public <Self, T> MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<T> t) {
                             newArray(ArrayToken.of(t), literal(1));
@@ -648,7 +648,7 @@ class GenericClassChecksTest {
         void nothingIsCastToATypeParameterOrToTheClassWithThem() {
             // javac accepts the casts with an unchecked warning: the typed layer renders no code javac warns of
             assertThatIllegalArgumentException()
-                    .isThrownBy(() -> probe(new TypedJavaFile.TypedGenericClassSpec1<>() {
+                    .isThrownBy(() -> probe(new GenericDeclarationArities.TypedGenericClassSpec1<>() {
                         @Override
                         public <Self, T> MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<T> t) {
                             literalNull(Object_.TOKEN).cast(t);
@@ -657,7 +657,7 @@ class GenericClassChecksTest {
                     }))
                     .withMessageContaining("would be an unchecked cast (JLS 5.1.6.2)");
             assertThatIllegalArgumentException()
-                    .isThrownBy(() -> probe(new TypedJavaFile.TypedGenericClassSpec1<>() {
+                    .isThrownBy(() -> probe(new GenericDeclarationArities.TypedGenericClassSpec1<>() {
                         @Override
                         public <Self, T> MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<T> t) {
                             literalNull(Object_.TOKEN).cast(h.self());

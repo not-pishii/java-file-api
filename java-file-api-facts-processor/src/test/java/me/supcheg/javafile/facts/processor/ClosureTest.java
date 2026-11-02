@@ -118,7 +118,7 @@ class ClosureTest {
                         "java.io.Serializable", "java.lang.Exception", "java.lang.Object", "java.lang.Throwable");
         // every supertype is read for a full metamodel, as if it were asked for
         assertThat(Stream.of("p.Root", "p.Mid", "p.Top", "java.lang.Object", "java.lang.Throwable")
-                        .map(graph.nodes()::get))
+                        .map(name -> graph.nodes().get(name)))
                 .allSatisfy(node -> assertThat(node)
                         .isInstanceOfSatisfying(
                                 Node.Inherited.class,

@@ -24,8 +24,10 @@ public final class TypeNames {
     /// @param desc the descriptor
     /// @return the qualified name
     public static String describe(ClassDesc desc) {
-        if (desc.isArray()) {
-            return describe(desc.componentType()) + "[]";
+        ClassDesc component = desc.componentType();
+        if (component != null) {
+            // an array is the only type with a component
+            return describe(component) + "[]";
         }
         if (desc.isPrimitive() || desc.packageName().isEmpty()) {
             return desc.displayName();

@@ -16,11 +16,11 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;
 
+import static me.supcheg.javafile.typed.ExpressionArities.lambda;
+import static me.supcheg.javafile.typed.ExpressionArities.staticCall;
 import static me.supcheg.javafile.typed.Expressions.cond;
 import static me.supcheg.javafile.typed.Expressions.eqRef;
-import static me.supcheg.javafile.typed.Expressions.lambda;
 import static me.supcheg.javafile.typed.Expressions.literal;
-import static me.supcheg.javafile.typed.Expressions.staticCall;
 import static me.supcheg.javafile.typed.Expressions.switch_;
 import static org.assertj.core.api.Assertions.assertThat;
 

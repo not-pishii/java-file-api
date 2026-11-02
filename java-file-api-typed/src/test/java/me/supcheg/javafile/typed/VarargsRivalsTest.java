@@ -14,10 +14,10 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;
 
+import static me.supcheg.javafile.typed.ExpressionArities.new_;
+import static me.supcheg.javafile.typed.ExpressionArities.staticCall;
 import static me.supcheg.javafile.typed.Expressions.box;
 import static me.supcheg.javafile.typed.Expressions.literal;
-import static me.supcheg.javafile.typed.Expressions.new_;
-import static me.supcheg.javafile.typed.Expressions.staticCall;
 import static me.supcheg.javafile.typed.Expressions.varargs;
 import static org.assertj.core.api.Assertions.assertThat;
 

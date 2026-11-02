@@ -18,6 +18,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 /// families themselves) are made of: a class `arity.Subject`, the result `arity.Result` of its methods and their
 /// parameters `arity.A1`..`arity.A16`, each a token of a type of its own, so that a fact which gave one parameter
 /// for another would not compile.
+// the phantoms are named as the type variables of the arity families they stand for: `A1` is the first parameter
+@SuppressWarnings("ClassNamedLikeTypeParameter")
 final class ArityFamilies {
     private ArityFamilies() {}
 

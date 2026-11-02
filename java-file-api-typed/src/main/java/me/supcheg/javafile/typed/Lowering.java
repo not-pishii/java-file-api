@@ -1498,7 +1498,7 @@ final class Lowering {
     /// field is that of the direct superclass and is read on `this`, so `super.f` is the field —
     /// whatever field the class declares by that name and whatever constant an interface of it
     /// has (JLS 15.11.2), and with no cast to a type the class has no access to the member through.
-    private Expr protectedFieldReceiver(ClassToken<?> subclass, Node.Operand receiving, FieldRef<?, ?> field) {
+    private static Expr protectedFieldReceiver(ClassToken<?> subclass, Node.Operand receiving, FieldRef<?, ?> field) {
         if (!(receiving.node() instanceof Node.This)) {
             throw new IllegalStateException(field + " is protected, and is reached on an expression that is not"
                     + " this: the typed layer reads and assigns a protected field of the superclass as super."

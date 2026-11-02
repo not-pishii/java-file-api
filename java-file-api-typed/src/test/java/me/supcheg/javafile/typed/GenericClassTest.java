@@ -18,11 +18,11 @@ import org.junit.jupiter.api.Test;
 import java.lang.constant.ClassDesc;
 import java.util.function.Supplier;
 
+import static me.supcheg.javafile.typed.ExpressionArities.new_;
 import static me.supcheg.javafile.typed.Expressions.assignField;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.literalNull;
 import static me.supcheg.javafile.typed.Expressions.ltInt;
-import static me.supcheg.javafile.typed.Expressions.new_;
 import static me.supcheg.javafile.typed.TypedJavaFile.typeParam;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -34,13 +34,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 class GenericClassTest {
     private static final ClassDesc DESC = ClassDesc.of("me.supcheg.example", "Box");
 
-    private static JavaFile box(TypedJavaFile.TypedGenericClassSpec1<Object> spec) {
+    private static JavaFile box(GenericDeclarationArities.TypedGenericClassSpec1<Object> spec) {
         return TypedJavaFile.declareClass(UnsafeFacts.unverifiedClasspath(), DESC, typeParam("T"), spec);
     }
 
     @Test
     void aContainerHoldsAValueOfItsTypeParameter() throws Throwable {
-        CompiledClasses compiled = CompiledClasses.of(box(new TypedJavaFile.TypedGenericClassSpec1<>() {
+        CompiledClasses compiled = CompiledClasses.of(box(new GenericDeclarationArities.TypedGenericClassSpec1<>() {
             @Override
             public <Self, T> MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<T> t) {
                 var cb = h.extendsObject().members();
@@ -89,7 +89,7 @@ class GenericClassTest {
                 UnsafeFacts.unverifiedClasspath(),
                 DESC,
                 typeParam("N", Number_.TOKEN),
-                new TypedJavaFile.TypedGenericClassSpec1<>() {
+                new GenericDeclarationArities.TypedGenericClassSpec1<>() {
                     @Override
                     public <Self, N extends Number> MemberBodies<Self, ?> build(
                             ClassHeader<Self> h, TypeVarToken<N> n) {
@@ -118,7 +118,7 @@ class GenericClassTest {
 
     @Test
     void aGenericClassExtendsAndImplementsTypesOfItsTypeParameterAndOfItself() throws Throwable {
-        CompiledClasses compiled = CompiledClasses.of(box(new TypedJavaFile.TypedGenericClassSpec1<>() {
+        CompiledClasses compiled = CompiledClasses.of(box(new GenericDeclarationArities.TypedGenericClassSpec1<>() {
             @Override
             public <Self, T> MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<T> t) {
                 var carrier = new Carrier_<>(t);
@@ -155,6 +155,7 @@ class GenericClassTest {
         assertThat(((Carrier<?>) box).carried()).isEqualTo("carried");
         assertThat(compiled.generated().getMethod("mine").invoke(box)).isEqualTo("carried");
         assertThat(compiled.generated().getMethod("same").invoke(box)).isEqualTo(7);
+        // the generated class is comparable with the class itself, which the test compares as one of Object
         @SuppressWarnings("unchecked")
         Comparable<Object> comparable = (Comparable<Object>) box;
         assertThat(comparable.compareTo(box)).isEqualTo(7);
@@ -166,7 +167,7 @@ class GenericClassTest {
                 UnsafeFacts.unverifiedClasspath(),
                 DESC,
                 typeParam("T", Number_.TOKEN),
-                new TypedJavaFile.TypedGenericClassSpec1<>() {
+                new GenericDeclarationArities.TypedGenericClassSpec1<>() {
                     @Override
                     public <Self, T extends Number> MemberBodies<Self, ?> build(
                             ClassHeader<Self> h, TypeVarToken<T> t) {
@@ -202,7 +203,7 @@ class GenericClassTest {
 
     @Test
     void aBoundThatMentionsTheTypeParameterItselfIsAWitnessBesideObject() throws Throwable {
-        CompiledClasses compiled = CompiledClasses.of(box(new TypedJavaFile.TypedGenericClassSpec1<>() {
+        CompiledClasses compiled = CompiledClasses.of(box(new GenericDeclarationArities.TypedGenericClassSpec1<>() {
             @Override
             public <Self, T> MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<T> t) {
                 var comparable = new Comparable_<>(t);
@@ -239,7 +240,7 @@ class GenericClassTest {
                 UnsafeFacts.unverifiedClasspath(),
                 DESC,
                 typeParam("N", Number_.TOKEN),
-                new TypedJavaFile.TypedGenericClassSpec1<>() {
+                new GenericDeclarationArities.TypedGenericClassSpec1<>() {
                     @Override
                     public <Self, N extends Number> MemberBodies<Self, ?> build(
                             ClassHeader<Self> h, TypeVarToken<N> n) {
@@ -270,7 +271,7 @@ class GenericClassTest {
                 typeParam("A"),
                 typeParam("B", Number_.TOKEN),
                 typeParam("C", new Comparable_<>(String_.TOKEN).token),
-                new TypedJavaFile.TypedGenericClassSpec3<>() {
+                new GenericDeclarationArities.TypedGenericClassSpec3<>() {
                     @Override
                     public <Self, A, B extends Number, C extends Comparable<String>> MemberBodies<Self, ?> build(
                             ClassHeader<Self> h, TypeVarToken<A> a, TypeVarToken<B> b, TypeVarToken<C> c) {
@@ -303,7 +304,7 @@ class GenericClassTest {
                 DESC,
                 typeParam("String"),
                 typeParam("Shape"),
-                new TypedJavaFile.TypedGenericClassSpec2<>() {
+                new GenericDeclarationArities.TypedGenericClassSpec2<>() {
                     @Override
                     public <Self, T1, T2> MemberBodies<Self, ?> build(
                             ClassHeader<Self> h, TypeVarToken<T1> t1, TypeVarToken<T2> t2) {

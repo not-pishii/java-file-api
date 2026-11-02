@@ -58,6 +58,8 @@ public record MethodModel(
     /// @param throwsTypes the declared exceptions
     /// @param overridability whether the method can be overridden
     /// @param access the access of the method
+    // one parameter per fact the model holds, as the processor writes it: there is no builder to hide them
+    @SuppressWarnings("TooManyParameters")
     public MethodModel(
             String name,
             boolean isStatic,

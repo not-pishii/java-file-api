@@ -291,8 +291,9 @@ final class ClassDeclaration<Self> {
                             + " (JLS 8.4.5, 4.9), which the typed layer holds to: of the same result");
                 });
         variables = variables.stream()
-                .map(mine ->
-                        mine == bounded ? new Variable(mine.token(), mine.first(), with(mine.more(), bound)) : mine)
+                .map(mine -> mine.equals(bounded)
+                        ? new Variable(mine.token(), mine.first(), with(mine.more(), bound))
+                        : mine)
                 .toList();
         return new Upcast<>(variable, bound);
     }
@@ -590,7 +591,7 @@ final class ClassDeclaration<Self> {
     }
 
     private void requireAbout(Complete<Self, ?> proof) {
-        if (proof.self() != self) {
+        if (!proof.self().equals(self)) {
             throw new IllegalArgumentException(
                     "the proof that " + proof + " is not a proof about " + described + ", which is " + self);
         }
@@ -766,7 +767,7 @@ final class ClassDeclaration<Self> {
                 proof.steps().stream().map(Complete.Step::method).collect(Collectors.toSet());
         merged.groups()
                 .flatMap(group -> group.entries().stream())
-                .filter(entry -> entry.through() == supertype
+                .filter(entry -> entry.through().equals(supertype)
                         && entry.leftAbstract()
                         && !proven.contains(entry.method().signature()))
                 .findFirst()
@@ -804,7 +805,7 @@ final class ClassDeclaration<Self> {
                                 + " header of the class gave"));
             case Implemented.ByInheritance inheritance ->
                 inheritances.stream()
-                        .filter(made -> made == inheritance)
+                        .filter(made -> made.equals(inheritance))
                         .findFirst()
                         .<Stepped>map(made -> new Stepped.Inherited(made.inherited()))
                         .orElseThrow(() -> new IllegalArgumentException(
@@ -979,7 +980,7 @@ final class ClassDeclaration<Self> {
         extended.interfaces().forEach(cb::withInterface);
         permits.forEach(cb::withPermits);
         members.forEach(cb);
-        nestedTypes.forEach(cb::accept);
+        nestedTypes.forEach(cb);
     }
 
     /// Completes the declaration of a member class, by the bodies its specification ended in.
@@ -1086,8 +1087,7 @@ final class ClassDeclaration<Self> {
     /// @param superclass its superclass
     /// @param interfaces its superinterfaces, in the order they were named
     /// @param named the names the fields and member types of its supertypes take in its body
-    private record Extended(
-            Superclass superclass, List<ClassOrInterfaceTypeRef> interfaces, List<InheritedName> named) {
+    record Extended(Superclass superclass, List<ClassOrInterfaceTypeRef> interfaces, List<InheritedName> named) {
         Extended {
             interfaces = List.copyOf(interfaces);
             named = List.copyOf(named);
@@ -1156,7 +1156,6 @@ final class ClassDeclaration<Self> {
 
         /// The class declares its members.
         ///
-        /// @param builder the builder of the members
         /// @param extended what its header said of its supertypes
         record Members<Self>(Extended extended) implements Phase<Self> {}
 

@@ -93,7 +93,7 @@ abstract non-sealed class TypeMemberDeclarations<Self> extends TypeMemberDeclara
     /// @param <B1> the leftmost bound of the type parameter
     /// @return the token of the member class
     public final <N, B1> FinalClassToken<N> declareNestedClass(
-            String name, TypeParameter<B1> p1, TypedJavaFile.TypedGenericClassSpec1<B1> spec) {
+            String name, TypeParameter<B1> p1, GenericDeclarationArities.TypedGenericClassSpec1<B1> spec) {
         requireDeclaring("a member class of " + described());
         NestedDeclarations.NestedType<FinalClassToken<N>> nested =
                 NestedDeclarations.class_(target(), desc(), name, p1, spec);
@@ -102,7 +102,7 @@ abstract non-sealed class TypeMemberDeclarations<Self> extends TypeMemberDeclara
     }
 
     /// Declares a generic `public static final` member class of the type with two type parameters,
-    /// see [#declareNestedClass(String, TypeParameter, TypedJavaFile.TypedGenericClassSpec1)].
+    /// see [#declareNestedClass].
     ///
     /// @param name the simple name of the member class
     /// @param p1 the first type parameter
@@ -116,7 +116,7 @@ abstract non-sealed class TypeMemberDeclarations<Self> extends TypeMemberDeclara
             String name,
             TypeParameter<B1> p1,
             TypeParameter<B2> p2,
-            TypedJavaFile.TypedGenericClassSpec2<B1, B2> spec) {
+            GenericDeclarationArities.TypedGenericClassSpec2<B1, B2> spec) {
         requireDeclaring("a member class of " + described());
         NestedDeclarations.NestedType<FinalClassToken<N>> nested =
                 NestedDeclarations.class_(target(), desc(), name, p1, p2, spec);
@@ -125,7 +125,7 @@ abstract non-sealed class TypeMemberDeclarations<Self> extends TypeMemberDeclara
     }
 
     /// Declares a generic `public static final` member class of the type with three type parameters,
-    /// see [#declareNestedClass(String, TypeParameter, TypedJavaFile.TypedGenericClassSpec1)].
+    /// see [#declareNestedClass].
     ///
     /// @param name the simple name of the member class
     /// @param p1 the first type parameter
@@ -142,7 +142,7 @@ abstract non-sealed class TypeMemberDeclarations<Self> extends TypeMemberDeclara
             TypeParameter<B1> p1,
             TypeParameter<B2> p2,
             TypeParameter<B3> p3,
-            TypedJavaFile.TypedGenericClassSpec3<B1, B2, B3> spec) {
+            GenericDeclarationArities.TypedGenericClassSpec3<B1, B2, B3> spec) {
         requireDeclaring("a member class of " + described());
         NestedDeclarations.NestedType<FinalClassToken<N>> nested =
                 NestedDeclarations.class_(target(), desc(), name, p1, p2, p3, spec);
@@ -174,7 +174,7 @@ abstract non-sealed class TypeMemberDeclarations<Self> extends TypeMemberDeclara
     /// @param <B1> the leftmost bound of the type parameter
     /// @return the token of the member interface
     public final <I, B1> InterfaceToken<I> declareNestedInterface(
-            String name, TypeParameter<B1> p1, TypedJavaFile.TypedGenericInterfaceSpec1<B1> spec) {
+            String name, TypeParameter<B1> p1, GenericDeclarationArities.TypedGenericInterfaceSpec1<B1> spec) {
         requireDeclaring("a member interface of " + described());
         NestedDeclarations.NestedType<InterfaceToken<I>> nested =
                 NestedDeclarations.interface_(target(), desc(), name, p1, spec);
@@ -183,7 +183,7 @@ abstract non-sealed class TypeMemberDeclarations<Self> extends TypeMemberDeclara
     }
 
     /// Declares a generic `public` member interface of the type with two type parameters, see
-    /// [#declareNestedInterface(String, TypeParameter, TypedJavaFile.TypedGenericInterfaceSpec1)].
+    /// [#declareNestedInterface].
     ///
     /// @param name the simple name of the member interface
     /// @param p1 the first type parameter
@@ -197,7 +197,7 @@ abstract non-sealed class TypeMemberDeclarations<Self> extends TypeMemberDeclara
             String name,
             TypeParameter<B1> p1,
             TypeParameter<B2> p2,
-            TypedJavaFile.TypedGenericInterfaceSpec2<B1, B2> spec) {
+            GenericDeclarationArities.TypedGenericInterfaceSpec2<B1, B2> spec) {
         requireDeclaring("a member interface of " + described());
         NestedDeclarations.NestedType<InterfaceToken<I>> nested =
                 NestedDeclarations.interface_(target(), desc(), name, p1, p2, spec);
@@ -206,7 +206,7 @@ abstract non-sealed class TypeMemberDeclarations<Self> extends TypeMemberDeclara
     }
 
     /// Declares a generic `public` member interface of the type with three type parameters, see
-    /// [#declareNestedInterface(String, TypeParameter, TypedJavaFile.TypedGenericInterfaceSpec1)].
+    /// [#declareNestedInterface].
     ///
     /// @param name the simple name of the member interface
     /// @param p1 the first type parameter
@@ -223,7 +223,7 @@ abstract non-sealed class TypeMemberDeclarations<Self> extends TypeMemberDeclara
             TypeParameter<B1> p1,
             TypeParameter<B2> p2,
             TypeParameter<B3> p3,
-            TypedJavaFile.TypedGenericInterfaceSpec3<B1, B2, B3> spec) {
+            GenericDeclarationArities.TypedGenericInterfaceSpec3<B1, B2, B3> spec) {
         requireDeclaring("a member interface of " + described());
         NestedDeclarations.NestedType<InterfaceToken<I>> nested =
                 NestedDeclarations.interface_(target(), desc(), name, p1, p2, p3, spec);
@@ -255,7 +255,7 @@ abstract non-sealed class TypeMemberDeclarations<Self> extends TypeMemberDeclara
     /// @param <B1> the leftmost bound of the type parameter
     /// @return the token of the member record
     public final <R, B1> FinalClassToken<R> declareNestedRecord(
-            String name, TypeParameter<B1> p1, TypedJavaFile.TypedGenericRecordSpec1<B1> spec) {
+            String name, TypeParameter<B1> p1, GenericDeclarationArities.TypedGenericRecordSpec1<B1> spec) {
         requireDeclaring("a member record of " + described());
         NestedDeclarations.NestedType<FinalClassToken<R>> nested =
                 NestedDeclarations.record(target(), desc(), name, p1, spec);
@@ -264,7 +264,7 @@ abstract non-sealed class TypeMemberDeclarations<Self> extends TypeMemberDeclara
     }
 
     /// Declares a generic `public` member record of the type with two type parameters, see
-    /// [#declareNestedRecord(String, TypeParameter, TypedJavaFile.TypedGenericRecordSpec1)].
+    /// [#declareNestedRecord].
     ///
     /// @param name the simple name of the member record
     /// @param p1 the first type parameter
@@ -278,7 +278,7 @@ abstract non-sealed class TypeMemberDeclarations<Self> extends TypeMemberDeclara
             String name,
             TypeParameter<B1> p1,
             TypeParameter<B2> p2,
-            TypedJavaFile.TypedGenericRecordSpec2<B1, B2> spec) {
+            GenericDeclarationArities.TypedGenericRecordSpec2<B1, B2> spec) {
         requireDeclaring("a member record of " + described());
         NestedDeclarations.NestedType<FinalClassToken<R>> nested =
                 NestedDeclarations.record(target(), desc(), name, p1, p2, spec);
@@ -287,7 +287,7 @@ abstract non-sealed class TypeMemberDeclarations<Self> extends TypeMemberDeclara
     }
 
     /// Declares a generic `public` member record of the type with three type parameters, see
-    /// [#declareNestedRecord(String, TypeParameter, TypedJavaFile.TypedGenericRecordSpec1)].
+    /// [#declareNestedRecord].
     ///
     /// @param name the simple name of the member record
     /// @param p1 the first type parameter
@@ -304,7 +304,7 @@ abstract non-sealed class TypeMemberDeclarations<Self> extends TypeMemberDeclara
             TypeParameter<B1> p1,
             TypeParameter<B2> p2,
             TypeParameter<B3> p3,
-            TypedJavaFile.TypedGenericRecordSpec3<B1, B2, B3> spec) {
+            GenericDeclarationArities.TypedGenericRecordSpec3<B1, B2, B3> spec) {
         requireDeclaring("a member record of " + described());
         NestedDeclarations.NestedType<FinalClassToken<R>> nested =
                 NestedDeclarations.record(target(), desc(), name, p1, p2, p3, spec);
@@ -321,6 +321,8 @@ abstract non-sealed class TypeMemberDeclarations<Self> extends TypeMemberDeclara
     /// @param <B1> the leftmost bound of the type parameter
     /// @return never
     /// @throws IllegalArgumentException always, naming the enum and the type parameter
+    // a refusal of what javac rejects: the tests call it to read the message, and it never returns
+    @SuppressWarnings("DoNotCallSuggester")
     public final <E, B1> EnumToken<E> declareNestedEnum(
             String name, TypeParameter<B1> p1, TypedJavaFile.TypedEnumSpec spec) {
         throw genericNested("enum", name, "an enum has no type parameters (JLS 8.9)");
@@ -335,6 +337,8 @@ abstract non-sealed class TypeMemberDeclarations<Self> extends TypeMemberDeclara
     /// @param <B1> the leftmost bound of the type parameter
     /// @return never
     /// @throws IllegalArgumentException always, naming the annotation type and the type parameter
+    // a refusal of what javac rejects: the tests call it to read the message, and it never returns
+    @SuppressWarnings("DoNotCallSuggester")
     public final <B1> java.lang.constant.ClassDesc declareNestedAnnotationType(
             String name, TypeParameter<B1> p1, TypedJavaFile.TypedAnnotationTypeSpec spec) {
         throw genericNested("annotation type", name, "an annotation type has no type parameters (JLS 9.6)");

@@ -8,6 +8,8 @@ public class Spreads {
     public String told = "";
 
     /// How many arguments the `static` `void` methods were given, together.
+    // the fixture counts its spreads, which is what the generated code is checked against
+    @SuppressWarnings("NonFinalStaticField")
     public static int counted;
 
     public Spreads() {}
@@ -68,6 +70,8 @@ public class Spreads {
         return "parts:" + String.join("+", parts);
     }
 
+    // the array is what the fixture proves: an overload beside one of variable arity
+    @SuppressWarnings("AvoidObjectArrays")
     public static String mix(int first, int second, String[] parts) {
         return "array";
     }

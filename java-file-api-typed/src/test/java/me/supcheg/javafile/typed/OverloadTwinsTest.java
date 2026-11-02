@@ -32,10 +32,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
+import static me.supcheg.javafile.typed.ExpressionArities.new_;
+import static me.supcheg.javafile.typed.ExpressionArities.staticCall;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.literalNull;
-import static me.supcheg.javafile.typed.Expressions.new_;
-import static me.supcheg.javafile.typed.Expressions.staticCall;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;

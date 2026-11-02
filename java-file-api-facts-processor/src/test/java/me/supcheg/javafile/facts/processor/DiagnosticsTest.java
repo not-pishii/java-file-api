@@ -1,5 +1,7 @@
 package me.supcheg.javafile.facts.processor;
 
+import com.google.auto.common.AnnotationMirrors;
+import com.google.auto.common.AnnotationValues;
 import org.junit.jupiter.api.Test;
 
 import javax.annotation.processing.Messager;
@@ -34,7 +36,7 @@ class DiagnosticsTest {
         @Override
         public void printMessage(
                 Diagnostic.Kind kind, CharSequence message, Element element, AnnotationMirror annotation) {
-            messages.add(kind + " on " + element + ", " + annotation + ": " + message);
+            messages.add(kind + " on " + element + ", " + AnnotationMirrors.toString(annotation) + ": " + message);
         }
 
         @Override
@@ -44,7 +46,8 @@ class DiagnosticsTest {
                 Element element,
                 AnnotationMirror annotation,
                 AnnotationValue value) {
-            messages.add(kind + " on " + element + ", " + annotation + ", " + value + ": " + message);
+            messages.add(kind + " on " + element + ", " + AnnotationMirrors.toString(annotation) + ", "
+                    + AnnotationValues.toString(value) + ": " + message);
         }
     }
 

@@ -1,5 +1,7 @@
 package me.supcheg.javafile.typed;
 
+import org.jspecify.annotations.Nullable;
+
 import java.security.CodeSource;
 import java.util.Objects;
 
@@ -15,7 +17,8 @@ import java.util.Objects;
 /// @param at the frame of the generator
 record Site(StackTraceElement at) {
     private static final String PACKAGE = Site.class.getPackageName();
-    private static final CodeSource OWN = Site.class.getProtectionDomain().getCodeSource();
+    private static final @Nullable CodeSource OWN =
+            Site.class.getProtectionDomain().getCodeSource();
     private static final StackWalker WALKER = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
 
     /// The place the typed layer was called from: the innermost frame that is none of its own.

@@ -187,8 +187,10 @@ final class DocRenderer {
     }
 
     private static String param(ClassDesc param, Context ctx, String array) {
-        if (param.isArray()) {
-            return param(param.componentType(), ctx, array) + array;
+        java.lang.constant.ClassDesc component = param.componentType();
+        if (component != null) {
+            // an array is the only type with a component, so `isArray()` above has already told it is there
+            return param(component, ctx, array) + array;
         }
         return param.isPrimitive() ? param.displayName() : ctx.mention(param);
     }
@@ -305,13 +307,13 @@ final class DocRenderer {
                     switch (style) {
                         case MARKDOWN ->
                             MARKDOWN_INLINE.indexOf(c) >= 0
-                                    || lineStart && MARKDOWN_LINE_START.indexOf(c) >= 0
+                                    || (lineStart && MARKDOWN_LINE_START.indexOf(c) >= 0)
                                     // `_` starts emphasis only after what is not a letter or a digit and
                                     // before what is not a space, and nothing ends what did not start
-                                    || c == '_'
+                                    || (c == '_'
                                             && !Character.isLetterOrDigit(previous)
-                                            && !Character.isWhitespace(next);
-                        case TRADITIONAL -> "&<>\\".indexOf(c) >= 0 || c == '/' && previous == '*';
+                                            && !Character.isWhitespace(next));
+                        case TRADITIONAL -> "&<>\\".indexOf(c) >= 0 || (c == '/' && previous == '*');
                     };
             return markup ? reference(c) : String.valueOf(c);
         }

@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -530,7 +531,8 @@ public final class TypeShape<K extends DeclaredKind> {
         return switch (parameter.bounds().getFirst()) {
             case ClassTypeRef cls -> cls.desc();
             case ParameterizedTypeRef parameterized -> parameterized.raw();
-            case TypeVarRef var -> boundErasure(byName.get(var.name()), byName, seen);
+            // the bounds above are checked to name declared parameters only, so the map has the entry
+            case TypeVarRef var -> boundErasure(Objects.requireNonNull(byName.get(var.name())), byName, seen);
         };
     }
 

@@ -172,6 +172,7 @@ public final class TypedJavaFile extends GenericDeclarationArities {
         <Self> TypedRecordBodies<Self> build(TypedRecordBuilder<Self> rb);
     }
 
+    /// Declares a `public` enum, from its constants and members.
     ///
     /// @param target the classpath the enum is compiled against
     /// @param desc the enum's binary name
@@ -201,6 +202,8 @@ public final class TypedJavaFile extends GenericDeclarationArities {
     /// @param spec declares the enum, which is never called
     /// @return never
     /// @throws IllegalArgumentException always, naming the enum and the type parameter
+    // an overload that refuses a type parameter at compile time: the tests call it to read the message it throws
+    @SuppressWarnings("DoNotCallSuggester")
     public static JavaFile enum_(
             TargetClasspath target, ClassDesc desc, TypeParameter<?> parameter, TypedEnumSpec spec) {
         throw genericKind("enum", desc, "an enum has no type parameters (JLS 8.9)");
@@ -239,6 +242,8 @@ public final class TypedJavaFile extends GenericDeclarationArities {
     /// @param spec declares the annotation type, which is never called
     /// @return never
     /// @throws IllegalArgumentException always, naming the annotation type and the type parameter
+    // an overload that refuses a type parameter at compile time: the tests call it to read the message it throws
+    @SuppressWarnings("DoNotCallSuggester")
     public static JavaFile annotationType(
             TargetClasspath target, ClassDesc desc, TypeParameter<?> parameter, TypedAnnotationTypeSpec spec) {
         throw genericKind("annotation type", desc, "an annotation type has no type parameters (JLS 9.6)");

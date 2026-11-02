@@ -51,7 +51,7 @@ class TypedInterfaceCompileTest {
                 UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedInterfaceSpec() {
                     @Override
                     public <Self> TypedInterfaceBodies<Self> build(TypedInterfaceBuilder<Self> ib) {
-                        var area = ib.declareAbstractMethod("area", PrimitiveToken.DOUBLE);
+                        ib.declareAbstractMethod("area", PrimitiveToken.DOUBLE);
                         var describe = ib.declareDefaultMethod("describe", String_.TOKEN);
                         var twice = ib.declarePrivateMethod("twice", PrimitiveToken.INT, PrimitiveToken.INT);
                         var unit = ib.declareStaticMethod("unit", PrimitiveToken.DOUBLE);

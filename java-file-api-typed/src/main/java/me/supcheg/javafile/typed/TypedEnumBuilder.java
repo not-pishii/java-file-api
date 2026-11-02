@@ -11,10 +11,12 @@ import me.supcheg.javafile.model.EnumMember;
 import me.supcheg.javafile.model.TypeDecl;
 import me.supcheg.javafile.type.ClassTypeRef;
 import me.supcheg.javafile.typed.TypeDeclarationSupport.Member.Kind;
+import org.jspecify.annotations.Nullable;
 
 import java.lang.constant.ClassDesc;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 /// Declares an enum (§6.5), branded with `Self`: constants without arguments,
@@ -42,7 +44,7 @@ public final class TypedEnumBuilder<Self> extends EnumConstructorArities<Self> {
     private final List<Constructor> constructors = new ArrayList<>();
     private final List<me.supcheg.javafile.type.ClassOrInterfaceTypeRef> interfaces = new ArrayList<>();
     private java.util.Optional<me.supcheg.javafile.doc.DocComment> doc = java.util.Optional.empty();
-    private TypedEnumBodies<Self> bodies;
+    private @Nullable TypedEnumBodies<Self> bodies;
 
     TypedEnumBuilder(TargetClasspath target, ClassDesc desc) {
         super(target, desc, "enum");
@@ -185,7 +187,7 @@ public final class TypedEnumBuilder<Self> extends EnumConstructorArities<Self> {
             String name,
             java.util.Optional<me.supcheg.javafile.doc.DocComment> doc,
             List<? extends Expr<?>> args,
-            Consumer<TypedEnumConstantBodies<Self>> body) {
+            @Nullable Consumer<TypedEnumConstantBodies<Self>> body) {
         requireHeader("constant " + name + " of " + described());
         constants.add(new Constant<>(
                 name,
@@ -232,6 +234,7 @@ public final class TypedEnumBuilder<Self> extends EnumConstructorArities<Self> {
                 doc.map(comment -> Docs.requireSafe(comment, "a constructor of " + described()))));
     }
 
+    @Override
     void declaredConstructor(List<?> params, VoidBody body, me.supcheg.javafile.doc.DocComment doc) {
         declaredConstructor(params, body, java.util.Optional.of(doc));
     }
@@ -262,19 +265,20 @@ public final class TypedEnumBuilder<Self> extends EnumConstructorArities<Self> {
 
     private void populate(EnumBuilder eb, List<?> members) {
         doc.ifPresent(eb::withDoc);
-        for (EnumConstant constant : bodies.enumConstants()) {
+        TypedEnumBodies<Self> declared = Objects.requireNonNull(bodies);
+        for (EnumConstant constant : declared.enumConstants()) {
             eb.withConstant(constant);
         }
         interfaces.forEach(eb::withInterface);
         members.forEach(member -> eb.accept((EnumMember) member));
-        declaredNested().forEach(eb::accept);
+        declaredNested().forEach(eb);
     }
 
     /// A constant as it was declared.
     record Constant<Self>(
             String name,
             List<Expr<?>> args,
-            Consumer<TypedEnumConstantBodies<Self>> body,
+            @Nullable Consumer<TypedEnumConstantBodies<Self>> body,
             java.util.Optional<me.supcheg.javafile.doc.DocComment> doc) {
         Constant {
             args = List.copyOf(args);

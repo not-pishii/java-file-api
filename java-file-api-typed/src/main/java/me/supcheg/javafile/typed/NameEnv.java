@@ -42,7 +42,7 @@ final class NameEnv {
     String declare(Var<?> var) {
         String name;
         do {
-            name = "v" + (counter++);
+            name = "v" + counter++;
         } while (taken.contains(name));
         return declare(var, name);
     }

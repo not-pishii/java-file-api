@@ -24,10 +24,10 @@ import org.junit.jupiter.api.Test;
 import java.lang.constant.ClassDesc;
 import java.util.List;
 
+import static me.supcheg.javafile.typed.ExpressionArities.new_;
+import static me.supcheg.javafile.typed.ExpressionArities.staticCall;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.newArray;
-import static me.supcheg.javafile.typed.Expressions.new_;
-import static me.supcheg.javafile.typed.Expressions.staticCall;
 import static me.supcheg.javafile.typed.JavacVerdict.compiledClass;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -149,6 +149,7 @@ class VariableArityTest {
         }));
 
         assertThat(compiled.source()).contains("@Override\n    public int scatter(String... v0) {");
+        // the generated class is of the fixture's type, and the test calls it as that type
         @SuppressWarnings("unchecked")
         Scattering<String> probe =
                 (Scattering<String>) compiled.generated().getConstructor().newInstance();
@@ -176,7 +177,7 @@ class VariableArityTest {
         }));
 
         assertThat(compiled.source()).contains("return Objects.hash((Object[]) new String[1]);");
-        assertThat(compiled.invoke("m")).isEqualTo(java.util.Objects.hash(new Object[1]));
+        assertThat(compiled.invoke("m")).isEqualTo(java.util.Arrays.hashCode(new String[1]));
     }
 
     @Test

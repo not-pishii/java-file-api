@@ -192,9 +192,11 @@ final class TypeSignatureRegistry {
                 .forEach(variableArity::add);
         return new MethodTableTemplate(
                 Set.of(),
-                Stream.concat(declared.get(true).stream(), had.stream().map(TypeSignatureRegistry::inherited))
+                Stream.concat(
+                                declared.getOrDefault(true, Set.of()).stream(),
+                                had.stream().map(TypeSignatureRegistry::inherited))
                         .collect(Collectors.toSet()),
-                declared.get(false).stream().collect(Collectors.toSet()),
+                declared.getOrDefault(false, Set.of()).stream().collect(Collectors.toSet()),
                 constructorSignatures,
                 variableArity);
     }

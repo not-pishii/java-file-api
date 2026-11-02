@@ -191,6 +191,7 @@ public final class TypedEnumBodies<Self> extends TypedTypeBodies<Self, EnumMembe
             }
             return List.of();
         }
+        // the owner of the bodies of an enum is the builder of the enum
         @SuppressWarnings("unchecked")
         TypedEnumBuilder<Self> enumBuilder = (TypedEnumBuilder<Self>) owner();
         TypedEnumConstantBodies<Self> body = new TypedEnumConstantBodies<>(enumBuilder, abstractMethods);

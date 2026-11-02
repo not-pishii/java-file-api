@@ -177,7 +177,7 @@ final class Tokens {
     static void requireNotRaw(TypeToken<?> type) {
         raw(type).findFirst().ifPresent(raw -> {
             throw new IllegalStateException("the type " + type + " is written in the code, and "
-                    + (raw == type ? "is" : "mentions") + " the raw type " + raw + ": javac warns of it"
+                    + (raw.equals(type) ? "is" : "mentions") + " the raw type " + raw + ": javac warns of it"
                     + " (-Xlint:rawtypes) — give the generic type its type arguments, or wildcards");
         });
     }

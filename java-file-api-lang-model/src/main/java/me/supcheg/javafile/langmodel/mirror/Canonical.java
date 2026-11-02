@@ -32,6 +32,7 @@ import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.TypeRef;
 import me.supcheg.javafile.type.TypeVarRef;
 import me.supcheg.javafile.type.UnboundedTypeArg;
+import org.jspecify.annotations.Nullable;
 
 import java.lang.annotation.ElementType;
 import java.lang.constant.ClassDesc;
@@ -248,7 +249,7 @@ public final class Canonical {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable Object o) {
         return o instanceof Canonical other && text.equals(other.text);
     }
 
@@ -508,8 +509,10 @@ public final class Canonical {
     }
 
     private static String classLiteral(ClassDesc type) {
-        if (type.isArray()) {
-            return classLiteral(type.componentType()) + "[]";
+        ClassDesc component = type.componentType();
+        if (component != null) {
+            // an array is the only type with a component
+            return classLiteral(component) + "[]";
         }
         return type.isPrimitive() ? type.displayName() : binaryName(type);
     }
@@ -644,12 +647,14 @@ public final class Canonical {
     private static String escape(int c) {
         return c >= ' ' && c < 0x7f && c != '"' && c != '\'' && c != '\\'
                 ? String.valueOf((char) c)
-                : String.format("\\u%04x", c);
+                : String.format(Locale.ROOT, "\\u%04x", c);
     }
 
     private static String erasure(ClassDesc erasure) {
-        if (erasure.isArray()) {
-            return erasure(erasure.componentType()) + "[]";
+        ClassDesc component = erasure.componentType();
+        if (component != null) {
+            // an array is the only type with a component
+            return erasure(component) + "[]";
         }
         return erasure.isPrimitive() ? erasure.displayName() : binaryName(erasure);
     }

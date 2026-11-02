@@ -2,6 +2,7 @@ package me.supcheg.javafile.facts;
 
 import me.supcheg.javafile.annotation.ArrayValue;
 import me.supcheg.javafile.annotation.SingleAnnotationValue;
+import org.jspecify.annotations.Nullable;
 
 /// The value of an element of an annotation (§3.6), typed by the Java type
 /// of the element: a `String`, a primitive marker of [Prim], an enum
@@ -16,6 +17,8 @@ import me.supcheg.javafile.annotation.SingleAnnotationValue;
 /// renderer writes.
 ///
 /// @param <V> the Java type of the element
+// the parameter is phantom: it types the value the generated builder of the annotation takes, not a member here
+@SuppressWarnings("UnusedTypeParameter")
 public final class AnnotationValue<V> {
     private final me.supcheg.javafile.annotation.AnnotationValue value;
 
@@ -44,7 +47,7 @@ public final class AnnotationValue<V> {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable Object o) {
         return o instanceof AnnotationValue<?> other && value.equals(other.value);
     }
 

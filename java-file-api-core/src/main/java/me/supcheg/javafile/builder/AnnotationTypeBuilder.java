@@ -143,9 +143,6 @@ public final class AnnotationTypeBuilder implements Consumer<AnnotationElementDe
         return this;
     }
 
-    /// Adds a ready-made element, e.g. one passed to a transform.
-    ///
-    /// @param element the element to append
     /// Adds a documented element without a default value.
     ///
     /// @param name the element name

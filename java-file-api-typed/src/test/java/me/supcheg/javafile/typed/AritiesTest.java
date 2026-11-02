@@ -14,11 +14,11 @@ import org.junit.jupiter.api.parallel.ExecutionMode;
 
 import java.lang.constant.ClassDesc;
 
+import static me.supcheg.javafile.typed.ExpressionArities.new_;
+import static me.supcheg.javafile.typed.ExpressionArities.staticCall;
+import static me.supcheg.javafile.typed.ExpressionArities.voidStaticCall;
 import static me.supcheg.javafile.typed.Expressions.concat;
 import static me.supcheg.javafile.typed.Expressions.literal;
-import static me.supcheg.javafile.typed.Expressions.new_;
-import static me.supcheg.javafile.typed.Expressions.staticCall;
-import static me.supcheg.javafile.typed.Expressions.voidStaticCall;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /// The forms of the typed layer at the arities beyond none: a call, a

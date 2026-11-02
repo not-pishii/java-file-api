@@ -6,6 +6,7 @@ import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.typed.ClassHeader;
 import me.supcheg.javafile.typed.MemberBodies;
 import me.supcheg.javafile.typed.TypedJavaFile;
+import org.jspecify.annotations.NullMarked;
 import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;
@@ -16,6 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /// The generated stages of a generic declaration are the public API of [TypedJavaFile] from another
 /// package: the entry point is its inherited static method, and the specification of four type
 /// parameters is its inherited nested type.
+@NullMarked
 class GenericDeclarationApiTest {
     @Test
     void aClassOfFourTypeParametersIsDeclaredFromAnotherPackage() {

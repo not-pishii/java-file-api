@@ -1141,7 +1141,7 @@ public final class Expressions extends ExpressionArities {
     /// @throws IllegalArgumentException if `op` is plain `=`, the value is of another type, or
     ///     the type has no such operator
     public static <T> Assignment assign(MutVar<T> var, AssignOp op, Expr<? extends T> value) {
-        compound(op, var.type(), value, "assign");
+        compound(op, var.type(), "assign");
         return new Assignment(new Node.Assign(new Node.Target.Local(var), op, value.node()));
     }
 
@@ -1159,7 +1159,7 @@ public final class Expressions extends ExpressionArities {
     ///     the type has no such operator
     public static <O, T> Assignment assignField(
             Expr<? extends O> target, MutableFieldRef<O, T> field, AssignOp op, Expr<? extends T> value) {
-        compound(op, field.type(), value, "assignField");
+        compound(op, field.type(), "assignField");
         return new Assignment(new Node.Assign(new Node.Target.Field(receiver(target, field), field), op, value.node()));
     }
 
@@ -1175,7 +1175,7 @@ public final class Expressions extends ExpressionArities {
     ///     the type has no such operator
     public static <T> Assignment assignStaticField(
             MutableStaticFieldRef<T> field, AssignOp op, Expr<? extends T> value) {
-        compound(op, field.type(), value, "assignStaticField");
+        compound(op, field.type(), "assignStaticField");
         return new Assignment(new Node.Assign(new Node.Target.StaticField(field), op, value.node()));
     }
 
@@ -1194,13 +1194,13 @@ public final class Expressions extends ExpressionArities {
     ///     the type has no such operator
     public static <A, T> Assignment assignAt(
             ArrayToken<A, T> type, Expr<A> array, Expr<Prim.Int> index, AssignOp op, Expr<? extends T> value) {
-        compound(op, type.component(), value, "assignAt");
+        compound(op, type.component(), "assignAt");
         return new Assignment(new Node.Assign(new Node.Target.Element(array.node(), index.node()), op, value.node()));
     }
 
     /// Rejects a compound assignment the typed layer cannot write without an
     /// implicit conversion.
-    private static void compound(AssignOp op, TypeToken<?> place, Expr<?> value, String where) {
+    private static void compound(AssignOp op, TypeToken<?> place, String where) {
         boolean taken = takes(op, place);
         if (op == AssignOp.ASSIGN) {
             throw new IllegalArgumentException(

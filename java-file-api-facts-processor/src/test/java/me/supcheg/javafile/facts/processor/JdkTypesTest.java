@@ -396,6 +396,8 @@ class JdkTypesTest {
     /// `ZipConstants`: the facts `StringBuilder_` and `ZipFile_` adopt are rendered by the typed layer as members
     /// of the `public` types, which javac compiles in another package and the JVM runs.
     @Test
+    // the generated methods append to the builder the test gives them, so the builder is no concatenation here
+    @SuppressWarnings("UnnecessaryStringBuilder")
     void theMembersJdkTypesAdoptAreCalledThroughTheTypedLayer() throws Exception {
         Compiled compilation = processor()
                 .compile(generator("java.lang.StringBuilder.class, java.util.zip.ZipFile.class"), """

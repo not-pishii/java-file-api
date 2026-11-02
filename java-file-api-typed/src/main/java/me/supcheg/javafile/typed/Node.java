@@ -255,6 +255,8 @@ sealed interface Node {
 
     /// The numeric conversions of the typed layer, each from the type it converts and to the one it
     /// converts to.
+    // the tokens are the singletons of `PrimitiveToken`, which expose nothing that can change
+    @SuppressWarnings("ImmutableEnumChecker")
     enum Conversion {
         INT_TO_LONG(PrimitiveToken.LONG),
         INT_TO_DOUBLE(PrimitiveToken.DOUBLE),

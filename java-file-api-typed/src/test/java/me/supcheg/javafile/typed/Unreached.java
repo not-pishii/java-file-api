@@ -10,6 +10,8 @@ final class Unreached {
     ///
     /// @param <T> the stage the specification returns
     /// @return never
+    // the call is what fails the test: the method never returns, and its type parameter is the stage it stands for
+    @SuppressWarnings({"DoNotCallSuggester", "TypeParameterUnusedInFormals"})
     static <T> T here() {
         throw new AssertionError("the specification was to be rejected before its end, and came to it");
     }

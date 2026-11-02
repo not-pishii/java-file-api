@@ -293,7 +293,7 @@ public abstract sealed class MemberBodies<Self, S> extends MemberBodyArities<Sel
         owner.requireDefining(what);
         Slot found = slots.stream()
                 .filter(slot -> slot.declared() instanceof Member.Initializer)
-                .filter(slot -> ((Member.Initializer) slot.declared()).handle() == handle)
+                .filter(slot -> ((Member.Initializer) slot.declared()).handle().equals(handle))
                 .findFirst()
                 .orElseThrow(() -> undeclared(what));
         if (found instanceof Slot.Defined) {
@@ -377,7 +377,7 @@ public abstract sealed class MemberBodies<Self, S> extends MemberBodyArities<Sel
     /// `super.method(args)`, on `this` of this class.
     @Override
     Node superCallNode(This<Self> receiver, Invocable method, List<Node.Operand> args, Node.Passing passing) {
-        if (receiver.type() != self) {
+        if (!receiver.type().equals(self)) {
             throw new IllegalArgumentException("super." + method.name() + "(...) is called on this of " + described
                     + ", got this of " + receiver.type());
         }
@@ -490,7 +490,10 @@ public abstract sealed class MemberBodies<Self, S> extends MemberBodyArities<Sel
     /// @throws IllegalStateException if a type the class names cannot be written in its file
     private void requireWritable(List<Slot> with, String added) {
         try {
-            written.apply(members(with));
+            // the render is the check; the source it gives is of no use here, and a class that renders is one
+            // with source
+            String source = written.apply(members(with));
+            Invariants.require(!source.isEmpty(), "%s renders no source", described);
         } catch (IllegalStateException unwritable) {
             throw new IllegalStateException(
                     added + " of " + described + " cannot be written: " + unwritable.getMessage()
@@ -648,7 +651,7 @@ public abstract sealed class MemberBodies<Self, S> extends MemberBodyArities<Sel
     /// The declared member is there whole.
     private void defined(Slot.Open from, ClassMember member, String what) {
         List<Slot> with = slots.stream()
-                .map(slot -> slot == from ? new Slot.Defined(from.declared(), member) : slot)
+                .map(slot -> slot.equals(from) ? new Slot.Defined(from.declared(), member) : slot)
                 .toList();
         requireWritable(with, what);
         slots = with;

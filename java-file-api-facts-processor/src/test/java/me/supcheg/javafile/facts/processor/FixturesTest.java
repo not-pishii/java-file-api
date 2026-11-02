@@ -24,6 +24,8 @@ class FixturesTest {
     private static final String ONLY = "fixtures.only";
 
     @TempDir
+    // JUnit fills the field with the directory of the test, so it cannot be final
+    @SuppressWarnings("NonFinalStaticField")
     static Path work;
 
     @TestFactory

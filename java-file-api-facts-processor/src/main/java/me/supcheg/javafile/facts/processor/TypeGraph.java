@@ -1,6 +1,7 @@
 package me.supcheg.javafile.facts.processor;
 
 import me.supcheg.javafile.langmodel.mirror.Hierarchy;
+import org.jspecify.annotations.Nullable;
 
 import javax.lang.model.element.TypeElement;
 import java.lang.constant.ClassDesc;
@@ -129,7 +130,7 @@ final class TypeGraph {
     }
 
     @Override
-    public boolean equals(Object other) {
+    public boolean equals(@Nullable Object other) {
         return other instanceof TypeGraph graph
                 && nodes.equals(graph.nodes)
                 && List.copyOf(edges).equals(List.copyOf(graph.edges))

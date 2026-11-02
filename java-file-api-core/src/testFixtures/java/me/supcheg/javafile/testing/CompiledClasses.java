@@ -3,6 +3,7 @@ package me.supcheg.javafile.testing;
 import com.google.testing.compile.Compilation;
 import com.google.testing.compile.JavaFileObjects;
 import me.supcheg.javafile.JavaFile;
+import org.jspecify.annotations.NullMarked;
 
 import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
@@ -24,6 +25,7 @@ import static com.google.testing.compile.CompilationSubject.assertThat;
 /// @param source the rendered source of the generated class
 /// @param loader loads the generated and the fixture classes
 /// @param generated the generated class
+@NullMarked
 public record CompiledClasses(String source, ClassLoader loader, Class<?> generated) {
 
     /// Renders, compiles and loads `file`.

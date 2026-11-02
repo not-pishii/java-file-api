@@ -105,6 +105,8 @@ final class Diagnostics {
         ///
         /// @param element the `@Facts` it concerns, empty if it no longer exists
         /// @param text the message
+        // the record is nested in `Message`, which is the namespace it is read in: it shadows java.lang.Error nowhere
+        @SuppressWarnings("AvoidCommonTypeNames")
         record Error(Optional<? extends Element> element, String text) implements Message {}
 
         /// A warning.

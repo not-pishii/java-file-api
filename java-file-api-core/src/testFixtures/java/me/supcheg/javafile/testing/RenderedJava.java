@@ -4,6 +4,7 @@ import com.google.testing.compile.Compilation;
 import com.google.testing.compile.CompilationSubject;
 import com.google.testing.compile.JavaFileObjects;
 import me.supcheg.javafile.JavaFile;
+import org.jspecify.annotations.NullMarked;
 
 import javax.tools.JavaFileObject;
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import static com.google.testing.compile.Compiler.javac;
 
 /// The oracle of the tests: the Java a [JavaFile] renders, compiled by javac with every lint enabled, because the
 /// library guarantees that what it renders compiles without a warning under `-Xlint:all`.
+@NullMarked
 public final class RenderedJava {
     private RenderedJava() {}
 

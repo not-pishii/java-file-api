@@ -237,7 +237,7 @@ final class ImportManager implements TypeContext {
                     + ": the name of the member type obscures the first name of the qualified one");
         }
         boolean sameScopeAsCurrentFile = packageName.equals(currentPackage) || packageName.equals("java.lang");
-        return sameScopeAsCurrentFile && ClassDescNames.nestingChain(desc).size() > 1 || packageName.isEmpty()
+        return (sameScopeAsCurrentFile && ClassDescNames.nestingChain(desc).size() > 1) || packageName.isEmpty()
                 ? dotted
                 : packageName + "." + dotted;
     }

@@ -148,6 +148,8 @@ public final class TypedModuleBuilder {
     /// @param name the simple name of the member type
     /// @return never
     /// @throws IllegalArgumentException always
+    // a refusal of what javac rejects: the tests call it to read the message, and it never returns
+    @SuppressWarnings("DoNotCallSuggester")
     public ClassDesc nestedType(String name) {
         throw new IllegalArgumentException("cannot declare the member type " + name + " in the module-info.java"
                 + " of module " + moduleName + ": a module-info.java declares directives alone (JLS 7.7)");

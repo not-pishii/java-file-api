@@ -424,10 +424,10 @@ class InheritanceVerdictTest {
                             }))
                     .withMessageContaining("the first has package access");
             CompilationSubject.assertThat(javac().withOptions("-Xlint:all")
-                            .compile(JavaFileObjects.forSourceString(
-                                    "me.supcheg.javafile.typed.fixtures.Probe",
-                                    "package me.supcheg.javafile.typed.fixtures;\n"
-                                            + "public final class Probe extends Base implements Local {}\n")))
+                            .compile(JavaFileObjects.forSourceString("me.supcheg.javafile.typed.fixtures.Probe", """
+                                    package me.supcheg.javafile.typed.fixtures;
+                                    public final class Probe extends Base implements Local {}
+                                    """)))
                     .hadErrorContaining("attempting to assign weaker access privileges; was public");
             // stricter than javac, which lets a class of the package override the method
             assertThatIllegalArgumentException()

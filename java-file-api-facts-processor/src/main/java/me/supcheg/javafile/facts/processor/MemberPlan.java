@@ -8,7 +8,6 @@ import me.supcheg.javafile.langmodel.mirror.MethodModel;
 import me.supcheg.javafile.langmodel.mirror.MirrorTranslator;
 import me.supcheg.javafile.langmodel.mirror.SamModel;
 import me.supcheg.routine.Either;
-import me.supcheg.routine.EitherCollectors;
 import me.supcheg.routine.Pair;
 
 import javax.lang.model.element.Element;
@@ -20,6 +19,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
@@ -123,11 +123,11 @@ record MemberPlan(List<EnumFact> enumConstants, List<Fact> members, Optional<Sam
         /// @param member the member, declared or adopted
         /// @return the origin
         static Had of(TypeElement type, Element member) {
-            return member.getEnclosingElement().equals(type)
+            // a member is enclosed by the type that declares it
+            TypeElement declarer = (TypeElement) Objects.requireNonNull(member.getEnclosingElement());
+            return declarer.equals(type)
                     ? new Declared()
-                    : new Adopted(((TypeElement) member.getEnclosingElement())
-                            .getQualifiedName()
-                            .toString());
+                    : new Adopted(declarer.getQualifiedName().toString());
         }
 
         /// The type has the member among its own: it declares it or adopts it.
@@ -164,7 +164,8 @@ record MemberPlan(List<EnumFact> enumConstants, List<Fact> members, Optional<Sam
                 .collect(Collectors.toSet());
         MetamodelNames.MemberNames names = MetamodelNames.members(
                 candidates.named().stream()
-                        .map(member -> member.getEnclosingElement().equals(type)
+                        .map(member -> Objects.requireNonNull(member.getEnclosingElement())
+                                        .equals(type)
                                 ? MetamodelNames.Named.declared(member)
                                 : new MetamodelNames.Named(member, models.parameters(type, member)))
                         .toList(),
@@ -184,7 +185,7 @@ record MemberPlan(List<EnumFact> enumConstants, List<Fact> members, Optional<Sam
                                 .orElseGet(() ->
                                         Origin.of(type, conflict.getValue().getFirst()))))
                 .toList();
-        Pair<List<Skip>, List<Map.Entry<Element, String>>> named = names.names().entrySet().stream()
+        List<Either<Skip, Map.Entry<Element, String>>> decided = names.names().entrySet().stream()
                 .filter(entry -> live.contains(entry.getKey()))
                 .<Either<Skip, Map.Entry<Element, String>>>map(entry -> taken.contains(entry.getValue())
                         ? Either.left(new Skip(
@@ -192,16 +193,23 @@ record MemberPlan(List<EnumFact> enumConstants, List<Fact> members, Optional<Sam
                                 "would be named " + entry.getValue() + ", a name the metamodel itself uses",
                                 Origin.of(type, entry.getKey())))
                         : Either.right(entry))
-                .collect(EitherCollectors.groupingTo(Collectors.toList(), Collectors.toList()));
+                .toList();
+        Pair<List<Skip>, List<Map.Entry<Element, String>>> named = Pair.pair(
+                decided.stream().flatMap(either -> either.left().stream()).toList(),
+                decided.stream().flatMap(either -> either.right().stream()).toList());
         Map<Element, String> factNames = inOrder(named.right());
         List<EnumFact> enums = candidates.enumConstants().stream()
                 .filter(factNames::containsKey)
-                .map(e -> new EnumFact(factNames.get(e), e.getSimpleName().toString()))
+                // the filter tells the name is there
+                .map(e -> new EnumFact(
+                        Objects.requireNonNull(factNames.get(e)),
+                        e.getSimpleName().toString()))
                 .toList();
         List<Fact> members = candidates.members().entrySet().stream()
                 .filter(entry -> factNames.containsKey(entry.getKey()))
                 .map(entry -> new Fact(
-                        factNames.get(entry.getKey()),
+                        // the filter tells the name is there
+                        Objects.requireNonNull(factNames.get(entry.getKey())),
                         entry.getValue(),
                         Origin.of(type, entry.getKey()),
                         models.reference(type, entry.getKey())))
@@ -302,13 +310,19 @@ record MemberPlan(List<EnumFact> enumConstants, List<Fact> members, Optional<Sam
             List<Element> named = Stream.concat(
                             enclosed.stream().filter(isConstant.or(withFacts::contains)),
                             publicMembers.stream()
-                                    .filter(member ->
-                                            !member.getEnclosingElement().equals(type)))
+                                    .filter(member -> !Objects.requireNonNull(member.getEnclosingElement())
+                                            .equals(type)))
                     .toList();
-            Pair<List<Skip>, List<Map.Entry<Element, MemberModel>>> read = publicMembers.stream()
+            List<Either<Skip, Map.Entry<Element, MemberModel>>> read = publicMembers.stream()
                     .map(member -> candidate(type, member, models.translator(), targets))
-                    .collect(EitherCollectors.groupingTo(Collectors.toList(), Collectors.toList()));
-            return new Candidates(named, enumConstants, inOrder(read.right()), read.left());
+                    .toList();
+            return new Candidates(
+                    named,
+                    enumConstants,
+                    inOrder(read.stream()
+                            .flatMap(either -> either.right().stream())
+                            .toList()),
+                    read.stream().flatMap(either -> either.left().stream()).toList());
         }
     }
 

@@ -20,6 +20,9 @@ val mockitoAgent = configurations.create("mockitoAgent") { isTransitive = false 
 
 dependencies {
     api(libs.jspecify)
+    // `@FormatMethod` and `@DoNotCall` are annotations of the code, not of the build: the library compiles
+    // against them and a consumer without the jar simply does not see them
+    compileOnly(libs.errorprone.annotations)
     errorprone(libs.errorprone.core)
     errorprone(libs.nullaway)
     mockitoAgent(libs.mockito.core)
@@ -45,6 +48,12 @@ tasks {
                     "UngroupedOverloads",
                     "InconsistentOverloads",
                     "VarWithPrimitive")
+            // `Self` is the name of the class being declared in the facts and the typed layers, and every
+            // generated family spells it: it is the convention of the layer, not a misuse of a type parameter
+            disable("TypeParameterNaming")
+            // `Void` is the phantom the typed layer gives a body, a statement or a call that has no type: it
+            // is never a value, so it is never `@Nullable`, and annotating each use says nothing
+            disable("VoidMissingNullable")
             option("NullAway:AnnotatedPackages", "me.supcheg")
             option("NullAway:JSpecifyMode", "true")
             option("NullAway:CheckOptionalEmptiness", "true")

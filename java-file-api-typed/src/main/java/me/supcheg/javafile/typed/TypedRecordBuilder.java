@@ -47,6 +47,8 @@ import java.util.List;
 public final class TypedRecordBuilder<Self> extends RecordConstructorArities<Self> {
     private static final ClassDesc CD_RECORD = ClassDesc.of("java.lang", "Record");
     private static final ClassDesc CD_OBJECT = ConstantDescs.CD_Object;
+    // the supplier is what the fact of the class is built with, and a record has `Record` and `Object` above it
+    @SuppressWarnings("UnnecessaryLambda")
     private static final java.util.function.Supplier<List<ClassDesc>> SUPERCLASSES =
             () -> List.of(CD_RECORD, CD_OBJECT);
 
@@ -106,6 +108,8 @@ public final class TypedRecordBuilder<Self> extends RecordConstructorArities<Sel
     ///
     /// @return never
     /// @throws IllegalArgumentException always, naming the record
+    // a refusal of what javac rejects: the tests call it to read the message, and it never returns
+    @SuppressWarnings("DoNotCallSuggester")
     public final InstanceInitializerBlock declareInitializerBlock() {
         throw new IllegalArgumentException("cannot declare an instance initializer block of " + described()
                 + ": a record has no instance initializer block - its compact constructor replaces it"
@@ -241,6 +245,7 @@ public final class TypedRecordBuilder<Self> extends RecordConstructorArities<Sel
     // (RecordConstructorArities, see TypedCodegen). They call the hooks below.
 
     @Override
+    // the class being declared is the class whose token the builder holds
     @SuppressWarnings("unchecked")
     FinalClassToken<Self> finalSelf() {
         return (FinalClassToken<Self>) self();
@@ -307,7 +312,7 @@ public final class TypedRecordBuilder<Self> extends RecordConstructorArities<Sel
                 component.doc())));
         interfaces.forEach(rb::withInterface);
         members.forEach(member -> rb.accept((RecordMember) member));
-        declaredNested().forEach(rb::accept);
+        declaredNested().forEach(rb);
     }
 
     record Component(

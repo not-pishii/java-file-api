@@ -17,9 +17,9 @@ import java.lang.constant.ClassDesc;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
 import static com.google.testing.compile.Compiler.javac;
+import static me.supcheg.javafile.typed.ExpressionArities.staticCall;
 import static me.supcheg.javafile.typed.Expressions.enumConstant;
 import static me.supcheg.javafile.typed.Expressions.literal;
-import static me.supcheg.javafile.typed.Expressions.staticCall;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
@@ -29,6 +29,8 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 class ClassNamesTest {
 
     /// A specification that is not to run: the class is refused before it does.
+    // the method of the specification is generic in the class it declares, which a lambda cannot implement
+    @SuppressWarnings("UnnecessaryAnonymousClass")
     private static final TypedJavaFile.TypedClassSpec NEVER = new TypedJavaFile.TypedClassSpec() {
         @Override
         public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
@@ -107,7 +109,7 @@ class ClassNamesTest {
                         UnsafeFacts.unverifiedClasspath(),
                         ClassDesc.of("gen", "var"),
                         TypedJavaFile.typeParam("T"),
-                        new TypedJavaFile.TypedGenericClassSpec1<Object>() {
+                        new GenericDeclarationArities.TypedGenericClassSpec1<Object>() {
                             @Override
                             public <Self, T1> MemberBodies<Self, ?> build(
                                     ClassHeader<Self> h, me.supcheg.javafile.facts.TypeVarToken<T1> t1) {

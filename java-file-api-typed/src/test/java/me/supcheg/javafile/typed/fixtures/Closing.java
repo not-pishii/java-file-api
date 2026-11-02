@@ -2,7 +2,10 @@ package me.supcheg.javafile.typed.fixtures;
 
 /// A resource that records its close and may throw from it, for the try-with-resources tests.
 public final class Closing implements AutoCloseable {
+    // the fixture counts its closings, which is what the generated code is checked against
+    @SuppressWarnings("NonFinalStaticField")
     private static int closes;
+
     private final boolean failing;
 
     /// @param failing whether [#close()] throws

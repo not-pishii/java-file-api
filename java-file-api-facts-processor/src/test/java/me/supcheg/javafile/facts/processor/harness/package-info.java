@@ -13,4 +13,7 @@
 /// another version of it as the target classpath;
 /// [me.supcheg.javafile.facts.processor.harness.InCompilation]
 /// gives a unit test the `Elements` and `Types` of a compilation.
+@NullMarked
 package me.supcheg.javafile.facts.processor.harness;
+
+import org.jspecify.annotations.NullMarked;

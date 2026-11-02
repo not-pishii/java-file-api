@@ -6,7 +6,6 @@ import me.supcheg.javafile.langmodel.mirror.MemberFilter;
 import me.supcheg.javafile.langmodel.mirror.Translation;
 import me.supcheg.javafile.langmodel.mirror.TypeModel;
 import me.supcheg.routine.Either;
-import me.supcheg.routine.EitherCollectors;
 import me.supcheg.routine.Pair;
 
 import javax.annotation.processing.Filer;
@@ -21,6 +20,7 @@ import java.io.Writer;
 import java.lang.constant.ClassDesc;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -81,12 +81,15 @@ final class ReuseIndex {
                     case TOKEN -> List.of(Completeness.FULL, Completeness.TOKEN);
                 };
         // each listed metamodel either matches or is stale, with the reason
-        Pair<List<String>, List<Lookup.Reusable>> candidates = directories.stream()
+        List<Either<String, Lookup.Reusable>> read = directories.stream()
                 .flatMap(directory ->
                         read(directory.path(binaryName))
                                 .map(listed -> candidate(type, listed, directory, models))
                                 .stream())
-                .collect(EitherCollectors.groupingTo(Collectors.toList(), Collectors.toList()));
+                .toList();
+        Pair<List<String>, List<Lookup.Reusable>> candidates = Pair.pair(
+                read.stream().flatMap(either -> either.left().stream()).toList(),
+                read.stream().flatMap(either -> either.right().stream()).toList());
         return candidates.right().stream()
                 .<Lookup>map(Function.identity())
                 .findFirst()
@@ -144,12 +147,15 @@ final class ReuseIndex {
                 || !models.binaryName((TypeElement) ofType.asElement()).equals(binaryName)) {
             return Either.left(listed + " is the metamodel of " + of + ", not of " + binaryName);
         }
+        // the annotation member is a boolean, or absent in a metamodel of an older format: `equals` on the constant
+        // is the null-safe form, and an expression on the value would throw on an absent member
+        @SuppressWarnings("YodaCondition")
         boolean complete = Boolean.TRUE.equals(marker.get().get("complete"));
         if (directory == Completeness.FULL && !complete) {
             return Either.left(listed + " is listed as full, but is token-only");
         }
         Object format = marker.get().get("format");
-        if (!Integer.valueOf(MetamodelFormat.VERSION).equals(format)) {
+        if (!Objects.equals(format, MetamodelFormat.VERSION)) {
             return Either.left("metamodel " + listed + " on the classpath is of "
                     + (format == null ? "an older format" : "format " + format) + ", not of format "
                     + MetamodelFormat.VERSION + ", which this processor generates");

@@ -51,7 +51,7 @@ class TypedRecordCompileTest {
                 TypedJavaFile.record(UnsafeFacts.unverifiedClasspath(), desc, new TypedJavaFile.TypedRecordSpec() {
                     @Override
                     public <Self> TypedRecordBodies<Self> build(TypedRecordBuilder<Self> rb) {
-                        var value = rb.component("value", PrimitiveToken.INT);
+                        rb.component("value", PrimitiveToken.INT);
                         var upcast = rb.implements_(
                                 me.supcheg.javafile.typed.testfacts.java.util.function.IntUnaryOperator_.TOKEN);
                         var apply = rb.declareOverride(

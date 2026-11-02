@@ -7,6 +7,7 @@ import me.supcheg.javafile.facts.TypeToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.testing.CompiledClasses;
 import me.supcheg.javafile.typed.testfacts.java.lang.String_;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;
@@ -43,7 +44,8 @@ class EnumConstantHelperAritiesTest {
     }
 
     /// Calls the generated `declare*` helper of the arity `n`, which a test cannot name one by one.
-    private static void declare(TypedEnumConstantBodies<?> cb, String form, String name, int n, TypeToken<?> result)
+    private static void declare(
+            TypedEnumConstantBodies<?> cb, String form, String name, int n, @Nullable TypeToken<?> result)
             throws ReflectiveOperationException {
         java.util.List<Class<?>> parameters = new java.util.ArrayList<>();
         parameters.add(String.class);

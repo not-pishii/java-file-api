@@ -57,16 +57,17 @@ class EnumConstantBodiesTest {
                             (b, self, x) -> b.return_(me.supcheg.javafile.typed.Expressions.addInt(
                                     me.supcheg.javafile.typed.Expressions.mulInt(x, literal(2)), self.field(base))));
                     cb.define(unitMethod, b -> b.return_(me.supcheg.javafile.typed.Expressions.staticField(unit)));
-                    cb.declareNestedClass("Box", typeParam("T"), new TypedJavaFile.TypedGenericClassSpec1<>() {
-                        @Override
-                        public <Box, T> MemberBodies<Box, ?> build(ClassHeader<Box> h, TypeVarToken<T> t) {
-                            var members = h.extendsObject().members();
-                            var echo = members.declareMethod("echo", t, t);
-                            var bodies = members.bodies();
-                            bodies.define(echo, (b, self, value) -> b.return_(value));
-                            return bodies;
-                        }
-                    });
+                    cb.declareNestedClass(
+                            "Box", typeParam("T"), new GenericDeclarationArities.TypedGenericClassSpec1<>() {
+                                @Override
+                                public <Box, T> MemberBodies<Box, ?> build(ClassHeader<Box> h, TypeVarToken<T> t) {
+                                    var members = h.extendsObject().members();
+                                    var echo = members.declareMethod("echo", t, t);
+                                    var bodies = members.bodies();
+                                    bodies.define(echo, (b, self, value) -> b.return_(value));
+                                    return bodies;
+                                }
+                            });
                 });
                 return eb.bodies();
             }

@@ -15,6 +15,8 @@ package me.supcheg.javafile.facts;
 /// arguments. Refer to them qualified, `Prim.Long`, rather than importing
 /// them, since `Long`, `Double`, `Float`, `Short` and `Byte` would shadow
 /// `java.lang`.
+// the names are the primitives they mark, and a marker is named `Prim.Long` and never imported, so it shadows nothing
+@SuppressWarnings("AvoidCommonTypeNames")
 public final class Prim {
     private Prim() {}
 

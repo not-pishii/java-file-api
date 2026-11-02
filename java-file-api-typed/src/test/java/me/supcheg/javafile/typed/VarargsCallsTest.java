@@ -34,13 +34,13 @@ import org.junit.jupiter.api.Test;
 import java.lang.constant.ClassDesc;
 import java.util.List;
 
+import static me.supcheg.javafile.typed.ExpressionArities.new_;
+import static me.supcheg.javafile.typed.ExpressionArities.staticCall;
+import static me.supcheg.javafile.typed.ExpressionArities.voidStaticCall;
 import static me.supcheg.javafile.typed.Expressions.box;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.literalNull;
-import static me.supcheg.javafile.typed.Expressions.new_;
-import static me.supcheg.javafile.typed.Expressions.staticCall;
 import static me.supcheg.javafile.typed.Expressions.varargs;
-import static me.supcheg.javafile.typed.Expressions.voidStaticCall;
 import static me.supcheg.javafile.typed.TypedJavaFile.typeParam;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -486,7 +486,7 @@ class VarargsCallsTest {
                 UnsafeFacts.unverifiedClasspath(),
                 ClassDesc.of("me.supcheg.example", "Bounded"),
                 typeParam("T", Gathered_.TOKEN),
-                new TypedJavaFile.TypedGenericClassSpec1<Gathered>() {
+                new GenericDeclarationArities.TypedGenericClassSpec1<Gathered>() {
                     @Override
                     public <Self, T extends Gathered> MemberBodies<Self, ?> build(
                             ClassHeader<Self> h, TypeVarToken<T> t) {

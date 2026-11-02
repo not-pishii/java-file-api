@@ -6,6 +6,8 @@ import java.util.function.Supplier;
 /// Overloads that a lambda alone does not tell apart: `() -> s.trim()` is a
 /// `Runnable`, a `Supplier` and a `Callable` to javac, which picks by the
 /// shape of the body unless the lambda says what it is.
+// the overloads are what the fixture proves: a lambda alone does not tell them apart
+@SuppressWarnings("FunctionalInterfaceClash")
 public final class Tasks {
     private Tasks() {}
 

@@ -100,7 +100,7 @@ class GenericDeclarationAritiesTest {
                 typeParam("T2"),
                 typeParam("T3"),
                 typeParam("T4", Number_.TOKEN),
-                new TypedJavaFile.TypedGenericClassSpec4<Object, Object, Object, Number>() {
+                new GenericDeclarationArities.TypedGenericClassSpec4<Object, Object, Object, Number>() {
                     @Override
                     public <Self, T1, T2, T3, T4 extends Number> MemberBodies<Self, ?> build(
                             ClassHeader<Self> h,
@@ -131,7 +131,7 @@ class GenericDeclarationAritiesTest {
                 typeParam("T10"),
                 typeParam("T11"),
                 typeParam("T12", new Comparable_<>(String_.TOKEN).token),
-                new TypedJavaFile.TypedGenericRecordSpec12<
+                new GenericDeclarationArities.TypedGenericRecordSpec12<
                         Object,
                         Object,
                         Object,
@@ -180,7 +180,7 @@ class GenericDeclarationAritiesTest {
                 typeParam("T6"),
                 typeParam("T7"),
                 typeParam("T8", Number_.TOKEN),
-                new TypedJavaFile.TypedGenericInterfaceSpec8<
+                new GenericDeclarationArities.TypedGenericInterfaceSpec8<
                         Object, Object, Object, Object, Object, Object, Object, Number>() {
                     @Override
                     public <Self, T1, T2, T3, T4, T5, T6, T7, T8 extends Number> TypedInterfaceBodies<Self> build(
@@ -221,7 +221,7 @@ class GenericDeclarationAritiesTest {
                         typeParam("T10"),
                         typeParam("T11"),
                         typeParam("T1"),
-                        new TypedJavaFile.TypedGenericClassSpec12<
+                        new GenericDeclarationArities.TypedGenericClassSpec12<
                                 Object,
                                 Object,
                                 Object,
@@ -266,7 +266,8 @@ class GenericDeclarationAritiesTest {
                         typeParam("T2"),
                         typeParam("T3"),
                         typeParam("T4", UnsafeFacts.<Comparable<?>>interfaceToken(Comparable_.Data.SHAPE)),
-                        new TypedJavaFile.TypedGenericInterfaceSpec4<Object, Object, Object, Comparable<?>>() {
+                        new GenericDeclarationArities.TypedGenericInterfaceSpec4<
+                                Object, Object, Object, Comparable<?>>() {
                             @Override
                             public <Self, T1, T2, T3, T4 extends Comparable<?>> TypedInterfaceBodies<Self> build(
                                     TypedInterfaceBuilder<Self> ib,
@@ -290,7 +291,7 @@ class GenericDeclarationAritiesTest {
                         typeParam("T2"),
                         typeParam("Box"),
                         typeParam("T4"),
-                        new TypedJavaFile.TypedGenericRecordSpec4<Object, Object, Object, Object>() {
+                        new GenericDeclarationArities.TypedGenericRecordSpec4<Object, Object, Object, Object>() {
                             @Override
                             public <Self, T1, T2, T3, T4> TypedRecordBodies<Self> build(
                                     TypedRecordBuilder<Self> rb,
@@ -315,19 +316,24 @@ class GenericDeclarationAritiesTest {
     private static JavaFile classOf(int n) {
         return switch (n) {
             case 1 ->
-                TypedJavaFile.declareClass(TARGET, DESC, typeParam("T1"), new TypedJavaFile.TypedGenericClassSpec1<>() {
-                    @Override
-                    public <Self, T1> MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<T1> t1) {
-                        return last(h, 1, t1);
-                    }
-                });
+                TypedJavaFile.declareClass(
+                        TARGET, DESC, typeParam("T1"), new GenericDeclarationArities.TypedGenericClassSpec1<>() {
+                            @Override
+                            public <Self, T1> MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<T1> t1) {
+                                return last(h, t1);
+                            }
+                        });
             case 2 ->
                 TypedJavaFile.declareClass(
-                        TARGET, DESC, typeParam("T1"), typeParam("T2"), new TypedJavaFile.TypedGenericClassSpec2<>() {
+                        TARGET,
+                        DESC,
+                        typeParam("T1"),
+                        typeParam("T2"),
+                        new GenericDeclarationArities.TypedGenericClassSpec2<>() {
                             @Override
                             public <Self, T1, T2> MemberBodies<Self, ?> build(
                                     ClassHeader<Self> h, TypeVarToken<T1> t1, TypeVarToken<T2> t2) {
-                                return last(h, 2, t2);
+                                return last(h, t2);
                             }
                         });
             case 3 ->
@@ -337,14 +343,14 @@ class GenericDeclarationAritiesTest {
                         typeParam("T1"),
                         typeParam("T2"),
                         typeParam("T3"),
-                        new TypedJavaFile.TypedGenericClassSpec3<>() {
+                        new GenericDeclarationArities.TypedGenericClassSpec3<>() {
                             @Override
                             public <Self, T1, T2, T3> MemberBodies<Self, ?> build(
                                     ClassHeader<Self> h,
                                     TypeVarToken<T1> t1,
                                     TypeVarToken<T2> t2,
                                     TypeVarToken<T3> t3) {
-                                return last(h, 3, t3);
+                                return last(h, t3);
                             }
                         });
             case 4 ->
@@ -355,7 +361,7 @@ class GenericDeclarationAritiesTest {
                         typeParam("T2"),
                         typeParam("T3"),
                         typeParam("T4"),
-                        new TypedJavaFile.TypedGenericClassSpec4<>() {
+                        new GenericDeclarationArities.TypedGenericClassSpec4<>() {
                             @Override
                             public <Self, T1, T2, T3, T4> MemberBodies<Self, ?> build(
                                     ClassHeader<Self> h,
@@ -363,7 +369,7 @@ class GenericDeclarationAritiesTest {
                                     TypeVarToken<T2> t2,
                                     TypeVarToken<T3> t3,
                                     TypeVarToken<T4> t4) {
-                                return last(h, 4, t4);
+                                return last(h, t4);
                             }
                         });
             case 5 ->
@@ -375,7 +381,7 @@ class GenericDeclarationAritiesTest {
                         typeParam("T3"),
                         typeParam("T4"),
                         typeParam("T5"),
-                        new TypedJavaFile.TypedGenericClassSpec5<>() {
+                        new GenericDeclarationArities.TypedGenericClassSpec5<>() {
                             @Override
                             public <Self, T1, T2, T3, T4, T5> MemberBodies<Self, ?> build(
                                     ClassHeader<Self> h,
@@ -384,7 +390,7 @@ class GenericDeclarationAritiesTest {
                                     TypeVarToken<T3> t3,
                                     TypeVarToken<T4> t4,
                                     TypeVarToken<T5> t5) {
-                                return last(h, 5, t5);
+                                return last(h, t5);
                             }
                         });
             case 6 ->
@@ -397,7 +403,7 @@ class GenericDeclarationAritiesTest {
                         typeParam("T4"),
                         typeParam("T5"),
                         typeParam("T6"),
-                        new TypedJavaFile.TypedGenericClassSpec6<>() {
+                        new GenericDeclarationArities.TypedGenericClassSpec6<>() {
                             @Override
                             public <Self, T1, T2, T3, T4, T5, T6> MemberBodies<Self, ?> build(
                                     ClassHeader<Self> h,
@@ -407,7 +413,7 @@ class GenericDeclarationAritiesTest {
                                     TypeVarToken<T4> t4,
                                     TypeVarToken<T5> t5,
                                     TypeVarToken<T6> t6) {
-                                return last(h, 6, t6);
+                                return last(h, t6);
                             }
                         });
             case 7 ->
@@ -421,7 +427,7 @@ class GenericDeclarationAritiesTest {
                         typeParam("T5"),
                         typeParam("T6"),
                         typeParam("T7"),
-                        new TypedJavaFile.TypedGenericClassSpec7<>() {
+                        new GenericDeclarationArities.TypedGenericClassSpec7<>() {
                             @Override
                             public <Self, T1, T2, T3, T4, T5, T6, T7> MemberBodies<Self, ?> build(
                                     ClassHeader<Self> h,
@@ -432,7 +438,7 @@ class GenericDeclarationAritiesTest {
                                     TypeVarToken<T5> t5,
                                     TypeVarToken<T6> t6,
                                     TypeVarToken<T7> t7) {
-                                return last(h, 7, t7);
+                                return last(h, t7);
                             }
                         });
             case 8 ->
@@ -447,7 +453,7 @@ class GenericDeclarationAritiesTest {
                         typeParam("T6"),
                         typeParam("T7"),
                         typeParam("T8"),
-                        new TypedJavaFile.TypedGenericClassSpec8<>() {
+                        new GenericDeclarationArities.TypedGenericClassSpec8<>() {
                             @Override
                             public <Self, T1, T2, T3, T4, T5, T6, T7, T8> MemberBodies<Self, ?> build(
                                     ClassHeader<Self> h,
@@ -459,7 +465,7 @@ class GenericDeclarationAritiesTest {
                                     TypeVarToken<T6> t6,
                                     TypeVarToken<T7> t7,
                                     TypeVarToken<T8> t8) {
-                                return last(h, 8, t8);
+                                return last(h, t8);
                             }
                         });
             case 9 ->
@@ -475,7 +481,7 @@ class GenericDeclarationAritiesTest {
                         typeParam("T7"),
                         typeParam("T8"),
                         typeParam("T9"),
-                        new TypedJavaFile.TypedGenericClassSpec9<>() {
+                        new GenericDeclarationArities.TypedGenericClassSpec9<>() {
                             @Override
                             public <Self, T1, T2, T3, T4, T5, T6, T7, T8, T9> MemberBodies<Self, ?> build(
                                     ClassHeader<Self> h,
@@ -488,7 +494,7 @@ class GenericDeclarationAritiesTest {
                                     TypeVarToken<T7> t7,
                                     TypeVarToken<T8> t8,
                                     TypeVarToken<T9> t9) {
-                                return last(h, 9, t9);
+                                return last(h, t9);
                             }
                         });
             case 10 ->
@@ -505,7 +511,7 @@ class GenericDeclarationAritiesTest {
                         typeParam("T8"),
                         typeParam("T9"),
                         typeParam("T10"),
-                        new TypedJavaFile.TypedGenericClassSpec10<>() {
+                        new GenericDeclarationArities.TypedGenericClassSpec10<>() {
                             @Override
                             public <Self, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> MemberBodies<Self, ?> build(
                                     ClassHeader<Self> h,
@@ -519,7 +525,7 @@ class GenericDeclarationAritiesTest {
                                     TypeVarToken<T8> t8,
                                     TypeVarToken<T9> t9,
                                     TypeVarToken<T10> t10) {
-                                return last(h, 10, t10);
+                                return last(h, t10);
                             }
                         });
             case 11 ->
@@ -537,7 +543,7 @@ class GenericDeclarationAritiesTest {
                         typeParam("T9"),
                         typeParam("T10"),
                         typeParam("T11"),
-                        new TypedJavaFile.TypedGenericClassSpec11<>() {
+                        new GenericDeclarationArities.TypedGenericClassSpec11<>() {
                             @Override
                             public <Self, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> MemberBodies<Self, ?> build(
                                     ClassHeader<Self> h,
@@ -552,7 +558,7 @@ class GenericDeclarationAritiesTest {
                                     TypeVarToken<T9> t9,
                                     TypeVarToken<T10> t10,
                                     TypeVarToken<T11> t11) {
-                                return last(h, 11, t11);
+                                return last(h, t11);
                             }
                         });
             case 12 ->
@@ -571,7 +577,7 @@ class GenericDeclarationAritiesTest {
                         typeParam("T10"),
                         typeParam("T11"),
                         typeParam("T12"),
-                        new TypedJavaFile.TypedGenericClassSpec12<>() {
+                        new GenericDeclarationArities.TypedGenericClassSpec12<>() {
                             @Override
                             public <Self, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>
                                     MemberBodies<Self, ?> build(
@@ -588,7 +594,7 @@ class GenericDeclarationAritiesTest {
                                             TypeVarToken<T10> t10,
                                             TypeVarToken<T11> t11,
                                             TypeVarToken<T12> t12) {
-                                return last(h, 12, t12);
+                                return last(h, t12);
                             }
                         });
             case 13 ->
@@ -608,7 +614,7 @@ class GenericDeclarationAritiesTest {
                         typeParam("T11"),
                         typeParam("T12"),
                         typeParam("T13"),
-                        new TypedJavaFile.TypedGenericClassSpec13<>() {
+                        new GenericDeclarationArities.TypedGenericClassSpec13<>() {
                             @Override
                             public <Self, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>
                                     MemberBodies<Self, ?> build(
@@ -626,7 +632,7 @@ class GenericDeclarationAritiesTest {
                                             TypeVarToken<T11> t11,
                                             TypeVarToken<T12> t12,
                                             TypeVarToken<T13> t13) {
-                                return last(h, 13, t13);
+                                return last(h, t13);
                             }
                         });
             case 14 ->
@@ -647,7 +653,7 @@ class GenericDeclarationAritiesTest {
                         typeParam("T12"),
                         typeParam("T13"),
                         typeParam("T14"),
-                        new TypedJavaFile.TypedGenericClassSpec14<>() {
+                        new GenericDeclarationArities.TypedGenericClassSpec14<>() {
                             @Override
                             public <Self, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>
                                     MemberBodies<Self, ?> build(
@@ -666,7 +672,7 @@ class GenericDeclarationAritiesTest {
                                             TypeVarToken<T12> t12,
                                             TypeVarToken<T13> t13,
                                             TypeVarToken<T14> t14) {
-                                return last(h, 14, t14);
+                                return last(h, t14);
                             }
                         });
             case 15 ->
@@ -688,7 +694,7 @@ class GenericDeclarationAritiesTest {
                         typeParam("T13"),
                         typeParam("T14"),
                         typeParam("T15"),
-                        new TypedJavaFile.TypedGenericClassSpec15<>() {
+                        new GenericDeclarationArities.TypedGenericClassSpec15<>() {
                             @Override
                             public <Self, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>
                                     MemberBodies<Self, ?> build(
@@ -708,7 +714,7 @@ class GenericDeclarationAritiesTest {
                                             TypeVarToken<T13> t13,
                                             TypeVarToken<T14> t14,
                                             TypeVarToken<T15> t15) {
-                                return last(h, 15, t15);
+                                return last(h, t15);
                             }
                         });
             case 16 ->
@@ -731,7 +737,7 @@ class GenericDeclarationAritiesTest {
                         typeParam("T14"),
                         typeParam("T15"),
                         typeParam("T16"),
-                        new TypedJavaFile.TypedGenericClassSpec16<>() {
+                        new GenericDeclarationArities.TypedGenericClassSpec16<>() {
                             @Override
                             public <Self, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>
                                     MemberBodies<Self, ?> build(
@@ -752,15 +758,15 @@ class GenericDeclarationAritiesTest {
                                             TypeVarToken<T14> t14,
                                             TypeVarToken<T15> t15,
                                             TypeVarToken<T16> t16) {
-                                return last(h, 16, t16);
+                                return last(h, t16);
                             }
                         });
             default -> throw new IllegalArgumentException("arity " + n);
         };
     }
 
-    /// A class of `n` type parameters with `public Tn last()`: a member that names the last token.
-    private static <Self, T> MemberBodies<Self, ?> last(ClassHeader<Self> h, int n, TypeVarToken<T> last) {
+    /// A class whose last type parameter is `last`, with `public T last()`: a member that names the token.
+    private static <Self, T> MemberBodies<Self, ?> last(ClassHeader<Self> h, TypeVarToken<T> last) {
         var members = h.extendsObject().members();
         var method = members.declareMethod("last", last);
         var bodies = members.bodies();
@@ -772,11 +778,11 @@ class GenericDeclarationAritiesTest {
         return switch (n) {
             case 1 ->
                 TypedJavaFile.interface_(
-                        TARGET, DESC, typeParam("T1"), new TypedJavaFile.TypedGenericInterfaceSpec1<>() {
+                        TARGET, DESC, typeParam("T1"), new GenericDeclarationArities.TypedGenericInterfaceSpec1<>() {
                             @Override
                             public <Self, T1> TypedInterfaceBodies<Self> build(
                                     TypedInterfaceBuilder<Self> ib, TypeVarToken<T1> t1) {
-                                return last(ib, 1, t1);
+                                return last(ib, t1);
                             }
                         });
             case 2 ->
@@ -785,11 +791,11 @@ class GenericDeclarationAritiesTest {
                         DESC,
                         typeParam("T1"),
                         typeParam("T2"),
-                        new TypedJavaFile.TypedGenericInterfaceSpec2<>() {
+                        new GenericDeclarationArities.TypedGenericInterfaceSpec2<>() {
                             @Override
                             public <Self, T1, T2> TypedInterfaceBodies<Self> build(
                                     TypedInterfaceBuilder<Self> ib, TypeVarToken<T1> t1, TypeVarToken<T2> t2) {
-                                return last(ib, 2, t2);
+                                return last(ib, t2);
                             }
                         });
             case 3 ->
@@ -799,14 +805,14 @@ class GenericDeclarationAritiesTest {
                         typeParam("T1"),
                         typeParam("T2"),
                         typeParam("T3"),
-                        new TypedJavaFile.TypedGenericInterfaceSpec3<>() {
+                        new GenericDeclarationArities.TypedGenericInterfaceSpec3<>() {
                             @Override
                             public <Self, T1, T2, T3> TypedInterfaceBodies<Self> build(
                                     TypedInterfaceBuilder<Self> ib,
                                     TypeVarToken<T1> t1,
                                     TypeVarToken<T2> t2,
                                     TypeVarToken<T3> t3) {
-                                return last(ib, 3, t3);
+                                return last(ib, t3);
                             }
                         });
             case 4 ->
@@ -817,7 +823,7 @@ class GenericDeclarationAritiesTest {
                         typeParam("T2"),
                         typeParam("T3"),
                         typeParam("T4"),
-                        new TypedJavaFile.TypedGenericInterfaceSpec4<>() {
+                        new GenericDeclarationArities.TypedGenericInterfaceSpec4<>() {
                             @Override
                             public <Self, T1, T2, T3, T4> TypedInterfaceBodies<Self> build(
                                     TypedInterfaceBuilder<Self> ib,
@@ -825,7 +831,7 @@ class GenericDeclarationAritiesTest {
                                     TypeVarToken<T2> t2,
                                     TypeVarToken<T3> t3,
                                     TypeVarToken<T4> t4) {
-                                return last(ib, 4, t4);
+                                return last(ib, t4);
                             }
                         });
             case 5 ->
@@ -837,7 +843,7 @@ class GenericDeclarationAritiesTest {
                         typeParam("T3"),
                         typeParam("T4"),
                         typeParam("T5"),
-                        new TypedJavaFile.TypedGenericInterfaceSpec5<>() {
+                        new GenericDeclarationArities.TypedGenericInterfaceSpec5<>() {
                             @Override
                             public <Self, T1, T2, T3, T4, T5> TypedInterfaceBodies<Self> build(
                                     TypedInterfaceBuilder<Self> ib,
@@ -846,7 +852,7 @@ class GenericDeclarationAritiesTest {
                                     TypeVarToken<T3> t3,
                                     TypeVarToken<T4> t4,
                                     TypeVarToken<T5> t5) {
-                                return last(ib, 5, t5);
+                                return last(ib, t5);
                             }
                         });
             case 6 ->
@@ -859,7 +865,7 @@ class GenericDeclarationAritiesTest {
                         typeParam("T4"),
                         typeParam("T5"),
                         typeParam("T6"),
-                        new TypedJavaFile.TypedGenericInterfaceSpec6<>() {
+                        new GenericDeclarationArities.TypedGenericInterfaceSpec6<>() {
                             @Override
                             public <Self, T1, T2, T3, T4, T5, T6> TypedInterfaceBodies<Self> build(
                                     TypedInterfaceBuilder<Self> ib,
@@ -869,7 +875,7 @@ class GenericDeclarationAritiesTest {
                                     TypeVarToken<T4> t4,
                                     TypeVarToken<T5> t5,
                                     TypeVarToken<T6> t6) {
-                                return last(ib, 6, t6);
+                                return last(ib, t6);
                             }
                         });
             case 7 ->
@@ -883,7 +889,7 @@ class GenericDeclarationAritiesTest {
                         typeParam("T5"),
                         typeParam("T6"),
                         typeParam("T7"),
-                        new TypedJavaFile.TypedGenericInterfaceSpec7<>() {
+                        new GenericDeclarationArities.TypedGenericInterfaceSpec7<>() {
                             @Override
                             public <Self, T1, T2, T3, T4, T5, T6, T7> TypedInterfaceBodies<Self> build(
                                     TypedInterfaceBuilder<Self> ib,
@@ -894,7 +900,7 @@ class GenericDeclarationAritiesTest {
                                     TypeVarToken<T5> t5,
                                     TypeVarToken<T6> t6,
                                     TypeVarToken<T7> t7) {
-                                return last(ib, 7, t7);
+                                return last(ib, t7);
                             }
                         });
             case 8 ->
@@ -909,7 +915,7 @@ class GenericDeclarationAritiesTest {
                         typeParam("T6"),
                         typeParam("T7"),
                         typeParam("T8"),
-                        new TypedJavaFile.TypedGenericInterfaceSpec8<>() {
+                        new GenericDeclarationArities.TypedGenericInterfaceSpec8<>() {
                             @Override
                             public <Self, T1, T2, T3, T4, T5, T6, T7, T8> TypedInterfaceBodies<Self> build(
                                     TypedInterfaceBuilder<Self> ib,
@@ -921,7 +927,7 @@ class GenericDeclarationAritiesTest {
                                     TypeVarToken<T6> t6,
                                     TypeVarToken<T7> t7,
                                     TypeVarToken<T8> t8) {
-                                return last(ib, 8, t8);
+                                return last(ib, t8);
                             }
                         });
             case 9 ->
@@ -937,7 +943,7 @@ class GenericDeclarationAritiesTest {
                         typeParam("T7"),
                         typeParam("T8"),
                         typeParam("T9"),
-                        new TypedJavaFile.TypedGenericInterfaceSpec9<>() {
+                        new GenericDeclarationArities.TypedGenericInterfaceSpec9<>() {
                             @Override
                             public <Self, T1, T2, T3, T4, T5, T6, T7, T8, T9> TypedInterfaceBodies<Self> build(
                                     TypedInterfaceBuilder<Self> ib,
@@ -950,7 +956,7 @@ class GenericDeclarationAritiesTest {
                                     TypeVarToken<T7> t7,
                                     TypeVarToken<T8> t8,
                                     TypeVarToken<T9> t9) {
-                                return last(ib, 9, t9);
+                                return last(ib, t9);
                             }
                         });
             case 10 ->
@@ -967,7 +973,7 @@ class GenericDeclarationAritiesTest {
                         typeParam("T8"),
                         typeParam("T9"),
                         typeParam("T10"),
-                        new TypedJavaFile.TypedGenericInterfaceSpec10<>() {
+                        new GenericDeclarationArities.TypedGenericInterfaceSpec10<>() {
                             @Override
                             public <Self, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> TypedInterfaceBodies<Self> build(
                                     TypedInterfaceBuilder<Self> ib,
@@ -981,7 +987,7 @@ class GenericDeclarationAritiesTest {
                                     TypeVarToken<T8> t8,
                                     TypeVarToken<T9> t9,
                                     TypeVarToken<T10> t10) {
-                                return last(ib, 10, t10);
+                                return last(ib, t10);
                             }
                         });
             case 11 ->
@@ -999,7 +1005,7 @@ class GenericDeclarationAritiesTest {
                         typeParam("T9"),
                         typeParam("T10"),
                         typeParam("T11"),
-                        new TypedJavaFile.TypedGenericInterfaceSpec11<>() {
+                        new GenericDeclarationArities.TypedGenericInterfaceSpec11<>() {
                             @Override
                             public <Self, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>
                                     TypedInterfaceBodies<Self> build(
@@ -1015,7 +1021,7 @@ class GenericDeclarationAritiesTest {
                                             TypeVarToken<T9> t9,
                                             TypeVarToken<T10> t10,
                                             TypeVarToken<T11> t11) {
-                                return last(ib, 11, t11);
+                                return last(ib, t11);
                             }
                         });
             case 12 ->
@@ -1034,7 +1040,7 @@ class GenericDeclarationAritiesTest {
                         typeParam("T10"),
                         typeParam("T11"),
                         typeParam("T12"),
-                        new TypedJavaFile.TypedGenericInterfaceSpec12<>() {
+                        new GenericDeclarationArities.TypedGenericInterfaceSpec12<>() {
                             @Override
                             public <Self, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>
                                     TypedInterfaceBodies<Self> build(
@@ -1051,7 +1057,7 @@ class GenericDeclarationAritiesTest {
                                             TypeVarToken<T10> t10,
                                             TypeVarToken<T11> t11,
                                             TypeVarToken<T12> t12) {
-                                return last(ib, 12, t12);
+                                return last(ib, t12);
                             }
                         });
             case 13 ->
@@ -1071,7 +1077,7 @@ class GenericDeclarationAritiesTest {
                         typeParam("T11"),
                         typeParam("T12"),
                         typeParam("T13"),
-                        new TypedJavaFile.TypedGenericInterfaceSpec13<>() {
+                        new GenericDeclarationArities.TypedGenericInterfaceSpec13<>() {
                             @Override
                             public <Self, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>
                                     TypedInterfaceBodies<Self> build(
@@ -1089,7 +1095,7 @@ class GenericDeclarationAritiesTest {
                                             TypeVarToken<T11> t11,
                                             TypeVarToken<T12> t12,
                                             TypeVarToken<T13> t13) {
-                                return last(ib, 13, t13);
+                                return last(ib, t13);
                             }
                         });
             case 14 ->
@@ -1110,7 +1116,7 @@ class GenericDeclarationAritiesTest {
                         typeParam("T12"),
                         typeParam("T13"),
                         typeParam("T14"),
-                        new TypedJavaFile.TypedGenericInterfaceSpec14<>() {
+                        new GenericDeclarationArities.TypedGenericInterfaceSpec14<>() {
                             @Override
                             public <Self, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>
                                     TypedInterfaceBodies<Self> build(
@@ -1129,7 +1135,7 @@ class GenericDeclarationAritiesTest {
                                             TypeVarToken<T12> t12,
                                             TypeVarToken<T13> t13,
                                             TypeVarToken<T14> t14) {
-                                return last(ib, 14, t14);
+                                return last(ib, t14);
                             }
                         });
             case 15 ->
@@ -1151,7 +1157,7 @@ class GenericDeclarationAritiesTest {
                         typeParam("T13"),
                         typeParam("T14"),
                         typeParam("T15"),
-                        new TypedJavaFile.TypedGenericInterfaceSpec15<>() {
+                        new GenericDeclarationArities.TypedGenericInterfaceSpec15<>() {
                             @Override
                             public <Self, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>
                                     TypedInterfaceBodies<Self> build(
@@ -1171,7 +1177,7 @@ class GenericDeclarationAritiesTest {
                                             TypeVarToken<T13> t13,
                                             TypeVarToken<T14> t14,
                                             TypeVarToken<T15> t15) {
-                                return last(ib, 15, t15);
+                                return last(ib, t15);
                             }
                         });
             case 16 ->
@@ -1194,7 +1200,7 @@ class GenericDeclarationAritiesTest {
                         typeParam("T14"),
                         typeParam("T15"),
                         typeParam("T16"),
-                        new TypedJavaFile.TypedGenericInterfaceSpec16<>() {
+                        new GenericDeclarationArities.TypedGenericInterfaceSpec16<>() {
                             @Override
                             public <Self, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>
                                     TypedInterfaceBodies<Self> build(
@@ -1215,16 +1221,15 @@ class GenericDeclarationAritiesTest {
                                             TypeVarToken<T14> t14,
                                             TypeVarToken<T15> t15,
                                             TypeVarToken<T16> t16) {
-                                return last(ib, 16, t16);
+                                return last(ib, t16);
                             }
                         });
             default -> throw new IllegalArgumentException("arity " + n);
         };
     }
 
-    /// An interface of `n` type parameters with `Tn last()`.
-    private static <Self, T> TypedInterfaceBodies<Self> last(
-            TypedInterfaceBuilder<Self> ib, int n, TypeVarToken<T> last) {
+    /// An interface whose last type parameter is `last`, with `T last()`.
+    private static <Self, T> TypedInterfaceBodies<Self> last(TypedInterfaceBuilder<Self> ib, TypeVarToken<T> last) {
         ib.declareAbstractMethod("last", last);
         return ib.bodies();
     }
@@ -1232,15 +1237,21 @@ class GenericDeclarationAritiesTest {
     private static JavaFile recordOf(int n) {
         return switch (n) {
             case 1 ->
-                TypedJavaFile.record(TARGET, DESC, typeParam("T1"), new TypedJavaFile.TypedGenericRecordSpec1<>() {
-                    @Override
-                    public <Self, T1> TypedRecordBodies<Self> build(TypedRecordBuilder<Self> rb, TypeVarToken<T1> t1) {
-                        return components(rb, List.of(t1));
-                    }
-                });
+                TypedJavaFile.record(
+                        TARGET, DESC, typeParam("T1"), new GenericDeclarationArities.TypedGenericRecordSpec1<>() {
+                            @Override
+                            public <Self, T1> TypedRecordBodies<Self> build(
+                                    TypedRecordBuilder<Self> rb, TypeVarToken<T1> t1) {
+                                return components(rb, List.of(t1));
+                            }
+                        });
             case 2 ->
                 TypedJavaFile.record(
-                        TARGET, DESC, typeParam("T1"), typeParam("T2"), new TypedJavaFile.TypedGenericRecordSpec2<>() {
+                        TARGET,
+                        DESC,
+                        typeParam("T1"),
+                        typeParam("T2"),
+                        new GenericDeclarationArities.TypedGenericRecordSpec2<>() {
                             @Override
                             public <Self, T1, T2> TypedRecordBodies<Self> build(
                                     TypedRecordBuilder<Self> rb, TypeVarToken<T1> t1, TypeVarToken<T2> t2) {
@@ -1254,7 +1265,7 @@ class GenericDeclarationAritiesTest {
                         typeParam("T1"),
                         typeParam("T2"),
                         typeParam("T3"),
-                        new TypedJavaFile.TypedGenericRecordSpec3<>() {
+                        new GenericDeclarationArities.TypedGenericRecordSpec3<>() {
                             @Override
                             public <Self, T1, T2, T3> TypedRecordBodies<Self> build(
                                     TypedRecordBuilder<Self> rb,
@@ -1272,7 +1283,7 @@ class GenericDeclarationAritiesTest {
                         typeParam("T2"),
                         typeParam("T3"),
                         typeParam("T4"),
-                        new TypedJavaFile.TypedGenericRecordSpec4<>() {
+                        new GenericDeclarationArities.TypedGenericRecordSpec4<>() {
                             @Override
                             public <Self, T1, T2, T3, T4> TypedRecordBodies<Self> build(
                                     TypedRecordBuilder<Self> rb,
@@ -1292,7 +1303,7 @@ class GenericDeclarationAritiesTest {
                         typeParam("T3"),
                         typeParam("T4"),
                         typeParam("T5"),
-                        new TypedJavaFile.TypedGenericRecordSpec5<>() {
+                        new GenericDeclarationArities.TypedGenericRecordSpec5<>() {
                             @Override
                             public <Self, T1, T2, T3, T4, T5> TypedRecordBodies<Self> build(
                                     TypedRecordBuilder<Self> rb,
@@ -1314,7 +1325,7 @@ class GenericDeclarationAritiesTest {
                         typeParam("T4"),
                         typeParam("T5"),
                         typeParam("T6"),
-                        new TypedJavaFile.TypedGenericRecordSpec6<>() {
+                        new GenericDeclarationArities.TypedGenericRecordSpec6<>() {
                             @Override
                             public <Self, T1, T2, T3, T4, T5, T6> TypedRecordBodies<Self> build(
                                     TypedRecordBuilder<Self> rb,
@@ -1338,7 +1349,7 @@ class GenericDeclarationAritiesTest {
                         typeParam("T5"),
                         typeParam("T6"),
                         typeParam("T7"),
-                        new TypedJavaFile.TypedGenericRecordSpec7<>() {
+                        new GenericDeclarationArities.TypedGenericRecordSpec7<>() {
                             @Override
                             public <Self, T1, T2, T3, T4, T5, T6, T7> TypedRecordBodies<Self> build(
                                     TypedRecordBuilder<Self> rb,
@@ -1364,7 +1375,7 @@ class GenericDeclarationAritiesTest {
                         typeParam("T6"),
                         typeParam("T7"),
                         typeParam("T8"),
-                        new TypedJavaFile.TypedGenericRecordSpec8<>() {
+                        new GenericDeclarationArities.TypedGenericRecordSpec8<>() {
                             @Override
                             public <Self, T1, T2, T3, T4, T5, T6, T7, T8> TypedRecordBodies<Self> build(
                                     TypedRecordBuilder<Self> rb,
@@ -1392,7 +1403,7 @@ class GenericDeclarationAritiesTest {
                         typeParam("T7"),
                         typeParam("T8"),
                         typeParam("T9"),
-                        new TypedJavaFile.TypedGenericRecordSpec9<>() {
+                        new GenericDeclarationArities.TypedGenericRecordSpec9<>() {
                             @Override
                             public <Self, T1, T2, T3, T4, T5, T6, T7, T8, T9> TypedRecordBodies<Self> build(
                                     TypedRecordBuilder<Self> rb,
@@ -1422,7 +1433,7 @@ class GenericDeclarationAritiesTest {
                         typeParam("T8"),
                         typeParam("T9"),
                         typeParam("T10"),
-                        new TypedJavaFile.TypedGenericRecordSpec10<>() {
+                        new GenericDeclarationArities.TypedGenericRecordSpec10<>() {
                             @Override
                             public <Self, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> TypedRecordBodies<Self> build(
                                     TypedRecordBuilder<Self> rb,
@@ -1454,7 +1465,7 @@ class GenericDeclarationAritiesTest {
                         typeParam("T9"),
                         typeParam("T10"),
                         typeParam("T11"),
-                        new TypedJavaFile.TypedGenericRecordSpec11<>() {
+                        new GenericDeclarationArities.TypedGenericRecordSpec11<>() {
                             @Override
                             public <Self, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> TypedRecordBodies<Self> build(
                                     TypedRecordBuilder<Self> rb,
@@ -1488,7 +1499,7 @@ class GenericDeclarationAritiesTest {
                         typeParam("T10"),
                         typeParam("T11"),
                         typeParam("T12"),
-                        new TypedJavaFile.TypedGenericRecordSpec12<>() {
+                        new GenericDeclarationArities.TypedGenericRecordSpec12<>() {
                             @Override
                             public <Self, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>
                                     TypedRecordBodies<Self> build(
@@ -1525,7 +1536,7 @@ class GenericDeclarationAritiesTest {
                         typeParam("T11"),
                         typeParam("T12"),
                         typeParam("T13"),
-                        new TypedJavaFile.TypedGenericRecordSpec13<>() {
+                        new GenericDeclarationArities.TypedGenericRecordSpec13<>() {
                             @Override
                             public <Self, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>
                                     TypedRecordBodies<Self> build(
@@ -1564,7 +1575,7 @@ class GenericDeclarationAritiesTest {
                         typeParam("T12"),
                         typeParam("T13"),
                         typeParam("T14"),
-                        new TypedJavaFile.TypedGenericRecordSpec14<>() {
+                        new GenericDeclarationArities.TypedGenericRecordSpec14<>() {
                             @Override
                             public <Self, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>
                                     TypedRecordBodies<Self> build(
@@ -1606,7 +1617,7 @@ class GenericDeclarationAritiesTest {
                         typeParam("T13"),
                         typeParam("T14"),
                         typeParam("T15"),
-                        new TypedJavaFile.TypedGenericRecordSpec15<>() {
+                        new GenericDeclarationArities.TypedGenericRecordSpec15<>() {
                             @Override
                             public <Self, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>
                                     TypedRecordBodies<Self> build(
@@ -1650,7 +1661,7 @@ class GenericDeclarationAritiesTest {
                         typeParam("T14"),
                         typeParam("T15"),
                         typeParam("T16"),
-                        new TypedJavaFile.TypedGenericRecordSpec16<>() {
+                        new GenericDeclarationArities.TypedGenericRecordSpec16<>() {
                             @Override
                             public <Self, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>
                                     TypedRecordBodies<Self> build(

@@ -31,6 +31,8 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 /// is given, in scope in the header, the components, the members and the member types. The declarations
 /// are rendered, compiled under `-Xlint:all` and run; a generic enum and a generic annotation type are
 /// refused at the entry point, as javac refuses them.
+// the test checks what the wildcards allow, and builds raw values on purpose
+@SuppressWarnings({"rawtypes", "unchecked"})
 class GenericDeclarationsTest {
     private static final ClassDesc DESC = ClassDesc.of("me.supcheg.example", "Box");
 
@@ -40,12 +42,12 @@ class GenericDeclarationsTest {
                 UnsafeFacts.unverifiedClasspath(),
                 DESC,
                 typeParam("T", Number_.TOKEN),
-                new TypedJavaFile.TypedGenericInterfaceSpec1<>() {
+                new GenericDeclarationArities.TypedGenericInterfaceSpec1<>() {
                     @Override
                     public <Self, T extends Number> TypedInterfaceBodies<Self> build(
                             TypedInterfaceBuilder<Self> ib, TypeVarToken<T> t) {
                         ib.extends_(new Comparable_<>(t).token);
-                        var id = ib.declareAbstractMethod("id", t, t);
+                        ib.declareAbstractMethod("id", t, t);
                         var zero = ib.declareDefaultMethod("zero", t, t);
                         var bodies = ib.bodies();
                         bodies.define(zero, (b, self, value) -> b.return_(value));
@@ -74,7 +76,10 @@ class GenericDeclarationsTest {
     @Test
     void aGenericRecordDeclaresComponentsAndMethodsOfItsTypeParameter() throws Throwable {
         CompiledClasses compiled = CompiledClasses.of(TypedJavaFile.record(
-                UnsafeFacts.unverifiedClasspath(), DESC, typeParam("T"), new TypedJavaFile.TypedGenericRecordSpec1<>() {
+                UnsafeFacts.unverifiedClasspath(),
+                DESC,
+                typeParam("T"),
+                new GenericDeclarationArities.TypedGenericRecordSpec1<>() {
                     @Override
                     public <Self, T> TypedRecordBodies<Self> build(TypedRecordBuilder<Self> rb, TypeVarToken<T> t) {
                         rb.implements_(new Comparable_<>(t).token);
@@ -107,18 +112,20 @@ class GenericDeclarationsTest {
                 UnsafeFacts.unverifiedClasspath(), DESC, new TypedJavaFile.TypedClassSpec() {
                     @Override
                     public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
-                        cb.declareNestedClass("Inner", typeParam("T"), new TypedJavaFile.TypedGenericClassSpec1<>() {
-                            @Override
-                            public <Self2, T> MemberBodies<Self2, ?> build(ClassHeader<Self2> h, TypeVarToken<T> t) {
-                                var inner = h.extendsObject().members();
-                                var value = inner.declareMethod("value", t, t);
-                                var ctor = inner.declareConstructor(t);
-                                var bodies = inner.bodies();
-                                bodies.define(ctor, (b, self, v) -> b.end());
-                                bodies.define(value, (b, self, v) -> b.return_(v));
-                                return bodies;
-                            }
-                        });
+                        cb.declareNestedClass(
+                                "Inner", typeParam("T"), new GenericDeclarationArities.TypedGenericClassSpec1<>() {
+                                    @Override
+                                    public <Self2, T> MemberBodies<Self2, ?> build(
+                                            ClassHeader<Self2> h, TypeVarToken<T> t) {
+                                        var inner = h.extendsObject().members();
+                                        var value = inner.declareMethod("value", t, t);
+                                        var ctor = inner.declareConstructor(t);
+                                        var bodies = inner.bodies();
+                                        bodies.define(ctor, (b, self, v) -> b.end());
+                                        bodies.define(value, (b, self, v) -> b.return_(v));
+                                        return bodies;
+                                    }
+                                });
                         return cb.bodies();
                     }
                 }));
@@ -140,7 +147,7 @@ class GenericDeclarationsTest {
                 DESC,
                 typeParam("A"),
                 typeParam("B", Number_.TOKEN),
-                new TypedJavaFile.TypedGenericInterfaceSpec2<>() {
+                new GenericDeclarationArities.TypedGenericInterfaceSpec2<>() {
                     @Override
                     public <Self, A, B extends Number> TypedInterfaceBodies<Self> build(
                             TypedInterfaceBuilder<Self> ib, TypeVarToken<A> a, TypeVarToken<B> b) {
@@ -154,7 +161,7 @@ class GenericDeclarationsTest {
                 typeParam("A"),
                 typeParam("B"),
                 typeParam("C", Number_.TOKEN),
-                new TypedJavaFile.TypedGenericRecordSpec3<>() {
+                new GenericDeclarationArities.TypedGenericRecordSpec3<>() {
                     @Override
                     public <Self, A, B, C extends Number> TypedRecordBodies<Self> build(
                             TypedRecordBuilder<Self> rb, TypeVarToken<A> a, TypeVarToken<B> b, TypeVarToken<C> c) {
@@ -171,7 +178,7 @@ class GenericDeclarationsTest {
                 typeParam("A"),
                 typeParam("B"),
                 typeParam("C", new Comparable_<>(String_.TOKEN).token),
-                new TypedJavaFile.TypedGenericInterfaceSpec3<>() {
+                new GenericDeclarationArities.TypedGenericInterfaceSpec3<>() {
                     @Override
                     public <Self, A, B, C extends Comparable<String>> TypedInterfaceBodies<Self> build(
                             TypedInterfaceBuilder<Self> ib, TypeVarToken<A> a, TypeVarToken<B> b, TypeVarToken<C> c) {
@@ -184,7 +191,7 @@ class GenericDeclarationsTest {
                 DESC,
                 typeParam("A"),
                 typeParam("B"),
-                new TypedJavaFile.TypedGenericRecordSpec2<>() {
+                new GenericDeclarationArities.TypedGenericRecordSpec2<>() {
                     @Override
                     public <Self, A, B> TypedRecordBodies<Self> build(
                             TypedRecordBuilder<Self> rb, TypeVarToken<A> a, TypeVarToken<B> b) {
@@ -210,7 +217,7 @@ class GenericDeclarationsTest {
                         DESC,
                         typeParam("T"),
                         typeParam("T"),
-                        new TypedJavaFile.TypedGenericInterfaceSpec2<>() {
+                        new GenericDeclarationArities.TypedGenericInterfaceSpec2<>() {
                             @Override
                             public <Self, T1, T2> TypedInterfaceBodies<Self> build(
                                     TypedInterfaceBuilder<Self> ib, TypeVarToken<T1> t1, TypeVarToken<T2> t2) {
@@ -224,7 +231,7 @@ class GenericDeclarationsTest {
                         UnsafeFacts.unverifiedClasspath(),
                         DESC,
                         typeParam("Box"),
-                        new TypedJavaFile.TypedGenericRecordSpec1<>() {
+                        new GenericDeclarationArities.TypedGenericRecordSpec1<>() {
                             @Override
                             public <Self, T> TypedRecordBodies<Self> build(
                                     TypedRecordBuilder<Self> rb, TypeVarToken<T> t) {
@@ -241,7 +248,7 @@ class GenericDeclarationsTest {
                         UnsafeFacts.unverifiedClasspath(),
                         DESC,
                         typeParam("T", UnsafeFacts.<Comparable<?>>interfaceToken(Comparable_.Data.SHAPE)),
-                        new TypedJavaFile.TypedGenericInterfaceSpec1<>() {
+                        new GenericDeclarationArities.TypedGenericInterfaceSpec1<>() {
                             @Override
                             public <Self, T extends Comparable<?>> TypedInterfaceBodies<Self> build(
                                     TypedInterfaceBuilder<Self> ib, TypeVarToken<T> t) {
@@ -302,7 +309,7 @@ class GenericDeclarationsTest {
                 UnsafeFacts.unverifiedClasspath(),
                 DESC,
                 typeParam("T", Number_.TOKEN),
-                new TypedJavaFile.TypedGenericInterfaceSpec1<>() {
+                new GenericDeclarationArities.TypedGenericInterfaceSpec1<>() {
                     @Override
                     public <Self, T extends Number> TypedInterfaceBodies<Self> build(
                             TypedInterfaceBuilder<Self> ib, TypeVarToken<T> t) {
@@ -316,7 +323,7 @@ class GenericDeclarationsTest {
                 UnsafeFacts.unverifiedClasspath(),
                 DESC,
                 typeParam("T", Number_.TOKEN),
-                new TypedJavaFile.TypedGenericRecordSpec1<>() {
+                new GenericDeclarationArities.TypedGenericRecordSpec1<>() {
                     @Override
                     public <Self, T extends Number> TypedRecordBodies<Self> build(
                             TypedRecordBuilder<Self> rb, TypeVarToken<T> t) {
@@ -351,7 +358,7 @@ class GenericDeclarationsTest {
                         UnsafeFacts.unverifiedClasspath(),
                         DESC,
                         typeParam("T", Number_.TOKEN),
-                        new TypedJavaFile.TypedGenericInterfaceSpec1<>() {
+                        new GenericDeclarationArities.TypedGenericInterfaceSpec1<>() {
                             @Override
                             public <Self, T extends Number> TypedInterfaceBodies<Self> build(
                                     TypedInterfaceBuilder<Self> ib, TypeVarToken<T> t) {
@@ -367,7 +374,7 @@ class GenericDeclarationsTest {
                         UnsafeFacts.unverifiedClasspath(),
                         DESC,
                         typeParam("T", Number_.TOKEN),
-                        new TypedJavaFile.TypedGenericRecordSpec1<>() {
+                        new GenericDeclarationArities.TypedGenericRecordSpec1<>() {
                             @Override
                             public <Self, T extends Number> TypedRecordBodies<Self> build(
                                     TypedRecordBuilder<Self> rb, TypeVarToken<T> t) {
@@ -382,7 +389,7 @@ class GenericDeclarationsTest {
                 UnsafeFacts.unverifiedClasspath(),
                 ClassDesc.of("me.supcheg.example", "Other"),
                 typeParam("T", Number_.TOKEN),
-                new TypedJavaFile.TypedGenericClassSpec1<>() {
+                new GenericDeclarationArities.TypedGenericClassSpec1<>() {
                     @Override
                     public <Self, T extends Number> MemberBodies<Self, ?> build(
                             ClassHeader<Self> h, TypeVarToken<T> t) {
@@ -395,7 +402,7 @@ class GenericDeclarationsTest {
                         UnsafeFacts.unverifiedClasspath(),
                         DESC,
                         typeParam("T", Number_.TOKEN),
-                        new TypedJavaFile.TypedGenericInterfaceSpec1<>() {
+                        new GenericDeclarationArities.TypedGenericInterfaceSpec1<>() {
                             @Override
                             public <Self, T extends Number> TypedInterfaceBodies<Self> build(
                                     TypedInterfaceBuilder<Self> ib, TypeVarToken<T> t) {
@@ -413,7 +420,7 @@ class GenericDeclarationsTest {
                         UnsafeFacts.unverifiedClasspath(),
                         DESC,
                         typeParam("T", String_.TOKEN),
-                        new TypedJavaFile.TypedGenericInterfaceSpec1<String>() {
+                        new GenericDeclarationArities.TypedGenericInterfaceSpec1<String>() {
                             @Override
                             public <Self, T extends String> TypedInterfaceBodies<Self> build(
                                     TypedInterfaceBuilder<Self> ib, TypeVarToken<T> t) {
@@ -427,7 +434,7 @@ class GenericDeclarationsTest {
                         UnsafeFacts.unverifiedClasspath(),
                         DESC,
                         typeParam("T", Numbered_.TOKEN),
-                        new TypedJavaFile.TypedGenericInterfaceSpec1<Numbered>() {
+                        new GenericDeclarationArities.TypedGenericInterfaceSpec1<Numbered>() {
                             @Override
                             public <Self, T extends Numbered> TypedInterfaceBodies<Self> build(
                                     TypedInterfaceBuilder<Self> ib, TypeVarToken<T> t) {
@@ -441,7 +448,7 @@ class GenericDeclarationsTest {
                         UnsafeFacts.unverifiedClasspath(),
                         DESC,
                         typeParam("T", Named_.TOKEN),
-                        new TypedJavaFile.TypedGenericInterfaceSpec1<Named>() {
+                        new GenericDeclarationArities.TypedGenericInterfaceSpec1<Named>() {
                             @Override
                             public <Self, T extends Named> TypedInterfaceBodies<Self> build(
                                     TypedInterfaceBuilder<Self> ib, TypeVarToken<T> t) {
@@ -455,7 +462,8 @@ class GenericDeclarationsTest {
                         UnsafeFacts.unverifiedClasspath(),
                         DESC,
                         typeParam("T", Origin_.TOKEN),
-                        new TypedJavaFile.TypedGenericInterfaceSpec1<me.supcheg.javafile.typed.fixtures.Origin>() {
+                        new GenericDeclarationArities.TypedGenericInterfaceSpec1<
+                                me.supcheg.javafile.typed.fixtures.Origin>() {
                             @Override
                             public <Self, T extends me.supcheg.javafile.typed.fixtures.Origin>
                                     TypedInterfaceBodies<Self> build(
@@ -474,7 +482,7 @@ class GenericDeclarationsTest {
                 DESC,
                 typeParam("A"),
                 typeParam("B", Number_.TOKEN),
-                new TypedJavaFile.TypedGenericInterfaceSpec2<>() {
+                new GenericDeclarationArities.TypedGenericInterfaceSpec2<>() {
                     @Override
                     public <Self, A, B extends Number> TypedInterfaceBodies<Self> build(
                             TypedInterfaceBuilder<Self> ib, TypeVarToken<A> a, TypeVarToken<B> b) {

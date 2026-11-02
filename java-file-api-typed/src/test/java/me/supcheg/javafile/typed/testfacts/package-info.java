@@ -136,9 +136,11 @@
     Target.class,
     ElementType.class
 })
+@NullMarked
 package me.supcheg.javafile.typed.testfacts;
 
 import me.supcheg.javafile.facts.meta.Facts;
+import org.jspecify.annotations.NullMarked;
 import me.supcheg.javafile.typed.fixtures.Applying;
 import me.supcheg.javafile.typed.fixtures.Closing;
 import me.supcheg.javafile.typed.fixtures.PickyClose;

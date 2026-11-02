@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;
 
+import static me.supcheg.javafile.typed.ExpressionArities.staticCall;
 import static me.supcheg.javafile.typed.Expressions.addInt;
 import static me.supcheg.javafile.typed.Expressions.addLong;
 import static me.supcheg.javafile.typed.Expressions.assign;
@@ -37,7 +38,6 @@ import static me.supcheg.javafile.typed.Expressions.preIncrement;
 import static me.supcheg.javafile.typed.Expressions.shlInt;
 import static me.supcheg.javafile.typed.Expressions.shlLong;
 import static me.supcheg.javafile.typed.Expressions.shrInt;
-import static me.supcheg.javafile.typed.Expressions.staticCall;
 import static me.supcheg.javafile.typed.Expressions.unaryPlusInt;
 import static me.supcheg.javafile.typed.Expressions.ushrInt;
 import static me.supcheg.javafile.typed.Expressions.ushrLong;

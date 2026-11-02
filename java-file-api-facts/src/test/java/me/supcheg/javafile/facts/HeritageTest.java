@@ -10,8 +10,6 @@ import me.supcheg.javafile.facts.Heritage.Inherited;
 import me.supcheg.javafile.facts.Heritage.InterfaceMethod;
 import me.supcheg.javafile.facts.Heritage.Named;
 import me.supcheg.javafile.facts.Heritage.Plain;
-import me.supcheg.javafile.facts.Heritage.Result;
-import me.supcheg.javafile.facts.Heritage.Type;
 import me.supcheg.javafile.facts.Heritage.Variable;
 import me.supcheg.javafile.facts.Heritage.Visibility;
 import me.supcheg.javafile.facts.MethodTableTemplate.Param;
@@ -47,7 +45,7 @@ class HeritageTest {
 
     /// A method without parameters, result or exceptions.
     private static Declaration declaration(Declarer by) {
-        return new Declaration(by, Arity.FIXED, List.of(), List.of(), Result.nothing(), List.of());
+        return new Declaration(by, Arity.FIXED, List.of(), List.of(), Heritage.Result.nothing(), List.of());
     }
 
     private static Heritage.Method<Declaration> group(Declarer... declarers) {
@@ -96,21 +94,21 @@ class HeritageTest {
 
     @Test
     void aMethodOfAHeritageHoldsEveryDeclarationOfItsSignature() {
-        Heritage.Type strings = new Type.Fixed(Types.array(Types.STRING));
+        Heritage.Type strings = new Heritage.Type.Fixed(Types.array(Types.STRING));
         Declaration ofClass = new Declaration(
                 new Declarer.OfClass(BASE, Visibility.PROTECTED, ClassMethod.ABSTRACT),
                 Arity.VARIABLE,
                 List.of(),
                 List.of(strings),
-                new Result.Of<>(new Type.Fixed(Types.STRING)),
+                new Heritage.Result.Of<>(new Heritage.Type.Fixed(Types.STRING)),
                 List.of());
         Declaration ofInterface = new Declaration(
                 new Declarer.OfInterface(API, InterfaceMethod.DEFAULT),
                 Arity.FIXED,
                 List.of(),
                 List.of(strings),
-                new Result.Of<>(new Type.Fixed(Types.OBJECT)),
-                List.of(new Type.Fixed(Types.of(Exception.class))));
+                new Heritage.Result.Of<>(new Heritage.Type.Fixed(Types.OBJECT)),
+                List.of(new Heritage.Type.Fixed(Types.of(Exception.class))));
         Heritage.Method<Declaration> format = new Heritage.Method<>(
                 Signature.of("format", Param.fixed(ConstantDescs.CD_String.arrayType())),
                 List.of(ofClass, ofInterface),
@@ -174,15 +172,17 @@ class HeritageTest {
     @Test
     void aHeritageAppliedToTypeArgumentsIsInTheirTerms() {
         ClassDesc list = ClassDesc.of("java.util.List");
-        Heritage.Type t = new Type.OfType(0);
+        Heritage.Type t = new Heritage.Type.OfType(0);
         Heritage.Method<Declaration> put = new Heritage.Method<>(
                 Signature.of("put", Param.var(0, 1), Param.fixed(list)),
                 List.of(new Declaration(
                         new Declarer.OfClass(BASE, Visibility.PUBLIC, ClassMethod.ABSTRACT),
                         Arity.FIXED,
                         List.of(),
-                        List.of(Type.array(t), Type.parameterized(list, List.of(new Argument.Extends(t)))),
-                        new Result.Of<>(t),
+                        List.of(
+                                Heritage.Type.array(t),
+                                Heritage.Type.parameterized(list, List.of(new Argument.Extends(t)))),
+                        new Heritage.Result.Of<>(t),
                         List.of(t))),
                 Set.of(List.of(ConstantDescs.CD_Object.arrayType(), list)),
                 List.of());
@@ -197,7 +197,7 @@ class HeritageTest {
                         new Declarer.OfClass(BASE, Visibility.PUBLIC, ClassMethod.ABSTRACT),
                         Arity.FIXED,
                         List.of(Types.array(Types.STRING), Types.parameterized(list, Types.extendsBound(Types.STRING))),
-                        new Result.Of<>(Types.STRING),
+                        new Heritage.Result.Of<>(Types.STRING),
                         List.of(Types.STRING)));
         assertThat(applied.signature()).isEqualTo(put.signature());
         assertThat(applied.erasures()).isEqualTo(put.erasures());
@@ -221,9 +221,9 @@ class HeritageTest {
                 List.of(new Declaration(
                         new Declarer.OfClass(BASE, Visibility.PUBLIC, ClassMethod.CONCRETE),
                         Arity.FIXED,
-                        List.of(new Variable(List.of(new Type.OfType(0)))),
-                        List.of(new Type.OfType(0), new Type.OfMember(0)),
-                        Result.nothing(),
+                        List.of(new Variable(List.of(new Heritage.Type.OfType(0)))),
+                        List.of(new Heritage.Type.OfType(0), new Heritage.Type.OfMember(0)),
+                        Heritage.Result.nothing(),
                         List.of())),
                 Set.of(List.of(ConstantDescs.CD_Object, ConstantDescs.CD_Object)),
                 List.of());
@@ -241,32 +241,38 @@ class HeritageTest {
                 .isEqualTo(new Generic(new Declaration(
                         new Declarer.OfClass(BASE, Visibility.PUBLIC, ClassMethod.CONCRETE),
                         Arity.FIXED,
-                        List.of(new Variable(List.of(new Type.Fixed(tOfTheClass)))),
-                        List.of(new Type.Fixed(tOfTheClass), new Type.OfMember(0)),
-                        Result.nothing(),
+                        List.of(new Variable(List.of(new Heritage.Type.Fixed(tOfTheClass)))),
+                        List.of(new Heritage.Type.Fixed(tOfTheClass), new Heritage.Type.OfMember(0)),
+                        Heritage.Result.nothing(),
                         List.of())));
     }
 
     @Test
     void aTypeOfAHeritageIsInNormalForm() {
         ClassDesc map = ClassDesc.of("java.util.Map");
-        assertThat(Type.array(new Type.Fixed(Types.INT))).isEqualTo(new Type.Fixed(Types.array(Types.INT)));
-        assertThat(Type.array(new Type.OfType(1))).isEqualTo(new Type.Array(new Type.OfType(1)));
-        assertThat(Type.parameterized(
-                        map, List.of(new Argument.Exact(new Type.Fixed(Types.STRING)), new Argument.Unbounded())))
-                .isEqualTo(new Type.Fixed(Types.parameterized(map, Types.exact(Types.STRING), Types.unbounded())));
-        assertThat(Type.parameterized(map, List.of(new Argument.Super(new Type.OfMember(0)), new Argument.Unbounded()))
+        assertThat(Heritage.Type.array(new Heritage.Type.Fixed(Types.INT)))
+                .isEqualTo(new Heritage.Type.Fixed(Types.array(Types.INT)));
+        assertThat(Heritage.Type.array(new Heritage.Type.OfType(1)))
+                .isEqualTo(new Heritage.Type.Array(new Heritage.Type.OfType(1)));
+        assertThat(Heritage.Type.parameterized(
+                        map,
+                        List.of(new Argument.Exact(new Heritage.Type.Fixed(Types.STRING)), new Argument.Unbounded())))
+                .isEqualTo(new Heritage.Type.Fixed(
+                        Types.parameterized(map, Types.exact(Types.STRING), Types.unbounded())));
+        assertThat(Heritage.Type.parameterized(
+                                map,
+                                List.of(new Argument.Super(new Heritage.Type.OfMember(0)), new Argument.Unbounded()))
                         .applied(List.of()))
-                .isEqualTo(new Type.Parameterized(
-                        map, List.of(new Argument.Super(new Type.OfMember(0)), new Argument.Unbounded())));
+                .isEqualTo(new Heritage.Type.Parameterized(
+                        map, List.of(new Argument.Super(new Heritage.Type.OfMember(0)), new Argument.Unbounded())));
         assertThatIllegalArgumentException()
-                .isThrownBy(() -> new Type.Array(new Type.Fixed(Types.INT)))
+                .isThrownBy(() -> new Heritage.Type.Array(new Heritage.Type.Fixed(Types.INT)))
                 .withMessageStartingWith("an array of a fixed type is fixed");
         assertThatIllegalArgumentException()
-                .isThrownBy(() -> new Type.Parameterized(map, List.of(new Argument.Unbounded())))
+                .isThrownBy(() -> new Heritage.Type.Parameterized(map, List.of(new Argument.Unbounded())))
                 .withMessageStartingWith("a parameterized type of fixed arguments is fixed");
         assertThatIllegalArgumentException()
-                .isThrownBy(() -> new Type.OfType(-1))
+                .isThrownBy(() -> new Heritage.Type.OfType(-1))
                 .withMessage("a type parameter is at a position from 0, got -1");
     }
 
@@ -283,17 +289,17 @@ class HeritageTest {
     @Test
     void theLastParameterOfAMethodOfVariableArityIsAnArrayHoweverItIsWritten() {
         Declarer base = new Declarer.OfClass(BASE, Visibility.PUBLIC, ClassMethod.FINAL);
-        List<Heritage.Variable> variable = List.of(new Heritage.Variable(List.of()));
-        Type.Parameterized listOfVariable = new Type.Parameterized(
-                ClassDesc.of("java.util", "List"), List.of(new Heritage.Argument.Exact(new Type.OfMember(0))));
+        List<Variable> variable = List.of(new Variable(List.of()));
+        Heritage.Type.Parameterized listOfVariable = new Heritage.Type.Parameterized(
+                ClassDesc.of("java.util", "List"), List.of(new Argument.Exact(new Heritage.Type.OfMember(0))));
 
         // T... and int...
         assertThat(new Declaration(
                                 base,
                                 Arity.VARIABLE,
                                 variable,
-                                List.of(new Type.Array(new Type.OfMember(0))),
-                                Result.nothing(),
+                                List.of(new Heritage.Type.Array(new Heritage.Type.OfMember(0))),
+                                Heritage.Result.nothing(),
                                 List.of())
                         .arity())
                 .isEqualTo(Arity.VARIABLE);
@@ -301,32 +307,36 @@ class HeritageTest {
                                 base,
                                 Arity.VARIABLE,
                                 List.of(),
-                                List.of(new Type.Fixed(Types.array(Types.INT))),
-                                Result.nothing(),
+                                List.of(new Heritage.Type.Fixed(Types.array(Types.INT))),
+                                Heritage.Result.nothing(),
                                 List.of())
                         .arity())
                 .isEqualTo(Arity.VARIABLE);
         // and no T, no type parameter of the type, no List<T> and no parameter at all
-        for (List<Type> params : List.of(
-                List.<Type>of(new Type.OfMember(0)),
-                List.<Type>of(new Type.OfType(0)),
-                List.<Type>of(listOfVariable),
-                List.<Type>of())) {
+        for (List<Heritage.Type> params : List.of(
+                List.<Heritage.Type>of(new Heritage.Type.OfMember(0)),
+                List.<Heritage.Type>of(new Heritage.Type.OfType(0)),
+                List.<Heritage.Type>of(listOfVariable),
+                List.<Heritage.Type>of())) {
             assertThatIllegalArgumentException()
-                    .isThrownBy(
-                            () -> new Declaration(base, Arity.VARIABLE, variable, params, Result.nothing(), List.of()))
+                    .isThrownBy(() -> new Declaration(
+                            base, Arity.VARIABLE, variable, params, Heritage.Result.nothing(), List.of()))
                     .withMessage("a method of p.Base is of variable arity, so its last parameter is an array");
         }
         // as a class inherits it
         assertThatIllegalArgumentException()
                 .isThrownBy(
-                        () -> new Heritage.Plain(base, Arity.VARIABLE, List.of(Types.INT), Result.nothing(), List.of()))
+                        () -> new Plain(base, Arity.VARIABLE, List.of(Types.INT), Heritage.Result.nothing(), List.of()))
                 .withMessage("a method of p.Base is of variable arity, so its last parameter is an array");
         assertThatIllegalArgumentException()
-                .isThrownBy(() -> new Heritage.Plain(base, Arity.VARIABLE, List.of(), Result.nothing(), List.of()))
+                .isThrownBy(() -> new Plain(base, Arity.VARIABLE, List.of(), Heritage.Result.nothing(), List.of()))
                 .withMessage("a method of p.Base is of variable arity, so its last parameter is an array");
-        assertThat(new Heritage.Plain(
-                                base, Arity.VARIABLE, List.of(Types.array(Types.INT)), Result.nothing(), List.of())
+        assertThat(new Plain(
+                                base,
+                                Arity.VARIABLE,
+                                List.of(Types.array(Types.INT)),
+                                Heritage.Result.nothing(),
+                                List.of())
                         .parameters())
                 .isEqualTo(1);
     }
@@ -336,10 +346,15 @@ class HeritageTest {
         Declarer base = new Declarer.OfClass(BASE, Visibility.PUBLIC, ClassMethod.FINAL);
         Signature unary = Signature.of("m", Param.fixed(ConstantDescs.CD_int));
         Declaration ofInt = new Declaration(
-                base, Arity.FIXED, List.of(), List.of(new Type.Fixed(Types.INT)), Result.nothing(), List.of());
+                base,
+                Arity.FIXED,
+                List.of(),
+                List.of(new Heritage.Type.Fixed(Types.INT)),
+                Heritage.Result.nothing(),
+                List.of());
 
         assertThatIllegalArgumentException()
-                .isThrownBy(() -> new Heritage.Generic(ofInt))
+                .isThrownBy(() -> new Generic(ofInt))
                 .withMessage("a generic method has a type parameter");
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> new Heritage.Method<>(unary, List.of(ofInt), Set.of(List.of()), List.of()))
@@ -354,7 +369,12 @@ class HeritageTest {
         Signature unary = Signature.of("m", Param.fixed(ConstantDescs.CD_int));
         Declarer base = new Declarer.OfClass(BASE, Visibility.PUBLIC, ClassMethod.FINAL);
         Declaration ofInt = new Declaration(
-                base, Arity.FIXED, List.of(), List.of(new Type.Fixed(Types.INT)), Result.nothing(), List.of());
+                base,
+                Arity.FIXED,
+                List.of(),
+                List.of(new Heritage.Type.Fixed(Types.INT)),
+                Heritage.Result.nothing(),
+                List.of());
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> new Declarer.OfClass(ConstantDescs.CD_int, Visibility.PUBLIC, ClassMethod.FINAL))
                 .withMessage("a member is declared by a class or interface, got int");
@@ -373,13 +393,18 @@ class HeritageTest {
                         base,
                         Arity.VARIABLE,
                         List.of(),
-                        List.of(new Type.Fixed(Types.INT)),
-                        Result.nothing(),
+                        List.of(new Heritage.Type.Fixed(Types.INT)),
+                        Heritage.Result.nothing(),
                         List.of()))
                 .withMessage("a method of p.Base is of variable arity, so its last parameter is an array");
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> new Declaration(
-                        base, Arity.FIXED, List.of(), List.of(new Type.OfMember(0)), Result.nothing(), List.of()))
+                        base,
+                        Arity.FIXED,
+                        List.of(),
+                        List.of(new Heritage.Type.OfMember(0)),
+                        Heritage.Result.nothing(),
+                        List.of()))
                 .withMessage("a method of p.Base mentions its type parameter ^0, and has 0");
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> new Heritage.Constructor(
@@ -391,7 +416,7 @@ class HeritageTest {
                         Signature.of("Base"),
                         Arity.FIXED,
                         List.of(),
-                        List.of(new Type.Fixed(Types.INT)),
+                        List.of(new Heritage.Type.Fixed(Types.INT)),
                         List.of()))
                 .withMessage("constructor Base() has 1 parameters");
     }

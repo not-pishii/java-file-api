@@ -92,6 +92,8 @@ public final class TypedInterfaceBuilder<Self> extends TypeMemberDeclarations<Se
     ///
     /// @return never
     /// @throws IllegalArgumentException always, naming the interface
+    // a refusal of what javac rejects: the tests call it to read the message, and it never returns
+    @SuppressWarnings("DoNotCallSuggester")
     public final InstanceInitializerBlock declareInitializerBlock() {
         throw new IllegalArgumentException("cannot declare an instance initializer block of " + described()
                 + ": an interface has no initializer blocks - it has no instance initializer, and no static"
@@ -102,6 +104,8 @@ public final class TypedInterfaceBuilder<Self> extends TypeMemberDeclarations<Se
     ///
     /// @return never
     /// @throws IllegalArgumentException always, naming the interface
+    // a refusal of what javac rejects: the tests call it to read the message, and it never returns
+    @SuppressWarnings("DoNotCallSuggester")
     public final StaticInitializerBlock declareStaticInitializerBlock() {
         throw new IllegalArgumentException("cannot declare a static initializer block of " + described()
                 + ": an interface has no initializer blocks - it has no static initializer, and no instance"
@@ -188,6 +192,6 @@ public final class TypedInterfaceBuilder<Self> extends TypeMemberDeclarations<Se
         extendsInterfaces.forEach(ib::withExtends);
         permits.forEach(ib::withPermits);
         members.forEach(member -> ib.accept((InterfaceMember) member));
-        declaredNested().forEach(ib::accept);
+        declaredNested().forEach(ib);
     }
 }

@@ -30,6 +30,9 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import static me.supcheg.javafile.typed.ExpressionArities.lambda;
+import static me.supcheg.javafile.typed.ExpressionArities.new_;
+import static me.supcheg.javafile.typed.ExpressionArities.staticCall;
 import static me.supcheg.javafile.typed.Expressions.addInt;
 import static me.supcheg.javafile.typed.Expressions.assign;
 import static me.supcheg.javafile.typed.Expressions.assignAt;
@@ -38,13 +41,10 @@ import static me.supcheg.javafile.typed.Expressions.concat;
 import static me.supcheg.javafile.typed.Expressions.enumConstant;
 import static me.supcheg.javafile.typed.Expressions.eqRef;
 import static me.supcheg.javafile.typed.Expressions.geInt;
-import static me.supcheg.javafile.typed.Expressions.lambda;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.literalNull;
 import static me.supcheg.javafile.typed.Expressions.newArray;
-import static me.supcheg.javafile.typed.Expressions.new_;
 import static me.supcheg.javafile.typed.Expressions.not;
-import static me.supcheg.javafile.typed.Expressions.staticCall;
 import static me.supcheg.javafile.typed.Expressions.switch_;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -565,6 +565,7 @@ class SwitchCompileTest {
     }
 
     @Test
+    // the generated method returns the supplier the test asked for, and the reflection call gives an object
     @SuppressWarnings("unchecked")
     void aSwitchIsInALambdaAndALambdaInASwitch() throws Throwable {
         assertThat(((Supplier<String>) compiled.invoke("lazy", Signal.RED)).get())

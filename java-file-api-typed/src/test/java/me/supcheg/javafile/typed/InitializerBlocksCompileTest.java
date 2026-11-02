@@ -11,9 +11,9 @@ import org.junit.jupiter.api.Test;
 import java.lang.constant.ClassDesc;
 import java.util.Set;
 
+import static me.supcheg.javafile.typed.ExpressionArities.new_;
 import static me.supcheg.javafile.typed.Expressions.assignField;
 import static me.supcheg.javafile.typed.Expressions.literal;
-import static me.supcheg.javafile.typed.Expressions.new_;
 import static me.supcheg.javafile.typed.Expressions.staticField;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -159,7 +159,7 @@ class InitializerBlocksCompileTest {
                 UnsafeFacts.unverifiedClasspath(), ORIGIN, new TypedJavaFile.TypedRecordSpec() {
                     @Override
                     public <Self> TypedRecordBodies<Self> build(TypedRecordBuilder<Self> rb) {
-                        var x = rb.component("x", PrimitiveToken.INT);
+                        rb.component("x", PrimitiveToken.INT);
                         var trace = rb.declareStaticField("TRACE", StringBuilder_.TOKEN);
                         var block = rb.declareStaticInitializerBlock();
                         var compact = rb.declareCompactConstructor(PrimitiveToken.INT);

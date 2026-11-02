@@ -23,6 +23,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 /// Constructor references of the generated code (6.4): `Type::new` of no parameters and of two, each of the
 /// functional interface its method implements, rendered exactly, compiled under `-Xlint:all`, and run so
 /// that what it constructs is observed.
+// the casts check the compile-time refusals, and are unchecked on purpose
+@SuppressWarnings({"rawtypes", "unchecked"})
 class ConstructorRefsCompileTest {
 
     private static final ClassDesc DESC = ClassDesc.of("me.supcheg.example", "Makers");

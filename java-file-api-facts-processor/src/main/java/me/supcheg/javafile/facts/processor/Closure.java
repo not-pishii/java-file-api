@@ -12,7 +12,6 @@ import me.supcheg.javafile.langmodel.mirror.MirrorTranslator;
 import me.supcheg.javafile.langmodel.mirror.Translation;
 import me.supcheg.javafile.langmodel.mirror.TypeModel;
 import me.supcheg.routine.Either;
-import me.supcheg.routine.EitherCollectors;
 import me.supcheg.routine.Pair;
 
 import javax.lang.model.element.TypeElement;
@@ -296,14 +295,17 @@ final class Closure {
     private static Reading readSignatures(TypeElement requested, TypeModel full, Models models) {
         // the sam of a functional interface is a fact even where it is inherited: its signature is mentioned too
         String self = Models.binaryName(full.desc());
-        Pair<List<String>, List<Mention>> mentions = Stream.concat(
+        List<Either<String, Mention>> decided = Stream.concat(
                         Mentions.of(full), full.sam().stream().flatMap(Mentions::of))
                 .map(Models::binaryName)
                 .filter(name -> !name.equals(self))
                 .distinct()
                 .sorted()
                 .map(name -> mention(name, models))
-                .collect(EitherCollectors.groupingTo(Collectors.toList(), Collectors.toList()));
+                .toList();
+        Pair<List<String>, List<Mention>> mentions = Pair.pair(
+                decided.stream().flatMap(either -> either.left().stream()).toList(),
+                decided.stream().flatMap(either -> either.right().stream()).toList());
         if (!mentions.left().isEmpty()) {
             return new Reading.Waiting(mentions.left().getFirst());
         }
@@ -477,7 +479,6 @@ final class Closure {
 
     /// A type a full metamodel is wanted of, as it is read.
     private sealed interface Reading {
-
         /// The full metamodel can be generated.
         ///
         /// @param type the type
@@ -500,8 +501,8 @@ final class Closure {
         record Rejected(String reason) implements Reading {}
     }
 
-    /// A class or interface a signature mentions.
-    private sealed interface Mention {
+    /// A class or interface a signature mentions. Package-private, as [#mention] tells it to the tests.
+    sealed interface Mention {
 
         /// The binary name of the type.
         String name();

@@ -192,7 +192,7 @@ public abstract sealed class MemberBuilder<Self, S> extends MemberBuilderArities
     /// @param <B1> the leftmost bound of the type parameter
     /// @return the token of the member class
     public final <N, B1> FinalClassToken<N> declareNestedClass(
-            String name, TypeParameter<B1> p1, TypedJavaFile.TypedGenericClassSpec1<B1> spec) {
+            String name, TypeParameter<B1> p1, GenericDeclarationArities.TypedGenericClassSpec1<B1> spec) {
         return nestedClass(name, List.of(p1), List.of(), new NestedDeclarations.ClassBodies() {
             @Override
             public <N2> MemberBodies<N2, ?> build(ClassHeader<N2> h, ClassDeclaration<N2> declaration) {
@@ -215,7 +215,7 @@ public abstract sealed class MemberBuilder<Self, S> extends MemberBuilderArities
             String name,
             TypeParameter<B1> p1,
             TypeParameter<B2> p2,
-            TypedJavaFile.TypedGenericClassSpec2<B1, B2> spec) {
+            GenericDeclarationArities.TypedGenericClassSpec2<B1, B2> spec) {
         return nestedClass(name, List.of(p1, p2), List.of(), new NestedDeclarations.ClassBodies() {
             @Override
             public <N2> MemberBodies<N2, ?> build(ClassHeader<N2> h, ClassDeclaration<N2> declaration) {
@@ -242,7 +242,7 @@ public abstract sealed class MemberBuilder<Self, S> extends MemberBuilderArities
             TypeParameter<B1> p1,
             TypeParameter<B2> p2,
             TypeParameter<B3> p3,
-            TypedJavaFile.TypedGenericClassSpec3<B1, B2, B3> spec) {
+            GenericDeclarationArities.TypedGenericClassSpec3<B1, B2, B3> spec) {
         return nestedClass(name, List.of(p1, p2, p3), List.of(), new NestedDeclarations.ClassBodies() {
             @Override
             public <N2> MemberBodies<N2, ?> build(ClassHeader<N2> h, ClassDeclaration<N2> declaration) {
@@ -279,7 +279,7 @@ public abstract sealed class MemberBuilder<Self, S> extends MemberBuilderArities
     /// @param <B1> the leftmost bound of the type parameter
     /// @return the token of the member interface
     public final <I, B1> InterfaceToken<I> declareNestedInterface(
-            String name, TypeParameter<B1> p1, TypedJavaFile.TypedGenericInterfaceSpec1<B1> spec) {
+            String name, TypeParameter<B1> p1, GenericDeclarationArities.TypedGenericInterfaceSpec1<B1> spec) {
         owner.requireDeclaring("a member interface of " + owner.described());
         NestedDeclarations.NestedType<InterfaceToken<I>> nested =
                 NestedDeclarations.interface_(owner.target(), owner.desc(), name, p1, spec);
@@ -288,7 +288,7 @@ public abstract sealed class MemberBuilder<Self, S> extends MemberBuilderArities
     }
 
     /// Declares a generic `public` member interface of the class with two type parameters, see
-    /// [#declareNestedInterface(String, TypeParameter, TypedJavaFile.TypedGenericInterfaceSpec1)].
+    /// [#declareNestedInterface].
     ///
     /// @param name the simple name of the member interface
     /// @param p1 the first type parameter
@@ -302,7 +302,7 @@ public abstract sealed class MemberBuilder<Self, S> extends MemberBuilderArities
             String name,
             TypeParameter<B1> p1,
             TypeParameter<B2> p2,
-            TypedJavaFile.TypedGenericInterfaceSpec2<B1, B2> spec) {
+            GenericDeclarationArities.TypedGenericInterfaceSpec2<B1, B2> spec) {
         owner.requireDeclaring("a member interface of " + owner.described());
         NestedDeclarations.NestedType<InterfaceToken<I>> nested =
                 NestedDeclarations.interface_(owner.target(), owner.desc(), name, p1, p2, spec);
@@ -311,7 +311,7 @@ public abstract sealed class MemberBuilder<Self, S> extends MemberBuilderArities
     }
 
     /// Declares a generic `public` member interface of the class with three type parameters, see
-    /// [#declareNestedInterface(String, TypeParameter, TypedJavaFile.TypedGenericInterfaceSpec1)].
+    /// [#declareNestedInterface].
     ///
     /// @param name the simple name of the member interface
     /// @param p1 the first type parameter
@@ -328,7 +328,7 @@ public abstract sealed class MemberBuilder<Self, S> extends MemberBuilderArities
             TypeParameter<B1> p1,
             TypeParameter<B2> p2,
             TypeParameter<B3> p3,
-            TypedJavaFile.TypedGenericInterfaceSpec3<B1, B2, B3> spec) {
+            GenericDeclarationArities.TypedGenericInterfaceSpec3<B1, B2, B3> spec) {
         owner.requireDeclaring("a member interface of " + owner.described());
         NestedDeclarations.NestedType<InterfaceToken<I>> nested =
                 NestedDeclarations.interface_(owner.target(), owner.desc(), name, p1, p2, p3, spec);
@@ -360,7 +360,7 @@ public abstract sealed class MemberBuilder<Self, S> extends MemberBuilderArities
     /// @param <B1> the leftmost bound of the type parameter
     /// @return the token of the member record
     public final <R, B1> FinalClassToken<R> declareNestedRecord(
-            String name, TypeParameter<B1> p1, TypedJavaFile.TypedGenericRecordSpec1<B1> spec) {
+            String name, TypeParameter<B1> p1, GenericDeclarationArities.TypedGenericRecordSpec1<B1> spec) {
         owner.requireDeclaring("a member record of " + owner.described());
         NestedDeclarations.NestedType<FinalClassToken<R>> nested =
                 NestedDeclarations.record(owner.target(), owner.desc(), name, p1, spec);
@@ -369,7 +369,7 @@ public abstract sealed class MemberBuilder<Self, S> extends MemberBuilderArities
     }
 
     /// Declares a generic `public` member record of the class with two type parameters, see
-    /// [#declareNestedRecord(String, TypeParameter, TypedJavaFile.TypedGenericRecordSpec1)].
+    /// [#declareNestedRecord].
     ///
     /// @param name the simple name of the member record
     /// @param p1 the first type parameter
@@ -383,7 +383,7 @@ public abstract sealed class MemberBuilder<Self, S> extends MemberBuilderArities
             String name,
             TypeParameter<B1> p1,
             TypeParameter<B2> p2,
-            TypedJavaFile.TypedGenericRecordSpec2<B1, B2> spec) {
+            GenericDeclarationArities.TypedGenericRecordSpec2<B1, B2> spec) {
         owner.requireDeclaring("a member record of " + owner.described());
         NestedDeclarations.NestedType<FinalClassToken<R>> nested =
                 NestedDeclarations.record(owner.target(), owner.desc(), name, p1, p2, spec);
@@ -392,7 +392,7 @@ public abstract sealed class MemberBuilder<Self, S> extends MemberBuilderArities
     }
 
     /// Declares a generic `public` member record of the class with three type parameters, see
-    /// [#declareNestedRecord(String, TypeParameter, TypedJavaFile.TypedGenericRecordSpec1)].
+    /// [#declareNestedRecord].
     ///
     /// @param name the simple name of the member record
     /// @param p1 the first type parameter
@@ -409,7 +409,7 @@ public abstract sealed class MemberBuilder<Self, S> extends MemberBuilderArities
             TypeParameter<B1> p1,
             TypeParameter<B2> p2,
             TypeParameter<B3> p3,
-            TypedJavaFile.TypedGenericRecordSpec3<B1, B2, B3> spec) {
+            GenericDeclarationArities.TypedGenericRecordSpec3<B1, B2, B3> spec) {
         owner.requireDeclaring("a member record of " + owner.described());
         NestedDeclarations.NestedType<FinalClassToken<R>> nested =
                 NestedDeclarations.record(owner.target(), owner.desc(), name, p1, p2, p3, spec);
@@ -440,6 +440,8 @@ public abstract sealed class MemberBuilder<Self, S> extends MemberBuilderArities
     /// @param <B1> the leftmost bound of the type parameter
     /// @return never
     /// @throws IllegalArgumentException always, naming the enum and the type parameter
+    // an overload that refuses a type parameter at compile time: the tests call it to read the message it throws
+    @SuppressWarnings("DoNotCallSuggester")
     public final <E, B1> EnumToken<E> declareNestedEnum(
             String name, TypeParameter<B1> p1, TypedJavaFile.TypedEnumSpec spec) {
         throw new IllegalArgumentException("cannot declare the member enum " + name + " of " + owner.described()
@@ -469,6 +471,8 @@ public abstract sealed class MemberBuilder<Self, S> extends MemberBuilderArities
     /// @param <B1> the leftmost bound of the type parameter
     /// @return never
     /// @throws IllegalArgumentException always, naming the annotation type and the type parameter
+    // an overload that refuses a type parameter at compile time: the tests call it to read the message it throws
+    @SuppressWarnings("DoNotCallSuggester")
     public final <B1> ClassDesc declareNestedAnnotationType(
             String name, TypeParameter<B1> p1, TypedJavaFile.TypedAnnotationTypeSpec spec) {
         throw new IllegalArgumentException("cannot declare the member annotation type " + name + " of "
@@ -1171,7 +1175,7 @@ public abstract sealed class MemberBuilder<Self, S> extends MemberBuilderArities
     }
 
     /// The native method `member`, rendered without a body.
-    private NativeMethodDecl nativeMethod(
+    private static NativeMethodDecl nativeMethod(
             Invocable member,
             List<ClassToken<? extends Throwable>> thrown,
             List<AnnotationRef<?>> annotations,
@@ -1500,6 +1504,8 @@ public abstract sealed class MemberBuilder<Self, S> extends MemberBuilderArities
     /// @param <A6> the sixth parameter type
     /// @param <A7> the seventh parameter type
     /// @return the fact of the abstract method
+    // one parameter per type token of the method it declares: the arity is the declared signature's
+    @SuppressWarnings("TooManyParameters")
     public final <R, A1, A2, A3, A4, A5, A6, A7> MethodRef7<Self, R, A1, A2, A3, A4, A5, A6, A7> declareAbstractMethod(
             String name,
             TypeToken<R> result,
@@ -1570,6 +1576,8 @@ public abstract sealed class MemberBuilder<Self, S> extends MemberBuilderArities
     /// @param <A7> the seventh parameter type
     /// @param <A8> the eighth parameter type
     /// @return the fact of the abstract method
+    // one parameter per type token of the method it declares: the arity is the declared signature's
+    @SuppressWarnings("TooManyParameters")
     public final <R, A1, A2, A3, A4, A5, A6, A7, A8>
             MethodRef8<Self, R, A1, A2, A3, A4, A5, A6, A7, A8> declareAbstractMethod(
                     String name,
@@ -1607,6 +1615,8 @@ public abstract sealed class MemberBuilder<Self, S> extends MemberBuilderArities
     /// @param <A7> the seventh parameter type
     /// @param <A8> the eighth parameter type
     /// @return the fact of the abstract method
+    // one parameter per type token of the method it declares: the arity is the declared signature's
+    @SuppressWarnings("TooManyParameters")
     public final <A1, A2, A3, A4, A5, A6, A7, A8>
             VoidMethodRef8<Self, A1, A2, A3, A4, A5, A6, A7, A8> declareVoidAbstractMethod(
                     String name,
@@ -1647,6 +1657,8 @@ public abstract sealed class MemberBuilder<Self, S> extends MemberBuilderArities
     /// @param <A8> the eighth parameter type
     /// @param <A9> the ninth parameter type
     /// @return the fact of the abstract method
+    // one parameter per type token of the method it declares: the arity is the declared signature's
+    @SuppressWarnings("TooManyParameters")
     public final <R, A1, A2, A3, A4, A5, A6, A7, A8, A9>
             MethodRef9<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9> declareAbstractMethod(
                     String name,
@@ -1687,6 +1699,8 @@ public abstract sealed class MemberBuilder<Self, S> extends MemberBuilderArities
     /// @param <A8> the eighth parameter type
     /// @param <A9> the ninth parameter type
     /// @return the fact of the abstract method
+    // one parameter per type token of the method it declares: the arity is the declared signature's
+    @SuppressWarnings("TooManyParameters")
     public final <A1, A2, A3, A4, A5, A6, A7, A8, A9>
             VoidMethodRef9<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9> declareVoidAbstractMethod(
                     String name,
@@ -1730,6 +1744,8 @@ public abstract sealed class MemberBuilder<Self, S> extends MemberBuilderArities
     /// @param <A9> the ninth parameter type
     /// @param <A10> the tenth parameter type
     /// @return the fact of the abstract method
+    // one parameter per type token of the method it declares: the arity is the declared signature's
+    @SuppressWarnings("TooManyParameters")
     public final <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10>
             MethodRef10<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> declareAbstractMethod(
                     String name,
@@ -1773,6 +1789,8 @@ public abstract sealed class MemberBuilder<Self, S> extends MemberBuilderArities
     /// @param <A9> the ninth parameter type
     /// @param <A10> the tenth parameter type
     /// @return the fact of the abstract method
+    // one parameter per type token of the method it declares: the arity is the declared signature's
+    @SuppressWarnings("TooManyParameters")
     public final <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10>
             VoidMethodRef10<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> declareVoidAbstractMethod(
                     String name,
@@ -1819,6 +1837,8 @@ public abstract sealed class MemberBuilder<Self, S> extends MemberBuilderArities
     /// @param <A10> the tenth parameter type
     /// @param <A11> the eleventh parameter type
     /// @return the fact of the abstract method
+    // one parameter per type token of the method it declares: the arity is the declared signature's
+    @SuppressWarnings("TooManyParameters")
     public final <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11>
             MethodRef11<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> declareAbstractMethod(
                     String name,
@@ -1865,6 +1885,8 @@ public abstract sealed class MemberBuilder<Self, S> extends MemberBuilderArities
     /// @param <A10> the tenth parameter type
     /// @param <A11> the eleventh parameter type
     /// @return the fact of the abstract method
+    // one parameter per type token of the method it declares: the arity is the declared signature's
+    @SuppressWarnings("TooManyParameters")
     public final <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11>
             VoidMethodRef11<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> declareVoidAbstractMethod(
                     String name,
@@ -1914,6 +1936,8 @@ public abstract sealed class MemberBuilder<Self, S> extends MemberBuilderArities
     /// @param <A11> the eleventh parameter type
     /// @param <A12> the twelfth parameter type
     /// @return the fact of the abstract method
+    // one parameter per type token of the method it declares: the arity is the declared signature's
+    @SuppressWarnings("TooManyParameters")
     public final <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12>
             MethodRef12<Self, R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> declareAbstractMethod(
                     String name,
@@ -1963,6 +1987,8 @@ public abstract sealed class MemberBuilder<Self, S> extends MemberBuilderArities
     /// @param <A11> the eleventh parameter type
     /// @param <A12> the twelfth parameter type
     /// @return the fact of the abstract method
+    // one parameter per type token of the method it declares: the arity is the declared signature's
+    @SuppressWarnings("TooManyParameters")
     public final <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12>
             VoidMethodRef12<Self, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> declareVoidAbstractMethod(
                     String name,

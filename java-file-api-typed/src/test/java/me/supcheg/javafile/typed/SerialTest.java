@@ -168,7 +168,7 @@ class SerialTest {
                 UnsafeFacts.unverifiedClasspath(),
                 DESC,
                 typeParam("T", comparable.token),
-                new TypedJavaFile.TypedGenericClassSpec1<Comparable<String>>() {
+                new GenericDeclarationArities.TypedGenericClassSpec1<Comparable<String>>() {
                     @Override
                     public <Self, T extends Comparable<String>> MemberBodies<Self, ?> build(
                             ClassHeader<Self> h, TypeVarToken<T> t) {
@@ -191,7 +191,7 @@ class SerialTest {
                 DESC,
                 typeParam("A"),
                 typeParam("B", String_.TOKEN),
-                new TypedJavaFile.TypedGenericClassSpec2<Object, String>() {
+                new GenericDeclarationArities.TypedGenericClassSpec2<Object, String>() {
                     @Override
                     public <Self, A, B extends String> MemberBodies<Self, ?> build(
                             ClassHeader<Self> h, TypeVarToken<A> a, TypeVarToken<B> b) {
@@ -211,7 +211,7 @@ class SerialTest {
                         UnsafeFacts.unverifiedClasspath(),
                         DESC,
                         typeParam("T", Runnable_.TOKEN),
-                        new TypedJavaFile.TypedGenericClassSpec1<Runnable>() {
+                        new GenericDeclarationArities.TypedGenericClassSpec1<Runnable>() {
                             @Override
                             public <Self, T extends Runnable> MemberBodies<Self, ?> build(
                                     ClassHeader<Self> h, TypeVarToken<T> t) {

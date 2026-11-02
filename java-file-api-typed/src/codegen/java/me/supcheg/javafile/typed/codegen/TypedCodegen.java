@@ -1,7 +1,6 @@
 package me.supcheg.javafile.typed.codegen;
 
 import me.supcheg.javafile.JavaFile;
-import me.supcheg.javafile.annotation.AnnotationUse;
 import me.supcheg.javafile.annotation.AnnotationValues;
 import me.supcheg.javafile.builder.ClassBuilder;
 import me.supcheg.javafile.builder.InterfaceBuilder;
@@ -29,7 +28,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
@@ -161,7 +162,6 @@ public final class TypedCodegen {
             typed("TypeDeclarationSupport").nested("Member").nested("Kind");
     private static final ClassDesc GENERIC_DECLARATIONS = typed("GenericDeclarations");
     private static final ClassDesc GENERIC_DECLARATION_ARITIES = typed("GenericDeclarationArities");
-    private static final ClassDesc ENUM_CONSTANT_BODY_ARITIES = typed("EnumConstantBodyArities");
     private static final ClassDesc TYPE_PARAMETER = typed("TypeParameter");
     private static final ClassDesc CLASS_HEADER = typed("ClassHeader");
     private static final ClassDesc TYPE_DECLARATION_SUPPORT = typed("TypeDeclarationSupport");
@@ -627,7 +627,7 @@ public final class TypedCodegen {
                 }
             }
             for (Map.Entry<Path, String> file : files.entrySet()) {
-                Files.createDirectories(file.getKey().getParent());
+                Files.createDirectories(Objects.requireNonNull(file.getKey().getParent()));
                 Files.writeString(file.getKey(), file.getValue(), StandardCharsets.UTF_8);
             }
         } catch (IOException e) {
@@ -763,7 +763,7 @@ public final class TypedCodegen {
     }
 
     static TypeRef applied(ClassDesc raw, List<? extends TypeArg> args) {
-        return args.isEmpty() ? Types.of(raw) : Types.parameterized(raw, args, new AnnotationUse[0]);
+        return args.isEmpty() ? Types.of(raw) : Types.parameterized(raw, args);
     }
 
     static TypeRef applied(ClassDesc raw, TypeArg... args) {
@@ -1763,7 +1763,7 @@ public final class TypedCodegen {
         method(cb, PUBLIC, typeVars(as), Optional.empty(), "constructor", params, documentedDoc, b -> {
             b.exprStatement(call("requireHeader", add(literal("a constructor of "), call("described"))));
             b.localVar("root", Types.of(VOID_BODY), call("constructorRoot"));
-            b.localVar("self", appliedTo(THIS, "Self"), new_(THIS, field("root"), call("self")));
+            b.localVar("self", appliedTo(THIS, "Self"), newDiamond(THIS, field("root"), call("self")));
             IntStream.rangeClosed(1, n)
                     .forEach(i -> b.localVar(
                             "v" + i, appliedTo(VAR, "A" + i), staticCall(VAR, "param", field("p" + i), field("root"))));
@@ -2800,7 +2800,7 @@ public final class TypedCodegen {
             String parameter,
             boolean wildcard) {
         String noun() {
-            return simple.toLowerCase();
+            return simple.toLowerCase(Locale.ROOT);
         }
 
         String spec(int n) {
@@ -2851,7 +2851,7 @@ public final class TypedCodegen {
                             + (n == 1 ? "token of its type parameter" : "tokens of its type parameters") + ".");
                     d.param(
                             kind.parameter,
-                            "the self-branded " + (kind == GENERIC_CLASS ? "first stage of the header" : "builder")
+                            "the self-branded " + (kind.equals(GENERIC_CLASS) ? "first stage of the header" : "builder")
                                     + " of the " + kind.noun());
                     IntStream.rangeClosed(1, n)
                             .forEach(i -> d.param("t" + i, "the token of the " + ordinal(i, n) + "type parameter"));
@@ -2886,9 +2886,9 @@ public final class TypedCodegen {
                         .mapToObj(i -> param("p" + i, appliedTo(TYPE_PARAMETER, "B" + i)))
                         .toList(),
                 List.of(param("spec", applied(GENERIC_DECLARATION_ARITIES.nested(kind.spec(n)), exacts(bs)))));
-        String inScope = kind == GENERIC_CLASS
+        String inScope = kind.equals(GENERIC_CLASS)
                 ? "header, the members and the member types of the class"
-                : kind == GENERIC_INTERFACE
+                : kind.equals(GENERIC_INTERFACE)
                         ? "header, the members and the member types of the interface"
                         : "components, its header, its members and its member types";
         Doc doc = Doc.of("Declares a generic `public " + (kind.wildcard ? "final " : "") + kind.noun() + "` with "
@@ -2907,7 +2907,7 @@ public final class TypedCodegen {
                 .param(
                         "spec",
                         "declares the " + kind.noun() + ", given its "
-                                + (kind == GENERIC_CLASS ? "header" : "builder")
+                                + (kind.equals(GENERIC_CLASS) ? "header" : "builder")
                                 + " and the tokens of its type parameters");
         for (int i = 1; i <= n; i++) {
             doc = doc.typeParam("B" + i, "the leftmost bound of the " + ordinal(i, n) + "type parameter");
@@ -2932,19 +2932,20 @@ public final class TypedCodegen {
     /// `new GenericDeclarations.ClassBodies() { ... }` and its like: what gives the specification the
     /// declaration and the tokens of its type parameters.
     private static Expr declarationBodies(GenericKind kind, int n) {
-        String holder = kind == GENERIC_CLASS ? "declaration" : "builder";
+        String holder = kind.equals(GENERIC_CLASS) ? "declaration" : "builder";
         return Exprs.newAnonymous(
                 Types.of(GENERIC_DECLARATIONS.nested(kind.bridge)),
                 List.of(),
                 acb -> acb.withMethod("build", kind.bodiesType("Self"), mb -> {
                     mb.withAnnotation(OVERRIDE);
                     mb.withTypeParam("Self");
-                    mb.withParam(holder, appliedTo(kind == GENERIC_CLASS ? CLASS_DECLARATION : kind.builder, "Self"));
+                    mb.withParam(
+                            holder, appliedTo(kind.equals(GENERIC_CLASS) ? CLASS_DECLARATION : kind.builder, "Self"));
                     mb.withBody(b -> b.return_(field("spec")
                             .call(
                                     "build",
                                     listOf(
-                                                    kind == GENERIC_CLASS
+                                                    kind.equals(GENERIC_CLASS)
                                                             ? List.<Expr>of(newDiamond(CLASS_HEADER, field(holder)))
                                                             : List.<Expr>of(field(holder)),
                                                     IntStream.rangeClosed(1, n)
@@ -2992,7 +2993,7 @@ public final class TypedCodegen {
             String call,
             boolean enclosing) {
         String noun() {
-            return simple.toLowerCase();
+            return simple.toLowerCase(Locale.ROOT);
         }
 
         String spec(int n) {

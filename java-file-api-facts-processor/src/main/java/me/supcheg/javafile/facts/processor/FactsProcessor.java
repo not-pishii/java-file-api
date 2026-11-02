@@ -26,6 +26,7 @@ import java.lang.constant.ClassDesc;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.SortedMap;
@@ -174,6 +175,9 @@ public final class FactsProcessor extends AbstractProcessor {
     /// them, which is not this processor's to claim, so that lint still
     /// names it.
     @Override
+    // claiming is what keeps the annotations of the round from being reported as unclaimed under
+    // `-Xlint:processing`, which is an error here: the javadoc of [#process] says how the rest are passed on
+    @SuppressWarnings("DoNotClaimAnnotations")
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment round) {
         run(round);
         return true;
@@ -274,18 +278,20 @@ public final class FactsProcessor extends AbstractProcessor {
         Function<String, SortedSet<Site>> sitesOf = name -> Optional.ofNullable(asked.get(name))
                 .map(Asked::sites)
                 .orElseGet(() -> graph.roots(name)
-                        .flatMap(root -> asked.get(root).sites().stream())
+                        // a root is a type `@Facts` asked for
+                        .flatMap(root -> Objects.requireNonNull(asked.get(root)).sites().stream())
                         .collect(Collectors.toCollection(TreeSet::new)));
         // a requested type the round deals with for the first time: one that is settled or written now
         Predicate<String> dealtWith =
-                name -> graph.nodes().get(name).request().stream().anyMatch(request -> switch (request) {
-                    case TypeGraph.Request.Settled _, TypeGraph.Request.Waiting _ -> false;
-                    case TypeGraph.Request.Ready _ -> !graph.waits(name);
-                    case TypeGraph.Request.OnClasspath _,
-                            TypeGraph.Request.Late _,
-                            TypeGraph.Request.Unrepresentable _,
-                            TypeGraph.Request.Rejected _ -> true;
-                });
+                name -> Objects.requireNonNull(graph.nodes().get(name)).request().stream()
+                        .anyMatch(request -> switch (request) {
+                            case TypeGraph.Request.Settled _, TypeGraph.Request.Waiting _ -> false;
+                            case TypeGraph.Request.Ready _ -> !graph.waits(name);
+                            case TypeGraph.Request.OnClasspath _,
+                                    TypeGraph.Request.Late _,
+                                    TypeGraph.Request.Unrepresentable _,
+                                    TypeGraph.Request.Rejected _ -> true;
+                        });
         // what the round settles without writing, and what it has to tell of it, type by type
         List<Settlement> settlements = graph.nodes().values().stream()
                 .flatMap(node -> settlement(node).stream())
@@ -327,7 +333,8 @@ public final class FactsProcessor extends AbstractProcessor {
                 metamodel.binaryName(),
                 write(
                         metamodel,
-                        owners.get(metamodel.metamodel()),
+                        // a planned metamodel is one of the owners
+                        Objects.requireNonNull(owners.get(metamodel.metamodel())),
                         models,
                         targets,
                         index,
@@ -363,7 +370,8 @@ public final class FactsProcessor extends AbstractProcessor {
                 ? Optional.empty()
                 : Optional.of(new Diagnostics.Message.Warning(
                         told.stream()
-                                .flatMap(root -> asked.get(root).sites().stream())
+                                // a told name is a root, a type `@Facts` asked for
+                                .flatMap(root -> Objects.requireNonNull(asked.get(root)).sites().stream())
                                 .sorted()
                                 .findFirst()
                                 .flatMap(site -> site.resolve(elements)),
@@ -560,7 +568,9 @@ public final class FactsProcessor extends AbstractProcessor {
         return nearestPublic(graph, name)
                 .distinct()
                 .sorted()
-                .map(supertype -> supertype(graph.nodes().get(supertype), base, mirror, elements, models))
+                .map(supertype -> supertype(
+                        // the nearest public supertypes are nodes of the graph
+                        Objects.requireNonNull(graph.nodes().get(supertype)), base, mirror, elements, models))
                 .toList();
     }
 

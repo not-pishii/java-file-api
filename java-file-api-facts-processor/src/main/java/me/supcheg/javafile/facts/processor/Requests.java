@@ -10,6 +10,7 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 /// Reads the types `@Facts` asks for (mini-spec §1.1, §8).
@@ -74,6 +75,7 @@ final class Requests {
     private static Stream<Found> literals(AnnotationMirror annotation, AnnotationValue value) {
         Stream<?> items = value.getValue() instanceof List<?> list ? list.stream() : Stream.of(value);
         return items.map(AnnotationValue.class::cast)
+                .filter(Objects::nonNull)
                 .map(literal -> new Found(annotation, literal, literal(literal.getValue())));
     }
 

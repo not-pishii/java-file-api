@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;
 
-import static com.google.testing.compile.CompilationSubject.assertThat;
+import static me.supcheg.javafile.typed.ExpressionArities.staticCall;
 import static me.supcheg.javafile.typed.Expressions.addInt;
 import static me.supcheg.javafile.typed.Expressions.assignAt;
 import static me.supcheg.javafile.typed.Expressions.assignField;
@@ -31,7 +31,6 @@ import static me.supcheg.javafile.typed.Expressions.narrowCheckedLongToInt;
 import static me.supcheg.javafile.typed.Expressions.narrowTruncatingLongToInt;
 import static me.supcheg.javafile.typed.Expressions.neqRef;
 import static me.supcheg.javafile.typed.Expressions.newArray;
-import static me.supcheg.javafile.typed.Expressions.staticCall;
 import static me.supcheg.javafile.typed.Expressions.unbox;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;

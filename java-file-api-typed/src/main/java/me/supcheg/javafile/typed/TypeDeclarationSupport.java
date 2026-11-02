@@ -19,10 +19,12 @@ import me.supcheg.javafile.type.ClassOrInterfaceTypeRef;
 import me.supcheg.javafile.type.ClassTypeRef;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.TypeVarRef;
+import org.jspecify.annotations.Nullable;
 
 import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -44,13 +46,12 @@ abstract class TypeDeclarationSupport<Self> {
     private final TargetClasspath target;
     private final ClassDesc desc;
     private final String described;
-    private final String kind;
     private final Inheritance.Heir.OfClass heir;
     private final DeclarationIdentity identity;
     private List<Variable> variables = List.of();
     private Inheritance inherited;
-    private DeclaredToken<Self> self;
-    private TypeSignatureRegistry registry;
+    private @Nullable DeclaredToken<Self> self;
+    private @Nullable TypeSignatureRegistry registry;
     private List<Member> members = List.of();
     private List<me.supcheg.javafile.model.TypeDecl> nested = List.of();
     private Optional<me.supcheg.javafile.doc.DocComment> pendingDoc = Optional.empty();
@@ -64,7 +65,6 @@ abstract class TypeDeclarationSupport<Self> {
     TypeDeclarationSupport(TargetClasspath target, ClassDesc desc, String kind) {
         this.target = target;
         this.desc = desc;
-        this.kind = kind;
         this.described =
                 kind + " " + (desc.packageName().isEmpty() ? "" : desc.packageName() + ".") + desc.displayName();
         this.heir = new Inheritance.Heir.OfClass(described, desc);
@@ -187,7 +187,8 @@ abstract class TypeDeclarationSupport<Self> {
     }
 
     final DeclaredToken<Self> self() {
-        return self;
+        // the constructor of a subclass gives the token before anything else is declared
+        return Objects.requireNonNull(self);
     }
 
     final List<Subtyping.Bounded> bounded() {
@@ -228,7 +229,7 @@ abstract class TypeDeclarationSupport<Self> {
         scope("a supertype of " + described).require(supertype);
         target.verify(supertype);
         inherited = inherited.with(Inheritance.supertype(heir, target, supertype));
-        return new Upcast<>(self, supertype);
+        return new Upcast<>(self(), supertype);
     }
 
     /// Gives a type parameter of the type one more bound, an interface: `<T extends A & B>`. The
@@ -299,7 +300,7 @@ abstract class TypeDeclarationSupport<Self> {
                             + " (JLS 8.4.5, 4.9), which the typed layer holds to: of the same result");
                 });
         variables = variables.stream()
-                .map(mine -> mine == bounded
+                .map(mine -> mine.equals(bounded)
                         ? new Variable(
                                 mine.token(),
                                 mine.first(),
@@ -377,7 +378,7 @@ abstract class TypeDeclarationSupport<Self> {
 
     private TypeSignatureRegistry registry() {
         if (registry == null) {
-            registry = new TypeSignatureRegistry(described, self, inherited, bounded());
+            registry = new TypeSignatureRegistry(described, self(), inherited, bounded());
         }
         return registry;
     }
@@ -454,7 +455,7 @@ abstract class TypeDeclarationSupport<Self> {
             Set<Modifier> modifiers,
             Optional<me.supcheg.javafile.doc.DocComment> doc) {
         requireDeclaring(member.toString());
-        Set<Modifier> rendered = requireModifiers(member, kind, modifiers);
+        Set<Modifier> rendered = requireModifiers(modifiers);
         TypeScope scope = scope(kind, "the signature of " + member);
         Stream.concat(member.params().stream(), member.resultType().stream()).forEach(type -> {
             Tokens.requireNotRaw(type);
@@ -484,7 +485,7 @@ abstract class TypeDeclarationSupport<Self> {
     /// The modifiers a method of the kind is rendered with beside those its kind fixes, held to what
     /// Java allows: an interface has no `synchronized` or `native` method, and a constructor is
     /// neither.
-    private static Set<Modifier> requireModifiers(Invocable member, Member.Kind kind, Set<Modifier> modifiers) {
+    private static Set<Modifier> requireModifiers(Set<Modifier> modifiers) {
         return modifiers.isEmpty() ? Set.of() : Set.copyOf(modifiers);
     }
 
@@ -537,8 +538,8 @@ abstract class TypeDeclarationSupport<Self> {
             List<AnnotationRef<?>> annotations,
             List<List<AnnotationRef<?>>> parameterAnnotations,
             Optional<me.supcheg.javafile.doc.DocComment> doc) {
-        if (!Tokens.sameType(up.self(), self)) {
-            throw new IllegalArgumentException("the witness is of " + up.self() + ", and the type is " + self);
+        if (!Tokens.sameType(up.self(), self())) {
+            throw new IllegalArgumentException("the witness is of " + up.self() + ", and the type is " + self());
         }
         requireDeclaring(member.toString());
         TypeScope scope = scope(kind, "the signature of " + member);
@@ -602,7 +603,7 @@ abstract class TypeDeclarationSupport<Self> {
         Tokens.requireNotRaw(type);
         scope.require(type);
         registry().field(name);
-        FieldRef<Self, T> field = UnsafeFacts.field(self, name, type);
+        FieldRef<Self, T> field = UnsafeFacts.field(self(), name, type);
         declared(new Member.Field(field, Set.copyOf(modifiers), annotations, doc, Site.here()));
         return field;
     }
@@ -637,7 +638,7 @@ abstract class TypeDeclarationSupport<Self> {
         Tokens.requireNotRaw(type);
         staticScope("the type of constant " + name).require(type);
         registry().field(name);
-        StaticFieldRef<T> constant = UnsafeFacts.staticField(self, name, type);
+        StaticFieldRef<T> constant = UnsafeFacts.staticField(self(), name, type);
         declared(new Member.Constant(constant, annotations, doc, Site.here()));
         return constant;
     }
@@ -736,7 +737,7 @@ abstract class TypeDeclarationSupport<Self> {
     final <B extends TypedTypeBodies<Self, ?>> B bodies(java.util.function.Function<TypedTypeBodies.Declared, B> make) {
         requireDeclaring("the bodies of " + described);
         registry().requireComplete(allowAbstract());
-        B bodies = make.apply(new TypedTypeBodies.Declared(self, inherited, members, this::table));
+        B bodies = make.apply(new TypedTypeBodies.Declared(self(), inherited, members, this::table));
         membersBegan = true;
         return bodies;
     }

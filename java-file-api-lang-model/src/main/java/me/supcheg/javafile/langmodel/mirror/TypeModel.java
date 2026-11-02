@@ -92,6 +92,8 @@ public record TypeModel(
     /// @param filter which members are in `members`
     /// @param members the members that have facts
     /// @param skipped the members that have no facts
+    // one parameter per fact the model holds, as the processor writes it: there is no builder to hide them
+    @SuppressWarnings("TooManyParameters")
     public TypeModel(
             ClassDesc desc,
             DeclaredKind kind,

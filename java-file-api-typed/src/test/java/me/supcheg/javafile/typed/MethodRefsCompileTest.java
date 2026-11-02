@@ -21,6 +21,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 /// Method references of the generated code (6.4): a bound receiver, an unbound instance reference and
 /// a static reference, each of the functional interface its method implements, rendered exactly and run.
+// the casts check the compile-time refusals, and are unchecked on purpose
+@SuppressWarnings({"rawtypes", "unchecked"})
 class MethodRefsCompileTest {
 
     private static final ClassDesc DESC = ClassDesc.of("me.supcheg.example", "References");

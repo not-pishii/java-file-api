@@ -60,10 +60,6 @@ final class FixtureFiles {
                 .toList();
     }
 
-    private static List<String> names(int from, int to) {
-        return IntStream.rangeClosed(from, to).mapToObj(i -> "a" + i).toList();
-    }
-
     /// `prefix + a1 + "," + ... + an`: what a member tells of its arguments.
     private static Expr told(String prefix, int n) {
         return told(prefix, n, List.of());

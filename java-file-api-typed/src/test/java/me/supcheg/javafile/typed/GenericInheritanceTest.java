@@ -40,7 +40,10 @@ class GenericInheritanceTest {
     void aMethodOfAnInterfaceIsHadFromAGenericSuperclassByInheritance() throws Throwable {
         // T carried() of Carrier<T> for T carried() of Carrying<T>
         CompiledClasses compiled = CompiledClasses.of(TypedJavaFile.declareClass(
-                UnsafeFacts.unverifiedClasspath(), DESC, typeParam("T"), new TypedJavaFile.TypedGenericClassSpec1<>() {
+                UnsafeFacts.unverifiedClasspath(),
+                DESC,
+                typeParam("T"),
+                new GenericDeclarationArities.TypedGenericClassSpec1<>() {
                     @Override
                     public <Self, T> MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<T> t) {
                         var carrier = new Carrier_<>(t);
@@ -71,7 +74,10 @@ class GenericInheritanceTest {
     void aProtectedMethodAndAPublicOneOfAGenericSuperclassAreCalledOnTheClassItself() throws Throwable {
         // protected String p(T) and String m(T) of BaseTwin<T>
         CompiledClasses compiled = CompiledClasses.of(TypedJavaFile.declareClass(
-                UnsafeFacts.unverifiedClasspath(), DESC, typeParam("T"), new TypedJavaFile.TypedGenericClassSpec1<>() {
+                UnsafeFacts.unverifiedClasspath(),
+                DESC,
+                typeParam("T"),
+                new GenericDeclarationArities.TypedGenericClassSpec1<>() {
                     @Override
                     public <Self, T> MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<T> t) {
                         var base = new BaseTwin_<>(t);
@@ -111,7 +117,7 @@ class GenericInheritanceTest {
                 UnsafeFacts.unverifiedClasspath(),
                 DESC,
                 typeParam("E", Op_.TOKEN),
-                new TypedJavaFile.TypedGenericClassSpec1<Op>() {
+                new GenericDeclarationArities.TypedGenericClassSpec1<Op>() {
                     @Override
                     public <Self, E extends Op> MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<E> e) {
                         var cb = h.extendsObject().members();
@@ -145,7 +151,7 @@ class GenericInheritanceTest {
                 UnsafeFacts.unverifiedClasspath(),
                 DESC,
                 typeParam("T", CharSequence_.TOKEN),
-                new TypedJavaFile.TypedGenericClassSpec1<CharSequence>() {
+                new GenericDeclarationArities.TypedGenericClassSpec1<CharSequence>() {
                     @Override
                     public <Self, T extends CharSequence> MemberBodies<Self, ?> build(
                             ClassHeader<Self> h, TypeVarToken<T> t) {
@@ -180,7 +186,7 @@ class GenericInheritanceTest {
                 UnsafeFacts.unverifiedClasspath(),
                 DESC,
                 typeParam("T", Number_.TOKEN),
-                new TypedJavaFile.TypedGenericClassSpec1<Number>() {
+                new GenericDeclarationArities.TypedGenericClassSpec1<Number>() {
                     @Override
                     public <Self, T extends Number> MemberBodies<Self, ?> build(
                             ClassHeader<Self> h, TypeVarToken<T> t) {
@@ -206,6 +212,7 @@ class GenericInheritanceTest {
                 .contains("public final class Box<T extends Number> implements Consumer<T> {")
                 .contains("@Override\n    public void accept(T v0) {");
         Object box = compiled.generated().getConstructor().newInstance();
+        // the generated class consumes the type parameter, which the test gives it as an Object
         @SuppressWarnings("unchecked")
         Consumer<Object> consumer = (Consumer<Object>) box;
         consumer.accept(7);

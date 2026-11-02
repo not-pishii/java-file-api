@@ -8,6 +8,8 @@ public class Base {
     public final String name;
     public final Op op = Op.SUB;
     protected int hits;
+    // a static field of the fixture the generated code reads and assigns
+    @SuppressWarnings("NonFinalStaticField")
     protected static int limit = 3;
 
     public Base() {

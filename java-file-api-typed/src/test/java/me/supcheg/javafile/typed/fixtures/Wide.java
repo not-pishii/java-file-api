@@ -4,6 +4,8 @@ package me.supcheg.javafile.typed.fixtures;
 /// with: what a generated class calls, overrides and declares over at the arities beyond none.
 public class Wide {
     /// What the static methods were last called with.
+    // the static methods of the fixture write it, which is what the generated code is checked against
+    @SuppressWarnings("NonFinalStaticField")
     public static String noted = "";
 
     /// What the constructor and the `void` methods were called with, in order.

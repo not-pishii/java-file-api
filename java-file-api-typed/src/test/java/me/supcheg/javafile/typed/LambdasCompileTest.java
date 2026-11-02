@@ -44,6 +44,10 @@ import java.util.function.Function;
 import java.util.function.IntBinaryOperator;
 import java.util.function.Supplier;
 
+import static me.supcheg.javafile.typed.ExpressionArities.lambda;
+import static me.supcheg.javafile.typed.ExpressionArities.lambdaBlock;
+import static me.supcheg.javafile.typed.ExpressionArities.new_;
+import static me.supcheg.javafile.typed.ExpressionArities.staticCall;
 import static me.supcheg.javafile.typed.Expressions.addInt;
 import static me.supcheg.javafile.typed.Expressions.assign;
 import static me.supcheg.javafile.typed.Expressions.assignAt;
@@ -53,12 +57,8 @@ import static me.supcheg.javafile.typed.Expressions.concat;
 import static me.supcheg.javafile.typed.Expressions.cond;
 import static me.supcheg.javafile.typed.Expressions.eqRef;
 import static me.supcheg.javafile.typed.Expressions.gtInt;
-import static me.supcheg.javafile.typed.Expressions.lambda;
-import static me.supcheg.javafile.typed.Expressions.lambdaBlock;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.newArray;
-import static me.supcheg.javafile.typed.Expressions.new_;
-import static me.supcheg.javafile.typed.Expressions.staticCall;
 import static me.supcheg.javafile.typed.Expressions.unbox;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -454,6 +454,8 @@ class LambdasCompileTest {
     }
 
     @Test
+    // the generated method appends to the builder the test gives it, so the builder is no concatenation here
+    @SuppressWarnings("UnnecessaryStringBuilder")
     void aLambdaIsAnArgumentOfAConstructorAndAnElementOfAnArray() throws Throwable {
         assertThat(compiled.invoke("held", "a")).isEqualTo("a");
         assertThat(compiled.invoke("element", new StringBuilder())).isEqualTo("x");
@@ -474,6 +476,7 @@ class LambdasCompileTest {
     }
 
     @Test
+    // the generated value is of the type the test asks for: reflection gives it as an Object
     @SuppressWarnings("unchecked")
     void aLambdaIsReturnedAndCapturesAParameter() throws Throwable {
         assertThat(((Supplier<String>) compiled.invoke("constant", "a")).get()).isEqualTo("a");
@@ -482,12 +485,15 @@ class LambdasCompileTest {
     }
 
     @Test
+    // the generated methods append to the builders the test gives them, so the builders are no concatenation
+    @SuppressWarnings("UnnecessaryStringBuilder")
     void aVoidLambdaRunsItsEffect() throws Throwable {
         assertThat(compiled.invoke("twice", new StringBuilder())).isEqualTo("xx");
         assertThat(compiled.invoke("blockTwice", new StringBuilder())).isEqualTo("xyxy");
     }
 
     @Test
+    // the generated value is of the type the test asks for: reflection gives it as an Object
     @SuppressWarnings("unchecked")
     void lambdasOfOneParameterWithoutAResult() throws Throwable {
         StringBuilder sb = new StringBuilder();
@@ -500,6 +506,7 @@ class LambdasCompileTest {
     }
 
     @Test
+    // the generated value is of the type the test asks for: reflection gives it as an Object
     @SuppressWarnings("unchecked")
     void lambdasOfTwoAndThreeParameters() throws Throwable {
         assertThat(((IntBinaryOperator) compiled.invoke("sum")).applyAsInt(2, 3))
@@ -545,6 +552,7 @@ class LambdasCompileTest {
     }
 
     @Test
+    // the generated value is of the type the test asks for: reflection gives it as an Object
     @SuppressWarnings("unchecked")
     void aLambdaIsTheValueOfALambda() throws Throwable {
         assertThat(((Function<String, Supplier<String>>) compiled.invoke("curried"))
@@ -558,6 +566,7 @@ class LambdasCompileTest {
     }
 
     @Test
+    // the generated value is of the type the test asks for: reflection gives it as an Object
     @SuppressWarnings("unchecked")
     void aLambdaInitializesAFieldAndCapturesThis() throws Throwable {
         assertThat(compiled.invoke("shout", "a")).isEqualTo("A");
@@ -573,6 +582,7 @@ class LambdasCompileTest {
     }
 
     @Test
+    // the generated value is of the type the test asks for: reflection gives it as an Object
     @SuppressWarnings("unchecked")
     void aLambdaCapturesTheVariableOfALoop() throws Throwable {
         List<Supplier<String>> suppliers = (List<Supplier<String>>) compiled.invoke("suppliers", List.of("a", "b"));
@@ -581,6 +591,7 @@ class LambdasCompileTest {
     }
 
     @Test
+    // the generated value is of the type the test asks for: reflection gives it as an Object
     @SuppressWarnings("unchecked")
     void aCheckedExceptionOfTheBodyIsDeclaredByTheFunctionalInterfaceOrCaughtInTheBody() throws Throwable {
         assertThat(compiled.invoke("read", "a")).isEqualTo((int) 'a');

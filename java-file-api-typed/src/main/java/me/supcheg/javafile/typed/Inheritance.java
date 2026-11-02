@@ -373,7 +373,7 @@ final class Inheritance {
     private static void requireNoBridgeClash(String owner, Map<MethodSignature, Group> groups) {
         groups.values()
                 .forEach(group -> groups.values().stream()
-                        .filter(other -> other != group
+                        .filter(other -> !other.equals(group)
                                 && other.signature()
                                         .name()
                                         .equals(group.signature().name()))
@@ -548,7 +548,7 @@ final class Inheritance {
                 case PROTECTED, PACKAGE ->
                     Optional.of("it is not public, and the method of an interface is: weaker access (JLS 8.4.8.3)");
                 case PUBLIC ->
-                    declared.arity() != other.declared().arity()
+                    !declared.arity().equals(other.declared().arity())
                             ? Optional.of("the last parameter of one is of variable arity and that of the other"
                                     + " an array, of which javac warns")
                             : !sameResult(other)

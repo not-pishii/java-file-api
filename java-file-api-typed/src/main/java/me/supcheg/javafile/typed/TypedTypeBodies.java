@@ -66,6 +66,7 @@ import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody7;
 import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody8;
 import me.supcheg.javafile.typed.MemberBodyArities.InstanceBody9;
 import me.supcheg.javafile.typed.TypeDeclarationSupport.Member;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.BiFunction;
@@ -266,7 +267,7 @@ abstract class TypedTypeBodies<Self, M> {
                 "the initializer of " + what,
                 instanceFieldsFrom(slot));
         VariableInitializer lowered = lowering.lowerInitializer(initializer.node(), field.type());
-        defined(slot, field(slot.declared(), lowered), "the initializer of " + what);
+        defined(slot, field(slot.declared(), lowered));
     }
 
     /// Gives a declared constant or static field its initializer. A constant of an interface must be
@@ -298,8 +299,7 @@ abstract class TypedTypeBodies<Self, M> {
                 switch (slot) {
                     case Slot.BlankConstant constant -> constant(constant.declared(), lowered);
                     case Slot.BlankStatic staticField -> staticField(staticField.declared(), lowered);
-                },
-                "the initializer of " + what);
+                });
     }
 
     /// The initializer of a constant or of a static field, lowered: one of a static field reads only the
@@ -386,7 +386,7 @@ abstract class TypedTypeBodies<Self, M> {
                 new Lowering.Place.InClass(self(), owner.scope(what), owner.bounded(), localStaticMembers()),
                 what,
                 instanceFieldsFrom(slot));
-        definedInitializer(slot, new InitializerBlock(false, lowering.lowerBlock(root.instrs())), what);
+        definedInitializer(slot, new InitializerBlock(false, lowering.lowerBlock(root.instrs())));
     }
 
     /// Defines a declared static initializer block. Its body is built and lowered here, with no `this`, against
@@ -408,7 +408,7 @@ abstract class TypedTypeBodies<Self, M> {
                 new Lowering.Place.InClass(self(), owner.staticScope(what), owner.bounded(), localStaticMembers()),
                 what,
                 staticFieldsFrom(slot));
-        definedInitializer(slot, new InitializerBlock(true, lowering.lowerBlock(root.instrs())), what);
+        definedInitializer(slot, new InitializerBlock(true, lowering.lowerBlock(root.instrs())));
     }
 
     /// The slot of an initializer block that is declared and has no body yet.
@@ -416,7 +416,7 @@ abstract class TypedTypeBodies<Self, M> {
         owner.requireDefining(what);
         Slot found = slots.stream()
                 .filter(slot -> slot.declared() instanceof Member.Initializer)
-                .filter(slot -> ((Member.Initializer) slot.declared()).handle() == handle)
+                .filter(slot -> ((Member.Initializer) slot.declared()).handle().equals(handle))
                 .findFirst()
                 .orElseThrow(() -> undeclared(what));
         if (found instanceof Slot.Defined) {
@@ -458,9 +458,9 @@ abstract class TypedTypeBodies<Self, M> {
     }
 
     /// Puts the block in its slot, there whole.
-    private void definedInitializer(Slot.AwaitingBody from, InitializerBlock member, String what) {
+    private void definedInitializer(Slot.AwaitingBody from, InitializerBlock member) {
         List<Slot> with = slots.stream()
-                .map(slot -> slot == from ? new Slot.Defined(from.declared(), member) : slot)
+                .map(slot -> slot.equals(from) ? new Slot.Defined(from.declared(), member) : slot)
                 .toList();
         slots = with;
     }
@@ -871,14 +871,14 @@ abstract class TypedTypeBodies<Self, M> {
         defineConstructor(ctor, Start.delegating(args), body);
     }
 
-    private <R> void defineConstructor(Invocable ctor, Start start, InstanceBody0<Self, VoidBody, Void> body) {
+    private void defineConstructor(Invocable ctor, Start start, InstanceBody0<Self, VoidBody, Void> body) {
         Slot.Awaiting slot = definable(ctor);
         VoidBody root = VoidBody.root("body of constructor", MemberBodies.declares(ctor));
         This<Self> self = thisOf(root);
         defineIn(slot, root, List.of(), start, b -> body.build(b, self));
     }
 
-    private <R, A1> void defineConstructor(Invocable ctor, Start start, InstanceBody1<Self, VoidBody, Void, A1> body) {
+    private <A1> void defineConstructor(Invocable ctor, Start start, InstanceBody1<Self, VoidBody, Void, A1> body) {
         Slot.Awaiting slot = definable(ctor);
         VoidBody root = VoidBody.root("body of constructor", MemberBodies.declares(ctor));
         This<Self> self = thisOf(root);
@@ -886,7 +886,7 @@ abstract class TypedTypeBodies<Self, M> {
         defineIn(slot, root, List.of(p1), start, b -> body.build(b, self, p1));
     }
 
-    private <R, A1, A2> void defineConstructor(
+    private <A1, A2> void defineConstructor(
             Invocable ctor, Start start, InstanceBody2<Self, VoidBody, Void, A1, A2> body) {
         Slot.Awaiting slot = definable(ctor);
         VoidBody root = VoidBody.root("body of constructor", MemberBodies.declares(ctor));
@@ -896,7 +896,7 @@ abstract class TypedTypeBodies<Self, M> {
         defineIn(slot, root, List.of(p1, p2), start, b -> body.build(b, self, p1, p2));
     }
 
-    private <R, A1, A2, A3> void defineConstructor(
+    private <A1, A2, A3> void defineConstructor(
             Invocable ctor, Start start, InstanceBody3<Self, VoidBody, Void, A1, A2, A3> body) {
         Slot.Awaiting slot = definable(ctor);
         VoidBody root = VoidBody.root("body of constructor", MemberBodies.declares(ctor));
@@ -907,7 +907,7 @@ abstract class TypedTypeBodies<Self, M> {
         defineIn(slot, root, List.of(p1, p2, p3), start, b -> body.build(b, self, p1, p2, p3));
     }
 
-    private <R, A1, A2, A3, A4> void defineConstructor(
+    private <A1, A2, A3, A4> void defineConstructor(
             Invocable ctor, Start start, InstanceBody4<Self, VoidBody, Void, A1, A2, A3, A4> body) {
         Slot.Awaiting slot = definable(ctor);
         VoidBody root = VoidBody.root("body of constructor", MemberBodies.declares(ctor));
@@ -919,7 +919,7 @@ abstract class TypedTypeBodies<Self, M> {
         defineIn(slot, root, List.of(p1, p2, p3, p4), start, b -> body.build(b, self, p1, p2, p3, p4));
     }
 
-    private <R, A1, A2, A3, A4, A5> void defineConstructor(
+    private <A1, A2, A3, A4, A5> void defineConstructor(
             Invocable ctor, Start start, InstanceBody5<Self, VoidBody, Void, A1, A2, A3, A4, A5> body) {
         Slot.Awaiting slot = definable(ctor);
         VoidBody root = VoidBody.root("body of constructor", MemberBodies.declares(ctor));
@@ -932,7 +932,7 @@ abstract class TypedTypeBodies<Self, M> {
         defineIn(slot, root, List.of(p1, p2, p3, p4, p5), start, b -> body.build(b, self, p1, p2, p3, p4, p5));
     }
 
-    private <R, A1, A2, A3, A4, A5, A6> void defineConstructor(
+    private <A1, A2, A3, A4, A5, A6> void defineConstructor(
             Invocable ctor, Start start, InstanceBody6<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6> body) {
         Slot.Awaiting slot = definable(ctor);
         VoidBody root = VoidBody.root("body of constructor", MemberBodies.declares(ctor));
@@ -946,7 +946,7 @@ abstract class TypedTypeBodies<Self, M> {
         defineIn(slot, root, List.of(p1, p2, p3, p4, p5, p6), start, b -> body.build(b, self, p1, p2, p3, p4, p5, p6));
     }
 
-    private <R, A1, A2, A3, A4, A5, A6, A7> void defineConstructor(
+    private <A1, A2, A3, A4, A5, A6, A7> void defineConstructor(
             Invocable ctor, Start start, InstanceBody7<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7> body) {
         Slot.Awaiting slot = definable(ctor);
         VoidBody root = VoidBody.root("body of constructor", MemberBodies.declares(ctor));
@@ -966,7 +966,7 @@ abstract class TypedTypeBodies<Self, M> {
                 b -> body.build(b, self, p1, p2, p3, p4, p5, p6, p7));
     }
 
-    private <R, A1, A2, A3, A4, A5, A6, A7, A8> void defineConstructor(
+    private <A1, A2, A3, A4, A5, A6, A7, A8> void defineConstructor(
             Invocable ctor, Start start, InstanceBody8<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8> body) {
         Slot.Awaiting slot = definable(ctor);
         VoidBody root = VoidBody.root("body of constructor", MemberBodies.declares(ctor));
@@ -987,7 +987,7 @@ abstract class TypedTypeBodies<Self, M> {
                 b -> body.build(b, self, p1, p2, p3, p4, p5, p6, p7, p8));
     }
 
-    private <R, A1, A2, A3, A4, A5, A6, A7, A8, A9> void defineConstructor(
+    private <A1, A2, A3, A4, A5, A6, A7, A8, A9> void defineConstructor(
             Invocable ctor, Start start, InstanceBody9<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8, A9> body) {
         Slot.Awaiting slot = definable(ctor);
         VoidBody root = VoidBody.root("body of constructor", MemberBodies.declares(ctor));
@@ -1009,7 +1009,7 @@ abstract class TypedTypeBodies<Self, M> {
                 b -> body.build(b, self, p1, p2, p3, p4, p5, p6, p7, p8, p9));
     }
 
-    private <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> void defineConstructor(
+    private <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> void defineConstructor(
             Invocable ctor,
             Start start,
             InstanceBody10<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> body) {
@@ -1034,7 +1034,7 @@ abstract class TypedTypeBodies<Self, M> {
                 b -> body.build(b, self, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10));
     }
 
-    private <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> void defineConstructor(
+    private <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> void defineConstructor(
             Invocable ctor,
             Start start,
             InstanceBody11<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> body) {
@@ -1060,7 +1060,7 @@ abstract class TypedTypeBodies<Self, M> {
                 b -> body.build(b, self, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11));
     }
 
-    private <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> void defineConstructor(
+    private <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> void defineConstructor(
             Invocable ctor,
             Start start,
             InstanceBody12<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> body) {
@@ -1087,7 +1087,7 @@ abstract class TypedTypeBodies<Self, M> {
                 b -> body.build(b, self, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12));
     }
 
-    private <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> void defineConstructor(
+    private <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> void defineConstructor(
             Invocable ctor,
             Start start,
             InstanceBody13<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> body) {
@@ -1115,7 +1115,7 @@ abstract class TypedTypeBodies<Self, M> {
                 b -> body.build(b, self, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13));
     }
 
-    private <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> void defineConstructor(
+    private <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> void defineConstructor(
             Invocable ctor,
             Start start,
             InstanceBody14<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> body) {
@@ -1144,7 +1144,7 @@ abstract class TypedTypeBodies<Self, M> {
                 b -> body.build(b, self, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14));
     }
 
-    private <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> void defineConstructor(
+    private <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> void defineConstructor(
             Invocable ctor,
             Start start,
             InstanceBody15<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15>
@@ -1175,7 +1175,7 @@ abstract class TypedTypeBodies<Self, M> {
                 b -> body.build(b, self, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15));
     }
 
-    private <R, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> void defineConstructor(
+    private <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> void defineConstructor(
             Invocable ctor,
             Start start,
             InstanceBody16<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16>
@@ -1209,6 +1209,7 @@ abstract class TypedTypeBodies<Self, M> {
 
     @SuppressWarnings("unchecked")
     private static <T> TypeToken<T> param(Invocable member, int index) {
+        // the fact of a member holds the token of each of its parameters, and the index is one of them
         return (TypeToken<T>) member.params().get(index);
     }
 
@@ -1228,7 +1229,7 @@ abstract class TypedTypeBodies<Self, M> {
     <R, B extends Block<R, B>> void defineIn(
             Slot.Awaiting slot, B root, List<Var<?>> params, Start start, Function<? super B, Terminated<R>> bodyFn) {
         MemberBodies.built(root, bodyFn);
-        defined(slot, lower(slot.declared(), root, params, start), "the " + root.path());
+        defined(slot, lower(slot.declared(), root, params, start));
     }
 
     private M lower(Member.Callable declared, Block<?, ?> root, List<Var<?>> params, Start start) {
@@ -1267,7 +1268,7 @@ abstract class TypedTypeBodies<Self, M> {
                 ConstructorBody body =
                         switch (start) {
                             case Start.Implicit _ -> lowering.lowerConstructor(root.instrs());
-                            case Start.This(var args) ->
+                            case Start.ThisCall(var args) ->
                                 new ConstructorBody.Explicit(
                                         CodeBody.EMPTY,
                                         new ConstructorInvocation.This(args.stream()
@@ -1286,6 +1287,7 @@ abstract class TypedTypeBodies<Self, M> {
 
     /// The name of a parameter of a compact constructor, if the declaration gives one: the component
     /// name, which the compact constructor does not write but its body names.
+    @Nullable
     String compactParameterName(Member.Callable declared, int index) {
         return null;
     }
@@ -1351,6 +1353,7 @@ abstract class TypedTypeBodies<Self, M> {
                     .forEach(member -> rejection.addSuppressed(member.site().asCause(member.what() + " was declared")));
             throw rejection;
         }
+        // every slot is defined, and the member of a defined one is a member of the type
         @SuppressWarnings("unchecked")
         List<M> members = Stream.concat(
                         slots.stream().map(slot -> (M) ((Slot.Defined) slot).member()), extraMembers().stream())
@@ -1364,9 +1367,9 @@ abstract class TypedTypeBodies<Self, M> {
         return List.of();
     }
 
-    private void defined(Slot.Open from, M member, String what) {
+    private void defined(Slot.Open from, M member) {
         List<Slot> with = slots.stream()
-                .map(slot -> slot == from ? new Slot.Defined(from.declared(), member) : slot)
+                .map(slot -> slot.equals(from) ? new Slot.Defined(from.declared(), member) : slot)
                 .toList();
         slots = with;
     }
@@ -1379,16 +1382,17 @@ abstract class TypedTypeBodies<Self, M> {
 
         record Implicit() implements Start {}
 
-        record This(List<Expr<?>> args) implements Start {
-            public This(List<Expr<?>> args) {
+        record ThisCall(List<Expr<?>> args) implements Start {
+            public ThisCall(List<Expr<?>> args) {
                 this.args = List.copyOf(args);
             }
         }
 
         static Start delegating(List<? extends Expr<?>> args) {
+            // a copy of the list of expressions, of the wildcard the caller's list has
             @SuppressWarnings("unchecked")
             List<Expr<?>> copied = (List<Expr<?>>) (List<?>) List.copyOf(args);
-            return new This(copied);
+            return new ThisCall(copied);
         }
     }
 

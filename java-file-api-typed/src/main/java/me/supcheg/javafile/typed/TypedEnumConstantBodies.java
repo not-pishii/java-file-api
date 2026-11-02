@@ -411,7 +411,7 @@ public final class TypedEnumConstantBodies<Self> extends EnumConstantBodyArities
     /// @param <B1> the leftmost bound of the type parameter
     /// @return the token of the member class
     public <N, B1> FinalClassToken<N> declareNestedClass(
-            String name, TypeParameter<B1> p1, TypedJavaFile.TypedGenericClassSpec1<B1> spec) {
+            String name, TypeParameter<B1> p1, GenericDeclarationArities.TypedGenericClassSpec1<B1> spec) {
         NestedDeclarations.NestedType<FinalClassToken<N>> type =
                 NestedDeclarations.class_(owner().target(), owner().desc(), name, p1, spec);
         nested = Stream.concat(nested.stream(), Stream.of(type.type())).toList();
@@ -419,7 +419,8 @@ public final class TypedEnumConstantBodies<Self> extends EnumConstantBodyArities
     }
 
     /// Declares a generic `public static final` member class of the constant's body with two type
-    /// parameters, see [#declareNestedClass(String, TypeParameter, TypedJavaFile.TypedGenericClassSpec1)].
+    /// parameters, see
+    /// [#declareNestedClass].
     ///
     /// @param name the simple name of the member class
     /// @param p1 the first type parameter
@@ -433,7 +434,7 @@ public final class TypedEnumConstantBodies<Self> extends EnumConstantBodyArities
             String name,
             TypeParameter<B1> p1,
             TypeParameter<B2> p2,
-            TypedJavaFile.TypedGenericClassSpec2<B1, B2> spec) {
+            GenericDeclarationArities.TypedGenericClassSpec2<B1, B2> spec) {
         NestedDeclarations.NestedType<FinalClassToken<N>> type =
                 NestedDeclarations.class_(owner().target(), owner().desc(), name, p1, p2, spec);
         nested = Stream.concat(nested.stream(), Stream.of(type.type())).toList();
@@ -441,7 +442,7 @@ public final class TypedEnumConstantBodies<Self> extends EnumConstantBodyArities
     }
 
     /// Declares a generic `public static final` member class of the constant's body with three type
-    /// parameters, see [#declareNestedClass(String, TypeParameter, TypedJavaFile.TypedGenericClassSpec1)].
+    /// parameters, see [#declareNestedClass].
     ///
     /// @param name the simple name of the member class
     /// @param p1 the first type parameter
@@ -458,7 +459,7 @@ public final class TypedEnumConstantBodies<Self> extends EnumConstantBodyArities
             TypeParameter<B1> p1,
             TypeParameter<B2> p2,
             TypeParameter<B3> p3,
-            TypedJavaFile.TypedGenericClassSpec3<B1, B2, B3> spec) {
+            GenericDeclarationArities.TypedGenericClassSpec3<B1, B2, B3> spec) {
         NestedDeclarations.NestedType<FinalClassToken<N>> type =
                 NestedDeclarations.class_(owner().target(), owner().desc(), name, p1, p2, p3, spec);
         nested = Stream.concat(nested.stream(), Stream.of(type.type())).toList();
@@ -489,7 +490,7 @@ public final class TypedEnumConstantBodies<Self> extends EnumConstantBodyArities
     /// @param <B1> the leftmost bound of the type parameter
     /// @return the token of the member interface
     public <I, B1> InterfaceToken<I> declareNestedInterface(
-            String name, TypeParameter<B1> p1, TypedJavaFile.TypedGenericInterfaceSpec1<B1> spec) {
+            String name, TypeParameter<B1> p1, GenericDeclarationArities.TypedGenericInterfaceSpec1<B1> spec) {
         NestedDeclarations.NestedType<InterfaceToken<I>> type =
                 NestedDeclarations.interface_(owner().target(), owner().desc(), name, p1, spec);
         nested = java.util.stream.Stream.concat(nested.stream(), java.util.stream.Stream.of(type.type()))
@@ -498,7 +499,7 @@ public final class TypedEnumConstantBodies<Self> extends EnumConstantBodyArities
     }
 
     /// Declares a generic `public` member interface of the constant's body with two type parameters,
-    /// see [#declareNestedInterface(String, TypeParameter, TypedJavaFile.TypedGenericInterfaceSpec1)].
+    /// see [#declareNestedInterface].
     ///
     /// @param name the simple name of the member interface
     /// @param p1 the first type parameter
@@ -512,7 +513,7 @@ public final class TypedEnumConstantBodies<Self> extends EnumConstantBodyArities
             String name,
             TypeParameter<B1> p1,
             TypeParameter<B2> p2,
-            TypedJavaFile.TypedGenericInterfaceSpec2<B1, B2> spec) {
+            GenericDeclarationArities.TypedGenericInterfaceSpec2<B1, B2> spec) {
         NestedDeclarations.NestedType<InterfaceToken<I>> type =
                 NestedDeclarations.interface_(owner().target(), owner().desc(), name, p1, p2, spec);
         nested = java.util.stream.Stream.concat(nested.stream(), java.util.stream.Stream.of(type.type()))
@@ -521,7 +522,7 @@ public final class TypedEnumConstantBodies<Self> extends EnumConstantBodyArities
     }
 
     /// Declares a generic `public` member interface of the constant's body with three type parameters,
-    /// see [#declareNestedInterface(String, TypeParameter, TypedJavaFile.TypedGenericInterfaceSpec1)].
+    /// see [#declareNestedInterface].
     ///
     /// @param name the simple name of the member interface
     /// @param p1 the first type parameter
@@ -538,7 +539,7 @@ public final class TypedEnumConstantBodies<Self> extends EnumConstantBodyArities
             TypeParameter<B1> p1,
             TypeParameter<B2> p2,
             TypeParameter<B3> p3,
-            TypedJavaFile.TypedGenericInterfaceSpec3<B1, B2, B3> spec) {
+            GenericDeclarationArities.TypedGenericInterfaceSpec3<B1, B2, B3> spec) {
         NestedDeclarations.NestedType<InterfaceToken<I>> type =
                 NestedDeclarations.interface_(owner().target(), owner().desc(), name, p1, p2, p3, spec);
         nested = java.util.stream.Stream.concat(nested.stream(), java.util.stream.Stream.of(type.type()))
@@ -570,7 +571,7 @@ public final class TypedEnumConstantBodies<Self> extends EnumConstantBodyArities
     /// @param <B1> the leftmost bound of the type parameter
     /// @return the token of the member record
     public <R, B1> FinalClassToken<R> declareNestedRecord(
-            String name, TypeParameter<B1> p1, TypedJavaFile.TypedGenericRecordSpec1<B1> spec) {
+            String name, TypeParameter<B1> p1, GenericDeclarationArities.TypedGenericRecordSpec1<B1> spec) {
         NestedDeclarations.NestedType<FinalClassToken<R>> type =
                 NestedDeclarations.record(owner().target(), owner().desc(), name, p1, spec);
         nested = java.util.stream.Stream.concat(nested.stream(), java.util.stream.Stream.of(type.type()))
@@ -579,7 +580,7 @@ public final class TypedEnumConstantBodies<Self> extends EnumConstantBodyArities
     }
 
     /// Declares a generic `public` member record of the constant's body with two type parameters,
-    /// see [#declareNestedRecord(String, TypeParameter, TypedJavaFile.TypedGenericRecordSpec1)].
+    /// see [#declareNestedRecord].
     ///
     /// @param name the simple name of the member record
     /// @param p1 the first type parameter
@@ -593,7 +594,7 @@ public final class TypedEnumConstantBodies<Self> extends EnumConstantBodyArities
             String name,
             TypeParameter<B1> p1,
             TypeParameter<B2> p2,
-            TypedJavaFile.TypedGenericRecordSpec2<B1, B2> spec) {
+            GenericDeclarationArities.TypedGenericRecordSpec2<B1, B2> spec) {
         NestedDeclarations.NestedType<FinalClassToken<R>> type =
                 NestedDeclarations.record(owner().target(), owner().desc(), name, p1, p2, spec);
         nested = java.util.stream.Stream.concat(nested.stream(), java.util.stream.Stream.of(type.type()))
@@ -602,7 +603,7 @@ public final class TypedEnumConstantBodies<Self> extends EnumConstantBodyArities
     }
 
     /// Declares a generic `public` member record of the constant's body with three type parameters,
-    /// see [#declareNestedRecord(String, TypeParameter, TypedJavaFile.TypedGenericRecordSpec1)].
+    /// see [#declareNestedRecord].
     ///
     /// @param name the simple name of the member record
     /// @param p1 the first type parameter
@@ -619,7 +620,7 @@ public final class TypedEnumConstantBodies<Self> extends EnumConstantBodyArities
             TypeParameter<B1> p1,
             TypeParameter<B2> p2,
             TypeParameter<B3> p3,
-            TypedJavaFile.TypedGenericRecordSpec3<B1, B2, B3> spec) {
+            GenericDeclarationArities.TypedGenericRecordSpec3<B1, B2, B3> spec) {
         NestedDeclarations.NestedType<FinalClassToken<R>> type =
                 NestedDeclarations.record(owner().target(), owner().desc(), name, p1, p2, p3, spec);
         nested = java.util.stream.Stream.concat(nested.stream(), java.util.stream.Stream.of(type.type()))
@@ -682,6 +683,8 @@ public final class TypedEnumConstantBodies<Self> extends EnumConstantBodyArities
     /// @param <B1> the leftmost bound of the type parameter
     /// @return never
     /// @throws IllegalArgumentException always, naming the enum and the type parameter
+    // a refusal of what javac rejects: the tests call it to read the message, and it never returns
+    @SuppressWarnings("DoNotCallSuggester")
     public <E, B1> EnumToken<E> declareNestedEnum(String name, TypeParameter<B1> p1, TypedJavaFile.TypedEnumSpec spec) {
         throw new IllegalArgumentException("cannot declare the member enum " + name + " of the body of a"
                 + " constant of " + owner().described() + " with a type parameter: an enum has no type parameters"
@@ -695,6 +698,8 @@ public final class TypedEnumConstantBodies<Self> extends EnumConstantBodyArities
     /// @param spec declares the annotation type, which is never called
     /// @return never
     /// @throws IllegalArgumentException always
+    // a refusal of what javac rejects: the tests call it to read the message, and it never returns
+    @SuppressWarnings("DoNotCallSuggester")
     public java.lang.constant.ClassDesc declareNestedAnnotationType(
             String name, TypedJavaFile.TypedAnnotationTypeSpec spec) {
         throw new IllegalArgumentException("cannot declare the member annotation type " + name + " of the body of a"
@@ -711,6 +716,8 @@ public final class TypedEnumConstantBodies<Self> extends EnumConstantBodyArities
     /// @param <B1> the leftmost bound of the type parameter
     /// @return never
     /// @throws IllegalArgumentException always
+    // a refusal of what javac rejects: the tests call it to read the message, and it never returns
+    @SuppressWarnings("DoNotCallSuggester")
     public <B1> java.lang.constant.ClassDesc declareNestedAnnotationType(
             String name, TypeParameter<B1> p1, TypedJavaFile.TypedAnnotationTypeSpec spec) {
         throw new IllegalArgumentException("cannot declare the member annotation type " + name + " of the body of a"

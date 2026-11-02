@@ -15,6 +15,8 @@ import java.util.Optional;
 ///
 /// @param <A> the annotation type
 /// @param <V> the Java type of the element
+// the parameters are phantom: they type the values the generated builder of the annotation takes, not a member here
+@SuppressWarnings("UnusedTypeParameter")
 public final class AnnotationElement<A, V> {
     private final ClassDesc annotation;
     private final String name;

@@ -17,6 +17,7 @@ import java.io.UncheckedIOException;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Locale;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -330,11 +331,11 @@ class ReuseTest {
         Path lib = Javac.plain().compile(outer).orFail().writeTo(root.resolve("outer"));
         Path listed = Javac.plain()
                 .classpath(lib)
-                .compile("""
+                .compile(String.format(Locale.ROOT, """
                         package x.facts.p;
                         @me.supcheg.javafile.facts.meta.GeneratedMetamodel(of = p.Outer.Inner.class, fingerprint = "none", complete = true, format = %d)
                         public final class Outer_Inner_ {}
-                        """.formatted(MetamodelFormat.VERSION))
+                        """, MetamodelFormat.VERSION))
                 .orFail()
                 .writeTo(root.resolve("x"));
         index(listed, "p.Outer$Inner", "x.facts.p.Outer_Inner_\n");
@@ -421,7 +422,7 @@ class ReuseTest {
     private Path fullMetamodel(String fingerprint, int format) throws IOException {
         Path directory = Javac.plain()
                 .classpath(v1)
-                .compile("""
+                .compile(String.format(Locale.ROOT, """
                         package x.facts.p;
                         @me.supcheg.javafile.facts.meta.GeneratedMetamodel(of = p.Dep.class, fingerprint = "%s", complete = true, format = %d)
                         public final class Dep_ {
@@ -429,7 +430,7 @@ class ReuseTest {
                                 public static final me.supcheg.javafile.facts.TypeShape<me.supcheg.javafile.facts.DeclaredKind.OpenClass> SHAPE = null;
                             }
                         }
-                        """.formatted(fingerprint, format))
+                        """, fingerprint, format))
                 .orFail()
                 .writeTo(root.resolve("x"));
         index(directory, "p.Dep", "x.facts.p.Dep_\n");

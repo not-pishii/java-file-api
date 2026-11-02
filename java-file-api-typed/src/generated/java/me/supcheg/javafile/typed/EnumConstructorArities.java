@@ -45,7 +45,7 @@ abstract sealed class EnumConstructorArities<Self> extends StaticFieldDeclaratio
     public void constructor(InstanceBody0<Self, VoidBody, Void> body) {
         requireHeader("a constructor of " + described());
         VoidBody root = constructorRoot();
-        This<Self> self = new This(root, self());
+        This<Self> self = new This<>(root, self());
         MemberBodies.built(root, (b) -> body.build(b, self));
         declaredConstructor(List.of(), root);
     }
@@ -60,7 +60,7 @@ abstract sealed class EnumConstructorArities<Self> extends StaticFieldDeclaratio
     public void constructor(DocComment doc, InstanceBody0<Self, VoidBody, Void> body) {
         requireHeader("a constructor of " + described());
         VoidBody root = constructorRoot();
-        This<Self> self = new This(root, self());
+        This<Self> self = new This<>(root, self());
         MemberBodies.built(root, (b) -> body.build(b, self));
         declaredConstructor(List.of(), root, doc);
     }
@@ -76,7 +76,7 @@ abstract sealed class EnumConstructorArities<Self> extends StaticFieldDeclaratio
     public <A1> void constructor(TypeToken<A1> p1, InstanceBody1<Self, VoidBody, Void, A1> body) {
         requireHeader("a constructor of " + described());
         VoidBody root = constructorRoot();
-        This<Self> self = new This(root, self());
+        This<Self> self = new This<>(root, self());
         Var<A1> v1 = Var.param(p1, root);
         MemberBodies.built(root, (b) -> body.build(b, self, v1));
         declaredConstructor(List.of(v1), root);
@@ -94,7 +94,7 @@ abstract sealed class EnumConstructorArities<Self> extends StaticFieldDeclaratio
     public <A1> void constructor(DocComment doc, TypeToken<A1> p1, InstanceBody1<Self, VoidBody, Void, A1> body) {
         requireHeader("a constructor of " + described());
         VoidBody root = constructorRoot();
-        This<Self> self = new This(root, self());
+        This<Self> self = new This<>(root, self());
         Var<A1> v1 = Var.param(p1, root);
         MemberBodies.built(root, (b) -> body.build(b, self, v1));
         declaredConstructor(List.of(v1), root, doc);
@@ -113,7 +113,7 @@ abstract sealed class EnumConstructorArities<Self> extends StaticFieldDeclaratio
     public <A1, A2> void constructor(TypeToken<A1> p1, TypeToken<A2> p2, InstanceBody2<Self, VoidBody, Void, A1, A2> body) {
         requireHeader("a constructor of " + described());
         VoidBody root = constructorRoot();
-        This<Self> self = new This(root, self());
+        This<Self> self = new This<>(root, self());
         Var<A1> v1 = Var.param(p1, root);
         Var<A2> v2 = Var.param(p2, root);
         MemberBodies.built(root, (b) -> body.build(b, self, v1, v2));
@@ -134,7 +134,7 @@ abstract sealed class EnumConstructorArities<Self> extends StaticFieldDeclaratio
     public <A1, A2> void constructor(DocComment doc, TypeToken<A1> p1, TypeToken<A2> p2, InstanceBody2<Self, VoidBody, Void, A1, A2> body) {
         requireHeader("a constructor of " + described());
         VoidBody root = constructorRoot();
-        This<Self> self = new This(root, self());
+        This<Self> self = new This<>(root, self());
         Var<A1> v1 = Var.param(p1, root);
         Var<A2> v2 = Var.param(p2, root);
         MemberBodies.built(root, (b) -> body.build(b, self, v1, v2));
@@ -156,7 +156,7 @@ abstract sealed class EnumConstructorArities<Self> extends StaticFieldDeclaratio
     public <A1, A2, A3> void constructor(TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, InstanceBody3<Self, VoidBody, Void, A1, A2, A3> body) {
         requireHeader("a constructor of " + described());
         VoidBody root = constructorRoot();
-        This<Self> self = new This(root, self());
+        This<Self> self = new This<>(root, self());
         Var<A1> v1 = Var.param(p1, root);
         Var<A2> v2 = Var.param(p2, root);
         Var<A3> v3 = Var.param(p3, root);
@@ -180,7 +180,7 @@ abstract sealed class EnumConstructorArities<Self> extends StaticFieldDeclaratio
     public <A1, A2, A3> void constructor(DocComment doc, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, InstanceBody3<Self, VoidBody, Void, A1, A2, A3> body) {
         requireHeader("a constructor of " + described());
         VoidBody root = constructorRoot();
-        This<Self> self = new This(root, self());
+        This<Self> self = new This<>(root, self());
         Var<A1> v1 = Var.param(p1, root);
         Var<A2> v2 = Var.param(p2, root);
         Var<A3> v3 = Var.param(p3, root);
@@ -205,7 +205,7 @@ abstract sealed class EnumConstructorArities<Self> extends StaticFieldDeclaratio
     public <A1, A2, A3, A4> void constructor(TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, InstanceBody4<Self, VoidBody, Void, A1, A2, A3, A4> body) {
         requireHeader("a constructor of " + described());
         VoidBody root = constructorRoot();
-        This<Self> self = new This(root, self());
+        This<Self> self = new This<>(root, self());
         Var<A1> v1 = Var.param(p1, root);
         Var<A2> v2 = Var.param(p2, root);
         Var<A3> v3 = Var.param(p3, root);
@@ -232,7 +232,7 @@ abstract sealed class EnumConstructorArities<Self> extends StaticFieldDeclaratio
     public <A1, A2, A3, A4> void constructor(DocComment doc, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, InstanceBody4<Self, VoidBody, Void, A1, A2, A3, A4> body) {
         requireHeader("a constructor of " + described());
         VoidBody root = constructorRoot();
-        This<Self> self = new This(root, self());
+        This<Self> self = new This<>(root, self());
         Var<A1> v1 = Var.param(p1, root);
         Var<A2> v2 = Var.param(p2, root);
         Var<A3> v3 = Var.param(p3, root);
@@ -260,7 +260,7 @@ abstract sealed class EnumConstructorArities<Self> extends StaticFieldDeclaratio
     public <A1, A2, A3, A4, A5> void constructor(TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, InstanceBody5<Self, VoidBody, Void, A1, A2, A3, A4, A5> body) {
         requireHeader("a constructor of " + described());
         VoidBody root = constructorRoot();
-        This<Self> self = new This(root, self());
+        This<Self> self = new This<>(root, self());
         Var<A1> v1 = Var.param(p1, root);
         Var<A2> v2 = Var.param(p2, root);
         Var<A3> v3 = Var.param(p3, root);
@@ -290,7 +290,7 @@ abstract sealed class EnumConstructorArities<Self> extends StaticFieldDeclaratio
     public <A1, A2, A3, A4, A5> void constructor(DocComment doc, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, InstanceBody5<Self, VoidBody, Void, A1, A2, A3, A4, A5> body) {
         requireHeader("a constructor of " + described());
         VoidBody root = constructorRoot();
-        This<Self> self = new This(root, self());
+        This<Self> self = new This<>(root, self());
         Var<A1> v1 = Var.param(p1, root);
         Var<A2> v2 = Var.param(p2, root);
         Var<A3> v3 = Var.param(p3, root);
@@ -321,7 +321,7 @@ abstract sealed class EnumConstructorArities<Self> extends StaticFieldDeclaratio
     public <A1, A2, A3, A4, A5, A6> void constructor(TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, InstanceBody6<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6> body) {
         requireHeader("a constructor of " + described());
         VoidBody root = constructorRoot();
-        This<Self> self = new This(root, self());
+        This<Self> self = new This<>(root, self());
         Var<A1> v1 = Var.param(p1, root);
         Var<A2> v2 = Var.param(p2, root);
         Var<A3> v3 = Var.param(p3, root);
@@ -354,7 +354,7 @@ abstract sealed class EnumConstructorArities<Self> extends StaticFieldDeclaratio
     public <A1, A2, A3, A4, A5, A6> void constructor(DocComment doc, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, InstanceBody6<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6> body) {
         requireHeader("a constructor of " + described());
         VoidBody root = constructorRoot();
-        This<Self> self = new This(root, self());
+        This<Self> self = new This<>(root, self());
         Var<A1> v1 = Var.param(p1, root);
         Var<A2> v2 = Var.param(p2, root);
         Var<A3> v3 = Var.param(p3, root);
@@ -388,7 +388,7 @@ abstract sealed class EnumConstructorArities<Self> extends StaticFieldDeclaratio
     public <A1, A2, A3, A4, A5, A6, A7> void constructor(TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, InstanceBody7<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7> body) {
         requireHeader("a constructor of " + described());
         VoidBody root = constructorRoot();
-        This<Self> self = new This(root, self());
+        This<Self> self = new This<>(root, self());
         Var<A1> v1 = Var.param(p1, root);
         Var<A2> v2 = Var.param(p2, root);
         Var<A3> v3 = Var.param(p3, root);
@@ -424,7 +424,7 @@ abstract sealed class EnumConstructorArities<Self> extends StaticFieldDeclaratio
     public <A1, A2, A3, A4, A5, A6, A7> void constructor(DocComment doc, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, InstanceBody7<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7> body) {
         requireHeader("a constructor of " + described());
         VoidBody root = constructorRoot();
-        This<Self> self = new This(root, self());
+        This<Self> self = new This<>(root, self());
         Var<A1> v1 = Var.param(p1, root);
         Var<A2> v2 = Var.param(p2, root);
         Var<A3> v3 = Var.param(p3, root);
@@ -461,7 +461,7 @@ abstract sealed class EnumConstructorArities<Self> extends StaticFieldDeclaratio
     public <A1, A2, A3, A4, A5, A6, A7, A8> void constructor(TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, InstanceBody8<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8> body) {
         requireHeader("a constructor of " + described());
         VoidBody root = constructorRoot();
-        This<Self> self = new This(root, self());
+        This<Self> self = new This<>(root, self());
         Var<A1> v1 = Var.param(p1, root);
         Var<A2> v2 = Var.param(p2, root);
         Var<A3> v3 = Var.param(p3, root);
@@ -500,7 +500,7 @@ abstract sealed class EnumConstructorArities<Self> extends StaticFieldDeclaratio
     public <A1, A2, A3, A4, A5, A6, A7, A8> void constructor(DocComment doc, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, InstanceBody8<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8> body) {
         requireHeader("a constructor of " + described());
         VoidBody root = constructorRoot();
-        This<Self> self = new This(root, self());
+        This<Self> self = new This<>(root, self());
         Var<A1> v1 = Var.param(p1, root);
         Var<A2> v2 = Var.param(p2, root);
         Var<A3> v3 = Var.param(p3, root);
@@ -540,7 +540,7 @@ abstract sealed class EnumConstructorArities<Self> extends StaticFieldDeclaratio
     public <A1, A2, A3, A4, A5, A6, A7, A8, A9> void constructor(TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, InstanceBody9<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8, A9> body) {
         requireHeader("a constructor of " + described());
         VoidBody root = constructorRoot();
-        This<Self> self = new This(root, self());
+        This<Self> self = new This<>(root, self());
         Var<A1> v1 = Var.param(p1, root);
         Var<A2> v2 = Var.param(p2, root);
         Var<A3> v3 = Var.param(p3, root);
@@ -582,7 +582,7 @@ abstract sealed class EnumConstructorArities<Self> extends StaticFieldDeclaratio
     public <A1, A2, A3, A4, A5, A6, A7, A8, A9> void constructor(DocComment doc, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, InstanceBody9<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8, A9> body) {
         requireHeader("a constructor of " + described());
         VoidBody root = constructorRoot();
-        This<Self> self = new This(root, self());
+        This<Self> self = new This<>(root, self());
         Var<A1> v1 = Var.param(p1, root);
         Var<A2> v2 = Var.param(p2, root);
         Var<A3> v3 = Var.param(p3, root);
@@ -625,7 +625,7 @@ abstract sealed class EnumConstructorArities<Self> extends StaticFieldDeclaratio
     public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> void constructor(TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, InstanceBody10<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> body) {
         requireHeader("a constructor of " + described());
         VoidBody root = constructorRoot();
-        This<Self> self = new This(root, self());
+        This<Self> self = new This<>(root, self());
         Var<A1> v1 = Var.param(p1, root);
         Var<A2> v2 = Var.param(p2, root);
         Var<A3> v3 = Var.param(p3, root);
@@ -670,7 +670,7 @@ abstract sealed class EnumConstructorArities<Self> extends StaticFieldDeclaratio
     public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> void constructor(DocComment doc, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, InstanceBody10<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10> body) {
         requireHeader("a constructor of " + described());
         VoidBody root = constructorRoot();
-        This<Self> self = new This(root, self());
+        This<Self> self = new This<>(root, self());
         Var<A1> v1 = Var.param(p1, root);
         Var<A2> v2 = Var.param(p2, root);
         Var<A3> v3 = Var.param(p3, root);
@@ -716,7 +716,7 @@ abstract sealed class EnumConstructorArities<Self> extends StaticFieldDeclaratio
     public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> void constructor(TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, InstanceBody11<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> body) {
         requireHeader("a constructor of " + described());
         VoidBody root = constructorRoot();
-        This<Self> self = new This(root, self());
+        This<Self> self = new This<>(root, self());
         Var<A1> v1 = Var.param(p1, root);
         Var<A2> v2 = Var.param(p2, root);
         Var<A3> v3 = Var.param(p3, root);
@@ -764,7 +764,7 @@ abstract sealed class EnumConstructorArities<Self> extends StaticFieldDeclaratio
     public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> void constructor(DocComment doc, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, InstanceBody11<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11> body) {
         requireHeader("a constructor of " + described());
         VoidBody root = constructorRoot();
-        This<Self> self = new This(root, self());
+        This<Self> self = new This<>(root, self());
         Var<A1> v1 = Var.param(p1, root);
         Var<A2> v2 = Var.param(p2, root);
         Var<A3> v3 = Var.param(p3, root);
@@ -813,7 +813,7 @@ abstract sealed class EnumConstructorArities<Self> extends StaticFieldDeclaratio
     public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> void constructor(TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, InstanceBody12<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> body) {
         requireHeader("a constructor of " + described());
         VoidBody root = constructorRoot();
-        This<Self> self = new This(root, self());
+        This<Self> self = new This<>(root, self());
         Var<A1> v1 = Var.param(p1, root);
         Var<A2> v2 = Var.param(p2, root);
         Var<A3> v3 = Var.param(p3, root);
@@ -864,7 +864,7 @@ abstract sealed class EnumConstructorArities<Self> extends StaticFieldDeclaratio
     public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> void constructor(DocComment doc, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, InstanceBody12<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12> body) {
         requireHeader("a constructor of " + described());
         VoidBody root = constructorRoot();
-        This<Self> self = new This(root, self());
+        This<Self> self = new This<>(root, self());
         Var<A1> v1 = Var.param(p1, root);
         Var<A2> v2 = Var.param(p2, root);
         Var<A3> v3 = Var.param(p3, root);
@@ -916,7 +916,7 @@ abstract sealed class EnumConstructorArities<Self> extends StaticFieldDeclaratio
     public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> void constructor(TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, InstanceBody13<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> body) {
         requireHeader("a constructor of " + described());
         VoidBody root = constructorRoot();
-        This<Self> self = new This(root, self());
+        This<Self> self = new This<>(root, self());
         Var<A1> v1 = Var.param(p1, root);
         Var<A2> v2 = Var.param(p2, root);
         Var<A3> v3 = Var.param(p3, root);
@@ -970,7 +970,7 @@ abstract sealed class EnumConstructorArities<Self> extends StaticFieldDeclaratio
     public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> void constructor(DocComment doc, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, InstanceBody13<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13> body) {
         requireHeader("a constructor of " + described());
         VoidBody root = constructorRoot();
-        This<Self> self = new This(root, self());
+        This<Self> self = new This<>(root, self());
         Var<A1> v1 = Var.param(p1, root);
         Var<A2> v2 = Var.param(p2, root);
         Var<A3> v3 = Var.param(p3, root);
@@ -1025,7 +1025,7 @@ abstract sealed class EnumConstructorArities<Self> extends StaticFieldDeclaratio
     public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> void constructor(TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, TypeToken<A14> p14, InstanceBody14<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> body) {
         requireHeader("a constructor of " + described());
         VoidBody root = constructorRoot();
-        This<Self> self = new This(root, self());
+        This<Self> self = new This<>(root, self());
         Var<A1> v1 = Var.param(p1, root);
         Var<A2> v2 = Var.param(p2, root);
         Var<A3> v3 = Var.param(p3, root);
@@ -1082,7 +1082,7 @@ abstract sealed class EnumConstructorArities<Self> extends StaticFieldDeclaratio
     public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> void constructor(DocComment doc, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, TypeToken<A14> p14, InstanceBody14<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14> body) {
         requireHeader("a constructor of " + described());
         VoidBody root = constructorRoot();
-        This<Self> self = new This(root, self());
+        This<Self> self = new This<>(root, self());
         Var<A1> v1 = Var.param(p1, root);
         Var<A2> v2 = Var.param(p2, root);
         Var<A3> v3 = Var.param(p3, root);
@@ -1140,7 +1140,7 @@ abstract sealed class EnumConstructorArities<Self> extends StaticFieldDeclaratio
     public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> void constructor(TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, TypeToken<A14> p14, TypeToken<A15> p15, InstanceBody15<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> body) {
         requireHeader("a constructor of " + described());
         VoidBody root = constructorRoot();
-        This<Self> self = new This(root, self());
+        This<Self> self = new This<>(root, self());
         Var<A1> v1 = Var.param(p1, root);
         Var<A2> v2 = Var.param(p2, root);
         Var<A3> v3 = Var.param(p3, root);
@@ -1200,7 +1200,7 @@ abstract sealed class EnumConstructorArities<Self> extends StaticFieldDeclaratio
     public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> void constructor(DocComment doc, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, TypeToken<A14> p14, TypeToken<A15> p15, InstanceBody15<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15> body) {
         requireHeader("a constructor of " + described());
         VoidBody root = constructorRoot();
-        This<Self> self = new This(root, self());
+        This<Self> self = new This<>(root, self());
         Var<A1> v1 = Var.param(p1, root);
         Var<A2> v2 = Var.param(p2, root);
         Var<A3> v3 = Var.param(p3, root);
@@ -1261,7 +1261,7 @@ abstract sealed class EnumConstructorArities<Self> extends StaticFieldDeclaratio
     public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> void constructor(TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, TypeToken<A14> p14, TypeToken<A15> p15, TypeToken<A16> p16, InstanceBody16<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> body) {
         requireHeader("a constructor of " + described());
         VoidBody root = constructorRoot();
-        This<Self> self = new This(root, self());
+        This<Self> self = new This<>(root, self());
         Var<A1> v1 = Var.param(p1, root);
         Var<A2> v2 = Var.param(p2, root);
         Var<A3> v3 = Var.param(p3, root);
@@ -1324,7 +1324,7 @@ abstract sealed class EnumConstructorArities<Self> extends StaticFieldDeclaratio
     public <A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> void constructor(DocComment doc, TypeToken<A1> p1, TypeToken<A2> p2, TypeToken<A3> p3, TypeToken<A4> p4, TypeToken<A5> p5, TypeToken<A6> p6, TypeToken<A7> p7, TypeToken<A8> p8, TypeToken<A9> p9, TypeToken<A10> p10, TypeToken<A11> p11, TypeToken<A12> p12, TypeToken<A13> p13, TypeToken<A14> p14, TypeToken<A15> p15, TypeToken<A16> p16, InstanceBody16<Self, VoidBody, Void, A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11, A12, A13, A14, A15, A16> body) {
         requireHeader("a constructor of " + described());
         VoidBody root = constructorRoot();
-        This<Self> self = new This(root, self());
+        This<Self> self = new This<>(root, self());
         Var<A1> v1 = Var.param(p1, root);
         Var<A2> v2 = Var.param(p2, root);
         Var<A3> v3 = Var.param(p3, root);

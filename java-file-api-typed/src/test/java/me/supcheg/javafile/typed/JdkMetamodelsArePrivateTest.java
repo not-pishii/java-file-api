@@ -1,5 +1,6 @@
 package me.supcheg.javafile.typed;
 
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -177,7 +178,8 @@ class JdkMetamodelsArePrivateTest {
                     .filter(diagnostic -> diagnostic.getKind() == Diagnostic.Kind.ERROR)
                     .map(diagnostic -> diagnostic.getMessage(null))
                     .toList();
-            return new Compiled(Boolean.TRUE.equals(succeeded), errors, output);
+            boolean compiled = succeeded != null && succeeded;
+            return new Compiled(compiled, errors, output);
         }
     }
 
@@ -215,7 +217,7 @@ class JdkMetamodelsArePrivateTest {
         Set<Path> entries = new LinkedHashSet<>();
         entries.add(main);
         for (String entry :
-                Pattern.compile(File.pathSeparator, Pattern.LITERAL).split(System.getProperty("java.class.path"))) {
+                Pattern.compile(File.pathSeparator, Pattern.LITERAL).split(System.getProperty("java.class.path"), 0)) {
             if (entry.isEmpty()) {
                 continue;
             }
@@ -343,7 +345,7 @@ class JdkMetamodelsArePrivateTest {
 
     /// Adds to `mentions` the name of a generated class the type names, however deep in its type arguments,
     /// bounds and arrays it is. A type is read once: a type variable bounds itself through a parameterized type.
-    private static void mention(Type type, Set<String> generated, List<String> mentions, Set<Type> seen) {
+    private static void mention(@Nullable Type type, Set<String> generated, List<String> mentions, Set<Type> seen) {
         if (type == null || !seen.add(type)) {
             return;
         }
@@ -387,7 +389,7 @@ class JdkMetamodelsArePrivateTest {
         }
 
         @Override
-        public CharSequence getCharContent(boolean ignoreEncodingErrors) {
+        public String getCharContent(boolean ignoreEncodingErrors) {
             return source;
         }
     }

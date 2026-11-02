@@ -22,6 +22,7 @@ import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.TypeRef;
 import me.supcheg.javafile.type.TypeVarRef;
 import me.supcheg.javafile.type.Types;
+import org.jspecify.annotations.Nullable;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
@@ -57,6 +58,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
@@ -286,7 +288,8 @@ public final class MirrorTranslator {
                 .filter(member -> switch (member) {
                     case ExecutableElement method
                     when method.getModifiers().contains(Modifier.ABSTRACT) && nameable(method) -> {
-                        List<ExecutableElement> same = twins.get(signature(method, element, self));
+                        List<ExecutableElement> same =
+                                Objects.requireNonNull(twins.get(signature(method, element, self)));
                         yield same.stream().noneMatch(told::contains)
                                 && pick(same, self).equals(method);
                     }
@@ -512,9 +515,11 @@ public final class MirrorTranslator {
             case ARRAY -> declaredIn(((ArrayType) mirror).getComponentType());
             case WILDCARD -> {
                 WildcardType wildcard = (WildcardType) mirror;
-                yield Stream.of(wildcard.getExtendsBound(), wildcard.getSuperBound())
-                        .filter(bound -> bound != null)
-                        .flatMap(MirrorTranslator::declaredIn);
+                TypeMirror upper = wildcard.getExtendsBound();
+                TypeMirror lower = wildcard.getSuperBound();
+                yield Stream.concat(
+                        upper == null ? Stream.empty() : declaredIn(upper),
+                        lower == null ? Stream.empty() : declaredIn(lower));
             }
             // a type variable is a type parameter of the type, whose bounds are read where it is declared; the
             // bounds of a type that has a model are resolved, and each is a bound of its own
@@ -532,7 +537,7 @@ public final class MirrorTranslator {
 
     private static boolean unnamedPackage(TypeElement type) {
         return Invariants.present(
-                        Stream.<Element>iterate(type, Element::getEnclosingElement)
+                        enclosings(type)
                                 .filter(PackageElement.class::isInstance)
                                 .map(PackageElement.class::cast)
                                 .findFirst(),
@@ -543,8 +548,39 @@ public final class MirrorTranslator {
 
     /// `type` and the types that enclose it, the innermost first.
     private static Stream<TypeElement> enclosing(TypeElement type) {
-        return Stream.<Element>iterate(type, element -> element instanceof TypeElement, Element::getEnclosingElement)
-                .map(TypeElement.class::cast);
+        List<TypeElement> chain = new ArrayList<>();
+        for (Element current = type;
+                current instanceof TypeElement enclosing;
+                current = current.getEnclosingElement()) {
+            chain.add(enclosing);
+        }
+        return chain.stream();
+    }
+
+    /// `element` and the elements that enclose it, the innermost first — up to the package, whose own
+    /// enclosing element is the module.
+    private static Stream<Element> enclosings(Element element) {
+        List<Element> chain = new ArrayList<>();
+        for (Element current = element; current != null; current = current.getEnclosingElement()) {
+            chain.add(current);
+        }
+        return chain.stream();
+    }
+
+    /// The element that encloses `element`, which every element this translator asks for here has: a
+    /// member is enclosed by its type, and a type by its type, package or module.
+    private static Element enclosingOf(Element element) {
+        return Objects.requireNonNull(element.getEnclosingElement());
+    }
+
+    /// The type that encloses a member, or that encloses a type another one is a member of.
+    private static TypeElement ownerOf(Element element) {
+        return (TypeElement) enclosingOf(element);
+    }
+
+    /// The type of a mirror that is a type, as an erasure gives it.
+    private TypeElement typeElement(TypeMirror type) {
+        return (TypeElement) Objects.requireNonNull(types.asElement(type));
     }
 
     private ExecutableElement pick(List<ExecutableElement> twins, DeclaredType self) {
@@ -565,11 +601,11 @@ public final class MirrorTranslator {
     /// Whether `type` has `other` in place of `member`: `other` hides it, or
     /// overrides or implements it as a member of `type`.
     private boolean replaces(Element other, Element member, TypeElement type) {
-        return other != member
+        return !other.equals(member)
                 && (elements.hides(other, member)
-                        || other instanceof ExecutableElement overrider
+                        || (other instanceof ExecutableElement overrider
                                 && member instanceof ExecutableElement overridden
-                                && elements.overrides(overrider, overridden, type));
+                                && elements.overrides(overrider, overridden, type)));
     }
 
     /// Translates one member of a type, as [#type] does for each member its
@@ -652,7 +688,7 @@ public final class MirrorTranslator {
         }
         ExecutableElement method = mostSpecific(candidates, self);
         // declared, or adopted from a superinterface that is not public: a member the type has a fact of
-        boolean declared = method.getEnclosingElement().equals(element)
+        boolean declared = ownerOf(method).equals(element)
                 || adopted.get().stream()
                         .anyMatch(member -> member instanceof ExecutableElement adoptedMethod
                                 && signature(adoptedMethod, element, self).equals(signature));
@@ -869,8 +905,7 @@ public final class MirrorTranslator {
         Object given = value.getValue();
         if (given instanceof VariableElement constant) {
             return me.supcheg.javafile.annotation.AnnotationValues.enumValue(
-                    desc((TypeElement) constant.getEnclosingElement()),
-                    constant.getSimpleName().toString());
+                    desc(ownerOf(constant)), constant.getSimpleName().toString());
         }
         if (given instanceof TypeMirror type) {
             requireResolved(type);
@@ -928,14 +963,15 @@ public final class MirrorTranslator {
     }
 
     private static Optional<TypeElement> genericOuter(TypeElement element) {
-        return Stream.iterate(
-                        element,
-                        type -> type.getNestingKind() == NestingKind.MEMBER
-                                && !type.getModifiers().contains(Modifier.STATIC),
-                        type -> (TypeElement) type.getEnclosingElement())
-                .map(type -> (TypeElement) type.getEnclosingElement())
-                .filter(outer -> !outer.getTypeParameters().isEmpty())
-                .findFirst();
+        TypeElement outer = element;
+        while (outer.getNestingKind() == NestingKind.MEMBER
+                && !outer.getModifiers().contains(Modifier.STATIC)) {
+            outer = ownerOf(outer);
+            if (!outer.getTypeParameters().isEmpty()) {
+                return Optional.of(outer);
+            }
+        }
+        return Optional.empty();
     }
 
     /// Where a type is declared, as a class that extends it has to know: an inner class is one that is a
@@ -1015,7 +1051,7 @@ public final class MirrorTranslator {
     /// element, whatever its type arguments, so that each is met once.
     private record Supertype(DeclaredType type) {
         @Override
-        public boolean equals(Object other) {
+        public boolean equals(@Nullable Object other) {
             return other instanceof Supertype(DeclaredType otherType)
                     && type.asElement().equals(otherType.asElement());
         }
@@ -1095,7 +1131,7 @@ public final class MirrorTranslator {
     private Thrown thrown(TypeMirror type) {
         TypeMirror erased = types.erasure(type);
         ClassDesc erasure = erasure(erased);
-        List<ClassDesc> superclasses = superclasses((TypeElement) types.asElement(erased));
+        List<ClassDesc> superclasses = superclasses(typeElement(erased));
         Optional<String> variable = type.getKind() == TypeKind.TYPEVAR
                 ? Optional.of(((TypeVariable) type).asElement().getSimpleName().toString())
                 : Optional.empty();
@@ -1159,7 +1195,7 @@ public final class MirrorTranslator {
         List<ExecutableElement> inheritable = lineage.stream()
                 .flatMap(type -> ElementFilter.methodsIn(type.getEnclosedElements()).stream())
                 .filter(method -> !method.getModifiers().contains(Modifier.PRIVATE))
-                .filter(method -> !(method.getEnclosingElement().getKind().isInterface()
+                .filter(method -> !(ownerOf(method).getKind().isInterface()
                         && method.getModifiers().contains(Modifier.STATIC)))
                 .toList();
         // a method Java source cannot name is no part of what a class of Java source inherits — but one
@@ -1172,7 +1208,7 @@ public final class MirrorTranslator {
         Map<String, List<ExecutableElement>> byName = byName(inheritable.stream()
                 .filter(MirrorTranslator::nameable)
                 .filter(method -> !isInterface
-                        || !(method.getEnclosingElement().equals(object)
+                        || !(ownerOf(method).equals(object)
                                 || OBJECT_METHODS.contains(signature(method, element, self)))));
         Map<MethodTableTemplate.Signature, List<ExecutableElement>> bySignature = standing(byName, element)
                 .collect(Collectors.groupingBy(
@@ -1184,7 +1220,8 @@ public final class MirrorTranslator {
                         self,
                         entry.getKey(),
                         entry.getValue(),
-                        byName.get(entry.getKey().name()),
+                        // the names are those of the signatures grouped above, so the entry is there
+                        Objects.requireNonNull(byName.get(entry.getKey().name())),
                         lineage))
                 .toList();
         List<Inherited<Heritage.Constructor>> constructors =
@@ -1256,12 +1293,12 @@ public final class MirrorTranslator {
         return !other.equals(method)
                 && !againstPublicOfObject(other, method)
                 && (overridesDeclared(other, method)
-                        || !overridesDeclared(method, other) && elements.overrides(other, method, type));
+                        || (!overridesDeclared(method, other) && elements.overrides(other, method, type)));
     }
 
     /// Whether `other` overrides `method` as the class or interface that declares `other` has the two.
     private boolean overridesDeclared(ExecutableElement other, ExecutableElement method) {
-        TypeElement declarer = (TypeElement) other.getEnclosingElement();
+        TypeElement declarer = ownerOf(other);
         return !againstPublicOfObject(other, method)
                 && (elements.overrides(other, method, declarer) || overridesInPackage(other, declarer, method));
     }
@@ -1271,19 +1308,17 @@ public final class MirrorTranslator {
     /// `Object`, which implements that of the interface (JLS 8.4.8.1, 9.2). `Elements.overrides` tells the
     /// reverse — as it does, rightly, of a `protected` method of `Object`, which the class is asked for.
     private static boolean againstPublicOfObject(ExecutableElement other, ExecutableElement method) {
-        return other.getEnclosingElement().getKind().isInterface() && publicOfObject(method);
+        return ownerOf(other).getKind().isInterface() && publicOfObject(method);
     }
 
     private static boolean publicOfObject(ExecutableElement method) {
         return method.getModifiers().contains(Modifier.PUBLIC)
-                && ((TypeElement) method.getEnclosingElement())
-                        .getQualifiedName()
-                        .contentEquals("java.lang.Object");
+                && ownerOf(method).getQualifiedName().contentEquals("java.lang.Object");
     }
 
     /// Whether a method is one an interface declares with the signature of a `public` method of `Object`.
     private boolean declaresPublicOfObjectAgain(ExecutableElement method) {
-        TypeElement declarer = (TypeElement) method.getEnclosingElement();
+        TypeElement declarer = ownerOf(method);
         return declarer.getKind().isInterface()
                 && ElementFilter.methodsIn(
                                 elements.getTypeElement("java.lang.Object").getEnclosedElements())
@@ -1296,7 +1331,7 @@ public final class MirrorTranslator {
     /// a superclass in its package — whatever classes of other packages are between the two, through
     /// which `declarer` does not inherit `method`, so that `Elements.overrides` denies it.
     private boolean overridesInPackage(ExecutableElement other, TypeElement declarer, ExecutableElement method) {
-        TypeElement overridden = (TypeElement) method.getEnclosingElement();
+        TypeElement overridden = ownerOf(method);
         Set<Modifier> modifiers = method.getModifiers();
         // (a method of an interface is `public` or `private`, and a private one is none of a heritage)
         if (visibility(method) != Heritage.Visibility.PACKAGE
@@ -1329,26 +1364,27 @@ public final class MirrorTranslator {
             List<TypeElement> lineage) {
         // the one whose result suits the others, among those a class of any package inherits
         List<ExecutableElement> reached = standing.stream()
-                .filter(method -> method.getEnclosingElement().getKind().isInterface()
-                        || visibility(method) != Heritage.Visibility.PACKAGE)
+                .filter(method ->
+                        ownerOf(method).getKind().isInterface() || visibility(method) != Heritage.Visibility.PACKAGE)
                 .toList();
         Optional<ExecutableElement> suiting = reached.isEmpty() ? Optional.empty() : Optional.of(pick(reached, self));
         List<ExecutableElement> ordered = standing.stream()
                 .sorted(Comparator.<ExecutableElement, Boolean>comparing(method -> !reached.contains(method))
                         .thenComparing(method -> !suiting.equals(Optional.of(method)))
-                        .thenComparing(
-                                method -> method.getEnclosingElement().getKind().isInterface())
-                        .thenComparing(method -> lineage.indexOf((TypeElement) method.getEnclosingElement())))
+                        .thenComparing(method -> ownerOf(method).getKind().isInterface(), Comparator.naturalOrder())
+                        .thenComparingInt(method -> lineage.indexOf(ownerOf(method))))
                 .toList();
         List<ExecutableElement> overridden = namesakes.stream()
                 .filter(other -> !standing.contains(other)
-                        && standing.stream().anyMatch(method -> overrides(method, other, element)))
+                        // (the parameters of `overrides` are named for the call, of the two none is the other)
+                        && standing.stream()
+                                .anyMatch(method -> overrides(/* other= */ method, /* method= */ other, element)))
                 .toList();
         Reading reading = new Reading(VarScope.of(element));
         List<Heritage.Declaration> declarations = ordered.stream()
                 .map(method -> {
                     ExecutableType type = (ExecutableType) types.asMemberOf(self, method);
-                    Positions positions = new Positions(element, type);
+                    Positions positions = new Positions(element, type, types);
                     TypeMirror returnType = type.getReturnType();
                     return new Heritage.Declaration(
                             declarer(method),
@@ -1369,8 +1405,8 @@ public final class MirrorTranslator {
                                 .map(this::erasedParameters)
                                 .collect(Collectors.toUnmodifiableSet()),
                         overridden.stream()
-                                .map(other -> elements.getBinaryName((TypeElement) other.getEnclosingElement())
-                                        .toString())
+                                .map(other ->
+                                        elements.getBinaryName(ownerOf(other)).toString())
                                 .distinct()
                                 .sorted()
                                 .map(ClassDesc::of)
@@ -1382,7 +1418,7 @@ public final class MirrorTranslator {
             TypeElement element, DeclaredType self, ExecutableElement constructor) {
         Reading reading = new Reading(VarScope.of(element));
         ExecutableType type = (ExecutableType) types.asMemberOf(self, constructor);
-        Positions positions = new Positions(element, type);
+        Positions positions = new Positions(element, type, types);
         return new Inherited<>(
                 new Heritage.Constructor(
                         visibility(constructor),
@@ -1400,12 +1436,12 @@ public final class MirrorTranslator {
     ///
     /// @param type the type the heritage is of
     /// @param member the method or constructor as a member of `type`
-    private record Positions(TypeElement type, ExecutableType member) {
+    /// @param types the types of the processing environment, which tells when two mirrors are one type
+    private record Positions(TypeElement type, ExecutableType member, javax.lang.model.util.Types types) {
 
         Optional<Heritage.Type> of(TypeVariable variable) {
             int own = IntStream.range(0, member.getTypeVariables().size())
-                    .filter(i -> member.getTypeVariables().get(i).equals(variable)
-                            || member.getTypeVariables().get(i).asElement().equals(variable.asElement()))
+                    .filter(i -> types.isSameType(member.getTypeVariables().get(i), variable))
                     .findFirst()
                     .orElse(-1);
             if (own >= 0) {
@@ -1507,7 +1543,7 @@ public final class MirrorTranslator {
     }
 
     private Heritage.Declarer declarer(ExecutableElement method) {
-        TypeElement type = (TypeElement) method.getEnclosingElement();
+        TypeElement type = ownerOf(method);
         Set<Modifier> modifiers = method.getModifiers();
         if (type.getKind().isInterface()) {
             return new Heritage.Declarer.OfInterface(
@@ -1598,7 +1634,7 @@ public final class MirrorTranslator {
     /// takes a value whose type mentions a type variable — a parameter of a method, a field that can be
     /// assigned: javac erases the member, and warns of a call or an assignment of it as unchecked.
     private Optional<TypeElement> rawDeclarer(DeclaredType self, Element member) {
-        TypeElement declarer = (TypeElement) member.getEnclosingElement();
+        TypeElement declarer = ownerOf(member);
         boolean takesVariable =
                 switch (member) {
                     case ExecutableElement method ->
@@ -1661,7 +1697,7 @@ public final class MirrorTranslator {
                 .<Read>map(rival -> new Read.Skipped(new SkippedMember(
                         "field " + name,
                         "is ambiguous in " + owner.getQualifiedName() + " with field " + name + " of "
-                                + ((TypeElement) rival.getEnclosingElement()).getQualifiedName())))
+                                + ownerOf(rival).getQualifiedName())))
                 .orElseGet(() -> Read.of(
                         reading,
                         0,
@@ -1851,8 +1887,8 @@ public final class MirrorTranslator {
     private ClassOrInterfaceTypeRef variable(TypeVariable variable, Reading reading) {
         TypeParameterElement element = (TypeParameterElement) variable.asElement();
         if (!reading.scope.declares(element)) {
-            return reading.unrepresentable("type variable " + variable + " of "
-                    + element.getEnclosingElement().getSimpleName() + " is out of scope");
+            return reading.unrepresentable(
+                    "type variable " + variable + " of " + ownerOf(element).getSimpleName() + " is out of scope");
         }
         return new TypeVarRef(element.getSimpleName().toString(), annotations(variable));
     }
@@ -1934,7 +1970,7 @@ public final class MirrorTranslator {
         /// in its place.
         static Category of(MethodTableTemplate.Signature signature, List<ExecutableElement> twins) {
             List<Set<Modifier>> ofClasses = twins.stream()
-                    .filter(twin -> !twin.getEnclosingElement().getKind().isInterface())
+                    .filter(twin -> !ownerOf(twin).getKind().isInterface())
                     .map(Element::getModifiers)
                     .toList();
             List<Set<Modifier>> telling = ofClasses.isEmpty()

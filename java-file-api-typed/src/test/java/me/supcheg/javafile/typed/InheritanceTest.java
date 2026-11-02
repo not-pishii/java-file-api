@@ -60,7 +60,9 @@ class InheritanceTest {
     }
 
     /// An interface made by hand, with the methods it has as a member.
+    // the array of methods is passed on to a list, which reads it and keeps nothing of it
     @SafeVarargs
+    @SuppressWarnings("varargs")
     private static Supertype iface(ClassDesc desc, Heritage.Method<Heritage.Inherited>... methods) {
         return new Supertype(
                 UnsafeFacts.interfaceToken(new ClassTypeRef(desc), MethodTable.EMPTY),
@@ -69,7 +71,9 @@ class InheritanceTest {
     }
 
     /// A class made by hand, with the methods it has as a member.
+    // the array of methods is passed on to a list, which reads it and keeps nothing of it
     @SafeVarargs
+    @SuppressWarnings("varargs")
     private static Supertype klass(ClassDesc desc, Heritage.Method<Heritage.Inherited>... methods) {
         return new Supertype(
                 UnsafeFacts.openClassToken(new ClassTypeRef(desc), List.of(ConstantDescs.CD_Object), MethodTable.EMPTY),

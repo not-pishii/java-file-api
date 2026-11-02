@@ -2,6 +2,7 @@ package me.supcheg.javafile.facts;
 
 import me.supcheg.javafile.type.ArrayTypeRef;
 import me.supcheg.javafile.type.Types;
+import org.jspecify.annotations.Nullable;
 
 import java.lang.constant.ClassDesc;
 
@@ -57,7 +58,7 @@ public final class ArrayToken<A, E> implements RefToken<A> {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable Object o) {
         return o instanceof ArrayToken<?, ?> other && component.equals(other.component);
     }
 

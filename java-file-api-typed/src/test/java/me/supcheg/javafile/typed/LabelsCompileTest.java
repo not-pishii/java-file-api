@@ -16,12 +16,12 @@ import java.lang.constant.ClassDesc;
 import java.util.List;
 import java.util.function.Consumer;
 
+import static me.supcheg.javafile.typed.ExpressionArities.lambdaBlock;
 import static me.supcheg.javafile.typed.Expressions.addInt;
 import static me.supcheg.javafile.typed.Expressions.assign;
 import static me.supcheg.javafile.typed.Expressions.enumConstant;
 import static me.supcheg.javafile.typed.Expressions.eqInt;
 import static me.supcheg.javafile.typed.Expressions.eqRef;
-import static me.supcheg.javafile.typed.Expressions.lambdaBlock;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.ltInt;
 import static me.supcheg.javafile.typed.Expressions.switch_;

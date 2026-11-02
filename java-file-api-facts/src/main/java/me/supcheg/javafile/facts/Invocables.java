@@ -73,7 +73,9 @@ final class Invocables {
     /// The method a class declares to override a method of a supertype, as the fact its
     /// `OverridingN` types it by: of the class, with the result and the parameters of the
     /// implementation.
-    @SuppressWarnings("unchecked")
+    // the generated `OverridingN` classes narrow the fact to the family their signature declares, and the
+    // arity of the method table guarantees the family: the cast is the one place it is made
+    @SuppressWarnings({"unchecked", "TypeParameterUnusedInFormals"})
     static <F extends Invocable> F own(Implemented.ByOverride how) {
         return (F) how.own();
     }

@@ -4,6 +4,7 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.TypeParameterElement;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 /// The type variables a type mirror may mention, for
@@ -37,7 +38,9 @@ public final class VarScope {
     public static VarScope of(ExecutableElement executable) {
         return new VarScope(Stream.concat(
                         executable.getTypeParameters().stream(),
-                        ((TypeElement) executable.getEnclosingElement()).getTypeParameters().stream())
+                        // a method or constructor is a member of a type, which encloses it
+                        ((TypeElement) Objects.requireNonNull(executable.getEnclosingElement()))
+                                .getTypeParameters().stream())
                 .toList());
     }
 

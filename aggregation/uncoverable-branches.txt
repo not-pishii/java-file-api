@@ -337,3 +337,5 @@ me/supcheg/javafile/langmodel/mirror/MirrorTranslator.java :: && type.asElement(
 
 me/supcheg/javafile/langmodel/mirror/MirrorTranslator.java :: yield arguments.isEmpty() || outerArguments || !(raw instanceof ClassTypeRef(ClassDesc desc, var _))
     the erasure of a declared type is read as a class type: the test only binds it
+me/supcheg/javafile/typed/MemberBodies.java :: Invariants.require(!source.isEmpty(), "%s renders no source", described);
+    the render of a class is its source: a class with no member still renders its declaration, so what it renders is never empty

@@ -98,6 +98,8 @@ public final class UnsafeFacts {
     /// @param <K> the kind of the type
     /// @return the shape
     /// @throws IllegalArgumentException if the data is inconsistent, see [TypeShape]
+    // the factory takes one parameter per fact of the metamodel: its arity is the metamodel's
+    @SuppressWarnings("TooManyParameters")
     public static <K extends DeclaredKind> TypeShape<K> shape(
             ShapeOrigin.Metamodel origin,
             K kind,
@@ -143,6 +145,8 @@ public final class UnsafeFacts {
     /// @param <K> the kind of the type
     /// @return the shape
     /// @throws IllegalArgumentException if the data is inconsistent, see [TypeShape]
+    // the factory takes one parameter per fact of the metamodel: its arity is the metamodel's
+    @SuppressWarnings("TooManyParameters")
     public static <K extends DeclaredKind> TypeShape<K> shape(
             ShapeOrigin.Metamodel origin,
             K kind,
@@ -191,6 +195,8 @@ public final class UnsafeFacts {
     /// @param <K> the kind of the type
     /// @return the shape
     /// @throws IllegalArgumentException if the data is inconsistent, see [TypeShape]
+    // the factory takes one parameter per fact of the metamodel: its arity is the metamodel's
+    @SuppressWarnings("TooManyParameters")
     public static <K extends DeclaredKind.Inheritable> TypeShape<K> shape(
             ShapeOrigin.Metamodel origin,
             K kind,
@@ -237,6 +243,8 @@ public final class UnsafeFacts {
     /// @param <K> the kind of the type
     /// @return the shape
     /// @throws IllegalArgumentException if the data is inconsistent, see [TypeShape]
+    // the factory takes one parameter per fact of the metamodel: its arity is the metamodel's
+    @SuppressWarnings("TooManyParameters")
     public static <K extends DeclaredKind.Inheritable> TypeShape<K> shape(
             ShapeOrigin.Metamodel origin,
             K kind,
@@ -281,6 +289,8 @@ public final class UnsafeFacts {
     /// @param heritage supplies the heritage of the type
     /// @param <K> the kind of the type
     /// @return the shape
+    // the factory takes one parameter per fact of the metamodel: its arity is the metamodel's
+    @SuppressWarnings("TooManyParameters")
     public static <K extends DeclaredKind.Inheritable> TypeShape<K> shape(
             ShapeOrigin.Metamodel origin,
             K kind,
@@ -322,6 +332,8 @@ public final class UnsafeFacts {
     /// @param <K> the kind of the type
     /// @return the shape
     /// @throws IllegalArgumentException if the data is inconsistent, see [TypeShape]
+    // the factory takes one parameter per fact of the metamodel: its arity is the metamodel's
+    @SuppressWarnings("TooManyParameters")
     public static <K extends DeclaredKind> TypeShape<K> shape(
             K kind,
             ClassDesc desc,
@@ -362,6 +374,8 @@ public final class UnsafeFacts {
     /// @param <K> the kind of the type
     /// @return the shape
     /// @throws IllegalArgumentException if the data is inconsistent, see [TypeShape]
+    // the factory takes one parameter per fact of the metamodel: its arity is the metamodel's
+    @SuppressWarnings("TooManyParameters")
     public static <K extends DeclaredKind> TypeShape<K> shape(
             K kind,
             ClassDesc desc,

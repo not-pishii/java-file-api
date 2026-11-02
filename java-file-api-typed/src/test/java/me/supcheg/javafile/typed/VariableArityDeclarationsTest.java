@@ -22,17 +22,17 @@ import java.lang.constant.ClassDesc;
 import java.util.ArrayList;
 import java.util.List;
 
+import static me.supcheg.javafile.typed.ExpressionArities.lambda;
+import static me.supcheg.javafile.typed.ExpressionArities.new_;
+import static me.supcheg.javafile.typed.ExpressionArities.staticCall;
 import static me.supcheg.javafile.typed.Expressions.addInt;
 import static me.supcheg.javafile.typed.Expressions.assign;
 import static me.supcheg.javafile.typed.Expressions.assignAt;
 import static me.supcheg.javafile.typed.Expressions.cloneArray;
 import static me.supcheg.javafile.typed.Expressions.eqRef;
-import static me.supcheg.javafile.typed.Expressions.lambda;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.literalNull;
 import static me.supcheg.javafile.typed.Expressions.newArrayOf;
-import static me.supcheg.javafile.typed.Expressions.new_;
-import static me.supcheg.javafile.typed.Expressions.staticCall;
 import static me.supcheg.javafile.typed.Expressions.varargs;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -45,7 +45,6 @@ class VariableArityDeclarationsTest {
     private static final InterfaceToken<List<String>> STRING_LIST = new List_<>(String_.TOKEN).token;
     private static final ArrayToken<List<String>[], List<String>> LISTS = ArrayToken.of(STRING_LIST);
     private static final ArrayToken<String[], String> STRINGS = ArrayToken.of(String_.TOKEN);
-    private static final ArrayToken<Object[], Object> OBJECTS = ArrayToken.of(Object_.TOKEN);
     private static final List_<String> STRINGS_LIST = new List_<>(String_.TOKEN);
     private static final String HEAP_POLLUTION = "parameter of variable arity of a @SafeVarargs member";
 
@@ -160,6 +159,7 @@ class VariableArityDeclarationsTest {
         assertThat(pair[0]).isSameAs(pair[1]);
     }
 
+    // the array of a generic type is what the fixture gives a parameter of variable arity
     @SuppressWarnings("unchecked")
     private static List<String>[] newPair() {
         return (List<String>[]) new List<?>[] {new ArrayList<String>(), List.of("b")};

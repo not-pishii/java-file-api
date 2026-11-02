@@ -26,13 +26,11 @@ class TypedDeclarationFormsTest {
                 UnsafeFacts.unverifiedClasspath(), INTERFACE, new TypedJavaFile.TypedInterfaceSpec() {
                     @Override
                     public <Self> TypedInterfaceBodies<Self> build(TypedInterfaceBuilder<Self> ib) {
-                        var a0 = ib.declareAbstractMethod("a0", PrimitiveToken.INT);
-                        var a1 = ib.declareVoidAbstractMethod("a1", PrimitiveToken.INT);
-                        var a2 = ib.declareAbstractMethod(
-                                "a2", PrimitiveToken.INT, PrimitiveToken.INT, PrimitiveToken.INT);
-                        var a3 = ib.declareVoidAbstractMethod(
-                                "a3", PrimitiveToken.INT, PrimitiveToken.INT, PrimitiveToken.INT);
-                        var a4 = ib.declareAbstractMethod(
+                        ib.declareAbstractMethod("a0", PrimitiveToken.INT);
+                        ib.declareVoidAbstractMethod("a1", PrimitiveToken.INT);
+                        ib.declareAbstractMethod("a2", PrimitiveToken.INT, PrimitiveToken.INT, PrimitiveToken.INT);
+                        ib.declareVoidAbstractMethod("a3", PrimitiveToken.INT, PrimitiveToken.INT, PrimitiveToken.INT);
+                        ib.declareAbstractMethod(
                                 "a4",
                                 PrimitiveToken.INT,
                                 PrimitiveToken.INT,

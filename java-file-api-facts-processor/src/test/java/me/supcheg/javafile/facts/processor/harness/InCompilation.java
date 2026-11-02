@@ -164,6 +164,7 @@ public final class InCompilation implements ParameterResolver, InvocationInterce
         return sources.isEmpty() ? List.of(Source.of(NOTHING)) : sources;
     }
 
+    // the store of the context holds an `AtomicReference` of the round: the compute's type argument says so
     @SuppressWarnings("unchecked")
     private static AtomicReference<Optional<Round>> running(ExtensionContext context) {
         return context.getStore(NAMESPACE)

@@ -5,6 +5,8 @@ package me.supcheg.javafile.typed.fixtures;
 public interface Origin {
     Object get();
 
+    // the array is what the fixture proves: a class overrides the method with a narrower array result
+    @SuppressWarnings("AvoidObjectArrays")
     default Object[] all() {
         return new Object[] {"origin"};
     }

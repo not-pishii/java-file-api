@@ -20,6 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
@@ -218,7 +219,10 @@ final class MetamodelNames {
                 .collect(
                         LinkedHashMap::new,
                         (map, member) -> {
-                            String name = member.name(qualified(member, overloads.get(member.name(new boolean[0]))));
+                            String name = member.name(qualified(
+                                    member,
+                                    // the member's own name is one the map groups by
+                                    Objects.requireNonNull(overloads.get(member.name(new boolean[0])))));
                             map.put(member, RESERVED.contains(name) || taken.contains(name) ? name + "_" : name);
                         },
                         Map::putAll);
@@ -241,7 +245,8 @@ final class MetamodelNames {
                         Map.Entry::getValue, TreeMap::new, Collectors.mapping(Map.Entry::getKey, Collectors.toList())));
 
         Map<Element, String> names = finalNames.entrySet().stream()
-                .filter(e -> byName.get(e.getValue()).size() == 1)
+                // the names are those the entries were grouped by
+                .filter(e -> Objects.requireNonNull(byName.get(e.getValue())).size() == 1)
                 .collect(LinkedHashMap::new, (map, e) -> map.put(e.getKey().element(), e.getValue()), Map::putAll);
         Map<String, List<Element>> conflicts = byName.entrySet().stream()
                 .filter(e -> e.getValue().size() > 1)
@@ -263,7 +268,10 @@ final class MetamodelNames {
             case CONSTRUCTOR ->
                 new Member(
                         element,
-                        element.getEnclosingElement().getModifiers().contains(Modifier.ABSTRACT)
+                        // a constructor is a member of its type
+                        Objects.requireNonNull(element.getEnclosingElement())
+                                                .getModifiers()
+                                                .contains(Modifier.ABSTRACT)
                                         || element.getModifiers().contains(Modifier.PROTECTED)
                                 ? "super"
                                 : "new",
@@ -278,7 +286,7 @@ final class MetamodelNames {
     private static boolean[] qualified(Member member, List<Member> overloads) {
         boolean[] qualified = new boolean[member.parameters().size()];
         for (Member other : overloads) {
-            if (other == member || other.parameters().size() != qualified.length) {
+            if (other.equals(member) || other.parameters().size() != qualified.length) {
                 continue;
             }
             for (int i = 0; i < qualified.length; i++) {
@@ -328,8 +336,13 @@ final class MetamodelNames {
 
     /// `type` and the types that enclose it, the innermost first.
     private static Stream<TypeElement> enclosing(Element type) {
-        return Stream.iterate(type, element -> element instanceof TypeElement, Element::getEnclosingElement)
-                .map(TypeElement.class::cast);
+        List<TypeElement> chain = new ArrayList<>();
+        for (Element element = type;
+                element instanceof TypeElement enclosing;
+                element = enclosing.getEnclosingElement()) {
+            chain.add(enclosing);
+        }
+        return chain.stream();
     }
 
     /// The simple names of a type and of the types that enclose it, outermost first, joined by `_`.

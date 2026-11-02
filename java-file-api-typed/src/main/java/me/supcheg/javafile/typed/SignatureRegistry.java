@@ -347,7 +347,7 @@ final class SignatureRegistry {
                             "the method " + own + " of " + owner + " cannot override " + entry + ": " + reason);
                 }));
         group.entries().stream()
-                .filter(entry -> entry.method().declared().arity() != group.arity())
+                .filter(entry -> !entry.method().declared().arity().equals(group.arity()))
                 .findFirst()
                 .ifPresent(other -> {
                     throw new IllegalArgumentException("the method " + own + " of " + owner + " cannot override both "
@@ -375,10 +375,15 @@ final class SignatureRegistry {
             Inheritance.Group group,
             Subtyping.Declaring declaring) {
         group.entries().stream()
-                .filter(entry -> entry.through() == through)
+                .filter(entry -> entry.through().equals(through))
                 .forEach(entry -> overrideRefusal(inherited, entry, declaring)
-                        .or(() -> entry.method().declared().arity()
-                                        == group.stands().method().declared().arity()
+                        .or(() -> entry.method()
+                                        .declared()
+                                        .arity()
+                                        .equals(group.stands()
+                                                .method()
+                                                .declared()
+                                                .arity())
                                 ? Optional.empty()
                                 : Optional.of("the last parameter of one is of variable arity and that of the"
                                         + " other an array, and javac warns of a method that implements one"
@@ -580,16 +585,18 @@ final class SignatureRegistry {
         Map<Boolean, List<Inheritance.Group>> had = inherited
                 .groups()
                 .collect(Collectors.partitioningBy(group -> group.standing() == Heritage.Dispatch.STATIC));
-        Set<MethodTableTemplate.Signature> abstractInherited = had.get(false).stream()
+        List<Inheritance.Group> nonStatic = had.getOrDefault(false, List.of());
+        List<Inheritance.Group> isStatic = had.getOrDefault(true, List.of());
+        Set<MethodTableTemplate.Signature> abstractInherited = nonStatic.stream()
                 .filter(group -> group.standing() == Heritage.Dispatch.ABSTRACT)
                 .map(SignatureRegistry::inherited)
                 .collect(Collectors.toSet());
-        Set<MethodTableTemplate.Signature> concreteInherited = had.get(false).stream()
+        Set<MethodTableTemplate.Signature> concreteInherited = nonStatic.stream()
                 .filter(group -> group.standing() != Heritage.Dispatch.ABSTRACT)
                 .map(SignatureRegistry::inherited)
                 .collect(Collectors.toSet());
         Set<MethodTableTemplate.Signature> staticInherited =
-                had.get(true).stream().map(SignatureRegistry::inherited).collect(Collectors.toSet());
+                isStatic.stream().map(SignatureRegistry::inherited).collect(Collectors.toSet());
         Set<MethodTableTemplate.Signature> declaredSignatures = Stream.of(
                         abstractDeclared, concreteDeclared, staticDeclared)
                 .flatMap(Set::stream)
@@ -607,7 +614,7 @@ final class SignatureRegistry {
                                 .filter(constructor -> constructor.arity() instanceof Arity.Variable)
                                 .map(Invocable::declared))
                 .collect(Collectors.toSet());
-        had.get(false).stream()
+        nonStatic.stream()
                 .filter(group -> group.arity() instanceof Arity.Variable)
                 .map(SignatureRegistry::inherited)
                 .forEach(variableArity::add);

@@ -22,10 +22,10 @@ import java.lang.constant.ClassDesc;
 import java.lang.constant.ConstantDescs;
 import java.util.List;
 
-import static me.supcheg.javafile.typed.Expressions.lambda;
+import static me.supcheg.javafile.typed.ExpressionArities.lambda;
+import static me.supcheg.javafile.typed.ExpressionArities.new_;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.newArrayOf;
-import static me.supcheg.javafile.typed.Expressions.new_;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /// An array created with its elements, `new E[] {e1, e2}`, is written `{e1, e2}` where it initializes a
@@ -44,6 +44,8 @@ class ArrayInitializersTest {
     }
 
     @Test
+    // the generated method appends to the builder the test gives it, so the builder is no concatenation here
+    @SuppressWarnings("UnnecessaryStringBuilder")
     void theElementsStandAloneWhereTheTypeIsToldAndInFullWhereItIsNot() throws Throwable {
         CompiledClasses compiled = CompiledClasses.of(file("Initializers", new TypedJavaFile.TypedClassSpec() {
             @Override

@@ -23,14 +23,14 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import static me.supcheg.javafile.typed.ExpressionArities.lambda;
+import static me.supcheg.javafile.typed.ExpressionArities.lambdaBlock;
+import static me.supcheg.javafile.typed.ExpressionArities.new_;
 import static me.supcheg.javafile.typed.Expressions.addInt;
 import static me.supcheg.javafile.typed.Expressions.assign;
 import static me.supcheg.javafile.typed.Expressions.box;
-import static me.supcheg.javafile.typed.Expressions.lambda;
-import static me.supcheg.javafile.typed.Expressions.lambdaBlock;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.ltInt;
-import static me.supcheg.javafile.typed.Expressions.new_;
 import static me.supcheg.javafile.typed.JavacVerdict.asJavac;
 import static me.supcheg.javafile.typed.JavacVerdict.asJavacAccepts;
 import static me.supcheg.javafile.typed.JavacVerdict.unlikeJavac;

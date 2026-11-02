@@ -20,6 +20,8 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 /// A member type of a class, an interface, a record, an enum and an enum constant's body (§6.5): each
 /// is declared through the declaration that encloses it, rendered inside it, compiled under
 /// `-Xlint:all` and, where it has a body, run.
+// a deliberately raw value is part of what the test proves
+@SuppressWarnings({"rawtypes", "unchecked"})
 class NestedTypesTest {
     private static final ClassDesc DESC = ClassDesc.of("me.supcheg.example", "Nested");
 
@@ -221,7 +223,10 @@ class NestedTypesTest {
     @Test
     void anInnerClassOfAGenericClassSeesItsTypeParameter() {
         CompiledClasses compiled = CompiledClasses.of(TypedJavaFile.declareClass(
-                UnsafeFacts.unverifiedClasspath(), DESC, typeParam("T"), new TypedJavaFile.TypedGenericClassSpec1<>() {
+                UnsafeFacts.unverifiedClasspath(),
+                DESC,
+                typeParam("T"),
+                new GenericDeclarationArities.TypedGenericClassSpec1<>() {
                     @Override
                     public <Self, T> MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<T> t) {
                         var cb = h.extendsObject().members();
@@ -249,7 +254,10 @@ class NestedTypesTest {
                     @Override
                     public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
                         cb.declareNestedClass(
-                                "Two", typeParam("A"), typeParam("B"), new TypedJavaFile.TypedGenericClassSpec2<>() {
+                                "Two",
+                                typeParam("A"),
+                                typeParam("B"),
+                                new GenericDeclarationArities.TypedGenericClassSpec2<>() {
                                     @Override
                                     public <Inner, A, B> MemberBodies<Inner, ?> build(
                                             ClassHeader<Inner> h, TypeVarToken<A> a, TypeVarToken<B> b) {
@@ -265,7 +273,7 @@ class NestedTypesTest {
                                 typeParam("A"),
                                 typeParam("B"),
                                 typeParam("C"),
-                                new TypedJavaFile.TypedGenericClassSpec3<>() {
+                                new GenericDeclarationArities.TypedGenericClassSpec3<>() {
                                     @Override
                                     public <Inner, A, B, C> MemberBodies<Inner, ?> build(
                                             ClassHeader<Inner> h,
@@ -309,7 +317,7 @@ class NestedTypesTest {
                 UnsafeFacts.unverifiedClasspath(),
                 ClassDesc.of("me.supcheg.example", "Other"),
                 typeParam("T"),
-                new TypedJavaFile.TypedGenericClassSpec1<>() {
+                new GenericDeclarationArities.TypedGenericClassSpec1<>() {
                     @Override
                     public <Self, T> MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<T> t) {
                         kept[0] = t;
@@ -417,7 +425,7 @@ class NestedTypesTest {
                     @Override
                     public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
                         cb.declareNestedInterface(
-                                "One", typeParam("A"), new TypedJavaFile.TypedGenericInterfaceSpec1<>() {
+                                "One", typeParam("A"), new GenericDeclarationArities.TypedGenericInterfaceSpec1<>() {
                                     @Override
                                     public <Inner, A> TypedInterfaceBodies<Inner> build(
                                             TypedInterfaceBuilder<Inner> ib, TypeVarToken<A> a) {
@@ -428,7 +436,7 @@ class NestedTypesTest {
                                 "Two",
                                 typeParam("A"),
                                 typeParam("B"),
-                                new TypedJavaFile.TypedGenericInterfaceSpec2<>() {
+                                new GenericDeclarationArities.TypedGenericInterfaceSpec2<>() {
                                     @Override
                                     public <Inner, A, B> TypedInterfaceBodies<Inner> build(
                                             TypedInterfaceBuilder<Inner> ib, TypeVarToken<A> a, TypeVarToken<B> b) {
@@ -440,7 +448,7 @@ class NestedTypesTest {
                                 typeParam("A"),
                                 typeParam("B"),
                                 typeParam("C"),
-                                new TypedJavaFile.TypedGenericInterfaceSpec3<>() {
+                                new GenericDeclarationArities.TypedGenericInterfaceSpec3<>() {
                                     @Override
                                     public <Inner, A, B, C> TypedInterfaceBodies<Inner> build(
                                             TypedInterfaceBuilder<Inner> ib,
@@ -451,7 +459,7 @@ class NestedTypesTest {
                                     }
                                 });
                         cb.declareNestedRecord(
-                                "OneRecord", typeParam("A"), new TypedJavaFile.TypedGenericRecordSpec1<>() {
+                                "OneRecord", typeParam("A"), new GenericDeclarationArities.TypedGenericRecordSpec1<>() {
                                     @Override
                                     public <Inner, A> TypedRecordBodies<Inner> build(
                                             TypedRecordBuilder<Inner> rb, TypeVarToken<A> a) {
@@ -463,7 +471,7 @@ class NestedTypesTest {
                                 "TwoRecord",
                                 typeParam("A"),
                                 typeParam("B"),
-                                new TypedJavaFile.TypedGenericRecordSpec2<>() {
+                                new GenericDeclarationArities.TypedGenericRecordSpec2<>() {
                                     @Override
                                     public <Inner, A, B> TypedRecordBodies<Inner> build(
                                             TypedRecordBuilder<Inner> rb, TypeVarToken<A> a, TypeVarToken<B> b) {
@@ -477,7 +485,7 @@ class NestedTypesTest {
                                 typeParam("A"),
                                 typeParam("B"),
                                 typeParam("C"),
-                                new TypedJavaFile.TypedGenericRecordSpec3<>() {
+                                new GenericDeclarationArities.TypedGenericRecordSpec3<>() {
                                     @Override
                                     public <Inner, A, B, C> TypedRecordBodies<Inner> build(
                                             TypedRecordBuilder<Inner> rb,
@@ -511,7 +519,7 @@ class NestedTypesTest {
                     @Override
                     public <Self> TypedInterfaceBodies<Self> build(TypedInterfaceBuilder<Self> ib) {
                         ib.declareNestedInterface(
-                                "One", typeParam("A"), new TypedJavaFile.TypedGenericInterfaceSpec1<>() {
+                                "One", typeParam("A"), new GenericDeclarationArities.TypedGenericInterfaceSpec1<>() {
                                     @Override
                                     public <Inner, A> TypedInterfaceBodies<Inner> build(
                                             TypedInterfaceBuilder<Inner> inner, TypeVarToken<A> a) {
@@ -519,7 +527,10 @@ class NestedTypesTest {
                                     }
                                 });
                         ib.declareNestedRecord(
-                                "Pair", typeParam("A"), typeParam("B"), new TypedJavaFile.TypedGenericRecordSpec2<>() {
+                                "Pair",
+                                typeParam("A"),
+                                typeParam("B"),
+                                new GenericDeclarationArities.TypedGenericRecordSpec2<>() {
                                     @Override
                                     public <Inner, A, B> TypedRecordBodies<Inner> build(
                                             TypedRecordBuilder<Inner> rb, TypeVarToken<A> a, TypeVarToken<B> b) {
@@ -545,7 +556,7 @@ class NestedTypesTest {
                     @Override
                     public <Self> TypedAnnotationTypeBuilder<Self> build(TypedAnnotationTypeBuilder<Self> ab) {
                         ab.declareNestedInterface(
-                                "One", typeParam("A"), new TypedJavaFile.TypedGenericInterfaceSpec1<>() {
+                                "One", typeParam("A"), new GenericDeclarationArities.TypedGenericInterfaceSpec1<>() {
                                     @Override
                                     public <Inner, A> TypedInterfaceBodies<Inner> build(
                                             TypedInterfaceBuilder<Inner> inner, TypeVarToken<A> a) {
@@ -557,7 +568,7 @@ class NestedTypesTest {
                                 typeParam("A"),
                                 typeParam("B"),
                                 typeParam("C"),
-                                new TypedJavaFile.TypedGenericRecordSpec3<>() {
+                                new GenericDeclarationArities.TypedGenericRecordSpec3<>() {
                                     @Override
                                     public <Inner, A, B, C> TypedRecordBodies<Inner> build(
                                             TypedRecordBuilder<Inner> rb,
@@ -701,8 +712,8 @@ class NestedTypesTest {
         assertThat(echo.invoke(inside, "x")).isEqualTo("x");
     }
 
-    private static TypedJavaFile.TypedGenericClassSpec1<Object> box() {
-        return new TypedJavaFile.TypedGenericClassSpec1<>() {
+    private static GenericDeclarationArities.TypedGenericClassSpec1<Object> box() {
+        return new GenericDeclarationArities.TypedGenericClassSpec1<>() {
             @Override
             public <Box, T> MemberBodies<Box, ?> build(ClassHeader<Box> h, TypeVarToken<T> t) {
                 var members = h.extendsObject().members();
@@ -714,8 +725,8 @@ class NestedTypesTest {
         };
     }
 
-    private static TypedJavaFile.TypedGenericClassSpec2<Object, Object> pair() {
-        return new TypedJavaFile.TypedGenericClassSpec2<>() {
+    private static GenericDeclarationArities.TypedGenericClassSpec2<Object, Object> pair() {
+        return new GenericDeclarationArities.TypedGenericClassSpec2<>() {
             @Override
             public <Pair, A, B> MemberBodies<Pair, ?> build(ClassHeader<Pair> h, TypeVarToken<A> a, TypeVarToken<B> b) {
                 var members = h.extendsObject().members();
@@ -727,8 +738,8 @@ class NestedTypesTest {
         };
     }
 
-    private static TypedJavaFile.TypedGenericClassSpec3<Object, Object, Object> triple() {
-        return new TypedJavaFile.TypedGenericClassSpec3<>() {
+    private static GenericDeclarationArities.TypedGenericClassSpec3<Object, Object, Object> triple() {
+        return new GenericDeclarationArities.TypedGenericClassSpec3<>() {
             @Override
             public <Triple, A, B, C> MemberBodies<Triple, ?> build(
                     ClassHeader<Triple> h, TypeVarToken<A> a, TypeVarToken<B> b, TypeVarToken<C> c) {
@@ -862,24 +873,24 @@ class NestedTypesTest {
 
     @Test
     void aMemberTypeOfEveryGenericArityIsDeclaredInAnInterfaceAndAnAnnotationType() {
-        TypedJavaFile.TypedGenericInterfaceSpec1<Object> oneInterface =
-                new TypedJavaFile.TypedGenericInterfaceSpec1<>() {
+        GenericDeclarationArities.TypedGenericInterfaceSpec1<Object> oneInterface =
+                new GenericDeclarationArities.TypedGenericInterfaceSpec1<>() {
                     @Override
                     public <Inner, A> TypedInterfaceBodies<Inner> build(
                             TypedInterfaceBuilder<Inner> inner, TypeVarToken<A> a) {
                         return inner.bodies();
                     }
                 };
-        TypedJavaFile.TypedGenericInterfaceSpec2<Object, Object> twoInterfaces =
-                new TypedJavaFile.TypedGenericInterfaceSpec2<>() {
+        GenericDeclarationArities.TypedGenericInterfaceSpec2<Object, Object> twoInterfaces =
+                new GenericDeclarationArities.TypedGenericInterfaceSpec2<>() {
                     @Override
                     public <Inner, A, B> TypedInterfaceBodies<Inner> build(
                             TypedInterfaceBuilder<Inner> inner, TypeVarToken<A> a, TypeVarToken<B> b) {
                         return inner.bodies();
                     }
                 };
-        TypedJavaFile.TypedGenericInterfaceSpec3<Object, Object, Object> threeInterfaces =
-                new TypedJavaFile.TypedGenericInterfaceSpec3<>() {
+        GenericDeclarationArities.TypedGenericInterfaceSpec3<Object, Object, Object> threeInterfaces =
+                new GenericDeclarationArities.TypedGenericInterfaceSpec3<>() {
                     @Override
                     public <Inner, A, B, C> TypedInterfaceBodies<Inner> build(
                             TypedInterfaceBuilder<Inner> inner,
@@ -889,15 +900,16 @@ class NestedTypesTest {
                         return inner.bodies();
                     }
                 };
-        TypedJavaFile.TypedGenericRecordSpec1<Object> oneRecord = new TypedJavaFile.TypedGenericRecordSpec1<>() {
-            @Override
-            public <Inner, A> TypedRecordBodies<Inner> build(TypedRecordBuilder<Inner> rb, TypeVarToken<A> a) {
-                rb.component("value", a);
-                return rb.bodies();
-            }
-        };
-        TypedJavaFile.TypedGenericRecordSpec2<Object, Object> twoRecords =
-                new TypedJavaFile.TypedGenericRecordSpec2<>() {
+        GenericDeclarationArities.TypedGenericRecordSpec1<Object> oneRecord =
+                new GenericDeclarationArities.TypedGenericRecordSpec1<>() {
+                    @Override
+                    public <Inner, A> TypedRecordBodies<Inner> build(TypedRecordBuilder<Inner> rb, TypeVarToken<A> a) {
+                        rb.component("value", a);
+                        return rb.bodies();
+                    }
+                };
+        GenericDeclarationArities.TypedGenericRecordSpec2<Object, Object> twoRecords =
+                new GenericDeclarationArities.TypedGenericRecordSpec2<>() {
                     @Override
                     public <Inner, A, B> TypedRecordBodies<Inner> build(
                             TypedRecordBuilder<Inner> rb, TypeVarToken<A> a, TypeVarToken<B> b) {
@@ -906,8 +918,8 @@ class NestedTypesTest {
                         return rb.bodies();
                     }
                 };
-        TypedJavaFile.TypedGenericRecordSpec3<Object, Object, Object> threeRecords =
-                new TypedJavaFile.TypedGenericRecordSpec3<>() {
+        GenericDeclarationArities.TypedGenericRecordSpec3<Object, Object, Object> threeRecords =
+                new GenericDeclarationArities.TypedGenericRecordSpec3<>() {
                     @Override
                     public <Inner, A, B, C> TypedRecordBodies<Inner> build(
                             TypedRecordBuilder<Inner> rb, TypeVarToken<A> a, TypeVarToken<B> b, TypeVarToken<C> c) {
@@ -1141,8 +1153,8 @@ class NestedTypesTest {
         CompiledClasses.of(file);
     }
 
-    private static TypedJavaFile.TypedGenericInterfaceSpec1<Object> genericInterface1() {
-        return new TypedJavaFile.TypedGenericInterfaceSpec1<>() {
+    private static GenericDeclarationArities.TypedGenericInterfaceSpec1<Object> genericInterface1() {
+        return new GenericDeclarationArities.TypedGenericInterfaceSpec1<>() {
             @Override
             public <Inner, A> TypedInterfaceBodies<Inner> build(TypedInterfaceBuilder<Inner> inner, TypeVarToken<A> a) {
                 return inner.bodies();
@@ -1150,8 +1162,8 @@ class NestedTypesTest {
         };
     }
 
-    private static TypedJavaFile.TypedGenericInterfaceSpec2<Object, Object> genericInterface2() {
-        return new TypedJavaFile.TypedGenericInterfaceSpec2<>() {
+    private static GenericDeclarationArities.TypedGenericInterfaceSpec2<Object, Object> genericInterface2() {
+        return new GenericDeclarationArities.TypedGenericInterfaceSpec2<>() {
             @Override
             public <Inner, A, B> TypedInterfaceBodies<Inner> build(
                     TypedInterfaceBuilder<Inner> inner, TypeVarToken<A> a, TypeVarToken<B> b) {
@@ -1160,8 +1172,8 @@ class NestedTypesTest {
         };
     }
 
-    private static TypedJavaFile.TypedGenericInterfaceSpec3<Object, Object, Object> genericInterface3() {
-        return new TypedJavaFile.TypedGenericInterfaceSpec3<>() {
+    private static GenericDeclarationArities.TypedGenericInterfaceSpec3<Object, Object, Object> genericInterface3() {
+        return new GenericDeclarationArities.TypedGenericInterfaceSpec3<>() {
             @Override
             public <Inner, A, B, C> TypedInterfaceBodies<Inner> build(
                     TypedInterfaceBuilder<Inner> inner, TypeVarToken<A> a, TypeVarToken<B> b, TypeVarToken<C> c) {
@@ -1170,8 +1182,8 @@ class NestedTypesTest {
         };
     }
 
-    private static TypedJavaFile.TypedGenericRecordSpec1<Object> genericRecord1() {
-        return new TypedJavaFile.TypedGenericRecordSpec1<>() {
+    private static GenericDeclarationArities.TypedGenericRecordSpec1<Object> genericRecord1() {
+        return new GenericDeclarationArities.TypedGenericRecordSpec1<>() {
             @Override
             public <Inner, A> TypedRecordBodies<Inner> build(TypedRecordBuilder<Inner> rb, TypeVarToken<A> a) {
                 rb.component("value", a);
@@ -1180,8 +1192,8 @@ class NestedTypesTest {
         };
     }
 
-    private static TypedJavaFile.TypedGenericRecordSpec2<Object, Object> genericRecord2() {
-        return new TypedJavaFile.TypedGenericRecordSpec2<>() {
+    private static GenericDeclarationArities.TypedGenericRecordSpec2<Object, Object> genericRecord2() {
+        return new GenericDeclarationArities.TypedGenericRecordSpec2<>() {
             @Override
             public <Inner, A, B> TypedRecordBodies<Inner> build(
                     TypedRecordBuilder<Inner> rb, TypeVarToken<A> a, TypeVarToken<B> b) {
@@ -1192,8 +1204,8 @@ class NestedTypesTest {
         };
     }
 
-    private static TypedJavaFile.TypedGenericRecordSpec3<Object, Object, Object> genericRecord3() {
-        return new TypedJavaFile.TypedGenericRecordSpec3<>() {
+    private static GenericDeclarationArities.TypedGenericRecordSpec3<Object, Object, Object> genericRecord3() {
+        return new GenericDeclarationArities.TypedGenericRecordSpec3<>() {
             @Override
             public <Inner, A, B, C> TypedRecordBodies<Inner> build(
                     TypedRecordBuilder<Inner> rb, TypeVarToken<A> a, TypeVarToken<B> b, TypeVarToken<C> c) {

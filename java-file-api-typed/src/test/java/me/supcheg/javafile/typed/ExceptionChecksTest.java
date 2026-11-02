@@ -42,12 +42,12 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import static me.supcheg.javafile.typed.ExpressionArities.new_;
+import static me.supcheg.javafile.typed.ExpressionArities.staticCall;
+import static me.supcheg.javafile.typed.ExpressionArities.voidStaticCall;
 import static me.supcheg.javafile.typed.Expressions.enumConstant;
 import static me.supcheg.javafile.typed.Expressions.literal;
-import static me.supcheg.javafile.typed.Expressions.new_;
-import static me.supcheg.javafile.typed.Expressions.staticCall;
 import static me.supcheg.javafile.typed.Expressions.switch_;
-import static me.supcheg.javafile.typed.Expressions.voidStaticCall;
 import static me.supcheg.javafile.typed.JavacVerdict.asJavac;
 import static me.supcheg.javafile.typed.JavacVerdict.asJavacAccepts;
 import static me.supcheg.javafile.typed.JavacVerdict.compiled;

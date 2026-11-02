@@ -457,9 +457,10 @@ class CanonicalTest {
                                 MemberFilter.DECLARED_ACCESSIBLE,
                                 "package p; public interface Op<A, B> { B apply(A a, int[] is) throws Exception, Error; }")
                         .text())
-                .contains(
-                        "member method public abstract apply(#0, int[]) -> #1 throws java.lang.Error, java.lang.Exception\n"
-                                + "sam apply(#0, int[]) -> #1 throws java.lang.Error, java.lang.Exception\n");
+                .contains("""
+                        member method public abstract apply(#0, int[]) -> #1 throws java.lang.Error, java.lang.Exception
+                        sam apply(#0, int[]) -> #1 throws java.lang.Error, java.lang.Exception
+                        """);
         assertThat(canonical("p.Two", MemberFilter.NONE, "package p; public interface Two { void a(); void b(); }")
                         .text())
                 .doesNotContain("sam ");

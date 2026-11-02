@@ -241,10 +241,6 @@ final class ArityTests {
         return Stream.concat(leading.stream(), Stream.of(last)).toList();
     }
 
-    private static Expr call(String method, Expr... args) {
-        return x(method, args);
-    }
-
     private static Expr callAll(String method, List<Expr> args) {
         return x(method, args.toArray(Expr[]::new));
     }
@@ -1005,7 +1001,6 @@ final class ArityTests {
         check(b, invoke(plain, field("plain"), "lam", a), expectedTag("fn", n) + "/" + expectedTag("blk", n));
         check(b, noted(n), note("note:", j) + note("note:", j));
         TypeRef make = Types.of(FixtureFiles.fixture("Make", n));
-        TypeRef wide = Types.of(FixtureFiles.fixture("Wide", n));
         b.localVar("make", make, cast(make, invoke(plain, nothing(), "viaCtor", List.of())));
         check(b, field("make").call("make", a.toArray(Expr[]::new)).field("told"), "new:" + j);
         b.localVar("widening", widening, cast(widening, field("plain")));

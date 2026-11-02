@@ -20,6 +20,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /// The refusals of constructor references (6.4): the typed layer, not javac, rejects a `Type::new` whose
 /// class, constructor, parameters or result the method of the functional interface does not take.
+// the checks are tested with deliberately raw values
+@SuppressWarnings({"rawtypes", "unchecked"})
 class ConstructorRefChecksTest {
 
     private static final Supplier_<String> SUPPLIER = new Supplier_<>(String_.TOKEN);

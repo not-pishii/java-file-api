@@ -36,6 +36,8 @@ class ForeignNamesTest {
     private static final int PUBLIC_ABSTRACT = ClassFile.ACC_PUBLIC | ClassFile.ACC_ABSTRACT;
 
     @TempDir
+    // JUnit fills the field with the directory of the test, so it cannot be final
+    @SuppressWarnings("NonFinalStaticField")
     static Path classes;
 
     @BeforeAll

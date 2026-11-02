@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;
 
-import static me.supcheg.javafile.typed.Expressions.staticCall;
+import static me.supcheg.javafile.typed.ExpressionArities.staticCall;
 import static me.supcheg.javafile.typed.JavacVerdict.asJavacWarns;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 

@@ -34,7 +34,7 @@ class DocImportsTest {
     }
 
     private static String render(Consumer<ClassBuilder> spec) {
-        return JavaFile.class_(HOLDER, spec::accept).render(MARKDOWN);
+        return JavaFile.class_(HOLDER, spec).render(MARKDOWN);
     }
 
     private static String withoutComments(String source) {

@@ -278,7 +278,7 @@ sealed interface Entry permits Entry.Offered, Entry.Refused {
         // two methods told apart by their packages alone have the classes with their packages
         List<Step> steps = plain.stream()
                 .flatMap(step -> step.right().stream())
-                .map(step -> named.get(step.name()) > 1
+                .map(step -> named.getOrDefault(step.name(), 0L) > 1
                         ? step(step.index(), step.told(), model, plan, elements, true)
                                 .right()
                                 .orElseThrow()

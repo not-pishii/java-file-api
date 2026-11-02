@@ -23,11 +23,11 @@ import org.junit.jupiter.api.Test;
 import java.lang.constant.ClassDesc;
 import java.util.Arrays;
 
+import static me.supcheg.javafile.typed.ExpressionArities.staticCall;
 import static me.supcheg.javafile.typed.Expressions.concat;
 import static me.supcheg.javafile.typed.Expressions.enumConstant;
 import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.literalNull;
-import static me.supcheg.javafile.typed.Expressions.staticCall;
 import static me.supcheg.javafile.typed.TypedJavaFile.typeParam;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
@@ -169,7 +169,7 @@ class WhereItIsSaidTest {
                     UnsafeFacts.unverifiedClasspath(),
                     DESC,
                     typeParam("T"),
-                    new TypedJavaFile.TypedGenericClassSpec1<>() {
+                    new GenericDeclarationArities.TypedGenericClassSpec1<>() {
                         @Override
                         public <Self, T> MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<T> t) {
                             var cb = h.extendsObject().members();
@@ -314,6 +314,8 @@ class WhereItIsSaidTest {
         }
 
         @Test
+        // the call is what the test runs: the rejection is caught inside, and what it is is asserted below
+        @SuppressWarnings("CheckReturnValue")
         void aSupertypeTheClassSaidItIsAboutToNameIsHeldWhereTheHeaderEnds() {
             Throwable[] rejection = new Throwable[1];
 

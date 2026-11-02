@@ -30,12 +30,12 @@ import java.lang.constant.ClassDesc;
 import java.util.List;
 import java.util.concurrent.Callable;
 
+import static me.supcheg.javafile.typed.ExpressionArities.new_;
 import static me.supcheg.javafile.typed.Expressions.addInt;
 import static me.supcheg.javafile.typed.Expressions.assignField;
 import static me.supcheg.javafile.typed.Expressions.assignStaticField;
 import static me.supcheg.javafile.typed.Expressions.concat;
 import static me.supcheg.javafile.typed.Expressions.literal;
-import static me.supcheg.javafile.typed.Expressions.new_;
 import static me.supcheg.javafile.typed.Expressions.staticField;
 import static me.supcheg.javafile.typed.JavacVerdict.classAsJavac;
 import static me.supcheg.javafile.typed.JavacVerdict.classUnlikeJavac;

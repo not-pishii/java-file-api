@@ -1,5 +1,8 @@
 package me.supcheg.javafile;
 
+import com.google.errorprone.annotations.FormatMethod;
+import com.google.errorprone.annotations.FormatString;
+
 import java.util.Optional;
 import java.util.concurrent.Callable;
 
@@ -25,9 +28,9 @@ public final class Invariants {
     /// @param <T> the type of the value
     /// @return the value
     /// @throws IllegalStateException if `optional` is empty
-    public static <T> T present(Optional<T> optional, String invariant, Object... parts) {
-        require(optional.isPresent(), invariant, parts);
-        return optional.get();
+    @FormatMethod
+    public static <T> T present(Optional<T> optional, @FormatString String invariant, Object... parts) {
+        return optional.orElseThrow(() -> new IllegalStateException(String.format(invariant, parts)));
     }
 
     /// Returns what `action` gives, which is known not to fail though its signature lets it: the digest
@@ -39,7 +42,8 @@ public final class Invariants {
     /// @param <T> the type of the result
     /// @return the result
     /// @throws IllegalStateException if `action` throws, with what it threw as the cause
-    public static <T> T sure(Callable<T> action, String invariant, Object... parts) {
+    @FormatMethod
+    public static <T> T sure(Callable<T> action, @FormatString String invariant, Object... parts) {
         try {
             return action.call();
         } catch (Exception e) {
@@ -55,6 +59,9 @@ public final class Invariants {
     /// @param <T> the type of the values
     /// @return never
     /// @throws IllegalStateException always
+    // every use of it is a `Collectors.toMap` merge function, which the contract of the collector never calls,
+    // so `@DoNotCall` would reject the references that are the only way this method is meant to be used
+    @SuppressWarnings("DoNotCallSuggester")
     public static <T> T unique(T first, T second) {
         throw new IllegalStateException("one key has two values: " + first + " and " + second);
     }
@@ -65,7 +72,8 @@ public final class Invariants {
     /// @param invariant what it is, as a format
     /// @param parts the arguments of the format
     /// @throws IllegalStateException if `holds` is `false`
-    public static void require(boolean holds, String invariant, Object... parts) {
+    @FormatMethod
+    public static void require(boolean holds, @FormatString String invariant, Object... parts) {
         if (!holds) {
             throw new IllegalStateException(String.format(invariant, parts));
         }

@@ -527,7 +527,7 @@ public final class FixtureRun {
         public <R, P> Object apply(
                 TypeToken<R> result, TypeToken<P> parameter, Function<Expr<P>, Expr<R>> body, P argument) {
             ClassLoader ofTheArgument = argument.getClass().getClassLoader();
-            if (another && ofTheArgument != null && ofTheArgument != ClassLoader.getPlatformClassLoader()) {
+            if (another && ofTheArgument != null && !ofTheArgument.equals(ClassLoader.getPlatformClassLoader())) {
                 throw new IllegalArgumentException("an argument of another version of the library than "
                         + argument.getClass().getName() + " is needed: against a version, give an argument of the"
                         + " JDK and make what the body needs of the library in the body");

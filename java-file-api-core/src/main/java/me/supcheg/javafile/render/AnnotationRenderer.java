@@ -61,8 +61,10 @@ final class AnnotationRenderer {
     /// A class literal names a type as source does: a primitive or an array
     /// of one is not a name an import reaches.
     private static String classLiteral(java.lang.constant.ClassDesc type, Context ctx) {
-        if (type.isArray()) {
-            return classLiteral(type.componentType(), ctx) + "[]";
+        java.lang.constant.ClassDesc component = type.componentType();
+        if (component != null) {
+            // an array is the only type with a component, so the check above has already told it is there
+            return classLiteral(component, ctx) + "[]";
         }
         return type.isPrimitive() ? type.displayName() : ctx.reference(type);
     }

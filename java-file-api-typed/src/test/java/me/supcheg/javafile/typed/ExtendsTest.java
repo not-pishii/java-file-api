@@ -33,12 +33,12 @@ import java.lang.constant.ClassDesc;
 import java.util.AbstractList;
 import java.util.List;
 
+import static me.supcheg.javafile.typed.ExpressionArities.new_;
+import static me.supcheg.javafile.typed.ExpressionArities.staticCall;
 import static me.supcheg.javafile.typed.Expressions.addInt;
 import static me.supcheg.javafile.typed.Expressions.assignField;
 import static me.supcheg.javafile.typed.Expressions.concat;
 import static me.supcheg.javafile.typed.Expressions.literal;
-import static me.supcheg.javafile.typed.Expressions.new_;
-import static me.supcheg.javafile.typed.Expressions.staticCall;
 import static me.supcheg.javafile.typed.Expressions.subInt;
 import static me.supcheg.javafile.typed.JavacVerdict.classAsJavac;
 import static me.supcheg.javafile.typed.JavacVerdict.classUnlikeJavac;
@@ -597,9 +597,10 @@ class ExtendsTest {
                     }),
                     "can throw the checked exception java.io.IOException",
                     "extends Shape",
-                    "public Probe() { super(\"s\"); }\n"
-                            + "@Override public int area() { return 0; }\n"
-                            + "@Override protected String describe(String p) { return p; }",
+                    """
+                    public Probe() { super("s"); }
+                    @Override public int area() { return 0; }
+                    @Override protected String describe(String p) { return p; }""",
                     "unreported exception");
         }
 
@@ -667,9 +668,10 @@ class ExtendsTest {
                     }),
                     "is abstract in me.supcheg.javafile.typed.fixtures.Shape (JLS 15.12.3)",
                     "extends Shape",
-                    "public Probe() throws java.io.IOException { super(\"s\"); }\n"
-                            + "@Override public int area() { return super.area(); }\n"
-                            + "@Override protected String describe(String p) { return p; }",
+                    """
+                    public Probe() throws java.io.IOException { super("s"); }
+                    @Override public int area() { return super.area(); }
+                    @Override protected String describe(String p) { return p; }""",
                     "cannot be accessed directly");
         }
 

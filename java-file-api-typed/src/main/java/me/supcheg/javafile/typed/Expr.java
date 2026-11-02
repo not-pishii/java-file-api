@@ -152,6 +152,7 @@ public abstract sealed class Expr<T> extends ExprArities<T> permits Expr.Built, 
     /// This expression, as its own type: the hook the generated forms of [ExprArities] continue.
     ///
     /// @return this expression
+    @Override
     final Expr<T> self() {
         return this;
     }

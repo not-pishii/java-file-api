@@ -28,6 +28,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 /// The types of one round, as [MirrorTranslator] reads them, each read at
@@ -132,7 +133,8 @@ final class Models {
     /// @param member a field, enum constant, constructor or method `owner` declares or inherits
     /// @return the reference
     DocRef reference(TypeElement owner, Element member) {
-        TypeElement declaring = (TypeElement) member.getEnclosingElement();
+        // a member is enclosed by the type that declares it
+        TypeElement declaring = (TypeElement) Objects.requireNonNull(member.getEnclosingElement());
         ClassDesc through = ClassDesc.of(binaryName(
                 MirrorTranslator.isPublic(declaring)
                                 && element(ClassDesc.of(binaryName(declaring))).isPresent()
@@ -162,8 +164,9 @@ final class Models {
                         && method.getSimpleName().contentEquals(sam.name()))
                 // all the members of a type leave out a method that another overrides: one that the interface
                 // declares is the only one of its name
-                .min(Comparator.comparing(
-                        (ExecutableElement method) -> binaryName((TypeElement) method.getEnclosingElement())))
+                .min(Comparator.comparing((ExecutableElement method) ->
+                        // a method is a member of the type that declares it
+                        binaryName((TypeElement) Objects.requireNonNull(method.getEnclosingElement()))))
                 .map(method -> reference(type, method))
                 // the single abstract method was read off the type
                 .orElseThrow();

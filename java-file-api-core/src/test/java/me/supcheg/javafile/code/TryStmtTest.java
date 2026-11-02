@@ -13,7 +13,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class TryStmtTest {
 
     private static final ClassDesc IO_EXCEPTION = ClassDesc.of("java.io", "IOException");
-    private static final ClassDesc SQL_EXCEPTION = ClassDesc.of("java.sql", "SQLException");
 
     @Test
     void withFinallyAcceptsEmptyCatchesForPlainTryFinally() {

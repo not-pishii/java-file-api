@@ -60,5 +60,7 @@ public sealed interface DocTag {
     /// `@deprecated`: why the declaration should not be used, and what to use instead.
     ///
     /// @param description the explanation
+    // `Deprecated` is the name javadoc gives the tag, and a nested record does not shadow java.lang.Deprecated
+    @SuppressWarnings("AvoidCommonTypeNames")
     record Deprecated(DocText description) implements DocTag {}
 }

@@ -27,13 +27,15 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 /// has, an initializer given twice or never, a field of another declaration, and a mutable static field of a
 /// record. Each refusal is told against javac, which rejects the Java it stands for — or accepts it, where the
 /// typed layer is stricter and the test says so.
+// the checks are tested with deliberately raw values
+@SuppressWarnings({"rawtypes", "unchecked"})
 class StaticFieldChecksTest {
 
     private static final ClassDesc DESC = ClassDesc.of("me.supcheg.example", "Probe");
     private static final String STATIC_CONTEXT =
             "non-static type variable T cannot be referenced from a static context";
 
-    private static JavaFile probe(TypedJavaFile.TypedGenericClassSpec1<Object> spec) {
+    private static JavaFile probe(GenericDeclarationArities.TypedGenericClassSpec1<Object> spec) {
         return TypedJavaFile.declareClass(UnsafeFacts.unverifiedClasspath(), DESC, TypedJavaFile.typeParam("T"), spec);
     }
 
@@ -41,7 +43,7 @@ class StaticFieldChecksTest {
     void aStaticFieldOfATypeParameterOfTheClassIsRefusedAsJavacRefusesIt() {
         JavacVerdict.classAsJavac(
                 IllegalStateException.class,
-                () -> probe(new TypedJavaFile.TypedGenericClassSpec1<>() {
+                () -> probe(new GenericDeclarationArities.TypedGenericClassSpec1<>() {
                     @Override
                     public <Self, T> MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<T> t) {
                         h.extendsObject().members().declareStaticField("value", t);
@@ -60,7 +62,7 @@ class StaticFieldChecksTest {
     void aStaticInitializerMentioningATypeParameterOfTheClassIsRefusedAsJavacRefusesIt() {
         JavacVerdict.classAsJavac(
                 IllegalStateException.class,
-                () -> probe(new TypedJavaFile.TypedGenericClassSpec1<>() {
+                () -> probe(new GenericDeclarationArities.TypedGenericClassSpec1<>() {
                     @Override
                     public <Self, T> MemberBodies<Self, ?> build(ClassHeader<Self> h, TypeVarToken<T> t) {
                         var cb = h.extendsObject().members();

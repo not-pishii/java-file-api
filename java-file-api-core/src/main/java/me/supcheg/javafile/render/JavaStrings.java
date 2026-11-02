@@ -21,13 +21,13 @@ final class JavaStrings {
                 // `\u0085`, `\u2028` and `\u2029` are no line terminators of the source, but
                 // they are ones of the white space check of a text block, so the escape keeps
                 // them out of the source text while the string keeps them in its value
-                case '\u0085', '\u2028', '\u2029' -> sb.append(String.format("\\u%04x", (int) c));
+                case '\u0085', '\u2028', '\u2029' -> sb.append(String.format(Locale.ROOT, "\\u%04x", (int) c));
                 default -> {
                     // a surrogate without its pair is no character: no encoding writes it
                     boolean paired = Character.isHighSurrogate(c)
                             ? i + 1 < raw.length() && Character.isLowSurrogate(raw.charAt(i + 1))
                             : i > 0 && Character.isHighSurrogate(raw.charAt(i - 1));
-                    if (c < 0x20 || Character.isSurrogate(c) && !paired) {
+                    if (c < 0x20 || (Character.isSurrogate(c) && !paired)) {
                         sb.append(String.format(Locale.ROOT, "\\u%04x", (int) c));
                     } else {
                         sb.append(c);
@@ -108,7 +108,7 @@ final class JavaStrings {
                 case '\f' -> sb.append("\\f");
                 default -> {
                     if (c < 0x20) {
-                        sb.append(String.format("\\%03o", (int) c));
+                        sb.append(String.format(Locale.ROOT, "\\%03o", (int) c));
                     } else {
                         sb.append(c);
                     }

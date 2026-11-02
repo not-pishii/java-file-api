@@ -5,7 +5,9 @@
 /// `-Ajavafile.facts.mirror=false`, `-Ajavafile.facts.visibility=package`), so that no user of the library names
 /// them. They are not listed in the index of reusable metamodels (`-Ajavafile.facts.index=false`): another module's
 /// processor generates its own. Ask here for the type a construct of the typed layer needs, no more.
+@NullMarked
 @Facts({String.class, Math.class, Class.class})
 package me.supcheg.javafile.typed.jdk;
 
 import me.supcheg.javafile.facts.meta.Facts;
+import org.jspecify.annotations.NullMarked;

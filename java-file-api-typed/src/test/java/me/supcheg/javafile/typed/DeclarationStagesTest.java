@@ -21,8 +21,8 @@ import org.junit.jupiter.api.Test;
 import java.lang.constant.ClassDesc;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static me.supcheg.javafile.typed.ExpressionArities.new_;
 import static me.supcheg.javafile.typed.Expressions.literal;
-import static me.supcheg.javafile.typed.Expressions.new_;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -131,6 +131,7 @@ class DeclarationStagesTest {
     }
 
     @Test
+    // the test hands a value of another class where the layer refuses one: the cast is unchecked
     @SuppressWarnings("unchecked")
     void aSpecificationReturnsTheBodiesOfItsOwnMembers() {
         AtomicReference<MemberBodies<?, ?>> other = new AtomicReference<>();
@@ -167,6 +168,7 @@ class DeclarationStagesTest {
     }
 
     @Test
+    // the test hands a value of another class where the layer refuses one: the cast is unchecked
     @SuppressWarnings("unchecked")
     void aProofIsAboutTheClassThatNamesTheSupertype() {
         AtomicReference<Complete<?, Runnable>> other = new AtomicReference<>();
@@ -196,6 +198,7 @@ class DeclarationStagesTest {
     }
 
     @Test
+    // the test hands a value of another class where the layer refuses one: the cast is unchecked
     @SuppressWarnings("unchecked")
     void aStepTakesAnImplementationTheClassItselfMade() {
         AtomicReference<VoidOverriding0<?>> other = new AtomicReference<>();
@@ -248,6 +251,7 @@ class DeclarationStagesTest {
     }
 
     @Test
+    // the test hands a value of another class where the layer refuses one: the cast is unchecked
     @SuppressWarnings({"unchecked", "rawtypes"})
     void aFieldIsInitializedOnceAndByTheClassThatDeclaredIt() {
         assertThat(file(new TypedJavaFile.TypedClassHeaderSpec() {
@@ -335,6 +339,7 @@ class DeclarationStagesTest {
     }
 
     @Test
+    // the test hands a value of another class where the layer refuses one: the cast is unchecked
     @SuppressWarnings("unchecked")
     void superIsCalledOnTheThisOfTheClass() {
         AtomicReference<This<?>> other = new AtomicReference<>();
@@ -401,6 +406,7 @@ class DeclarationStagesTest {
     }
 
     @Test
+    // the test hands a value of another class where the layer refuses one: the cast is unchecked
     @SuppressWarnings({"unchecked", "rawtypes"})
     void whatIsOfAnotherClassIsNoneOfTheSuperclass() {
         // the proof of another superclass than the one the class was said to extend
@@ -429,6 +435,7 @@ class DeclarationStagesTest {
     }
 
     @Test
+    // the test hands a value of another class where the layer refuses one: the cast is unchecked
     @SuppressWarnings({"unchecked", "rawtypes"})
     void theWitnessOfAnExceptionIsOfTheClassThatIsThrown() {
         assertThatIllegalArgumentException()

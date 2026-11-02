@@ -52,6 +52,8 @@ public final class TypedPackageInfoBuilder {
     /// @param name the simple name of the member type
     /// @return never
     /// @throws IllegalArgumentException always
+    // a refusal of what javac rejects: the tests call it to read the message, and it never returns
+    @SuppressWarnings("DoNotCallSuggester")
     public java.lang.constant.ClassDesc nestedType(String name) {
         throw new IllegalArgumentException("cannot declare the member type " + name + " in the package-info.java"
                 + " of package " + packageName + ": a package-info.java declares annotations alone (JLS 7.4.1)");
