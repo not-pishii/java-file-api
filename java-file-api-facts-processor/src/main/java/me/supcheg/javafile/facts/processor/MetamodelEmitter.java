@@ -26,6 +26,7 @@ import me.supcheg.javafile.doc.DocText;
 import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.Heritage;
 import me.supcheg.javafile.facts.MethodTableTemplate;
+import me.supcheg.javafile.facts.RecordShape;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.Thrown;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodel;
@@ -125,6 +126,8 @@ final class MetamodelEmitter {
     private static final ClassDesc CD_UNSAFE_FACTS = ClassDesc.of(FACTS, "UnsafeFacts");
     private static final ClassDesc CD_TYPE_SHAPE = ClassDesc.of(FACTS, "TypeShape");
     private static final ClassDesc CD_DECLARED_KIND = ClassDesc.of(FACTS, "DeclaredKind");
+    private static final ClassDesc CD_RECORD_SHAPE = ClassDesc.of(FACTS, "RecordShape");
+    private static final ClassDesc CD_RECORD_COMPONENT = ClassDesc.of(FACTS, "RecordComponent");
     private static final ClassDesc CD_METAMODEL_ORIGIN = ClassDesc.of(FACTS + ".ShapeOrigin$Metamodel");
     private static final ClassDesc CD_SUPERTYPES = ClassDesc.of(FACTS, "Supertypes");
     private static final ClassDesc CD_TEMPLATE = ClassDesc.of(FACTS, "MethodTableTemplate");
@@ -843,7 +846,8 @@ final class MetamodelEmitter {
                                 list(model.permitted().stream()
                                         .map(MetamodelEmitter::classDesc)
                                         .toList()),
-                                annotationUses(model.annotations()));
+                                annotationUses(model.annotations()),
+                                recordShape(model.recordShape()));
                 };
         return Exprs.staticCall(
                 CD_UNSAFE_FACTS, "shape", Stream.concat(type, rest).toList());
@@ -1466,6 +1470,23 @@ final class MetamodelEmitter {
             case ExtendsTypeArg bound -> Exprs.staticCall(CD_TYPES, "extendsBound", typeRef(bound.bound()));
             case SuperTypeArg bound -> Exprs.staticCall(CD_TYPES, "superBound", typeRef(bound.bound()));
             case UnboundedTypeArg _ -> Exprs.staticCall(CD_TYPES, "unbounded");
+        };
+    }
+
+    /// The record shape as an expression that makes it: [RecordShape#NONE] for a
+    /// type that is no record, or the components, in declaration order.
+    private static Expr recordShape(RecordShape shape) {
+        return switch (shape) {
+            case RecordShape.None _ -> Exprs.staticField(CD_RECORD_SHAPE, "NONE");
+            case RecordShape.Of(var components) ->
+                Exprs.new_(
+                        CD_RECORD_SHAPE.nested("Of"),
+                        list(components.stream()
+                                .map(component -> Exprs.new_(
+                                        CD_RECORD_COMPONENT,
+                                        Exprs.literal(component.name()),
+                                        typeRef(component.type())))
+                                .toList()));
         };
     }
 

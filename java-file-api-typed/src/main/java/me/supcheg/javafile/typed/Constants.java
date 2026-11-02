@@ -111,6 +111,7 @@ final class Constants {
                     Node.MethodRef _,
                     Node.ConstructorRef _,
                     Node.Switch _,
+                    Node.PatternSwitch _,
                     Node.Assign _,
                     Node.Increment _,
                     Node.ClassLiteral _,

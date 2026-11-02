@@ -713,6 +713,7 @@ final class Exceptions {
             // A switch throws what its selector, its values and its blocks do, and nothing of its own:
             // a selector that is null is a NullPointerException, which is not checked.
             case Node.Switch _ -> new Act.Computes();
+            case Node.PatternSwitch _ -> new Act.Computes();
         };
     }
 
@@ -736,7 +737,7 @@ final class Exceptions {
             case Instr.Synchronized(var lock, var _) -> Stream.of(lock);
             case Instr.Labeled _ -> Stream.empty();
             case Instr.If(var condition, var _, var _) -> Stream.of(condition);
-            case Instr.IfInstance(var operand, var _, var _, var _, var _) -> Stream.of(operand);
+            case Instr.IfInstance(var operand, var _, var _, var _) -> Stream.of(operand);
             case Instr.While(var _, var _, var condition, var _) -> Stream.of(condition);
             case Instr.DoWhile(var _, var _, var _, var condition) -> Stream.of(condition);
             case Instr.For(var _, var _, var _, var init, var condition, var update, var _) ->
@@ -765,12 +766,19 @@ final class Exceptions {
 
     /// The blocks `node` has itself: those of the cases of a `switch`.
     private static Stream<Block<?, ?>> blocks(Node node) {
-        return node instanceof Node.Switch switch_
-                ? switch_.arms().flatMap(arm -> switch (arm) {
+        return switch (node) {
+            case Node.Switch switch_ ->
+                switch_.arms().flatMap(arm -> switch (arm) {
                     case Node.Arm.Value _ -> Stream.empty();
                     case Node.Arm.Block(var block) -> Stream.of(block);
-                })
-                : Stream.empty();
+                });
+            case Node.PatternSwitch switch_ ->
+                switch_.arms().flatMap(arm -> switch (arm) {
+                    case Node.Arm.Value _ -> Stream.empty();
+                    case Node.Arm.Block(var block) -> Stream.of(block);
+                });
+            default -> Stream.empty();
+        };
     }
 
     /// `node` and every expression evaluated with it; a lambda is one of
@@ -827,6 +835,17 @@ final class Exceptions {
                             case Node.Arm.Value(var value) -> Stream.of(value);
                             case Node.Arm.Block _ -> Stream.empty();
                         }));
+            // A guard is evaluated where the switch is, and may call what throws; the statements of a
+            // block of a case are checked as they are appended to it.
+            case Node.PatternSwitch switch_ ->
+                Stream.concat(
+                        Stream.of(switch_.selector().node()),
+                        Stream.concat(
+                                switch_.arms().flatMap(arm -> switch (arm) {
+                                    case Node.Arm.Value(var value) -> Stream.of(value);
+                                    case Node.Arm.Block _ -> Stream.empty();
+                                }),
+                                switch_.cases().stream().flatMap(case_ -> case_.guard().stream())));
             case Node.Assign(var target, var _, var value) -> Stream.concat(children(target), Stream.of(value));
         };
     }

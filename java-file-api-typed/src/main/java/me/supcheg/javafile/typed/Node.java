@@ -372,6 +372,53 @@ sealed interface Node {
         record Block(YieldBody<?> block) implements Arm {}
     }
 
+    /// A `switch` expression over a sealed type, or over an enum, whose cases
+    /// are patterns, `null` and — over an enum — its constants: `switch (s) {
+    /// case Circle c -> ...; case Point(int x, int y) -> ...; case null -> ...;
+    /// default -> ... }`. Every result is of the type of the expression, see [Arm].
+    ///
+    /// @param selector the selector, with its static type: lowering casts it to `type` if it is of another
+    /// @param type the sealed type, or the enum
+    /// @param cases the cases, in order: every pattern, `null` and constant in at most one, and a
+    ///     permitted subtype of `type` — or every constant of an enum — in at least one if there is no
+    ///     `otherwise`
+    /// @param otherwise the `default` case, or that there is none
+    record PatternSwitch(Operand selector, DeclaredToken<?> type, List<PatternCase> cases, Default otherwise)
+            implements Exact {
+        public PatternSwitch {
+            cases = List.copyOf(cases);
+        }
+
+        /// What the cases are, the `default` one last.
+        Stream<Arm> arms() {
+            return Stream.concat(
+                    cases.stream().map(PatternCase::arm),
+                    switch (otherwise) {
+                        case Default.None _ -> Stream.<Arm>empty();
+                        case Default.Of(var arm) -> Stream.of(arm);
+                    });
+        }
+    }
+
+    /// A case of a [PatternSwitch], `case label when guard -> arm`.
+    ///
+    /// @param label what the case matches
+    /// @param guard the `when` condition of the case, or empty if it has none
+    /// @param arm what the case is
+    record PatternCase(Label label, Optional<Node> guard, Arm arm) {
+        /// What a case of a [PatternSwitch] matches.
+        sealed interface Label {
+            /// A pattern, `case T t` or `case R(int x, ...)`.
+            record Of(TypedPattern<?> pattern) implements Label {}
+
+            /// `case null`, which matches the `null` selector, and nothing a pattern matches.
+            record Null() implements Label {}
+
+            /// An enum constant, `case A`.
+            record Constant(EnumConstant<?> constant) implements Label {}
+        }
+    }
+
     /// An assignment, used as a statement.
     ///
     /// @param target the place assigned to

@@ -493,12 +493,34 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
     /// @throws IllegalArgumentException if the test would be unchecked
     public final <U> B ifInstanceOf(
             Expr<? super U> operand, RefToken<U> type, BiConsumer<? super B, ? super Var<U>> then) {
+        PatternBinding<U> binding = Patterns.binding(type);
+        return ifInstanceOf(operand, Patterns.type(binding), b -> then.accept(b, binding.var()));
+    }
+
+    /// Appends `if (operand instanceof pattern) { then }`; every binding the
+    /// pattern makes exists only in `then` (flow typing through HOAS).
+    ///
+    /// A pattern is a [TypedPattern.Type] — the form of
+    /// [#ifInstanceOf(Expr, RefToken, BiConsumer)] — or a record
+    /// deconstruction made by [Patterns], whose component bindings are in
+    /// scope in `then` with the types of the components. The type of the
+    /// pattern must be a subtype of the operand's, and the test checked, as
+    /// for the type pattern.
+    ///
+    /// @param operand the tested expression
+    /// @param pattern the pattern
+    /// @param then builds the `then` block
+    /// @param <U> the type the pattern matches
+    /// @return this block
+    /// @throws IllegalArgumentException if the test would be unchecked
+    public final <U> B ifInstanceOf(Expr<? super U> operand, TypedPattern<U> pattern, Consumer<? super B> then) {
         requireOpen();
-        Tokens.requireCheckedCast(operand.type(), type, "an instanceof pattern");
+        Patterns.requireReference(pattern.matched(), "an instanceof pattern");
+        Tokens.requireCheckedCast(operand.type(), pattern.matched(), "an instanceof pattern");
         B thenBlock = child("then-branch of ifInstanceOf");
-        Var<U> binding = new Var<>(type, Var.Role.Fixed.PATTERN_BINDING, thenBlock);
-        fill(thenBlock, b -> then.accept(b, binding));
-        return append(new Instr.IfInstance(operand.node(), type, binding, thenBlock, new Instr.Otherwise.Nothing()));
+        Patterns.bind(pattern, thenBlock);
+        fill(thenBlock, then);
+        return append(new Instr.IfInstance(operand.node(), pattern, thenBlock, new Instr.Otherwise.Nothing()));
     }
 
     /// Appends `if (operand instanceof U v) { then } else { otherwise }`
@@ -516,14 +538,34 @@ public abstract sealed class Block<R, B extends Block<R, B>> permits Body, VoidB
             RefToken<U> type,
             BiFunction<? super B, ? super Var<U>, Terminated<R>> then,
             Function<? super B, Terminated<R>> otherwise) {
+        PatternBinding<U> binding = Patterns.binding(type);
+        return ifInstanceOfElse(operand, Patterns.type(binding), b -> then.apply(b, binding.var()), otherwise);
+    }
+
+    /// Appends `if (operand instanceof pattern) { then } else { otherwise }`
+    /// whose branches both end, and so ends this block.
+    ///
+    /// @param operand the tested expression
+    /// @param pattern the pattern
+    /// @param then builds the `then` block; it must end
+    /// @param otherwise builds the `else` block; it must end
+    /// @param <U> the type the pattern matches
+    /// @return the proof that this block ended
+    /// @throws IllegalArgumentException if the test would be unchecked
+    public final <U> Terminated<R> ifInstanceOfElse(
+            Expr<? super U> operand,
+            TypedPattern<U> pattern,
+            Function<? super B, Terminated<R>> then,
+            Function<? super B, Terminated<R>> otherwise) {
         requireOpen();
-        Tokens.requireCheckedCast(operand.type(), type, "an instanceof pattern");
+        Patterns.requireReference(pattern.matched(), "an instanceof pattern");
+        Tokens.requireCheckedCast(operand.type(), pattern.matched(), "an instanceof pattern");
         B thenBlock = child("then-branch of ifInstanceOfElse");
-        Var<U> binding = new Var<>(type, Var.Role.Fixed.PATTERN_BINDING, thenBlock);
-        fillEnding(thenBlock, b -> then.apply(b, binding));
+        Patterns.bind(pattern, thenBlock);
+        fillEnding(thenBlock, then);
         B elseBlock = closed("else-branch of ifInstanceOfElse", otherwise);
         return appendFinal(
-                new Instr.IfInstance(operand.node(), type, binding, thenBlock, new Instr.Otherwise.Else(elseBlock)),
+                new Instr.IfInstance(operand.node(), pattern, thenBlock, new Instr.Otherwise.Else(elseBlock)),
                 "ifInstanceOfElse");
     }
 

@@ -2,7 +2,6 @@ package me.supcheg.javafile.typed;
 
 import me.supcheg.javafile.code.Stmt;
 import me.supcheg.javafile.facts.ClassToken;
-import me.supcheg.javafile.facts.RefToken;
 
 import java.util.List;
 import java.util.Optional;
@@ -48,9 +47,8 @@ sealed interface Instr {
     /// `if (c) { ... }`, with what it does where `c` does not hold.
     record If(Node condition, Block<?, ?> then, Otherwise otherwise) implements Instr {}
 
-    /// `if (x instanceof T v) { ... }`, with what it does where `x` is no `T`.
-    record IfInstance(Node operand, RefToken<?> type, Var<?> binding, Block<?, ?> then, Otherwise otherwise)
-            implements Instr {}
+    /// `if (x instanceof pattern) { ... }`, with what it does where `x` does not match.
+    record IfInstance(Node operand, TypedPattern<?> pattern, Block<?, ?> then, Otherwise otherwise) implements Instr {}
 
     /// What an `if` does where its condition does not hold: nothing, or its `else` block.
     sealed interface Otherwise {
@@ -192,7 +190,7 @@ sealed interface Instr {
             case Synchronized(var _, var body) -> Stream.of(body);
             case Labeled(var _, var body) -> Stream.of(body);
             case If(var _, var then, var otherwise) -> Stream.concat(Stream.of(then), otherwise.blocks());
-            case IfInstance(var _, var _, var _, var then, var otherwise) ->
+            case IfInstance(var _, var _, var then, var otherwise) ->
                 Stream.concat(Stream.of(then), otherwise.blocks());
             case While(var _, var _, var _, var body) -> Stream.of(body);
             case DoWhile(var _, var _, var body, var _) -> Stream.of(body);

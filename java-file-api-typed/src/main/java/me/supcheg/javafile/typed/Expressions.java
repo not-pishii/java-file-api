@@ -31,7 +31,8 @@ import java.util.stream.Stream;
 /// Combinators for typed expressions and effects (§6.1): literals, member
 /// access, calls, `new`, arrays, `cond`, per-primitive operators, explicit
 /// conversions, assignments, enum constants, `switch` expressions over an
-/// enum ([#switch_]) and lambdas (`lambda`, `lambdaBlock`).
+/// enum ([#switch_]) or over a sealed type or enum with patterns
+/// ([#switchPattern]) and lambdas (`lambda`, `lambdaBlock`).
 ///
 /// Primitive values are typed by their [Prim] markers: `literal(1)` is an
 /// `Expr<Prim.Int>`, never an `Expr<Integer>`. Boxing and unboxing are
@@ -957,6 +958,57 @@ public final class Expressions extends ExpressionArities {
         EnumSwitchCases<E, R> collected = new EnumSwitchCases<>(enumType, type, Scopes.enclosing());
         cases.accept(collected);
         return Expr.of(collected.close(operand(selector)), type);
+    }
+
+    /// `switch (selector) { case ... }`: a `switch` expression over a sealed
+    /// type — or over an enum — whose cases are patterns, `null` and, over an
+    /// enum, its constants (JLS 15.28).
+    ///
+    /// ```java
+    /// switchPattern(Figure_.TOKEN, figure, String_.TOKEN, c -> c
+    ///         .case_(Disc_.TOKEN, (body, disc) -> body.yield_(literal("disc")))
+    ///         .case_(Patterns.record(Point_.TOKEN, x, y), body -> body.yield_(literal("point")))
+    ///         .caseNull(body -> body.yield_(literal("nothing")))
+    ///         .default_(body -> body.yield_(literal("other"))));
+    /// ```
+    ///
+    /// The selector is evaluated once, and then the one case that matches it:
+    /// a block that yields the value of the `switch` ([YieldBody]). A case of
+    /// a pattern binds the components of the pattern in its block; the
+    /// pattern is made and checked by [Patterns]. The cases are checked as
+    /// they are added and when they are complete ([SealedSwitchCases]): a
+    /// pattern is a subtype of the selector's type, no case is dominated by
+    /// one before it, and — without a `default_` — the cases cover every
+    /// permitted subtype of a sealed selector, as the facts of its type name
+    /// them, or every constant of an enum.
+    ///
+    /// The result type is given explicitly and a result whose type is not `R`
+    /// is cast to it, so javac types the `switch` by `R` and never by its
+    /// results (JLS 15.28.1); primitive and reference results never mix.
+    ///
+    /// **Where it is used.** The block of a case is nested in the block the
+    /// `switch` is built in, and its statements are checked there as they are
+    /// built. A `switch` that has such a block is used in the block it is
+    /// built in, or in a block nested in that one and on the same side of
+    /// every lambda boundary ([ScopeCheck]).
+    ///
+    /// @param type the sealed type or enum of the selector
+    /// @param selector the selector
+    /// @param result the type of the `switch`
+    /// @param cases adds the cases, in the order of the code
+    /// @param <T> the sealed type or enum of the selector
+    /// @param <R> the type of the `switch`
+    /// @return the `switch` expression
+    /// @throws IllegalArgumentException if `type` is neither sealed nor an enum
+    /// @throws IllegalStateException if the cases are not exhaustive, or none has a result
+    public static <T, R> Expr<R> switchPattern(
+            DeclaredToken<T> type,
+            Expr<? extends T> selector,
+            TypeToken<R> result,
+            Consumer<? super SealedSwitchCases<T, R>> cases) {
+        SealedSwitchCases<T, R> collected = new SealedSwitchCases<>(type, result, Scopes.enclosing());
+        cases.accept(collected);
+        return Expr.of(collected.close(operand(selector)), result);
     }
 
     // ------------------------------------------------------------------

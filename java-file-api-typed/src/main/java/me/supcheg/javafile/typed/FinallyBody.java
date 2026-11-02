@@ -107,6 +107,20 @@ public final class FinallyBody<B extends Block<?, B>> {
         return this;
     }
 
+    /// Appends `if (operand instanceof pattern) { then }`, see
+    /// [Block#ifInstanceOf(Expr, TypedPattern, Consumer)].
+    ///
+    /// @param operand the tested expression
+    /// @param pattern the pattern
+    /// @param then builds the `then` block
+    /// @param <U> the type the pattern matches
+    /// @return this block
+    /// @throws IllegalArgumentException if the test would be unchecked
+    public <U> FinallyBody<B> ifInstanceOf(Expr<? super U> operand, TypedPattern<U> pattern, Consumer<? super B> then) {
+        block.ifInstanceOf(operand, pattern, then);
+        return this;
+    }
+
     /// Appends `while (condition) { body }`, see [Block#while_(Expr, BiConsumer)].
     ///
     /// @param condition the condition

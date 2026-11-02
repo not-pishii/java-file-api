@@ -44,7 +44,7 @@ import p.Kept;
 ///
 /// A generated class extends or implements [Kept] by the proof its metamodel starts, with the stages of `Kept_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Kept.class, fingerprint = "df5d17857e2c20328c98914da523aaa5d8cd8ca7609260392aef1dd1579d63be", complete = true, format = 19)
+@GeneratedMetamodel(of = Kept.class, fingerprint = "b2b040aeb460de065f2b74633a06dece748bcd7ac87ea3e256bc4f8fdbce2fb0", complete = true, format = 20)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -55,7 +55,7 @@ public final class Kept_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [Kept] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Kept_"), "df5d17857e2c20328c98914da523aaa5d8cd8ca7609260392aef1dd1579d63be", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Kept"), List.of(), List.of(ClassDesc.of("p.BadMid"), ClassDesc.of("java.lang.Object")), List.of(ClassDesc.of("p.HiddenI")), new Supertypes(List.of(), List.of(new ParameterizedTypeRef(ClassDesc.of("p.BadMid"), List.of(Types.exact(Types.of(ClassDesc.of("p.Secret")))), List.of()))), new MethodTableTemplate(Set.of(), Set.of(Signature.of("bad"), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("more"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("run"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Kept")), Set.of(), Map.ofEntries(Map.entry(Signature.of("clone"), List.of(new Thrown(ClassDesc.of("java.lang.CloneNotSupportedException"), List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))), Map.entry(Signature.of("finalize"), List.of(new Thrown(ClassDesc.of("java.lang.Throwable"), List.of(ClassDesc.of("java.lang.Object")), Optional.empty()))), Map.entry(Signature.of("wait"), List.of(new Thrown(ClassDesc.of("java.lang.InterruptedException"), List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))), Map.entry(Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), List.of(new Thrown(ClassDesc.of("java.lang.InterruptedException"), List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))), Map.entry(Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), List.of(new Thrown(ClassDesc.of("java.lang.InterruptedException"), List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))))), false, List.of(), List.of(), new Kept_Heritage());
+        public static final TypeShape<OpenClass> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.p.Kept_"), "b2b040aeb460de065f2b74633a06dece748bcd7ac87ea3e256bc4f8fdbce2fb0", () -> Canonical.TEXT), DeclaredKind.OPEN_CLASS, ClassDesc.of("p.Kept"), List.of(), List.of(ClassDesc.of("p.BadMid"), ClassDesc.of("java.lang.Object")), List.of(ClassDesc.of("p.HiddenI")), new Supertypes(List.of(), List.of(new ParameterizedTypeRef(ClassDesc.of("p.BadMid"), List.of(Types.exact(Types.of(ClassDesc.of("p.Secret")))), List.of()))), new MethodTableTemplate(Set.of(), Set.of(Signature.of("bad"), Signature.of("clone"), Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("finalize"), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("more"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("run"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(Signature.of("Kept")), Set.of(), Map.ofEntries(Map.entry(Signature.of("clone"), List.of(new Thrown(ClassDesc.of("java.lang.CloneNotSupportedException"), List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))), Map.entry(Signature.of("finalize"), List.of(new Thrown(ClassDesc.of("java.lang.Throwable"), List.of(ClassDesc.of("java.lang.Object")), Optional.empty()))), Map.entry(Signature.of("wait"), List.of(new Thrown(ClassDesc.of("java.lang.InterruptedException"), List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))), Map.entry(Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), List.of(new Thrown(ClassDesc.of("java.lang.InterruptedException"), List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))), Map.entry(Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), List.of(new Thrown(ClassDesc.of("java.lang.InterruptedException"), List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))))), false, List.of(), List.of(), new Kept_Heritage());
 
         private Data() {
         }
@@ -66,7 +66,7 @@ public final class Kept_ {
     static final class Canonical {
         /// The canonical form of [Kept].
         static final String TEXT = """
-        javafile-facts-canonical 12
+        javafile-facts-canonical 13
         type p.Kept open-class sealed=no nesting=top
         annotations -
         annotation -
@@ -75,6 +75,7 @@ public final class Kept_ {
         interfaces p.HiddenI
         supertypes p.BadMid<p.Secret>
         enum -
+        record -
         members declared-accessible
         member ctor public () throws -
         member field public static constant java.lang.String K = "k"

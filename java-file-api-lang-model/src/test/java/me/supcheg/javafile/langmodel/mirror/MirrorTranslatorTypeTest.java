@@ -7,6 +7,8 @@ import me.supcheg.javafile.facts.Heritage;
 import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
 import me.supcheg.javafile.facts.Overridability;
+import me.supcheg.javafile.facts.RecordComponent;
+import me.supcheg.javafile.facts.RecordShape;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.langmodel.mirror.FieldModel.Mutability;
 import me.supcheg.javafile.type.PrimitiveTypeRef;
@@ -1653,5 +1655,34 @@ class MirrorTranslatorTypeTest {
                 "package p; public enum Enum { A }");
 
         assertThat(extendable).containsExactly(true, true, false, false, false);
+    }
+
+    @Test
+    void aRecordTellsItsComponentsInDeclarationOrder() {
+        TypeModel model = full("p.Point", "package p; public record Point(int x, String label) {}");
+
+        assertThat(model.recordShape().components())
+                .containsExactly(
+                        new RecordComponent("x", PrimitiveTypeRef.INT), new RecordComponent("label", Types.STRING));
+    }
+
+    @Test
+    void aRecordThatDeclaresNoComponentIsARecordStill() {
+        TypeModel model = full("p.Nothing", "package p; public record Nothing() {}");
+        TypeModel notARecord = full("p.Plain", "package p; public class Plain {}");
+
+        assertThat(model.recordShape()).isInstanceOf(RecordShape.Of.class);
+        assertThat(model.recordShape().components()).isEmpty();
+        assertThat(notARecord.recordShape()).isSameAs(RecordShape.NONE);
+    }
+
+    @Test
+    void aRecordWhoseComponentIsNotPublicIsNoMetamodel() {
+        Translation<TypeModel> model =
+                translate("p.Rec", "package p; public record Rec(Secret secret) {}", "package p; class Secret {}");
+
+        assertThat(model)
+                .isEqualTo(new Translation.Unrepresentable<TypeModel>(
+                        "type p.Rec: the components of the record mention types that are not public: p.Secret"));
     }
 }

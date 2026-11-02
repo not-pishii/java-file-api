@@ -9,6 +9,8 @@ import me.supcheg.javafile.facts.DeclaredKind;
 import me.supcheg.javafile.facts.Heritage;
 import me.supcheg.javafile.facts.MethodTableTemplate;
 import me.supcheg.javafile.facts.Overridability;
+import me.supcheg.javafile.facts.RecordComponent;
+import me.supcheg.javafile.facts.RecordShape;
 import me.supcheg.javafile.facts.Supertypes;
 import me.supcheg.javafile.facts.Thrown;
 import me.supcheg.javafile.langmodel.mirror.FieldModel.Mutability;
@@ -780,6 +782,8 @@ public final class MirrorTranslator {
                 .map(e -> e.getSimpleName().toString())
                 .toList();
         List<ClassDesc> permitted = permitted(element);
+        Reading components = new Reading(VarScope.of(element));
+        RecordShape recordShape = recordShape(element, components);
         List<AnnotationUse> annotations = annotations(element);
         Optional<AnnotationModel> annotation = annotationModel(element, shape);
         // a model with members reads what the type adopts once, for the members and for the sam
@@ -805,6 +809,12 @@ public final class MirrorTranslator {
                     case SamRead.NoModel _ -> Optional.empty();
                 };
         shape.problems.addAll(bounds.problems);
+        shape.problems.addAll(components.problems);
+        if (!components.nonPublic.isEmpty()) {
+            return new Translation.Unrepresentable<>("type " + element.getQualifiedName()
+                    + ": the components of the record mention types that are not public: "
+                    + String.join(", ", components.nonPublic));
+        }
         enumConstants.stream()
                 .filter(constant -> !Identifiers.isValid(constant))
                 .forEach(constant -> shape.unrepresentable(
@@ -825,6 +835,7 @@ public final class MirrorTranslator {
                 enumConstants,
                 element.getModifiers().contains(Modifier.SEALED),
                 permitted,
+                recordShape,
                 sam,
                 switch (filter) {
                     case DECLARED_ACCESSIBLE -> inheritance(element);
@@ -850,6 +861,27 @@ public final class MirrorTranslator {
                     return desc((TypeElement) ((DeclaredType) subtype).asElement());
                 })
                 .toList();
+    }
+
+    /// What the declaration of a record tells beyond the facts of a class:
+    /// its components, in declaration order, with the names and types the
+    /// deconstruction pattern javac accepts repeats.
+    ///
+    /// @param element the class, interface, enum or record
+    /// @param reading what reading the types of the components found: a type that is not `public`
+    ///                is no part of a metamodel, and an unrepresentable one defers the type
+    /// @return the record shape; [RecordShape#NONE] for a type that is no record
+    /// @throws Unresolved if a component type is not generated yet
+    private RecordShape recordShape(TypeElement element, Reading reading) {
+        if (element.getKind() != ElementKind.RECORD) {
+            return RecordShape.NONE;
+        }
+        return new RecordShape.Of(element.getRecordComponents().stream()
+                .map(component -> {
+                    requireResolved(component.asType());
+                    return new RecordComponent(component.getSimpleName().toString(), type(component.asType(), reading));
+                })
+                .toList());
     }
 
     /// The annotations a type, a member or a parameter declares, in a

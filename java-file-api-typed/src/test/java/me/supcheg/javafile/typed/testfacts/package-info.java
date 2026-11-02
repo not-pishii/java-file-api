@@ -135,7 +135,17 @@
     Retention.class,
     RetentionPolicy.class,
     Target.class,
-    ElementType.class
+    ElementType.class,
+    Figure.class,
+    Disc.class,
+    Square.class,
+    Piece.class,
+    Point.class,
+    Line.class,
+    Boxed.class,
+    Bagged.class,
+    Blank.class,
+    Wrapped.class
 })
 @NullMarked
 package me.supcheg.javafile.typed.testfacts;
@@ -234,6 +244,16 @@ import me.supcheg.javafile.typed.fixtures.Author;
 import me.supcheg.javafile.typed.fixtures.PackageTag;
 import me.supcheg.javafile.typed.fixtures.Overridden;
 import me.supcheg.javafile.typed.fixtures.Unconstrained;
+import me.supcheg.javafile.typed.fixtures.Figure;
+import me.supcheg.javafile.typed.fixtures.Disc;
+import me.supcheg.javafile.typed.fixtures.Square;
+import me.supcheg.javafile.typed.fixtures.Piece;
+import me.supcheg.javafile.typed.fixtures.Point;
+import me.supcheg.javafile.typed.fixtures.Line;
+import me.supcheg.javafile.typed.fixtures.Boxed;
+import me.supcheg.javafile.typed.fixtures.Bagged;
+import me.supcheg.javafile.typed.fixtures.Blank;
+import me.supcheg.javafile.typed.fixtures.Wrapped;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

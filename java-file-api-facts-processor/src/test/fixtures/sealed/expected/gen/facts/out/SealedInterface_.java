@@ -38,7 +38,7 @@ import out.SealedInterface;
 ///
 /// A generated class extends or implements [SealedInterface] by the proof its metamodel starts, with the stages of `SealedInterface_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = SealedInterface.class, fingerprint = "5b55085a7d1efa4715d09b601f6649e11c9f877b8f6a662f5ef5a8c388adeb17", complete = true, format = 19)
+@GeneratedMetamodel(of = SealedInterface.class, fingerprint = "73fa7554a7e95cc8c28dd442cfe2af5be91bfd2e649f13f1dc9c854f51365a4e", complete = true, format = 20)
 @SuppressWarnings({
     "deprecation",
     "removal"
@@ -49,7 +49,7 @@ public final class SealedInterface_ {
     @GeneratedMetamodelPart
     public static final class Data {
         /// What [SealedInterface] was when this metamodel was generated. Its tokens are made from it.
-        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.out.SealedInterface_"), "5b55085a7d1efa4715d09b601f6649e11c9f877b8f6a662f5ef5a8c388adeb17", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("out.SealedInterface"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("sides")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of(), Map.ofEntries(Map.entry(Signature.of("wait"), List.of(new Thrown(ClassDesc.of("java.lang.InterruptedException"), List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))), Map.entry(Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), List.of(new Thrown(ClassDesc.of("java.lang.InterruptedException"), List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))), Map.entry(Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), List.of(new Thrown(ClassDesc.of("java.lang.InterruptedException"), List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))))), true, List.of(ClassDesc.of("out.Out")), List.of(), new SealedInterface_Heritage());
+        public static final TypeShape<Interface> SHAPE = UnsafeFacts.shape(new Metamodel(ClassDesc.of("gen.facts.out.SealedInterface_"), "73fa7554a7e95cc8c28dd442cfe2af5be91bfd2e649f13f1dc9c854f51365a4e", () -> Canonical.TEXT), DeclaredKind.INTERFACE, ClassDesc.of("out.SealedInterface"), List.of(), List.of(), List.of(), Supertypes.NONE, new MethodTableTemplate(Set.of(Signature.of("sides")), Set.of(Signature.of("equals", Param.fixed(ClassDesc.of("java.lang.Object"))), Signature.of("getClass"), Signature.of("hashCode"), Signature.of("notify"), Signature.of("notifyAll"), Signature.of("toString"), Signature.of("wait"), Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int))), Set.of(), Set.of(), Set.of(), Map.ofEntries(Map.entry(Signature.of("wait"), List.of(new Thrown(ClassDesc.of("java.lang.InterruptedException"), List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))), Map.entry(Signature.of("wait", Param.fixed(ConstantDescs.CD_long)), List.of(new Thrown(ClassDesc.of("java.lang.InterruptedException"), List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))), Map.entry(Signature.of("wait", Param.fixed(ConstantDescs.CD_long), Param.fixed(ConstantDescs.CD_int)), List.of(new Thrown(ClassDesc.of("java.lang.InterruptedException"), List.of(ClassDesc.of("java.lang.Exception"), ClassDesc.of("java.lang.Throwable"), ClassDesc.of("java.lang.Object")), Optional.empty()))))), true, List.of(ClassDesc.of("out.Out")), List.of(), new SealedInterface_Heritage());
 
         private Data() {
         }
@@ -60,7 +60,7 @@ public final class SealedInterface_ {
     static final class Canonical {
         /// The canonical form of [SealedInterface].
         static final String TEXT = """
-        javafile-facts-canonical 12
+        javafile-facts-canonical 13
         type out.SealedInterface interface sealed=yes nesting=top permits=out.Out
         annotations -
         annotation -
@@ -69,6 +69,7 @@ public final class SealedInterface_ {
         interfaces -
         supertypes -
         enum -
+        record -
         members declared-accessible
         member method public abstract sides() -> int throws -
         inherit method sides() erased () overrides - by interface abstract out.SealedInterface () -> int throws -

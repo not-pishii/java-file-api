@@ -6,6 +6,7 @@ import me.supcheg.javafile.facts.testfacts.java.lang.Integer_;
 import me.supcheg.javafile.facts.testfacts.java.lang.String_;
 import me.supcheg.javafile.facts.testfacts.java.util.List_;
 import me.supcheg.javafile.type.DeclaredTypeRef;
+import me.supcheg.javafile.type.PrimitiveTypeRef;
 import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.Types;
 import org.junit.jupiter.api.Test;
@@ -561,5 +562,66 @@ class TypeShapeTest {
                 MethodTableTemplate.EMPTY,
                 List.of(),
                 false);
+    }
+
+    @Test
+    void aRecordTellsItsComponentsInDeclarationOrder() {
+        RecordShape shape = recordShape(
+                DeclaredKind.FINAL_CLASS,
+                new RecordShape.Of(List.of(
+                        new RecordComponent("x", PrimitiveTypeRef.INT), new RecordComponent("label", Types.STRING))));
+
+        assertThat(shape).isInstanceOf(RecordShape.Of.class);
+        assertThat(shape.components())
+                .containsExactly(
+                        new RecordComponent("x", PrimitiveTypeRef.INT), new RecordComponent("label", Types.STRING));
+        assertThat(shape.components().getFirst().name()).isEqualTo("x");
+    }
+
+    @Test
+    void aRecordThatDeclaresNoComponentIsStillARecord() {
+        RecordShape empty = recordShape(DeclaredKind.FINAL_CLASS, new RecordShape.Of(List.of()));
+
+        assertThat(empty.components()).isEmpty();
+        assertThat(empty).isNotSameAs(RecordShape.NONE);
+        assertThat(RecordShape.NONE.components()).isEmpty();
+    }
+
+    @Test
+    void aRecordDeclaresAComponentOnce() {
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> new RecordShape.Of(List.of(
+                        new RecordComponent("x", PrimitiveTypeRef.INT),
+                        new RecordComponent("x", PrimitiveTypeRef.INT))))
+                .withMessageContaining("declares the component x twice");
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> new RecordComponent("not a name", PrimitiveTypeRef.INT))
+                .withMessageContaining("not a name");
+    }
+
+    @Test
+    void onlyAFinalClassIsARecord() {
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> recordShape(
+                        DeclaredKind.INTERFACE, new RecordShape.Of(List.of(new RecordComponent("x", Types.STRING)))))
+                .withMessageContaining("a record is a final class");
+    }
+
+    private static RecordShape recordShape(DeclaredKind kind, RecordShape recordShape) {
+        return UnsafeFacts.shape(
+                        new ShapeOrigin.Metamodel(ClassDesc.of("fixtures.facts", "Rec_"), FINGERPRINT, () -> ""),
+                        kind,
+                        ClassDesc.of("fixtures", "Rec"),
+                        List.of(),
+                        kind instanceof DeclaredKind.Interface ? List.of() : List.of(ConstantDescs.CD_Object),
+                        List.of(),
+                        Supertypes.NONE,
+                        MethodTableTemplate.EMPTY,
+                        List.of(),
+                        false,
+                        List.of(),
+                        List.of(),
+                        recordShape)
+                .recordShape();
     }
 }
