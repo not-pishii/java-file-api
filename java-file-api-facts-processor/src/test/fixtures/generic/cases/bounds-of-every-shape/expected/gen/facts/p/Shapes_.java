@@ -44,7 +44,7 @@ import p.Shapes;
 ///
 /// @param <T> a type argument of [Shapes]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Shapes.class, fingerprint = "12680041cb4895c086a30fddb74dbeeead1953693c2d41c33079025de2be2855", complete = true, format = 20)
+@GeneratedMetamodel(of = Shapes.class, fingerprint = "12680041cb4895c086a30fddb74dbeeead1953693c2d41c33079025de2be2855", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

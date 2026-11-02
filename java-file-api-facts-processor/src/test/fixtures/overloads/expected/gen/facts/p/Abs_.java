@@ -42,7 +42,7 @@ import p.Abs;
 ///
 /// @param <T> a type argument of [Abs]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Abs.class, fingerprint = "c768e767eca360b89fc89b27ecb44df43d6d37001e88733a39dae4bfa6872b57", complete = true, format = 20)
+@GeneratedMetamodel(of = Abs.class, fingerprint = "c768e767eca360b89fc89b27ecb44df43d6d37001e88733a39dae4bfa6872b57", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

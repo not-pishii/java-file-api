@@ -41,7 +41,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// A generated class extends or implements [Constable] by the proof its metamodel starts, with the stages of `Constable_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Constable.class, fingerprint = "458de7ca297a13089f153d2bc7aecc581ab6854b7c6e3eb5f8449b0501b74b57", complete = true, format = 20)
+@GeneratedMetamodel(of = Constable.class, fingerprint = "458de7ca297a13089f153d2bc7aecc581ab6854b7c6e3eb5f8449b0501b74b57", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

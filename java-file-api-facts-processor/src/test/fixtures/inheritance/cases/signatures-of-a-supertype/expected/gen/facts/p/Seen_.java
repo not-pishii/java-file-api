@@ -30,7 +30,7 @@ import p.Seen;
 ///
 /// `@Facts` does not ask for [Seen]: it is only mentioned in the signatures of [p.High]. For the facts of its members add `Seen.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Seen.class, fingerprint = "ec66d124cc8f9ca3a16981b7b9b7c12d6ec1543439437b5963680a4f964598b4", complete = false, format = 20)
+@GeneratedMetamodel(of = Seen.class, fingerprint = "ec66d124cc8f9ca3a16981b7b9b7c12d6ec1543439437b5963680a4f964598b4", complete = false, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

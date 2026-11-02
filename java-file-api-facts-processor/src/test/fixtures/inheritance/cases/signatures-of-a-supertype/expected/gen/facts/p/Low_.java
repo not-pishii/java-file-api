@@ -36,7 +36,7 @@ import p.Low;
 ///
 /// A generated class extends or implements [Low] by the proof its metamodel starts, with the stages of `Low_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Low.class, fingerprint = "518aeb3b0e27bf0a40b53c233cd6c20007e2707f8508c054657e3e5a742587a9", complete = true, format = 20)
+@GeneratedMetamodel(of = Low.class, fingerprint = "518aeb3b0e27bf0a40b53c233cd6c20007e2707f8508c054657e3e5a742587a9", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

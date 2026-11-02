@@ -45,7 +45,7 @@ import p.Seq;
 ///
 /// @param <E> a type argument of [Seq]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Seq.class, fingerprint = "33a0a411a430b5d03c139bcf4b8973d00c939445bd27adbe7df9c14cd6ef4e2f", complete = true, format = 20)
+@GeneratedMetamodel(of = Seq.class, fingerprint = "33a0a411a430b5d03c139bcf4b8973d00c939445bd27adbe7df9c14cd6ef4e2f", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

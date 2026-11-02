@@ -36,7 +36,7 @@ import p.Witness;
 ///
 /// A generated class extends or implements [Witness] by the proof its metamodel starts, with the stages of `Witness_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Witness.class, fingerprint = "db505c85895c9e956bf17f850a194642f7861a94c7ebee884da35869e0092463", complete = true, format = 20)
+@GeneratedMetamodel(of = Witness.class, fingerprint = "db505c85895c9e956bf17f850a194642f7861a94c7ebee884da35869e0092463", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

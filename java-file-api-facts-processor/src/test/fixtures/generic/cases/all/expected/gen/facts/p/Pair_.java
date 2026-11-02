@@ -45,7 +45,7 @@ import p.Pair;
 /// @param <A> a type argument of [Pair]
 /// @param <B> a type argument of [Pair]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Pair.class, fingerprint = "f26d8bf874f86db351ed7dedecf71f6ab39b09d3af58c8e45b29b769ca033f35", complete = true, format = 20)
+@GeneratedMetamodel(of = Pair.class, fingerprint = "f26d8bf874f86db351ed7dedecf71f6ab39b09d3af58c8e45b29b769ca033f35", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

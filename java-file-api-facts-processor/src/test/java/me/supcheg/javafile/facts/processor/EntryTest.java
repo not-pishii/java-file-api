@@ -17,6 +17,7 @@ import me.supcheg.javafile.type.SuperTypeArg;
 import me.supcheg.javafile.type.TypeArg;
 import me.supcheg.javafile.type.TypeRef;
 import me.supcheg.javafile.type.TypeVarRef;
+import me.supcheg.javafile.type.Types;
 import me.supcheg.javafile.type.UnboundedTypeArg;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -510,12 +511,127 @@ class EntryTest {
         assertThat(refusal("java.lang.Enum")).isEqualTo("no class extends java.lang.Enum but an enum or a record does");
         // a sealed type has an entry too: the typed layer holds a generator to the subtypes it permits
         assertThat(read("java.lang.constant.ConstantDesc").entry()).isInstanceOf(Entry.Offered.class);
-        // an abstract method with type parameters of its own
-        assertThat(refusal("java.util.Collection"))
-                .isEqualTo(
-                        "its abstract method toArray(java.lang.Object[]) is generic, and a generated method has no type"
-                                + " parameters yet");
-        assertThat(refusal("java.util.List")).contains("is generic");
+    }
+
+    @Test
+    void anAbstractMethodWithTypeParametersOfItsOwnIsAStepThatDeclaresThem() {
+        Entry.Offered offered = (Entry.Offered) read("java.util.Collection").entry();
+        Entry.Step toArray = offered.steps().stream()
+                .filter(step -> step.name().equals("toArray_TArray"))
+                .findFirst()
+                .orElseThrow();
+
+        assertThat(toArray.typeParams()).singleElement().satisfies(param -> {
+            assertThat(param.name()).isEqualTo("T");
+            assertThat(param.bounds()).isEmpty();
+        });
+        assertThat(toArray.params()).containsExactly(new ArrayTypeRef(Types.typeVar("T")));
+        assertThat(toArray.result()).isEqualTo(new Heritage.Result.Of<TypeRef>(new ArrayTypeRef(Types.typeVar("T"))));
+        // the names a step gives the type parameters of a method avoid those of the type and of the class
+        assertThat(steps(read("java.util.List"))).contains("toArray_TArray");
+        assertThat(((Entry.Offered) ofLibrary(
+                                        "p.Ids",
+                                        "package p; public interface Ids<E> { <T extends CharSequence> T id(T value); }")
+                                .entry())
+                        .steps())
+                .singleElement()
+                .satisfies(step -> {
+                    assertThat(step.name()).isEqualTo("id_T");
+                    assertThat(step.typeParams()).singleElement().satisfies(param -> {
+                        assertThat(param.name()).isEqualTo("T");
+                        assertThat(param.bounds())
+                                .containsExactly(new ClassTypeRef(ClassDesc.of("java.lang.CharSequence")));
+                    });
+                    assertThat(step.params()).containsExactly(Types.typeVar("T"));
+                    assertThat(step.result()).isEqualTo(new Heritage.Result.Of<TypeRef>(Types.typeVar("T")));
+                });
+    }
+
+    @Test
+    void aGenericMethodThatCannotBeAStepRefusesTheEntry() {
+        String many = IntStream.range(0, 17).mapToObj(i -> "int p" + i).collect(Collectors.joining(", "));
+        assertThat(((Entry.Refused)
+                                ofLibrary("p.Wide", "package p; public interface Wide { <T> void m(" + many + "); }")
+                                        .entry())
+                        .reason())
+                .contains("has 17 parameters, more than " + Entry.MAX_ARITY);
+
+        assertThat(((Entry.Refused) ofLibrary(
+                                        "p.Varying", "package p; public interface Varying { <T> void m(T... values); }")
+                                .entry())
+                        .reason())
+                .contains("is of variable arity with an element type that is not reifiable");
+        // a generic method of variable arity of an element type javac does not warn of is a step
+        assertThat(steps(ofLibrary(
+                        "p.Reifiable", "package p; public interface Reifiable { <T> void m(String... values); }")))
+                .containsExactly("m_StringArray");
+
+        assertThat(((Entry.Refused) ofLibrary(
+                                        "p.Bounded",
+                                        "package p; class Hidden {}",
+                                        "package p; public interface Bounded { <T extends Hidden> void m(T value); }")
+                                .entry())
+                        .reason())
+                .contains("mentions p.Hidden, which a class of another package cannot name");
+
+        // no fact of a deprecated method, as for a method without type parameters
+        assertThat(((Entry.Refused) ofLibrary(
+                                        "p.Aged", "package p; public interface Aged { @Deprecated <T> void old(T v); }")
+                                .entry())
+                        .reason())
+                .contains("has no fact in the metamodel of the type");
+    }
+
+    @Test
+    void theTypeParametersOfAStepAreNamedAroundThoseTheStageUses() {
+        // eight type parameters: the letters run out after Z
+        Entry.Step eight = ((Entry.Offered)
+                        ofLibrary("p.Eight", "package p; public interface Eight { <A,B,C,D,E,F,G,H> void m(); }")
+                                .entry())
+                .steps()
+                .getFirst();
+        assertThat(eight.typeParams().stream().map(param -> param.name()))
+                .containsExactly("T", "U", "V", "W", "X", "Y", "Z", "T8");
+        assertThat(eight.name()).isEqualTo("m");
+
+        // a type parameter of the type named like the first the step would take: `_` appended
+        Entry.Step taken = ((Entry.Offered)
+                        ofLibrary("p.Taken", "package p; public interface Taken<T> { <U> void m(U value); }")
+                                .entry())
+                .steps()
+                .getFirst();
+        assertThat(taken.typeParams().stream().map(param -> param.name())).containsExactly("T_");
+        assertThat(taken.name()).isEqualTo("m_T_");
+
+        // a bound that mentions the type parameter itself is written in terms of the step's name
+        Entry.Step bounded = ((Entry.Offered) ofLibrary(
+                                "p.Bounded",
+                                "package p; public interface Bounded { <T extends Comparable<T>> T max(T value); }")
+                        .entry())
+                .steps()
+                .getFirst();
+        assertThat(bounded.typeParams().getFirst().bounds())
+                .containsExactly(new ParameterizedTypeRef(
+                        ClassDesc.of("java.lang", "Comparable"), List.of(new ExactTypeArg(Types.typeVar("T")))));
+    }
+
+    @Test
+    void aGenericMethodDeclaredAlsoWithoutTypeParametersIsAStepOfItsGenericForm() {
+        // javac makes one method of `<T> void f(T)` and `void f(Object)`, which erases it
+        Read both = ofLibrary(
+                "p.Both",
+                "package p; public interface Generic { <T> void f(T value); }",
+                "package p; public interface Plain { void f(Object value); }",
+                "package p; public interface Both extends Generic, Plain {}");
+
+        assertThat(((Entry.Offered) both.entry()).steps()).singleElement().satisfies(step -> {
+            assertThat(step.name()).isEqualTo("f_T");
+            assertThat(step.typeParams()).singleElement().satisfies(param -> {
+                assertThat(param.name()).isEqualTo("T");
+                assertThat(param.bounds()).isEmpty();
+            });
+            assertThat(step.params()).containsExactly(Types.typeVar("T"));
+        });
     }
 
     @TempDir

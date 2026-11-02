@@ -43,13 +43,22 @@ final class GenericOverrides {
     }
 
     /// Why the method `own` cannot override the generic method `generic`, if it cannot: its fact names a
-    /// type variable per type parameter of the method it overrides, the fact of its witness.
+    /// type variable per type parameter of the method it overrides, the fact of its witness. A witness
+    /// of another bound is refused where the step is taken, or by javac where the method is declared:
+    /// the step and the declaration write the bounds of the method they implement.
     ///
     /// @param own the fact of the method the class declares
     /// @param generic the method it overrides, as the class inherits it
     /// @return why it cannot, or empty if it can
     static Optional<String> refusal(Invocable own, Heritage.Generic generic) {
-        return own.traits().typeArgs().stream()
+        List<RefToken<?>> witnesses = own.traits().typeArgs();
+        int variables = generic.told().typeParams().size();
+        if (witnesses.size() != variables) {
+            return Optional.of("the method names " + witnesses.size() + " type parameters, and the method it"
+                    + " overrides has " + variables + ": an override of a generic method declares a type"
+                    + " parameter per type parameter of the method it overrides (JLS 8.4.8.3)");
+        }
+        return witnesses.stream()
                 .filter(witness -> !(witness instanceof TypeVarToken<?>))
                 .findFirst()
                 .map(witness -> "the method is generic, and the fact of the override is instantiated with " + witness

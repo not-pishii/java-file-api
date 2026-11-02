@@ -37,7 +37,7 @@ import p.Unused;
 ///
 /// A generated class extends or implements [Unused] by the proof its metamodel starts, with the stages of `Unused_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Unused.class, fingerprint = "b40a40c3604007635d327dadfee676dfc950783eef22d2417365f37e89bf49d8", complete = true, format = 20)
+@GeneratedMetamodel(of = Unused.class, fingerprint = "b40a40c3604007635d327dadfee676dfc950783eef22d2417365f37e89bf49d8", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

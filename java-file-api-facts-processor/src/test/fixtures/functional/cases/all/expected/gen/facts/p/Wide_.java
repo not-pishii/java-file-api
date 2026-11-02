@@ -37,7 +37,7 @@ import p.Wide;
 ///
 /// A generated class extends or implements [Wide] by the proof its metamodel starts, with the stages of `Wide_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Wide.class, fingerprint = "dcacb5e0df7f61cafc1699b67ceb2c033c07efabccb9e7c2f47599da80c221b4", complete = true, format = 20)
+@GeneratedMetamodel(of = Wide.class, fingerprint = "dcacb5e0df7f61cafc1699b67ceb2c033c07efabccb9e7c2f47599da80c221b4", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

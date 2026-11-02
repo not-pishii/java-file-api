@@ -40,7 +40,7 @@ import p.Day;
 ///
 /// No generated class extends or implements [Day]: it is an enum class, which no class extends.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Day.class, fingerprint = "95b8619d409a2b89e7217c2aaaae587a7c9c9c17bac92eb66d638f56cc21018e", complete = true, format = 20)
+@GeneratedMetamodel(of = Day.class, fingerprint = "95b8619d409a2b89e7217c2aaaae587a7c9c9c17bac92eb66d638f56cc21018e", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

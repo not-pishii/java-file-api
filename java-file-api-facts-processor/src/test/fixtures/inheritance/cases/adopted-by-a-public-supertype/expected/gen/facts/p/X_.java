@@ -43,7 +43,7 @@ import p.X;
 ///
 /// A generated class extends or implements [X] by the proof its metamodel starts, with the stages of `X_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = X.class, fingerprint = "db442e1900a72d5b17a8e884f210d0207ef5ecfb1a2e2ae41873d26b3ed3fa1b", complete = true, format = 20)
+@GeneratedMetamodel(of = X.class, fingerprint = "db442e1900a72d5b17a8e884f210d0207ef5ecfb1a2e2ae41873d26b3ed3fa1b", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

@@ -44,7 +44,7 @@ import p.Color;
 ///
 /// No generated class extends or implements [Color]: it is an enum class, which no class extends.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Color.class, fingerprint = "9b2019bd663d687dc384c53faf975f1a3f6cfb4c264aba26e4dc62e7fdb7b23c", complete = true, format = 20)
+@GeneratedMetamodel(of = Color.class, fingerprint = "9b2019bd663d687dc384c53faf975f1a3f6cfb4c264aba26e4dc62e7fdb7b23c", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

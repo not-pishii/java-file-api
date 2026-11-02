@@ -42,7 +42,7 @@ import p.RawBound;
 ///
 /// @param <T> a type argument of [RawBound]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = RawBound.class, fingerprint = "be597d9097527af5a6b823f51fc7597a27ab7d2b0d979549cb3e91881dcac19d", complete = true, format = 20)
+@GeneratedMetamodel(of = RawBound.class, fingerprint = "be597d9097527af5a6b823f51fc7597a27ab7d2b0d979549cb3e91881dcac19d", complete = true, format = 21)
 @SuppressWarnings({
     "rawtypes",
     "deprecation",

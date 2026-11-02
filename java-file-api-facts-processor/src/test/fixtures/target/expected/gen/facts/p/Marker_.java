@@ -35,7 +35,7 @@ import p.Marker;
 ///
 /// A generated class extends or implements [Marker] by the proof its metamodel starts, with the stages of `Marker_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Marker.class, fingerprint = "80902ad0339f4a70b7e1fe628fe7531da3e76adbcdfb871141a3d190d587b7f7", complete = true, format = 20)
+@GeneratedMetamodel(of = Marker.class, fingerprint = "80902ad0339f4a70b7e1fe628fe7531da3e76adbcdfb871141a3d190d587b7f7", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

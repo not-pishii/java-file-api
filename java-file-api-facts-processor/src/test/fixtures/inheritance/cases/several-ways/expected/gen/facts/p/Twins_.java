@@ -39,7 +39,7 @@ import p.Twins;
 ///
 /// A generated class extends or implements [Twins] by the proof its metamodel starts, with the stages of `Twins_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Twins.class, fingerprint = "d124d291ee32b210c9ea347b21bdd66fb491bd0846dc160e91adb0d55b8b023e", complete = true, format = 20)
+@GeneratedMetamodel(of = Twins.class, fingerprint = "d124d291ee32b210c9ea347b21bdd66fb491bd0846dc160e91adb0d55b8b023e", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

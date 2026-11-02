@@ -36,7 +36,7 @@ import p.Open;
 ///
 /// A generated class extends or implements [Open] by the proof its metamodel starts, with the stages of `Open_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Open.class, fingerprint = "acb7b5099b00a66a25d0b2fcc16988500a5254dc87ae16044e3e1e2d5de00205", complete = true, format = 20)
+@GeneratedMetamodel(of = Open.class, fingerprint = "acb7b5099b00a66a25d0b2fcc16988500a5254dc87ae16044e3e1e2d5de00205", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

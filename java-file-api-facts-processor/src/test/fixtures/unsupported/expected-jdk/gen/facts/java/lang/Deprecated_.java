@@ -41,7 +41,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// `@Facts` does not ask for [Deprecated]: it is only mentioned in the signatures of [p.Noted]. For the facts of its members add `Deprecated.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Deprecated.class, fingerprint = "41a14247448760b589536fd8be9c43b05981971e05112af707ea40cbde6603ad", complete = false, format = 20)
+@GeneratedMetamodel(of = Deprecated.class, fingerprint = "41a14247448760b589536fd8be9c43b05981971e05112af707ea40cbde6603ad", complete = false, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

@@ -1,12 +1,15 @@
 package gen.facts.p;
 
 import gen.facts.p.Gen_Heritage.Held;
+import gen.facts.p.Gen_Heritage.Implement;
 import java.lang.constant.ClassDesc;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 import javax.annotation.processing.Generated;
 import me.supcheg.javafile.facts.Arity;
+import me.supcheg.javafile.facts.Complete;
+import me.supcheg.javafile.facts.DeclaredToken;
 import me.supcheg.javafile.facts.Heritage.Declaration;
 import me.supcheg.javafile.facts.Heritage.Declarer.OfInterface;
 import me.supcheg.javafile.facts.Heritage.InterfaceMethod;
@@ -15,12 +18,17 @@ import me.supcheg.javafile.facts.Heritage.Result.Of;
 import me.supcheg.javafile.facts.Heritage.Told;
 import me.supcheg.javafile.facts.Heritage.Type.OfMember;
 import me.supcheg.javafile.facts.Heritage.Variable;
+import me.supcheg.javafile.facts.Implementation1;
 import me.supcheg.javafile.facts.MethodTableTemplate.Param;
 import me.supcheg.javafile.facts.MethodTableTemplate.Signature;
+import me.supcheg.javafile.facts.RefToken;
+import me.supcheg.javafile.facts.Steps;
+import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.facts.meta.GeneratedMetamodelPart;
 import org.jspecify.annotations.NullMarked;
+import p.Gen;
 
-/// What a class that extends or implements [p.Gen] inherits: the heritage the shape of its metamodel tells, loaded only when one is declared.
+/// What a class that extends or implements [Gen] inherits: the heritage the shape of its metamodel tells, loaded only when one is declared.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
 @GeneratedMetamodelPart
 @SuppressWarnings({
@@ -43,7 +51,7 @@ public final class Gen_Heritage implements Supplier<Told> {
     }
 
     static final class Held {
-        /// Every constructor and method of [p.Gen] that is not private, as a member of it, whoever declares it.
+        /// Every constructor and method of [Gen] that is not private, as a member of it, whoever declares it.
         static final Told HERITAGE = new Told(List.of(m0()), List.of(), List.of());
 
         private Held() {
@@ -51,6 +59,36 @@ public final class Gen_Heritage implements Supplier<Told> {
 
         private static Method<Declaration> m0() {
             return new Method<>(Signature.of("id", Param.fixed(ClassDesc.of("java.lang.Object"))), List.of(new Declaration(new OfInterface(ClassDesc.of("p.Gen"), InterfaceMethod.ABSTRACT), Arity.FIXED, List.of(new Variable(List.of())), List.of(new OfMember(0)), new Of<>(new OfMember(0)), List.of())), Set.of(List.of(ClassDesc.of("java.lang.Object"))), List.of());
+        }
+    }
+
+    /// Starts the proof that a class being declared implements [Gen]: a step per abstract method follows, in the order of their names. For the metamodel of the type, whose method of this name gives its own token: the entry of a generator.
+    ///
+    /// @param type the token of the type
+    /// @param self the token of the class being declared
+    /// @param <Self> the class being declared
+    /// @return the stage of the first step
+    final <Self> Implement<Self> implement(DeclaredToken<Gen> type, RefToken<Self> self) {
+        return new Implement<>(UnsafeFacts.steps(type, self));
+    }
+
+    /// The proof that a class implements [Gen] after 0 of its 1 steps.
+    ///
+    /// @param <Self> the class being declared
+    public static final class Implement<Self> {
+        private final Steps<Self, Gen> steps;
+
+        private Implement(Steps<Self, Gen> steps) {
+            this.steps = steps;
+        }
+
+        /// Takes how the class has the abstract method `id(java.lang.Object)`, declared in `Gen`.
+        ///
+        /// @param how the implementation of the method
+        /// @param <T> a type parameter of the method
+        /// @return the proof, complete
+        public <T> Complete<Self, Gen> id_T(Implementation1<Self, ? extends T, T> how) {
+            return this.steps.with(Held.HERITAGE.methods().get(0).signature(), how).complete();
         }
     }
 }

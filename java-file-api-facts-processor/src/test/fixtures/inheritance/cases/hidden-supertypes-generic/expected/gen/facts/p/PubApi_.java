@@ -39,7 +39,7 @@ import p.PubApi;
 ///
 /// A generated class extends or implements [PubApi] by the proof its metamodel starts, with the stages of `PubApi_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = PubApi.class, fingerprint = "9c6c628f88b2ffb18a5a2de33c7847342fe119dd67f473adbed0600b2c0599d1", complete = true, format = 20)
+@GeneratedMetamodel(of = PubApi.class, fingerprint = "9c6c628f88b2ffb18a5a2de33c7847342fe119dd67f473adbed0600b2c0599d1", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

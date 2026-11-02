@@ -43,7 +43,7 @@ import p.PubNest;
 ///
 /// A generated class extends or implements [PubNest] by the proof its metamodel starts, with the stages of `PubNest_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = PubNest.class, fingerprint = "2c91de2e9114402b40a76c36c6e96f747241f0609332cf549b1db0eb2f330ea4", complete = true, format = 20)
+@GeneratedMetamodel(of = PubNest.class, fingerprint = "2c91de2e9114402b40a76c36c6e96f747241f0609332cf549b1db0eb2f330ea4", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

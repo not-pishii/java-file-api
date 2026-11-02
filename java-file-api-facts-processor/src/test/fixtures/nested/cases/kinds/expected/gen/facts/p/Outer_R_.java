@@ -42,7 +42,7 @@ import p.Outer.R;
 ///
 /// No generated class extends or implements [R]: it is a final class, which no class extends.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = R.class, fingerprint = "81b1eaffd4b33e32c1d5e96045e27d7edec510a0600e6337dfb8fafb18e12f46", complete = true, format = 20)
+@GeneratedMetamodel(of = R.class, fingerprint = "81b1eaffd4b33e32c1d5e96045e27d7edec510a0600e6337dfb8fafb18e12f46", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

@@ -37,7 +37,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// @param <Data_> a type argument of [p.Canonical]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = p.Canonical.class, fingerprint = "6b85f3519c4a0e7355dad341ef61b899c8e544591728dbc04e88f94e83bff1f7", complete = true, format = 20)
+@GeneratedMetamodel(of = p.Canonical.class, fingerprint = "6b85f3519c4a0e7355dad341ef61b899c8e544591728dbc04e88f94e83bff1f7", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

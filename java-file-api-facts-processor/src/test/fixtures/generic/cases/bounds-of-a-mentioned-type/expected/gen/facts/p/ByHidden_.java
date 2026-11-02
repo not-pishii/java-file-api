@@ -34,7 +34,7 @@ import p.ByHidden;
 ///
 /// The metamodel has no type parameters, and its token is of the raw type: a bound of a type parameter of [ByHidden] mentions a type the metamodel cannot name, so no full metamodel can be made of it either.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = ByHidden.class, fingerprint = "44a6c1023c7276863544748ae7ef5c4ad03cfbe74777f26930c26caa398257fd", complete = false, format = 20)
+@GeneratedMetamodel(of = ByHidden.class, fingerprint = "44a6c1023c7276863544748ae7ef5c4ad03cfbe74777f26930c26caa398257fd", complete = false, format = 21)
 @SuppressWarnings({
     "rawtypes",
     "deprecation",

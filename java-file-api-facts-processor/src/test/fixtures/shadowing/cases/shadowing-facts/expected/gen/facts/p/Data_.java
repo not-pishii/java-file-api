@@ -29,7 +29,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// `@Facts` does not ask for [p.Data]: it is only mentioned in the signatures of [p.List]. For the facts of its members add `Data.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = p.Data.class, fingerprint = "3d0193e51b5e4afa319c7b85540abe4574be37976bfcdc8ad306c9cfb68363c9", complete = false, format = 20)
+@GeneratedMetamodel(of = p.Data.class, fingerprint = "3d0193e51b5e4afa319c7b85540abe4574be37976bfcdc8ad306c9cfb68363c9", complete = false, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

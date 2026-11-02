@@ -29,7 +29,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// `@Facts` does not ask for [Throwable]: it is only mentioned in the signatures of [p.Io]. For the facts of its members add `Throwable.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Throwable.class, fingerprint = "17f3307a2d056e9d3ee923aa8b4c79fe9716666d93f69d12c51c3bd45f24a7cf", complete = false, format = 20)
+@GeneratedMetamodel(of = Throwable.class, fingerprint = "17f3307a2d056e9d3ee923aa8b4c79fe9716666d93f69d12c51c3bd45f24a7cf", complete = false, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

@@ -37,7 +37,7 @@ import p.Nested;
 ///
 /// A generated class extends or implements [Nested] by the proof its metamodel starts, with the stages of `Nested_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Nested.class, fingerprint = "2da0d4eeace8cb509611dd00021a9fd3474f63ed4ee09408ef4c2127c047059f", complete = true, format = 20)
+@GeneratedMetamodel(of = Nested.class, fingerprint = "2da0d4eeace8cb509611dd00021a9fd3474f63ed4ee09408ef4c2127c047059f", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

@@ -40,7 +40,7 @@ import p.Aged;
 ///
 /// A generated class extends or implements [Aged] by the proof its metamodel starts, with the stages of `Aged_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Aged.class, fingerprint = "8a4dbad60d6c7da2182faedccd68e0b5151ef7a67b997253cc2db3f99e60887d", complete = true, format = 20)
+@GeneratedMetamodel(of = Aged.class, fingerprint = "8a4dbad60d6c7da2182faedccd68e0b5151ef7a67b997253cc2db3f99e60887d", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

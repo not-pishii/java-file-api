@@ -40,7 +40,7 @@ import p.Only;
 ///
 /// A generated class extends or implements [B] by the proof its metamodel starts, with the stages of `B_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = B.class, fingerprint = "fdfc652b222614cffce32239ab6a07240e591d620ee5c02e9506fa75564ef856", complete = true, format = 20)
+@GeneratedMetamodel(of = B.class, fingerprint = "fdfc652b222614cffce32239ab6a07240e591d620ee5c02e9506fa75564ef856", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

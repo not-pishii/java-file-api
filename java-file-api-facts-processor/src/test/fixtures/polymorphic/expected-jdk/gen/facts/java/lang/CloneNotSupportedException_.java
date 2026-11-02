@@ -29,7 +29,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// `@Facts` does not ask for [CloneNotSupportedException]: it is only mentioned in the signatures of [Enum] and [Object]. For the facts of its members add `CloneNotSupportedException.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = CloneNotSupportedException.class, fingerprint = "e29572441b1171babb531fa5e0ca99ac6cee61859d2236418d67fdb62ff56b39", complete = false, format = 20)
+@GeneratedMetamodel(of = CloneNotSupportedException.class, fingerprint = "e29572441b1171babb531fa5e0ca99ac6cee61859d2236418d67fdb62ff56b39", complete = false, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

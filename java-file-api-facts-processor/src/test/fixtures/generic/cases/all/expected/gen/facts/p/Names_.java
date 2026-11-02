@@ -46,7 +46,7 @@ import p.Names;
 /// @param <UnsafeFacts_> a type argument of [Names]
 /// @param <Token> a type argument of [Names]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Names.class, fingerprint = "8f94257e6c303d5f10b4f1d179007fcceb6aa332747e163cc75a737e354f979f", complete = true, format = 20)
+@GeneratedMetamodel(of = Names.class, fingerprint = "8f94257e6c303d5f10b4f1d179007fcceb6aa332747e163cc75a737e354f979f", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

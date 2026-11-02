@@ -32,7 +32,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// `@Facts` does not ask for [Float]: it is only mentioned in the signatures of [p.Boxes]. For the facts of its members add `Float.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Float.class, fingerprint = "8476213d531e275db342b675a7d5069736e261ed18e660c3f70fd6a778485ec9", complete = false, format = 20)
+@GeneratedMetamodel(of = Float.class, fingerprint = "8476213d531e275db342b675a7d5069736e261ed18e660c3f70fd6a778485ec9", complete = false, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

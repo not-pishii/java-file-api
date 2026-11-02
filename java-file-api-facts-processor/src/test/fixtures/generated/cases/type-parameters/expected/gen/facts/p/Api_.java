@@ -39,7 +39,7 @@ import p.Raw;
 ///
 /// A generated class extends or implements [Api] by the proof its metamodel starts, with the stages of `Api_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Api.class, fingerprint = "8086f5acdd0f9cdfc598bb0100dfff765545c6ead0adac86398bed6cae8fd830", complete = true, format = 20)
+@GeneratedMetamodel(of = Api.class, fingerprint = "8086f5acdd0f9cdfc598bb0100dfff765545c6ead0adac86398bed6cae8fd830", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

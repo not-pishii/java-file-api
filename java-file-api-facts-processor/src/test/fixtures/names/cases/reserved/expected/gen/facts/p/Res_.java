@@ -41,7 +41,7 @@ import p.Res;
 ///
 /// A generated class extends or implements [Res] by the proof its metamodel starts, with the stages of `Res_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Res.class, fingerprint = "1f4ff2cb39cb9d6712b200faadca2203ab7d7c5c379d042c6aab25eba888e8b5", complete = true, format = 20)
+@GeneratedMetamodel(of = Res.class, fingerprint = "1f4ff2cb39cb9d6712b200faadca2203ab7d7c5c379d042c6aab25eba888e8b5", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

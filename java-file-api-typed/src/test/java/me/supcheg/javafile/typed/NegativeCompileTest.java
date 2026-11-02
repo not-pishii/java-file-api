@@ -1257,4 +1257,34 @@ class NegativeCompileTest {
                 "no suitable method found for permits",
                 "cannot be converted to me.supcheg.javafile.facts.ClassToken<?>");
     }
+
+    @Test
+    void aGenericMethodOfAnotherBoundImplementsNone() {
+        assertRejected(
+                "WrongGenericBound",
+                """
+                void use() {
+                    TypedJavaFile.declareClass(UnsafeFacts.unverifiedClasspath(), ClassDesc.of("fixtures", "Out"),
+                            new TypedJavaFile.TypedClassHeaderSpec() {
+                                public <Self> MemberBodies<Self, ?> build(ClassHeader<Self> h) {
+                                    var k = UnsafeFacts.<CharSequence>typeVarToken(Types.typeVar("K"),
+                                            ClassDesc.of("java.lang", "CharSequence"));
+                                    var w = UnsafeFacts.<Object>typeVarToken(Types.typeVar("K"),
+                                            ClassDesc.of("java.lang", "Object"));
+                                    var pick = h.overriding(Picking_.pick_T(k));
+                                    var hold = h.overriding(WrongBound_.hold_List(w));
+                                    var oh = h.extendsObject();
+                                    oh.implements_(Picking_.implement(h.self()).hold_List(hold).pick_T(pick));
+                                    var cb = oh.members();
+                                    var bodies = cb.bodies();
+                                    bodies.define(pick.method(), (b, self, value) -> b.return_(value));
+                                    bodies.define(hold.method(), (b, self, values) -> b.end());
+                                    return bodies;
+                                }
+                            });
+                }
+                """,
+                "inference variable T has incompatible bounds",
+                "upper bounds: java.lang.CharSequence");
+    }
 }

@@ -35,7 +35,7 @@ import p.ByDollar;
 ///
 /// The metamodel has no type parameters, and its token is of the raw type: a bound of a type parameter of [ByDollar] mentions a type the metamodel cannot name, so no full metamodel can be made of it either.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = ByDollar.class, fingerprint = "f37ed2a14431db6840cc8a42be209520918ad2950c34eb41df90038ac6d4d895", complete = false, format = 20)
+@GeneratedMetamodel(of = ByDollar.class, fingerprint = "f37ed2a14431db6840cc8a42be209520918ad2950c34eb41df90038ac6d4d895", complete = false, format = 21)
 @SuppressWarnings({
     "rawtypes",
     "deprecation",

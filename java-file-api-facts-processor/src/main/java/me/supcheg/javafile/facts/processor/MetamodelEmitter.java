@@ -1044,25 +1044,27 @@ final class MetamodelEmitter {
                         .withConstructor(ctor -> ctor.withModifiers(Modifier.PRIVATE)
                                 .withParam("steps", steps)
                                 .withBody(b -> b.assign(Exprs.this_().field("steps"), Exprs.field("steps"))))
-                        .withMethod(
-                                step.name(),
-                                after.apply(taken + 1),
-                                mb -> mb.withDoc(MetamodelDocs.step(step, taken + 1 == all.size()))
-                                        .withModifiers(Modifier.PUBLIC)
-                                        .withParam("how", implementation(step, self))
-                                        .withBody(b -> b.return_(made.apply(
-                                                taken + 1,
-                                                Exprs.this_()
-                                                        .field("steps")
-                                                        .call(
-                                                                "with",
-                                                                // the signature the heritage tells, not one
-                                                                // written again: the two cannot differ
-                                                                Exprs.staticField(held, MetamodelNames.HERITAGE)
-                                                                        .call("methods")
-                                                                        .call("get", Exprs.literal(step.index()))
-                                                                        .call("signature"),
-                                                                Exprs.field("how"))))));
+                        .withMethod(step.name(), after.apply(taken + 1), mb -> {
+                            mb.withDoc(MetamodelDocs.step(step, taken + 1 == all.size()))
+                                    .withModifiers(Modifier.PUBLIC);
+                            step.typeParams()
+                                    .forEach(param -> mb.withTypeParam(
+                                            param.name(), param.bounds().toArray(ClassOrInterfaceTypeRef[]::new)));
+                            mb.withParam("how", implementation(step, self))
+                                    .withBody(b -> b.return_(made.apply(
+                                            taken + 1,
+                                            Exprs.this_()
+                                                    .field("steps")
+                                                    .call(
+                                                            "with",
+                                                            // the signature the heritage tells, not one
+                                                            // written again: the two cannot differ
+                                                            Exprs.staticField(held, MetamodelNames.HERITAGE)
+                                                                    .call("methods")
+                                                                    .call("get", Exprs.literal(step.index()))
+                                                                    .call("signature"),
+                                                            Exprs.field("how")))));
+                        });
             });
         });
     }

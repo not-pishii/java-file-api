@@ -45,7 +45,7 @@ import p.HeirCf;
 ///
 /// A generated class extends or implements [HeirCf] by the proof its metamodel starts, with the stages of `HeirCf_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = HeirCf.class, fingerprint = "00f2ebe239927d1091b342645534f2eb4cf62d484716d3e2c2d837db93a49467", complete = true, format = 20)
+@GeneratedMetamodel(of = HeirCf.class, fingerprint = "00f2ebe239927d1091b342645534f2eb4cf62d484716d3e2c2d837db93a49467", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

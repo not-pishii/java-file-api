@@ -37,7 +37,7 @@ import p.Run;
 ///
 /// A generated class extends or implements [Run] by the proof its metamodel starts, with the stages of `Run_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Run.class, fingerprint = "7930371088834f3b9c1868bfdbf88ed3acebdf544cf0aa276dabe368f1f6a565", complete = true, format = 20)
+@GeneratedMetamodel(of = Run.class, fingerprint = "7930371088834f3b9c1868bfdbf88ed3acebdf544cf0aa276dabe368f1f6a565", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

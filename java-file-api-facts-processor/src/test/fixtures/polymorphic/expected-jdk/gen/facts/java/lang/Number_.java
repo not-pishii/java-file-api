@@ -45,7 +45,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// A generated class extends or implements [Number] by the proof its metamodel starts, with the stages of `Number_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Number.class, fingerprint = "d43eb962a5176cec16a78ff6b750028a24a1f79cb552deb6694f4ca3741339b8", complete = true, format = 20)
+@GeneratedMetamodel(of = Number.class, fingerprint = "d43eb962a5176cec16a78ff6b750028a24a1f79cb552deb6694f4ca3741339b8", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

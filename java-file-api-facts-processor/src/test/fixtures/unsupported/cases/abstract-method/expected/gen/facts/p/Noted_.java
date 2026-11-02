@@ -37,7 +37,7 @@ import p.Noted;
 ///
 /// A generated class extends or implements [Noted] by the proof its metamodel starts, with the stages of `Noted_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Noted.class, fingerprint = "a5f9a1a1a73504c4ad9f619e87e5b76a4c89ade150902568203c435a0d90449c", complete = true, format = 20)
+@GeneratedMetamodel(of = Noted.class, fingerprint = "a5f9a1a1a73504c4ad9f619e87e5b76a4c89ade150902568203c435a0d90449c", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

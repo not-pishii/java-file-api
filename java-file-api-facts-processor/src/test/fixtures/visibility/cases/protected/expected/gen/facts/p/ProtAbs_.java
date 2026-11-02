@@ -39,7 +39,7 @@ import p.ProtAbs;
 ///
 /// A generated class extends or implements [ProtAbs] by the proof its metamodel starts, with the stages of `ProtAbs_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = ProtAbs.class, fingerprint = "1bdcb9619862c156be2976ab645d97081c0085edb948b72f3e898135ed495860", complete = true, format = 20)
+@GeneratedMetamodel(of = ProtAbs.class, fingerprint = "1bdcb9619862c156be2976ab645d97081c0085edb948b72f3e898135ed495860", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

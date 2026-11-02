@@ -32,7 +32,7 @@ import org.jspecify.annotations.NullMarked;
 ///
 /// `@Facts` does not ask for [Integer]: it is only mentioned in the signatures of [p.Boxes]. For the facts of its members add `Integer.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Integer.class, fingerprint = "017ef096a149830e0ff68fecece427ce2c1334eb4aa44cfe37e0d6f80f5d7eee", complete = false, format = 20)
+@GeneratedMetamodel(of = Integer.class, fingerprint = "017ef096a149830e0ff68fecece427ce2c1334eb4aa44cfe37e0d6f80f5d7eee", complete = false, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

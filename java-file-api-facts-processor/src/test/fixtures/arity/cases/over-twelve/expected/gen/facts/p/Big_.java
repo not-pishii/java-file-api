@@ -46,7 +46,7 @@ import p.Big;
 ///
 /// A generated class extends or implements [Big] by the proof its metamodel starts, with the stages of `Big_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Big.class, fingerprint = "1d2b8a814cc20d7ef423d982e37562f95244c75e10ba3f7c1618d218d3714d35", complete = true, format = 20)
+@GeneratedMetamodel(of = Big.class, fingerprint = "1d2b8a814cc20d7ef423d982e37562f95244c75e10ba3f7c1618d218d3714d35", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

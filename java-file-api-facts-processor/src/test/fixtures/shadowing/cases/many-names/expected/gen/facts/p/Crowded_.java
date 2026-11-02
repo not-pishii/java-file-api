@@ -36,7 +36,7 @@ import p.Crowded;
 ///
 /// A generated class extends or implements [Crowded] by the proof its metamodel starts, with the stages of `Crowded_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Crowded.class, fingerprint = "3e16fdf6dd7297f4e08236b9242dafa47b43c6fdfb2d990ecd91f224c78ca262", complete = true, format = 20)
+@GeneratedMetamodel(of = Crowded.class, fingerprint = "3e16fdf6dd7297f4e08236b9242dafa47b43c6fdfb2d990ecd91f224c78ca262", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

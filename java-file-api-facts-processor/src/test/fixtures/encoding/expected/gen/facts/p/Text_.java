@@ -41,7 +41,7 @@ import p.Text;
 ///
 /// A generated class extends or implements [Text] by the proof its metamodel starts, with the stages of `Text_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Text.class, fingerprint = "86113eb47de4e56e17b4c761930338048aecc664d29ec52cef945b41b249e357", complete = true, format = 20)
+@GeneratedMetamodel(of = Text.class, fingerprint = "86113eb47de4e56e17b4c761930338048aecc664d29ec52cef945b41b249e357", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

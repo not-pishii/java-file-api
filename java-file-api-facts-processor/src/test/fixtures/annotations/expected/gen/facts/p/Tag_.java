@@ -61,7 +61,7 @@ import p.Tag;
 ///
 /// A generated class extends or implements [Tag] by the proof its metamodel starts, with the stages of `Tag_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Tag.class, fingerprint = "85bf99445a54bacaeb19e014790f3d2fabab6831c1b725a23cf072df866250ef", complete = true, format = 20)
+@GeneratedMetamodel(of = Tag.class, fingerprint = "85bf99445a54bacaeb19e014790f3d2fabab6831c1b725a23cf072df866250ef", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

@@ -40,7 +40,7 @@ import p.IoB;
 ///
 /// A generated class extends or implements [IoB] by the proof its metamodel starts, with the stages of `IoB_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = IoB.class, fingerprint = "912495eb34c4872d8a8248056f92609a2f1b0cba8f1fe4f578dda071003ceabd", complete = true, format = 20)
+@GeneratedMetamodel(of = IoB.class, fingerprint = "912495eb34c4872d8a8248056f92609a2f1b0cba8f1fe4f578dda071003ceabd", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

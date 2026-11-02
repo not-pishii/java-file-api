@@ -40,7 +40,7 @@ import p.Named;
 /// @param <String_> a type argument of [Named]
 /// @param <Int> a type argument of [Named]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Named.class, fingerprint = "7db438567cde314eca6cffd523b14ed31a3e58a028a4b5827d7255a03e7bbca6", complete = true, format = 20)
+@GeneratedMetamodel(of = Named.class, fingerprint = "7db438567cde314eca6cffd523b14ed31a3e58a028a4b5827d7255a03e7bbca6", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

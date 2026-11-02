@@ -1015,6 +1015,12 @@ A generic abstract method of an abstract class is declared with `m.declareAbstra
 `declareGenericMethod`, and a concrete subclass implements it with its own type parameters, whose names may differ
 and whose bounds may not (JLS 8.4.8.3).
 
+A generic abstract method of an interface takes part in the proof as any other: the step of the method declares its
+type parameters, and the implementation a class gives it names them with the type variables its fact is instantiated
+with — `h.overriding(Picker_.pick_T(k))` for `<T extends CharSequence> T pick(T)`, where `k` is a `TypeVarToken` whose
+erasure is `CharSequence`. The names may differ, the bounds may not: the step's declared bounds are those of the
+interface, so a fact of another bound does not compile where the step is taken.
+
 ```java
 var id = ib.declareGenericMethod(
         typeParam("T"),
@@ -1994,12 +2000,6 @@ generic element (`elements in annotation interface declarations cannot be generi
 declares none there: `TypeMemberDeclarations` serves an annotation type through another hierarchy, and
 `declareGenericMethod` is not offered on it. Every other kind that has methods - a class, an interface, a record and an
 enum - declares a generic method, abstract or not.
-- **Implementing an interface by a generic method.** The `@Facts` processor writes no `implement` proof of an
-interface that has a generic abstract method: its heritage tells the method with the positions of its type parameters
-(`Heritage.Generic`), and a step of the proof would need a stage that declares them, which neither the emitted metamodel
-nor `ImplementationN` carries yet. A default generic method is overridden by its fact
-([`declareOverride`](#generic-methods)), which is the interface's own; a class still implements no interface *by* a
-generic method of its own through the proof, though it can declare one and override the interface's.
 
 ### What stays in the core API
 

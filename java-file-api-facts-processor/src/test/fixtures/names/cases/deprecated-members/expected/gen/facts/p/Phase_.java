@@ -40,7 +40,7 @@ import p.Phase;
 ///
 /// No generated class extends or implements [Phase]: it is an enum class, which no class extends.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Phase.class, fingerprint = "ce7ed1949854d566512625064fb2c2115b9f48e8d3007ef0d4c9bc64e11ce0b5", complete = true, format = 20)
+@GeneratedMetamodel(of = Phase.class, fingerprint = "ce7ed1949854d566512625064fb2c2115b9f48e8d3007ef0d4c9bc64e11ce0b5", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

@@ -30,7 +30,7 @@ import p.Outer.NonStatic;
 ///
 /// `@Facts` does not ask for [NonStatic]: it is only mentioned in the signatures of [p.Outer]. For the facts of its members add `Outer.NonStatic.class` to `@Facts`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = NonStatic.class, fingerprint = "3d91f57aa3c9ba42fd4d7b422df33b27d0ecdd371da57dde654432b84a679c28", complete = false, format = 20)
+@GeneratedMetamodel(of = NonStatic.class, fingerprint = "3d91f57aa3c9ba42fd4d7b422df33b27d0ecdd371da57dde654432b84a679c28", complete = false, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

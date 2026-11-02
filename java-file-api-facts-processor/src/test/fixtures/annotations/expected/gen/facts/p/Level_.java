@@ -40,7 +40,7 @@ import p.Level;
 ///
 /// No generated class extends or implements [Level]: it is an enum class, which no class extends.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Level.class, fingerprint = "b6f073a7519201b6eec45a13a25dc288720607a0abbb3c6da97de6895302f53a", complete = true, format = 20)
+@GeneratedMetamodel(of = Level.class, fingerprint = "b6f073a7519201b6eec45a13a25dc288720607a0abbb3c6da97de6895302f53a", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

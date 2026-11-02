@@ -516,9 +516,16 @@ final class MetamodelDocs {
                                         .collect(Collectors.joining(" and "))),
                                 words(".")))
                         .toList(),
-                List.of(
-                        new DocTag.Param("how", DocText.of("the implementation of the method")),
-                        new DocTag.Return(DocText.of(last ? "the proof, complete" : "the stage of the next step"))));
+                Stream.concat(
+                                Stream.<DocTag>of(
+                                        new DocTag.Param("how", DocText.of("the implementation of the method"))),
+                                Stream.concat(
+                                        step.typeParams().stream()
+                                                .<DocTag>map(param -> new DocTag.TypeParam(
+                                                        param.name(), DocText.of("a type parameter of the method"))),
+                                        Stream.<DocTag>of(new DocTag.Return(DocText.of(
+                                                last ? "the proof, complete" : "the stage of the next step")))))
+                        .toList());
     }
 
     /// The comment of the class that holds the heritage of a type.

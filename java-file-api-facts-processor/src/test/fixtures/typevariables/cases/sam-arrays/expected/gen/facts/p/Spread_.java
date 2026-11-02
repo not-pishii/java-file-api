@@ -43,7 +43,7 @@ import p.Spread;
 ///
 /// @param <T> a type argument of [Spread]
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Spread.class, fingerprint = "b66bc7dab5cddfd324e82ae20f0f516dd72109d4c08427b3d8a0b263eb052046", complete = true, format = 20)
+@GeneratedMetamodel(of = Spread.class, fingerprint = "b66bc7dab5cddfd324e82ae20f0f516dd72109d4c08427b3d8a0b263eb052046", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"

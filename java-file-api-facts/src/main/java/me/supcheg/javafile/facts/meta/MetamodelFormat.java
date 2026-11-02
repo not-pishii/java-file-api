@@ -74,12 +74,16 @@ package me.supcheg.javafile.facts.meta;
 /// - 20: the shape of a record tells its components, in declaration order,
 ///   with their names and types, so that a record deconstruction pattern
 ///   knows what javac deconstructs; the canonical form tells them too.
+/// - 21: a type whose abstract method is generic has its entry too: the step
+///   of the method declares the type parameters of the method, and its
+///   parameters and result are told in terms of them, so that a generated
+///   class implements it by a generic method of its own.
 public final class MetamodelFormat {
 
     /// The current format version. A compile-time constant, so that the
     /// processor reads it from the class file with `getConstantValue()`
     /// without loading the class.
-    public static final int VERSION = 20;
+    public static final int VERSION = 21;
 
     private MetamodelFormat() {}
 }

@@ -41,7 +41,7 @@ import p.Overloaded;
 ///
 /// A generated class extends or implements [Overloaded] by the proof its metamodel starts, with the stages of `Overloaded_Heritage`.
 @Generated("me.supcheg.javafile.facts.processor.FactsProcessor")
-@GeneratedMetamodel(of = Overloaded.class, fingerprint = "dd1ffcc12aea014b9af22a09f81eadb2a25421d975f51b292f027fc7aade5629", complete = true, format = 20)
+@GeneratedMetamodel(of = Overloaded.class, fingerprint = "dd1ffcc12aea014b9af22a09f81eadb2a25421d975f51b292f027fc7aade5629", complete = true, format = 21)
 @SuppressWarnings({
     "deprecation",
     "removal"
