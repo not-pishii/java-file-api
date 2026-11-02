@@ -1001,6 +1001,30 @@ The fact of the member is the `F` of the specification, which no type of the cal
 `new MethodSpec1<Self, S, MethodRef1<Self, Object, Object>, Object>()`. A bound that mentions the parameter itself is
 said by `m.bound(...)`, as the header of a generic class says it, and a bound names a type parameter of the member
 alone: the member is declared before it tells whether it is `static`, which has none of the class in scope (JLS 8.1.2).
+A type parameter may also be bounded by an earlier one of the same member, `<T, U extends T>`, by
+`m.bound(u, t)`; a bound that names the type parameter itself, `<T extends Comparable<T>>`, and a further bound are
+said the same way, and a forward or cyclic bound is refused.
+
+A generic method is declared on every kind that has methods, not on a class alone: an interface, a record and an enum
+declare one through `declareGenericMethod` of [`TypeMemberDeclarations`](#typed-interfaces-records-enums-and-annotation-types), whose arity
+family is `GenericMethodArities.TypeMethodSpec1` to `TypeMethodSpec16` and whose stage is
+[`TypeGenericMethodDeclaration`]: a method, a `void` one, an abstract one, a `default` or `private` one of an
+interface, or a `static` one. An annotation type has elements and no method, which javac confirms, so it declares none.
+A generic abstract method of an abstract class is declared with `m.declareAbstractMethod` in the stage of a
+`declareGenericMethod`, and a concrete subclass implements it with its own type parameters, whose names may differ
+and whose bounds may not (JLS 8.4.8.3).
+
+```java
+var id = ib.declareGenericMethod(
+        typeParam("T"),
+        new GenericMethodArities.TypeMethodSpec1<Self, MethodRef1<Self, Object, Object>, Object>() {
+            @Override
+            public MethodRef1<Self, Object, Object> build(
+                    TypeGenericMethodDeclaration<Self> m, TypeVarToken<Object> t) {
+                return m.declareAbstractMethod("id", t, t);
+            }
+        });
+```
 
 ```java
 JavaFile file = TypedJavaFile.class_(
@@ -1861,8 +1885,17 @@ What follows is not a hole waiting to be filled: the typed layer does not expres
 - **Local and anonymous classes.** The core API declares them (`LocalTypeDeclStmt`, an anonymous class body in `new`); the typed layer has no form for a type declared inside a body. The one anonymous class it writes is the body of an enum constant, which is no declaration the generator names.
 - **Compound assignment with narrowing.** `int += long` makes Java convert implicitly (JLS 15.26.2); the typed layer writes no implicit conversion, so the call does not type-check in the generator and is refused. Write the conversion out: `assign(x, AssignOp.ADD_ASSIGN, narrowTruncatingLongToInt(y))`.
 - **A resource whose `close()` throws out of the `try`.** A try-with-resources closes its resource on every way out, so a checked exception `close()` declares and the `try` catches nowhere and the member does not declare is refused when the resource is declared (JLS 14.20.3), rather than rendered into code javac rejects and that fails at run time.
-- **Generic methods of a type that is not a `final` class.** An interface, a record, an enum and an annotation type declare their members through another hierarchy (`TypeMemberDeclarations`), whose forms take no type parameters yet; a generic method is declared by [`declareGenericMethod`](#generic-methods) on a class alone, `final` or not. A generic method has no abstract form either: `declareAbstractMethod` takes no type parameters, and javac accepts `<T> T id(T)` in an interface as in an abstract class.
-- **Implementing an interface by a generic method.** The `@Facts` processor writes no `implement` proof of an interface that has one: a generated class declares no generic method, so the proof's step could not be given. A default generic method is overridden by its fact ([`declareOverride`](#generic-methods)), which is the interface's own; a class still implements no interface *by* a generic method of its own.
+- **Generic methods of an annotation type.** An annotation type declares elements and no method, and javac refuses a
+generic element (`elements in annotation interface declarations cannot be generic methods`), so the typed layer
+declares none there: `TypeMemberDeclarations` serves an annotation type through another hierarchy, and
+`declareGenericMethod` is not offered on it. Every other kind that has methods - a class, an interface, a record and an
+enum - declares a generic method, abstract or not.
+- **Implementing an interface by a generic method.** The `@Facts` processor writes no `implement` proof of an
+interface that has a generic abstract method: its heritage tells the method with the positions of its type parameters
+(`Heritage.Generic`), and a step of the proof would need a stage that declares them, which neither the emitted metamodel
+nor `ImplementationN` carries yet. A default generic method is overridden by its fact
+([`declareOverride`](#generic-methods)), which is the interface's own; a class still implements no interface *by* a
+generic method of its own through the proof, though it can declare one and override the interface's.
 
 ### What stays in the core API
 
