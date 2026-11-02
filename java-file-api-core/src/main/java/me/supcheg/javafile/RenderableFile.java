@@ -6,6 +6,7 @@ import me.supcheg.javafile.render.StandardRenderer;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Objects;
 
 /// A generated source file: a [JavaFile], [PackageInfoFile], or [ModuleFile].
 ///
@@ -29,7 +30,7 @@ public sealed interface RenderableFile permits JavaFile, PackageInfoFile, Module
     /// @throws IOException if the directories or file cannot be created or written
     default void writeTo(Path outputDir) throws IOException {
         var out = outputDir.resolve(pathSuffix()).toAbsolutePath();
-        Files.createDirectories(out.getParent());
+        Files.createDirectories(Objects.requireNonNull(out.getParent()));
         Files.writeString(out, render());
     }
 

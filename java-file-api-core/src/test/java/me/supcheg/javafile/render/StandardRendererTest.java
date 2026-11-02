@@ -96,12 +96,16 @@ class StandardRendererTest {
                 new JavaFile.Meta("me.supcheg.example", builder.build()), SourceRenderer.format("    ", "\r\n"));
 
         assertThat(rendered)
-                .isEqualTo("package me.supcheg.example;\r\n" + "\r\n"
-                        + "import java.util.ResourceBundle;\r\n"
-                        + "\r\n"
-                        + "public final class Messages {\r\n"
-                        + "    private final ResourceBundle bundle;\r\n"
-                        + "}\r\n");
+                .isEqualTo(String.join(
+                        "\r\n",
+                        "package me.supcheg.example;",
+                        "",
+                        "import java.util.ResourceBundle;",
+                        "",
+                        "public final class Messages {",
+                        "    private final ResourceBundle bundle;",
+                        "}",
+                        ""));
     }
 
     @Test
@@ -125,7 +129,8 @@ class StandardRendererTest {
 
         String rendered = renderer.render(meta, SourceRenderer.format("  ", "\r\n"));
 
-        assertThat(rendered).isEqualTo("open module me.supcheg.example {\r\n" + "  requires java.base;\r\n" + "}\r\n");
+        assertThat(rendered)
+                .isEqualTo(String.join("\r\n", "open module me.supcheg.example {", "  requires java.base;", "}", ""));
     }
 
     @Test

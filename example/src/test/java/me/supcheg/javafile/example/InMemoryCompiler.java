@@ -55,7 +55,7 @@ final class InMemoryCompiler {
                         URI.create("string:///" + qualifiedName.replace('.', '/') + ".java"),
                         JavaFileObject.Kind.SOURCE) {
                     @Override
-                    public CharSequence getCharContent(boolean ignoreEncodingErrors) {
+                    public String getCharContent(boolean ignoreEncodingErrors) {
                         return source;
                     }
                 };

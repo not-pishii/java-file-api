@@ -459,7 +459,12 @@ class ExprRendererTest {
         Expr expr = newAnonymous(runnableType, List.of(), b -> b.withVoidMethod("run", mb -> {}));
 
         assertThat(ExprRenderer.renderExpr(expr, Context.of(standardFormat(), new ImportManager("p"))))
-                .isEqualTo("new Runnable() {\n" + "    public void run() {\n" + "    }\n" + "}");
+                .isEqualTo("""
+                        new Runnable() {
+                            public void run() {
+                            }
+                        }\
+                        """);
     }
 
     @Test
