@@ -1,7 +1,7 @@
 package me.supcheg.javafile.typed.fixtures;
 
-/// A generic record: a record pattern of it is not expressed yet, as the
-/// components of the pattern are the types its type arguments give them.
+/// A generic record: a record pattern of it substitutes the type argument its
+/// token carries for the type of its component.
 ///
 /// @param value the value
 /// @param <T> the type of the value

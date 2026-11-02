@@ -146,6 +146,8 @@
     Point.class,
     Line.class,
     Boxed.class,
+    Bounded.class,
+    Crated.class,
     Bagged.class,
     Blank.class,
     Wrapped.class
@@ -257,6 +259,8 @@ import me.supcheg.javafile.typed.fixtures.Piece;
 import me.supcheg.javafile.typed.fixtures.Point;
 import me.supcheg.javafile.typed.fixtures.Line;
 import me.supcheg.javafile.typed.fixtures.Boxed;
+import me.supcheg.javafile.typed.fixtures.Bounded;
+import me.supcheg.javafile.typed.fixtures.Crated;
 import me.supcheg.javafile.typed.fixtures.Bagged;
 import me.supcheg.javafile.typed.fixtures.Blank;
 import me.supcheg.javafile.typed.fixtures.Wrapped;

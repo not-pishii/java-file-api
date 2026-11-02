@@ -3,17 +3,27 @@ package me.supcheg.javafile.typed;
 import me.supcheg.javafile.facts.DeclaredToken;
 import me.supcheg.javafile.facts.RecordComponent;
 import me.supcheg.javafile.facts.RecordShape;
+import me.supcheg.javafile.facts.RefToken;
+import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.TypeNames;
 import me.supcheg.javafile.facts.TypeToken;
 import me.supcheg.javafile.type.ArrayTypeRef;
 import me.supcheg.javafile.type.ClassTypeRef;
+import me.supcheg.javafile.type.ExactTypeArg;
+import me.supcheg.javafile.type.ExtendsTypeArg;
 import me.supcheg.javafile.type.ParameterizedTypeRef;
 import me.supcheg.javafile.type.PrimitiveTypeRef;
+import me.supcheg.javafile.type.SuperTypeArg;
+import me.supcheg.javafile.type.TypeArg;
+import me.supcheg.javafile.type.TypeParam;
 import me.supcheg.javafile.type.TypeRef;
 import me.supcheg.javafile.type.TypeVarRef;
+import me.supcheg.javafile.type.UnboundedTypeArg;
 
 import java.lang.constant.ClassDesc;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /// Makes patterns for `instanceof` and a pattern `switch` (JLS 14.30), and
@@ -31,12 +41,20 @@ import java.util.stream.Collectors;
 ///         Patterns.record(Point_.TOKEN, Patterns.type(x2), Patterns.type(y2)));
 /// ```
 ///
-/// A record pattern is checked where it is made: the type is a record, the
-/// record is not generic, it has one pattern per component, and each pattern
-/// matches a type the component has (JLS 14.30.1). The components are the
-/// fact of the record's metamodel ([me.supcheg.javafile.facts.RecordShape]);
-/// a metamodel generated before a record's facts told them gives it none, and
-/// the target classpath check of lowering reports the mismatch of the format.
+/// A record pattern is checked where it is made: the type is a record, it has
+/// one pattern per component, and each pattern matches a type the component
+/// has (JLS 14.30.1). The components are the fact of the record's metamodel
+/// ([me.supcheg.javafile.facts.RecordShape]); a metamodel generated before a
+/// record's facts told them gives it none, and the target classpath check of
+/// lowering reports the mismatch of the format.
+///
+/// The components of a generic record are the types its type arguments give
+/// them: the token of `Box<String>` deconstructs `T value` as a `String`
+/// value, and the pattern of the component is checked against that type. The
+/// token carries the type arguments, so a token that carries none — the raw
+/// token — and a wildcard type argument leave a component's type undetermined,
+/// and a pattern of the record is refused rather than rendered with a type the
+/// code does not have.
 public final class Patterns {
     private Patterns() {}
 
@@ -66,8 +84,9 @@ public final class Patterns {
     /// @param components the patterns of the components
     /// @param <T> the record type
     /// @return the pattern
-    /// @throws IllegalArgumentException if `record` is not a record, is generic, or has another number of
-    ///         components; if a component pattern matches a type the component does not have
+    /// @throws IllegalArgumentException if `record` is not a record, has another number of components, or is
+    ///         generic and its token carries a raw or a wildcard type argument; if a component pattern
+    ///         matches a type the component does not have
     public static <T> TypedPattern<T> record(DeclaredToken<T> record, TypedPattern<?>... components) {
         return record(record, List.of(components));
     }
@@ -79,8 +98,9 @@ public final class Patterns {
     /// @param components the patterns of the components
     /// @param <T> the record type
     /// @return the pattern
-    /// @throws IllegalArgumentException if `record` is not a record, is generic, or has another number of
-    ///         components; if a component pattern matches a type the component does not have
+    /// @throws IllegalArgumentException if `record` is not a record, has another number of components, or is
+    ///         generic and its token carries a raw or a wildcard type argument; if a component pattern
+    ///         matches a type the component does not have
     public static <T> TypedPattern<T> record(DeclaredToken<T> record, List<TypedPattern<?>> components) {
         List<RecordComponent> declared = componentsOf(record);
         List<TypedPattern<?>> given = List.copyOf(components);
@@ -102,11 +122,13 @@ public final class Patterns {
         return new TypedPattern.Deconstruction<>(record, given);
     }
 
-    /// The components of the record a record pattern deconstructs.
+    /// The components of the record a record pattern deconstructs, in the types
+    /// the token's type arguments give them.
     ///
     /// @param record the record
     /// @return the components, in declaration order
-    /// @throws IllegalArgumentException if `record` is not a record, or is generic
+    /// @throws IllegalArgumentException if `record` is not a record; if the record is generic and its token
+    ///         carries no type argument, or a wildcard one
     private static List<RecordComponent> componentsOf(DeclaredToken<?> record) {
         RecordShape shape = record.shape().recordShape();
         if (!(shape instanceof RecordShape.Of(var components))) {
@@ -114,12 +136,58 @@ public final class Patterns {
                     + " is not one: a type pattern matches it, and a record deconstruction has a record to"
                     + " deconstruct (JLS 14.30.1)");
         }
-        if (!record.shape().typeParameters().isEmpty()) {
-            throw new IllegalArgumentException("a record pattern of " + record + " is not expressed: the record is"
-                    + " generic, and the components of its pattern are the types the type arguments give them,"
-                    + " which the typed layer does not substitute yet");
+        if (record.shape().typeParameters().isEmpty()) {
+            return components;
         }
-        return components;
+        List<TokenArg> arguments = record.typeArguments();
+        if (arguments.isEmpty()) {
+            throw new IllegalArgumentException("a record pattern of " + record + " is not expressed: the record is"
+                    + " generic, and its token carries no type argument, so the components of its pattern have"
+                    + " no type the type arguments give them; take a token of the record with a type argument"
+                    + " for each of its type parameters");
+        }
+        Map<String, TypeRef> env = new HashMap<>();
+        List<TypeParam> parameters = record.shape().typeParameters();
+        for (int i = 0; i < arguments.size(); i++) {
+            String parameter = parameters.get(i).name();
+            if (!(arguments.get(i) instanceof TokenArg.Exact(RefToken<?> argument))) {
+                throw new IllegalArgumentException("a record pattern of " + record + " is not expressed: the type"
+                        + " argument #" + i + " of its token is a wildcard, which leaves the type of the type"
+                        + " parameter " + parameter + " undetermined; take a token of the record with a type"
+                        + " argument for each of its type parameters");
+            }
+            env.put(parameter, argument.typeRef());
+        }
+        return components.stream()
+                .map(component -> new RecordComponent(component.name(), substituted(component.type(), env)))
+                .toList();
+    }
+
+    /// `type` with the type parameters of `env` replaced: the type of a component of a generic record, in
+    /// terms of the type arguments its token carries.
+    private static TypeRef substituted(TypeRef type, Map<String, TypeRef> env) {
+        return switch (type) {
+            case TypeVarRef variable -> env.getOrDefault(variable.name(), variable);
+            case ArrayTypeRef array -> new ArrayTypeRef(substituted(array.component(), env), array.annotations());
+            case ParameterizedTypeRef parameterized ->
+                new ParameterizedTypeRef(
+                        parameterized.raw(),
+                        parameterized.args().stream()
+                                .map(argument -> substituted(argument, env))
+                                .toList(),
+                        parameterized.annotations());
+            case ClassTypeRef _, PrimitiveTypeRef _ -> type;
+        };
+    }
+
+    /// `argument` with the type parameters of `env` replaced, in the bound of a wildcard.
+    private static TypeArg substituted(TypeArg argument, Map<String, TypeRef> env) {
+        return switch (argument) {
+            case ExactTypeArg(TypeRef type) -> new ExactTypeArg(substituted(type, env));
+            case ExtendsTypeArg(TypeRef bound) -> new ExtendsTypeArg(substituted(bound, env));
+            case SuperTypeArg(TypeRef bound) -> new SuperTypeArg(substituted(bound, env));
+            case UnboundedTypeArg _ -> argument;
+        };
     }
 
     /// Whether a pattern of `pattern` matches a value of the component type `component`: its type is the

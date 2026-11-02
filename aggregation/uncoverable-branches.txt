@@ -186,6 +186,9 @@ me/supcheg/javafile/typed/ExceptionType.java :: case InterfaceToken<?> _, ArrayT
 me/supcheg/javafile/typed/Lowering.java :: case ArrayToken<?, ?> _, PrimitiveToken<?, ?, ?> _ -> false;
     a case of several type patterns: javac tests each label once more after it matched
 
+me/supcheg/javafile/typed/Patterns.java :: case ClassTypeRef _, PrimitiveTypeRef _ -> type;
+    a case of several type patterns: javac tests each label once more after it matched
+
 me/supcheg/javafile/typed/Tokens.java :: case PrimitiveToken<?, ?, ?> _, TypeVarToken<?> _ -> Stream.empty();
     a case of several type patterns: javac tests each label once more after it matched
 

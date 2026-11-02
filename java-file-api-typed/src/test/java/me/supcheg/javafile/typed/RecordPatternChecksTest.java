@@ -4,12 +4,16 @@ import me.supcheg.javafile.JavaFile;
 import me.supcheg.javafile.facts.ArrayToken;
 import me.supcheg.javafile.facts.Prim;
 import me.supcheg.javafile.facts.PrimitiveToken;
+import me.supcheg.javafile.facts.TokenArg;
 import me.supcheg.javafile.facts.UnsafeFacts;
+import me.supcheg.javafile.type.Types;
+import me.supcheg.javafile.typed.testfacts.java.lang.Integer_;
 import me.supcheg.javafile.typed.testfacts.java.lang.Object_;
 import me.supcheg.javafile.typed.testfacts.java.lang.String_;
 import me.supcheg.javafile.typed.testfacts.java.util.List_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Bagged_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Blank_;
+import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Bounded_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Boxed_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Disc_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Line_;
@@ -21,6 +25,7 @@ import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Wr
 import org.junit.jupiter.api.Test;
 
 import java.lang.constant.ClassDesc;
+import java.lang.constant.ConstantDescs;
 import java.util.function.Function;
 
 import static me.supcheg.javafile.typed.Expressions.literal;
@@ -85,6 +90,20 @@ class RecordPatternChecksTest {
     }
 
     @Test
+    void aWildcardOfAComponentTypeIsSubstitutedInItsBound() {
+        var upper =
+                Patterns.binding(UnsafeFacts.interfaceToken(List_.Data.SHAPE, TokenArg.extendsBound(String_.TOKEN)));
+        var lower = Patterns.binding(UnsafeFacts.interfaceToken(List_.Data.SHAPE, TokenArg.superBound(String_.TOKEN)));
+        var either = Patterns.binding(UnsafeFacts.interfaceToken(List_.Data.SHAPE, TokenArg.unbounded()));
+        assertThat(Patterns.record(
+                        new Bounded_<>(String_.TOKEN).token,
+                        Patterns.type(upper),
+                        Patterns.type(lower),
+                        Patterns.type(either)))
+                .isInstanceOf(TypedPattern.Deconstruction.class);
+    }
+
+    @Test
     void aRecordPatternNamesARecord() {
         classAsJavac(
                 IllegalArgumentException.class,
@@ -114,15 +133,53 @@ class RecordPatternChecksTest {
     }
 
     @Test
-    void aRecordPatternOfAGenericRecordIsNotExpressed() {
+    void aTypeArgumentThatDoesNotFitTheComponentPatternIsRefused() {
         var text = Patterns.binding(String_.TOKEN);
+        classAsJavac(
+                IllegalArgumentException.class,
+                () -> intMethod((b, o) -> b.ifInstanceOf(
+                        o,
+                        Patterns.record(new Boxed_<>(Integer_.TOKEN).token, Patterns.type(text)),
+                        then -> then.return_(literal(1)))),
+                "matches the component 0, value, of the type java.lang.Integer with a pattern of java.lang.String",
+                "",
+                "static int m(Object o) { if (o instanceof Boxed<Integer>(String s)) { return 1; } return 0; }",
+                "incompatible types: java.lang.Integer cannot be converted to java.lang.String");
+    }
+
+    @Test
+    void aWildcardTypeArgumentLeavesTheComponentUndetermined() {
+        var value = Patterns.binding(Object_.TOKEN);
         classUnlikeJavac(
                 IllegalArgumentException.class,
                 () -> intMethod((b, o) -> b.ifInstanceOf(
-                        o, Patterns.record(Boxed_.ANY, Patterns.type(text)), then -> then.return_(literal(1)))),
-                "is not expressed: the record is generic",
+                        o, Patterns.record(Boxed_.ANY, Patterns.type(value)), then -> then.return_(literal(1)))),
+                "the type argument #0 of its token is a wildcard",
                 "",
-                "static int m(Object o) { if (o instanceof Boxed(String s)) { return s.length(); } return 0; }");
+                "static int m(Object o) { if (o instanceof Boxed<?>(Object x)) { return 1; } return 0; }");
+    }
+
+    @Test
+    void aRawTokenLeavesTheComponentUndetermined() {
+        var value = Patterns.binding(Object_.TOKEN);
+        classUnlikeJavac(
+                IllegalArgumentException.class,
+                () -> intMethod((b, o) -> b.ifInstanceOf(
+                        o,
+                        Patterns.record(UnsafeFacts.finalClassToken(Boxed_.Data.SHAPE), Patterns.type(value)),
+                        then -> then.return_(literal(1)))),
+                "the record is generic, and its token carries no type argument",
+                "",
+                "static int m(Object o) { if (o instanceof Boxed(Object x)) { return 1; } return 0; }");
+    }
+
+    @Test
+    void aComponentOfATypeVariableIsMatchedByItsTypeAlone() {
+        var variable = UnsafeFacts.typeVarToken(Types.typeVar("T"), ConstantDescs.CD_Object);
+        var value = Patterns.binding(Object_.TOKEN);
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> Patterns.record(new Boxed_<>(variable).token, Patterns.type(value)))
+                .withMessageContaining("matches the component 0, value, of the type T");
     }
 
     @Test
