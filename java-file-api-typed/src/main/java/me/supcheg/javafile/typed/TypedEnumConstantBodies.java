@@ -832,7 +832,7 @@ public final class TypedEnumConstantBodies<Self> extends EnumConstantBodyArities
                 declared.fact().resultType().map(type -> type.typeRef()),
                 annotations,
                 Set.copyOf(modifiers),
-                List.of(),
+                Tokens.typeParams(declared.fact().traits().typeParams()),
                 params,
                 code,
                 throwsClause,

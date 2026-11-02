@@ -462,6 +462,63 @@ abstract non-sealed class TypeMemberDeclarations<Self> extends TypeMemberDeclara
         return declare(fact, kind, List.of(), List.of(), List.of(), modifiers);
     }
 
+    /// Declares a member whose fact is whole already, as a generic method of the type is when its
+    /// stage builds it: the type parameters the fact carries are in scope in its signature and its
+    /// body, and the kind fixes the modifiers it is rendered with.
+    ///
+    /// @param fact the fact of the member
+    /// @param kind how the member is rendered
+    /// @param <F> the fact
+    /// @return the fact
+    /// @throws IllegalArgumentException if javac would reject the member
+    /// @throws IllegalStateException if the declarations have ended
+    final <F extends Invocable> F declaredAs(F fact, Kind kind) {
+        return declared(fact, kind);
+    }
+
+    /// Declares a generic method of the type from the `parameters` of a generated stage
+    /// ([TypeGenericMethodArities]): the specification declares the member itself, in a
+    /// [TypeGenericMethodDeclaration] the type parameters of the member are in scope in.
+    ///
+    /// @param parameters the type parameters, in order
+    /// @param spec declares the member
+    /// @param <F> the fact of the member
+    /// @return the fact of the member
+    /// @throws IllegalArgumentException if two type parameters are named alike, or one has the name of a
+    ///     type parameter of the type
+    /// @throws IllegalStateException if the declarations have ended
+    @Override
+    final <F extends Invocable> F genericMethod(
+            List<TypeParameter<?>> parameters, TypeGenericMethodBodies<Self, F> spec) {
+        requireDeclaring("a generic member of " + described());
+        Scopes.requireNoneOpen("a generic member of " + described());
+        requireTypeParameterNames(parameters);
+        return spec.build(new TypeGenericMethodDeclaration<>(this, parameters));
+    }
+
+    /// Holds the names of the type parameters of a generic member to what javac accepts, and to what
+    /// the layer can render: no two of one name (`<T, T>`), and none of the name of a type parameter of
+    /// the type, which the rendered code cannot tell from it.
+    private void requireTypeParameterNames(List<TypeParameter<?>> parameters) {
+        List<String> names = parameters.stream().map(TypeParameter::name).toList();
+        List<String> typeParams =
+                variables().stream().map(variable -> variable.typeRef().name()).toList();
+        for (int i = 0; i < names.size(); i++) {
+            String name = names.get(i);
+            if (names.indexOf(name) != i) {
+                throw new IllegalArgumentException("the generic member of " + described() + " declares the type"
+                        + " parameter " + name + " twice: a type parameter is named once in a declaration"
+                        + " (JLS 8.1.2, 8.4.4)");
+            }
+            if (typeParams.contains(name)) {
+                throw new IllegalArgumentException("the generic member of " + described() + " cannot declare the"
+                        + " type parameter " + name + ": the type declares a type parameter of that name, and the"
+                        + " rendered code cannot tell the two apart — javac hides one behind the other (JLS 6.4.1),"
+                        + " which the typed layer never means; name the type parameter of the member otherwise");
+            }
+        }
+    }
+
     private static MemberTraits abstractTraits() {
         return MemberTraits.ABSTRACT;
     }
