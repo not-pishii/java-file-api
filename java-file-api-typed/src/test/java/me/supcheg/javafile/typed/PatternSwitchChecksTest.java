@@ -33,7 +33,6 @@ import static me.supcheg.javafile.typed.Expressions.literal;
 import static me.supcheg.javafile.typed.Expressions.switchPattern;
 import static me.supcheg.javafile.typed.JavacVerdict.asJavac;
 import static me.supcheg.javafile.typed.JavacVerdict.classAsJavac;
-import static me.supcheg.javafile.typed.JavacVerdict.unlikeJavac;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
@@ -167,9 +166,9 @@ class PatternSwitchChecksTest {
     }
 
     @Test
-    void aSwitchOverATypeThatIsNeitherSealedNorAnEnumIsRefused() {
-        unlikeJavac(
-                IllegalArgumentException.class,
+    void aSwitchOverATypeThatIsNeitherSealedNorAnEnumNeedsADefault() {
+        classAsJavac(
+                IllegalStateException.class,
                 () -> declare(cb -> {
                     var value = cb.declareStaticMethod("value", String_.TOKEN, Object_.TOKEN);
                     var bodies = cb.bodies();
@@ -179,13 +178,13 @@ class PatternSwitchChecksTest {
                                     Object_.TOKEN,
                                     object,
                                     String_.TOKEN,
-                                    c -> c.case_(String_.TOKEN, (body, text) -> body.yield_(literal("text")))
-                                            .default_(literal("other")))));
+                                    c -> c.case_(String_.TOKEN, (body, text) -> body.yield_(literal("text"))))));
                     return bodies;
                 }),
-                "its type is neither sealed nor an enum",
-                "static String value(Object o) { return switch (o) { case String s -> \"text\";"
-                        + " default -> \"other\"; }; }");
+                "the type java.lang.Object of its selector is neither sealed nor an enum",
+                "",
+                "static String value(Object o) { return switch (o) { case String s -> \"text\"; }; }",
+                "the switch expression does not cover all possible input values");
     }
 
     @Test

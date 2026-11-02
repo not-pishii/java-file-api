@@ -7,6 +7,7 @@ import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.testing.RenderedJava;
 import me.supcheg.javafile.typed.testfacts.java.lang.IllegalStateException_;
 import me.supcheg.javafile.typed.testfacts.java.lang.Integer_;
+import me.supcheg.javafile.typed.testfacts.java.lang.Object_;
 import me.supcheg.javafile.typed.testfacts.java.lang.String_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Disc_;
 import me.supcheg.javafile.typed.testfacts.me.supcheg.javafile.typed.fixtures.Figure_;
@@ -95,6 +96,53 @@ class PatternSwitchCompileTest {
         assertThat(method.invoke(null, of("Disc", 3))).isEqualTo("disc 3");
         assertThat(method.invoke(null, of("Square", 2))).isEqualTo("square 2");
         assertThat(method.invoke(null, piece())).isEqualTo("piece");
+    }
+
+    @Test
+    void aSwitchOverObjectIsExhaustiveByItsDefault() throws Throwable {
+        JavaFile file = TypedJavaFile.class_(UnsafeFacts.unverifiedClasspath(), DESC, Unbranded.spec(cb -> {
+            var describe = cb.declareStaticMethod("describe", String_.TOKEN, Object_.TOKEN);
+            var bodies = cb.bodies();
+            bodies.define(
+                    describe,
+                    (b, value) -> b.return_(switchPattern(
+                            Object_.TOKEN,
+                            value,
+                            String_.TOKEN,
+                            c -> c.case_(String_.TOKEN, (body, text) -> body.yield_(concat(literal("text "), text)))
+                                    .case_(Integer_.TOKEN, (body, number) -> body.yield_(literal("number")))
+                                    .default_(body -> body.yield_(literal("other"))))));
+            return bodies;
+        }));
+
+        assertThat(file.render()).isEqualTo("""
+                        package me.supcheg.example;
+
+                        public final class Describe {
+                            public static String describe(Object v0) {
+                                return switch (v0) {
+                                    case String v1 -> {
+                                        yield "text " + v1;
+                                    }
+                                    case Integer v2 -> {
+                                        yield "number";
+                                    }
+                                    default -> {
+                                        yield "other";
+                                    }
+                                };
+                            }
+                        }
+                        """);
+
+        Compilation compilation = RenderedJava.compile(file);
+        assertThat(compilation).succeededWithoutWarnings();
+
+        Class<?> describe = load(compilation, "me.supcheg.example.Describe");
+        Method method = describe.getMethod("describe", Object.class);
+        assertThat(method.invoke(null, "text")).isEqualTo("text text");
+        assertThat(method.invoke(null, 1)).isEqualTo("number");
+        assertThat(method.invoke(null, 1.5d)).isEqualTo("other");
     }
 
     @Test

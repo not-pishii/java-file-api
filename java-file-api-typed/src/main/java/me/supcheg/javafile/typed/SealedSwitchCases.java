@@ -14,8 +14,8 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-/// Collects the cases of a `switch` expression over a sealed type, or over
-/// an enum, [Expressions#switchPattern(DeclaredToken, Expr, TypeToken, java.util.function.Consumer)]:
+/// Collects the cases of a `switch` expression over a declared type,
+/// [Expressions#switchPattern(DeclaredToken, Expr, TypeToken, java.util.function.Consumer)]:
 /// a type pattern, a record pattern, `null`, and an enum constant where the
 /// selector is an enum, in the order of the code.
 ///
@@ -53,7 +53,8 @@ import java.util.stream.Stream;
 ///   name them, [me.supcheg.javafile.facts.TypeShape#permitted()] — has a case
 ///   whose pattern covers it, and every constant of an enum selector has one
 ///   (javac: *the switch expression does not cover all possible input
-///   values*);
+///   values*); a selector that is neither sealed nor an enum has no such list,
+///   and is exhaustive by its `default_` or by an unconditional pattern alone;
 /// - the `switch` has a result: a case that is a value, or a block that
 ///   yields (javac: *switch expression does not have any result expressions*);
 /// - a case is added while the cases of the `switch` are being added: not
@@ -66,19 +67,16 @@ import java.util.stream.Stream;
 /// - *A pattern case is a block.* The bindings of a pattern are in scope in
 ///   the block that yields, and a value that uses them has no block to own
 ///   them.
-/// - *The selector is of a sealed type, or an enum.* A `switch` over another
-///   type is exhaustive only through an unconditional pattern or a `default`,
-///   which the typed layer does not express without a sealed hierarchy to
-///   prove it.
 /// - *A permitted subtype is covered by a case whose pattern type is its own,
 ///   or by the sealed type that permits it.* A pattern of a supertype of the
-///   selector is unconditional, and covers every value. A union of subtypes of
-///   a permitted subtype is not proven: the facts of a permitted subtype are
-///   not at hand to tell its own permitted subtypes.
+///   selector is unconditional, and covers every value. A union of the
+///   permitted subtypes of a sealed subtype of the selector is not proven
+///   though javac accepts it: the facts of a permitted subtype are not at hand
+///   to tell its own permitted subtypes, only the names its selector permits.
 /// - *The `default` case is the last*, and primitive and reference results do
 ///   not mix, as for a `switch` over an enum ([EnumSwitchCases]).
 ///
-/// @param <T> the sealed type or enum of the selector
+/// @param <T> the type of the selector
 /// @param <R> the type of the `switch` expression
 public final class SealedSwitchCases<T, R> {
     private final DeclaredToken<T> type;
@@ -100,16 +98,10 @@ public final class SealedSwitchCases<T, R> {
         record Made() implements Phase {}
     }
 
-    /// @param type the sealed type or enum of the selector
+    /// @param type the type of the selector
     /// @param result the type of the `switch`
     /// @param enclosing what the `switch` is built in: a block, or nothing outside of any body
-    /// @throws IllegalArgumentException if `type` is neither sealed nor an enum
     SealedSwitchCases(DeclaredToken<T> type, TypeToken<R> result, Block.Enclosing enclosing) {
-        if (!type.shape().sealed() && !(type instanceof EnumToken<?>)) {
-            throw new IllegalArgumentException("a switch_ over " + type + " is not expressed: its type is neither"
-                    + " sealed nor an enum, so the cases cannot be proven to cover every value of the selector;"
-                    + " switch over a sealed type, whose facts name the subtypes it permits, or over an enum");
-        }
         this.type = type;
         this.result = result;
         this.enclosing = enclosing;
@@ -319,7 +311,9 @@ public final class SealedSwitchCases<T, R> {
 
     /// Refuses the cases of a `switch` without a `default_` unless they cover
     /// every value of the selector: an unconditional pattern, every permitted
-    /// subtype of a sealed selector, or every constant of an enum.
+    /// subtype of a sealed selector, or every constant of an enum. A selector
+    /// that is neither sealed nor an enum has no list of subtypes to cover, so
+    /// only an unconditional pattern serves it.
     private void requireExhaustive(List<Node.PatternCase> cases) {
         if (unconditional(cases).isPresent()) {
             return;
@@ -340,6 +334,12 @@ public final class SealedSwitchCases<T, R> {
                         + " (JLS 15.28.1)");
             }
             return;
+        }
+        if (!type.shape().sealed()) {
+            throw new IllegalStateException("the " + statement() + " is not exhaustive: the type " + type
+                    + " of its selector is neither sealed nor an enum, so its cases cover no set of subtypes the"
+                    + " facts tell, and there is no default_; a switch expression covers every value of its"
+                    + " selector (JLS 15.28.1)");
         }
         List<ClassDesc> permitted = type.shape().permitted();
         if (permitted.isEmpty()) {

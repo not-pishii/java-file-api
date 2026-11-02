@@ -30,9 +30,9 @@ import java.util.stream.Stream;
 
 /// Combinators for typed expressions and effects (§6.1): literals, member
 /// access, calls, `new`, arrays, `cond`, per-primitive operators, explicit
-/// conversions, assignments, enum constants, `switch` expressions over an
-/// enum ([#switch_]) or over a sealed type or enum with patterns
-/// ([#switchPattern]) and lambdas (`lambda`, `lambdaBlock`).
+/// conversions, assignments, enum constants, `switch` expressions over an enum
+/// ([#switch_]) or with patterns ([#switchPattern]) and lambdas (`lambda`,
+/// `lambdaBlock`).
 ///
 /// Primitive values are typed by their [Prim] markers: `literal(1)` is an
 /// `Expr<Prim.Int>`, never an `Expr<Integer>`. Boxing and unboxing are
@@ -960,9 +960,8 @@ public final class Expressions extends ExpressionArities {
         return Expr.of(collected.close(operand(selector)), type);
     }
 
-    /// `switch (selector) { case ... }`: a `switch` expression over a sealed
-    /// type — or over an enum — whose cases are patterns, `null` and, over an
-    /// enum, its constants (JLS 15.28).
+    /// `switch (selector) { case ... }`: a `switch` expression whose cases are
+    /// patterns, `null` and, over an enum, its constants (JLS 15.28).
     ///
     /// ```java
     /// switchPattern(Figure_.TOKEN, figure, String_.TOKEN, c -> c
@@ -980,7 +979,9 @@ public final class Expressions extends ExpressionArities {
     /// pattern is a subtype of the selector's type, no case is dominated by
     /// one before it, and — without a `default_` — the cases cover every
     /// permitted subtype of a sealed selector, as the facts of its type name
-    /// them, or every constant of an enum.
+    /// them, or every constant of an enum. A selector whose type is neither
+    /// sealed nor an enum is exhausted by its `default_` or by an
+    /// unconditional pattern, and a `switch` of neither is refused.
     ///
     /// The result type is given explicitly and a result whose type is not `R`
     /// is cast to it, so javac types the `switch` by `R` and never by its
@@ -992,14 +993,13 @@ public final class Expressions extends ExpressionArities {
     /// built in, or in a block nested in that one and on the same side of
     /// every lambda boundary ([ScopeCheck]).
     ///
-    /// @param type the sealed type or enum of the selector
+    /// @param type the type of the selector
     /// @param selector the selector
     /// @param result the type of the `switch`
     /// @param cases adds the cases, in the order of the code
-    /// @param <T> the sealed type or enum of the selector
+    /// @param <T> the type of the selector
     /// @param <R> the type of the `switch`
     /// @return the `switch` expression
-    /// @throws IllegalArgumentException if `type` is neither sealed nor an enum
     /// @throws IllegalStateException if the cases are not exhaustive, or none has a result
     public static <T, R> Expr<R> switchPattern(
             DeclaredToken<T> type,
