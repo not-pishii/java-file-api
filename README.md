@@ -95,6 +95,7 @@ The examples below assume `import static me.supcheg.javafile.code.Exprs.*;` and 
 - [Typed quick start](#typed-quick-start)
 - [Extending and implementing](#extending-and-implementing)
 - [Generic classes](#generic-classes)
+- [Generic methods](#generic-methods)
 - [Typed method bodies: try/catch, lambdas, instanceof, enum switch](#typed-method-bodies-trycatch-lambdas-instanceof-enum-switch)
 - [Typed statements: text blocks, method and constructor references, assert, synchronized, resources, labels, the empty statement](#typed-statements-text-blocks-method-and-constructor-references-assert-synchronized-resources-labels-the-empty-statement)
 - [Typed operators: unary, bitwise, shifts, increments and class literals](#typed-operators-unary-bitwise-shifts-increments-and-class-literals)
@@ -988,6 +989,78 @@ public final class Collections2<T extends Object & Comparable<T>> {
 }
 ```
 
+### Generic methods
+
+The typed twin of a generic method of a class: `<T> T id(T)`. `declareGenericMethod` takes the type parameters of
+the member — one of the arity families of [GenericMethodArities] — and a specification, which is given the tokens of
+those type parameters and declares the member itself: a method, a `static` one, a `void` one, or a constructor. The
+type parameters are in scope in the signature and the body of that member alone (JLS 6.3), and the fact of the member
+carries them, so the body uses the tokens as types and a call passes its type arguments explicitly.
+
+The fact of the member is the `F` of the specification, which no type of the call tells: name it,
+`new MethodSpec1<Self, S, MethodRef1<Self, Object, Object>, Object>()`. A bound that mentions the parameter itself is
+said by `m.bound(...)`, as the header of a generic class says it, and a bound names a type parameter of the member
+alone: the member is declared before it tells whether it is `static`, which has none of the class in scope (JLS 8.1.2).
+
+```java
+JavaFile file = TypedJavaFile.class_(
+        UnsafeFacts.unverifiedClasspath(),
+        ClassDesc.of("com.example", "Collections3"),
+        new TypedJavaFile.TypedClassSpec() {
+            @Override
+            public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
+                var id = cb.declareGenericMethod(
+                        typeParam("T"),
+                        new GenericMethodArities.MethodSpec1<
+                                Self, Object, MethodRef1<Self, Object, Object>, Object>() {
+                            @Override
+                            public MethodRef1<Self, Object, Object> build(
+                                    GenericMethodDeclaration<Self, Object> m, TypeVarToken<Object> t) {
+                                return m.declareMethod("id", t, t);
+                            }
+                        });
+                var asInt = cb.declareGenericMethod(
+                        typeParam("N", Number_.TOKEN),
+                        new GenericMethodArities.MethodSpec1<
+                                Self, Object, MethodRef1<Self, Prim.Int, Number>, Number>() {
+                            @Override
+                            public MethodRef1<Self, Prim.Int, Number> build(
+                                    GenericMethodDeclaration<Self, Object> m, TypeVarToken<Number> n) {
+                                return m.declareMethod("asInt", PrimitiveToken.INT, n);
+                            }
+                        });
+                var held = cb.declareMethod("held", Object_.TOKEN);
+
+                var bodies = cb.bodies();
+                bodies.define(id, (b, self, value) -> b.return_(value));
+                bodies.define(asInt, (b, self, value) -> b.return_(value.call(Number_.intValue)));
+                // the call names the type argument of `id`, which javac would infer otherwise
+                bodies.define(
+                        held,
+                        (b, self) -> b.return_(self.call(id.withTypeArgs(String_.TOKEN), literal("held"))));
+                return bodies;
+            }
+        });
+```
+
+```java
+package com.example;
+
+public final class Collections3 {
+    public <T> T id(T v0) {
+        return v0;
+    }
+
+    public <N extends Number> int asInt(N v0) {
+        return v0.intValue();
+    }
+
+    public Object held() {
+        return this.<String>id("held");
+    }
+}
+```
+
 ### Typed method bodies: try/catch, lambdas, instanceof, enum switch
 
 The typed twin of [Method bodies](#method-bodies-try-with-resources-lambdas-pattern-switch). Statements are methods of
@@ -1788,6 +1861,8 @@ What follows is not a hole waiting to be filled: the typed layer does not expres
 - **Local and anonymous classes.** The core API declares them (`LocalTypeDeclStmt`, an anonymous class body in `new`); the typed layer has no form for a type declared inside a body. The one anonymous class it writes is the body of an enum constant, which is no declaration the generator names.
 - **Compound assignment with narrowing.** `int += long` makes Java convert implicitly (JLS 15.26.2); the typed layer writes no implicit conversion, so the call does not type-check in the generator and is refused. Write the conversion out: `assign(x, AssignOp.ADD_ASSIGN, narrowTruncatingLongToInt(y))`.
 - **A resource whose `close()` throws out of the `try`.** A try-with-resources closes its resource on every way out, so a checked exception `close()` declares and the `try` catches nowhere and the member does not declare is refused when the resource is declared (JLS 14.20.3), rather than rendered into code javac rejects and that fails at run time.
+- **Generic methods of a type that is not a `final` class.** An interface, a record, an enum and an annotation type declare their members through another hierarchy (`TypeMemberDeclarations`), whose forms take no type parameters yet; a generic method is declared by [`declareGenericMethod`](#generic-methods) on a class alone, `final` or not. A generic method has no abstract form either (`declareAbstractMethod`), and none is `synchronized` or `native` of a type parameter: javac accepts all three, and the layer has the forms of neither yet.
+- **Implementing an interface by a generic method.** The `@Facts` processor writes no `implement` proof of an interface that has one: a generated class declares no generic method, so the proof's step could not be given. A default generic method is overridden by its fact ([`declareOverride`](#generic-methods)), which is the interface's own; a class still implements no interface *by* a generic method of its own.
 
 ### What stays in the core API
 

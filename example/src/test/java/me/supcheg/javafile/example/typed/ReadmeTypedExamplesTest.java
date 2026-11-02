@@ -123,6 +123,15 @@ class ReadmeTypedExamplesTest {
     }
 
     @Test
+    void aGenericMethodTakesTheTypeArgumentsOfItsDeclaration() throws Throwable {
+        CompiledClasses collections = rendersAsShown("genericMethod", ReadmeTypedExamples.genericMethod());
+
+        assertThat(collections.invoke("id", "held")).isEqualTo("held");
+        assertThat(collections.invoke("asInt", 41)).isEqualTo(41);
+        assertThat(collections.invoke("held")).isEqualTo("held");
+    }
+
+    @Test
     void theMethodBodiesDoWhatTheyRead() throws Throwable {
         CompiledClasses signals = rendersAsShown("signals", ReadmeTypedExamples.signals());
 

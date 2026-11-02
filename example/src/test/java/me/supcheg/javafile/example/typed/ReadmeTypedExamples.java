@@ -7,6 +7,7 @@ import me.supcheg.javafile.example.typed.facts.java.lang.Double_;
 import me.supcheg.javafile.example.typed.facts.java.lang.Integer_;
 import me.supcheg.javafile.example.typed.facts.java.lang.Math_;
 import me.supcheg.javafile.example.typed.facts.java.lang.NumberFormatException_;
+import me.supcheg.javafile.example.typed.facts.java.lang.Number_;
 import me.supcheg.javafile.example.typed.facts.java.lang.Object_;
 import me.supcheg.javafile.example.typed.facts.java.lang.String_;
 import me.supcheg.javafile.example.typed.facts.java.util.List_;
@@ -15,12 +16,15 @@ import me.supcheg.javafile.example.typed.facts.java.util.function.Function_;
 import me.supcheg.javafile.example.typed.facts.java.util.function.Predicate_;
 import me.supcheg.javafile.example.typed.facts.me.supcheg.javafile.example.typed.Signal_;
 import me.supcheg.javafile.facts.ArrayToken;
+import me.supcheg.javafile.facts.MethodRef1;
 import me.supcheg.javafile.facts.Prim;
 import me.supcheg.javafile.facts.PrimitiveToken;
 import me.supcheg.javafile.facts.TypeVarToken;
 import me.supcheg.javafile.facts.UnsafeFacts;
 import me.supcheg.javafile.typed.ClassHeader;
 import me.supcheg.javafile.typed.Expr;
+import me.supcheg.javafile.typed.GenericMethodArities;
+import me.supcheg.javafile.typed.GenericMethodDeclaration;
 import me.supcheg.javafile.typed.MemberBodies;
 import me.supcheg.javafile.typed.TypedClassBodies;
 import me.supcheg.javafile.typed.TypedClassBuilder;
@@ -169,6 +173,50 @@ final class ReadmeTypedExamples {
                                                                         literal(0)),
                                                                 then -> then.exec(assign(best, item))))
                                                 .return_(best)));
+                        return bodies;
+                    }
+                });
+        // endregion
+        return file;
+    }
+
+    static JavaFile genericMethod() {
+        // region genericMethod
+        JavaFile file = TypedJavaFile.class_(
+                UnsafeFacts.unverifiedClasspath(),
+                ClassDesc.of("com.example", "Collections3"),
+                new TypedJavaFile.TypedClassSpec() {
+                    @Override
+                    public <Self> TypedClassBodies<Self> build(TypedClassBuilder<Self> cb) {
+                        var id = cb.declareGenericMethod(
+                                typeParam("T"),
+                                new GenericMethodArities.MethodSpec1<
+                                        Self, Object, MethodRef1<Self, Object, Object>, Object>() {
+                                    @Override
+                                    public MethodRef1<Self, Object, Object> build(
+                                            GenericMethodDeclaration<Self, Object> m, TypeVarToken<Object> t) {
+                                        return m.declareMethod("id", t, t);
+                                    }
+                                });
+                        var asInt = cb.declareGenericMethod(
+                                typeParam("N", Number_.TOKEN),
+                                new GenericMethodArities.MethodSpec1<
+                                        Self, Object, MethodRef1<Self, Prim.Int, Number>, Number>() {
+                                    @Override
+                                    public MethodRef1<Self, Prim.Int, Number> build(
+                                            GenericMethodDeclaration<Self, Object> m, TypeVarToken<Number> n) {
+                                        return m.declareMethod("asInt", PrimitiveToken.INT, n);
+                                    }
+                                });
+                        var held = cb.declareMethod("held", Object_.TOKEN);
+
+                        var bodies = cb.bodies();
+                        bodies.define(id, (b, self, value) -> b.return_(value));
+                        bodies.define(asInt, (b, self, value) -> b.return_(value.call(Number_.intValue)));
+                        // the call names the type argument of `id`, which javac would infer otherwise
+                        bodies.define(
+                                held,
+                                (b, self) -> b.return_(self.call(id.withTypeArgs(String_.TOKEN), literal("held"))));
                         return bodies;
                     }
                 });
