@@ -207,6 +207,25 @@ final class Tokens {
         });
     }
 
+    /// Holds the leftmost bound of a type parameter of a type to a declared token: a class or an
+    /// interface, with its type arguments if it is generic. A type parameter of a generic *method* may
+    /// be bounded by an earlier one of its own (`<T, U extends T>`), which the declaration stage says
+    /// by [GenericMethodDeclaration#bound(TypeVarToken, TypeVarToken)]; a type parameter of the type
+    /// itself is bounded by a declared thing alone here.
+    ///
+    /// @param variable the name of the type parameter, for messages
+    /// @param bound the bound it was declared with
+    /// @return the bound as a declared token
+    /// @throws IllegalArgumentException if `bound` is a type variable
+    static DeclaredToken<?> requireDeclaredBound(String variable, TypeToken<?> bound) {
+        if (bound instanceof DeclaredToken<?> declared) {
+            return declared;
+        }
+        throw new IllegalArgumentException("the type parameter " + variable + " cannot have the bound " + bound
+                + ": a type parameter of a type is bounded by a class or an interface, and a bound that is a type"
+                + " parameter is said of a generic method, whose type parameters it may name");
+    }
+
     private static Stream<TypeToken<?>> raw(TypeToken<?> type) {
         return switch (type) {
             case me.supcheg.javafile.facts.AnnotatedRefToken<?> annotated -> raw(annotated.token());

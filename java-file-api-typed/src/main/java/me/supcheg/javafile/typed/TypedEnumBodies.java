@@ -82,7 +82,7 @@ public final class TypedEnumBodies<Self> extends TypedTypeBodies<Self, EnumMembe
             return new me.supcheg.javafile.model.NativeMethodDecl(
                     declared.fact().name(),
                     declared.fact().resultType().map(type -> type.typeRef()),
-                    List.of(),
+                    Tokens.typeParams(declared.fact().traits().typeParams()),
                     params,
                     annotations,
                     Set.copyOf(modifiers),
@@ -94,7 +94,7 @@ public final class TypedEnumBodies<Self> extends TypedTypeBodies<Self, EnumMembe
                 declared.fact().resultType().map(type -> type.typeRef()),
                 annotations,
                 Set.copyOf(modifiers),
-                List.of(),
+                Tokens.typeParams(declared.fact().traits().typeParams()),
                 params,
                 code,
                 throwsClause,
@@ -110,7 +110,7 @@ public final class TypedEnumBodies<Self> extends TypedTypeBodies<Self, EnumMembe
         return new AbstractMethodDecl(
                 declared.fact().name(),
                 declared.fact().resultType().map(type -> type.typeRef()),
-                List.of(),
+                Tokens.typeParams(declared.fact().traits().typeParams()),
                 params,
                 annotations,
                 Set.of(Modifier.PUBLIC, Modifier.ABSTRACT),

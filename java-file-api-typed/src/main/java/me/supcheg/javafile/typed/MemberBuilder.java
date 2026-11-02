@@ -2065,7 +2065,7 @@ public abstract sealed class MemberBuilder<Self, S> extends MemberBuilderArities
                 self, name, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, MemberTraits.ABSTRACT));
     }
 
-    private <F extends Invocable> F declaredAbstract(F method) {
+    <F extends Invocable> F declaredAbstract(F method) {
         owner.requireDeclaring(method.toString());
         requireInScope(method);
         if (!owner.isAbstract()) {

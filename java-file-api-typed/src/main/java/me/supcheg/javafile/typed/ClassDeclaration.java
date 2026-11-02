@@ -134,17 +134,19 @@ final class ClassDeclaration<Self> {
                         + parameter.name() + ": in the class the name would mean the type parameter, and"
                         + " the class is named there by its simple name");
             }
-            requireNotRaw(parameter.bound(), parameter.name());
-            headerScope().require(parameter.bound());
-            target.verify(parameter.bound());
+            DeclaredToken<?> bound = Tokens.requireDeclaredBound(parameter.name(), parameter.bound());
+            requireNotRaw(bound, parameter.name());
+            headerScope().require(bound);
+            target.verify(bound);
         });
         this.variables = parameters.stream()
                 .map(parameter -> new Variable(
                         UnsafeFacts.declaredTypeVarToken(
                                 new TypeVarRef(parameter.name()),
-                                parameter.bound().erasure(),
+                                Tokens.requireDeclaredBound(parameter.name(), parameter.bound())
+                                        .erasure(),
                                 identity),
-                        parameter.bound(),
+                        Tokens.requireDeclaredBound(parameter.name(), parameter.bound()),
                         List.of()))
                 .toList();
         this.self = variables.isEmpty()

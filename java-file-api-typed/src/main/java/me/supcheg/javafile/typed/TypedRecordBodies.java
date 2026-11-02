@@ -62,7 +62,7 @@ public final class TypedRecordBodies<Self> extends TypedTypeBodies<Self, RecordM
                 declared.fact().resultType().map(type -> type.typeRef()),
                 annotations,
                 Set.copyOf(modifiers),
-                List.of(),
+                Tokens.typeParams(declared.fact().traits().typeParams()),
                 params,
                 code,
                 throwsClause,

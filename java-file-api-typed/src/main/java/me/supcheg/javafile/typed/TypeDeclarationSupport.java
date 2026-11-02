@@ -94,18 +94,20 @@ abstract class TypeDeclarationSupport<Self> {
                         + ": in the type the name would mean the type parameter, and the type is named there by"
                         + " its simple name");
             }
-            requireNotRaw(parameter.bound(), parameter.name());
-            scope("the header").require(parameter.bound());
-            target.verify(parameter.bound());
+            DeclaredToken<?> bound = Tokens.requireDeclaredBound(parameter.name(), parameter.bound());
+            requireNotRaw(bound, parameter.name());
+            scope("the header").require(bound);
+            target.verify(bound);
         });
         this.variables = parameters.stream()
-                .map(parameter -> new Variable(
-                        UnsafeFacts.declaredTypeVarToken(
-                                new TypeVarRef(parameter.name()),
-                                parameter.bound().erasure(),
-                                identity),
-                        parameter.bound(),
-                        List.of()))
+                .map(parameter -> {
+                    DeclaredToken<?> bound = Tokens.requireDeclaredBound(parameter.name(), parameter.bound());
+                    return new Variable(
+                            UnsafeFacts.declaredTypeVarToken(
+                                    new TypeVarRef(parameter.name()), bound.erasure(), identity),
+                            bound,
+                            List.of());
+                })
                 .toList();
     }
 
@@ -457,9 +459,14 @@ abstract class TypeDeclarationSupport<Self> {
         requireDeclaring(member.toString());
         Set<Modifier> rendered = requireModifiers(modifiers);
         TypeScope scope = scope(kind, "the signature of " + member);
+        List<me.supcheg.javafile.facts.MethodTypeParameter> typeParams =
+                member.traits().typeParams();
+        List<TypeVarToken<?>> methodVariables = typeParams.stream()
+                .<TypeVarToken<?>>map(me.supcheg.javafile.facts.MethodTypeParameter::token)
+                .toList();
         Stream.concat(member.params().stream(), member.resultType().stream()).forEach(type -> {
             Tokens.requireNotRaw(type);
-            scope.require(type);
+            scope.method(methodVariables, "the signature of " + member).require(type);
         });
         if (kind == Member.Kind.CONSTRUCTOR || kind == Member.Kind.CANONICAL || kind == Member.Kind.COMPACT) {
             registry().constructor(member);
@@ -472,7 +479,7 @@ abstract class TypeDeclarationSupport<Self> {
                 thrown,
                 annotations,
                 parameterAnnotations,
-                scope(kind, "the body of " + member),
+                scope(kind, "the body of " + member).method(methodVariables, "the body of " + member),
                 registry().overrides(member.signature()),
                 rendered,
                 doc,
@@ -543,9 +550,14 @@ abstract class TypeDeclarationSupport<Self> {
         }
         requireDeclaring(member.toString());
         TypeScope scope = scope(kind, "the signature of " + member);
+        List<me.supcheg.javafile.facts.MethodTypeParameter> typeParams =
+                member.traits().typeParams();
+        List<TypeVarToken<?>> methodVariables = typeParams.stream()
+                .<TypeVarToken<?>>map(me.supcheg.javafile.facts.MethodTypeParameter::token)
+                .toList();
         Stream.concat(member.params().stream(), member.resultType().stream()).forEach(type -> {
             Tokens.requireNotRaw(type);
-            scope.require(type);
+            scope.method(methodVariables, "the signature of " + member).require(type);
         });
         if (registry().inherited(member.signature()).isEmpty()) {
             throw new IllegalArgumentException("the method " + member + " of " + described + " overrides nothing:"
@@ -558,7 +570,7 @@ abstract class TypeDeclarationSupport<Self> {
                 thrown,
                 annotations,
                 parameterAnnotations,
-                scope(kind, "the body of " + member),
+                scope(kind, "the body of " + member).method(methodVariables, "the body of " + member),
                 true,
                 Set.of(),
                 doc,
