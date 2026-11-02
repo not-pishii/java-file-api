@@ -46,7 +46,7 @@ final class ScopeCheck {
             case Instr.Synchronized(var lock, var ignoredBody) -> node(lock, in(block), block.path());
             case Instr.Labeled ignored -> {}
             case Instr.If(var condition, var ignoredThen, var ignoredElse) -> node(condition, in(block), block.path());
-            case Instr.IfInstance(var operand, var ignoredType, var ignoredVar, var ignoredThen, var ignoredElse) ->
+            case Instr.IfInstance(var operand, var ignoredPattern, var ignoredThen, var ignoredElse) ->
                 node(operand, in(block), block.path());
             case Instr.While(var ignored, var ignoredLabel, var condition, var ignoredBody) ->
                 node(condition, in(block), block.path());
@@ -172,6 +172,18 @@ final class ScopeCheck {
             case Node.Switch switch_ -> {
                 node(switch_.selector().node(), use, where);
                 switch_.arms().forEach(arm -> arm(arm, use, where));
+            }
+            case Node.PatternSwitch switch_ -> {
+                node(switch_.selector().node(), use, where);
+                switch_.cases().forEach(case_ -> {
+                    if (case_.arm() instanceof Node.Arm.Block(var block)) {
+                        case_.guard().ifPresent(guard -> node(guard, in(block), block.path()));
+                    }
+                    arm(case_.arm(), use, where);
+                });
+                if (switch_.otherwise() instanceof Node.Default.Of(var arm)) {
+                    arm(arm, use, where);
+                }
             }
             case Node.Assign(var target, var _, var value) -> {
                 target(target, use, where);

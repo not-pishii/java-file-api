@@ -29,7 +29,7 @@ final class Reachability {
             case Instr.Labeled(var label, var body) ->
                 canCompleteNormally(body) || holds(body, new Instr.BreakLabel(label));
             case Instr.If(var _, var then, var otherwise) -> ifCompletes(then, otherwise);
-            case Instr.IfInstance(var _, var _, var _, var then, var otherwise) -> ifCompletes(then, otherwise);
+            case Instr.IfInstance(var _, var _, var then, var otherwise) -> ifCompletes(then, otherwise);
             case Instr.While(var ctl, var label, var condition, var body) ->
                 !Constants.isConstant(condition, true) || breaks(ctl, label, body);
             case Instr.For(var ctl, var label, var _, var _, var condition, var _, var body) ->

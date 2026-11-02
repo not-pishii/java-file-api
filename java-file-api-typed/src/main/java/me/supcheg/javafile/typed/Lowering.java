@@ -34,6 +34,7 @@ import me.supcheg.javafile.code.LabeledStmt;
 import me.supcheg.javafile.code.LocalVarDeclStmt;
 import me.supcheg.javafile.code.MethodCallExpr;
 import me.supcheg.javafile.code.NonEmptyList;
+import me.supcheg.javafile.code.PatternLabel;
 import me.supcheg.javafile.code.ReturnStmt;
 import me.supcheg.javafile.code.StatementExpr;
 import me.supcheg.javafile.code.StaticFieldAccessExpr;
@@ -56,6 +57,7 @@ import me.supcheg.javafile.facts.Arity;
 import me.supcheg.javafile.facts.ArrayToken;
 import me.supcheg.javafile.facts.ClassToken;
 import me.supcheg.javafile.facts.DeclaredToken;
+import me.supcheg.javafile.facts.EnumConstant;
 import me.supcheg.javafile.facts.EnumToken;
 import me.supcheg.javafile.facts.FactLookupException;
 import me.supcheg.javafile.facts.FieldRef;
@@ -488,15 +490,14 @@ final class Lowering {
             case Instr.Empty _ -> new EmptyStmt();
             case Instr.If(var condition, var then, var otherwise) ->
                 new IfStmt(expr(condition), lowerBlock(then.instrs()), List.of(), lowerOptional(otherwise));
-            case Instr.IfInstance(var operand, var type, var binding, var then, var otherwise) -> {
+            case Instr.IfInstance(var operand, var pattern, var then, var otherwise) -> {
                 Expr operandExpr = expr(operand, Typing.EXACT);
-                // The binding is in scope in the then-branch only.
+                // Every binding is in scope in the then-branch only.
                 names.push();
                 Expr condition;
                 CodeBody thenCode;
                 try {
-                    mentions(type);
-                    condition = operandExpr.instanceOf(written(type).typeRef(), declare(binding));
+                    condition = operandExpr.instanceOfPattern(pattern(pattern));
                     thenCode = lowerBlock(then.instrs());
                 } finally {
                     names.pop();
@@ -827,6 +828,7 @@ final class Lowering {
             case Node.ConstructorRef reference ->
                 Exprs.cast(written(reference.sam().owner()).typeRef(), constructorRef(reference));
             case Node.Switch switch_ -> switchExpr(switch_);
+            case Node.PatternSwitch switch_ -> patternSwitch(switch_);
             case Node.Assign ignored ->
                 throw new IllegalStateException(
                         "an assignment was used as a value; it is only representable as a statement (Effect)");
@@ -1704,6 +1706,28 @@ final class Lowering {
         }
     }
 
+    /// A pattern of the typed layer as core writes it: every type is
+    /// mentioned, and each binding is declared in the name scope the caller
+    /// pushed.
+    ///
+    /// @param pattern the pattern
+    /// @return the core pattern
+    private me.supcheg.javafile.code.Pattern pattern(TypedPattern<?> pattern) {
+        return switch (pattern) {
+            case TypedPattern.Type(var type, var binding) -> {
+                mentions(type);
+                yield me.supcheg.javafile.code.Patterns.typePattern(
+                        written(type).typeRef(), declare(binding.var()));
+            }
+            case TypedPattern.Deconstruction(var record, var components) -> {
+                mentions(record);
+                yield me.supcheg.javafile.code.Patterns.recordPattern(
+                        written(record).typeRef(),
+                        components.stream().map(this::pattern).toArray(me.supcheg.javafile.code.Pattern[]::new));
+            }
+        };
+    }
+
     /// A `switch` expression over an enum. The selector is of the enum to
     /// javac, cast to it if its static type is another; every result is of
     /// the type of the expression ([Expressions#switch_]), so that is the
@@ -1738,5 +1762,47 @@ final class Lowering {
             case Node.Arm.Value(var value) -> new ExprCaseBody(expr(value, Typing.EXACT));
             case Node.Arm.Block(var block) -> new BlockCaseBody(lowerBlock(block.instrs()));
         };
+    }
+
+    /// A `switch` expression over a sealed type, or over an enum, whose cases
+    /// are patterns, `null` and constants (JLS 15.28). The selector is
+    /// evaluated once, as it stands: a case is a pattern of a subtype of its
+    /// type, and every result is of the type of the expression
+    /// ([Expressions#switchPattern]), so that is the type javac gives the
+    /// `switch` where it stands alone. The bindings of a case are in scope in
+    /// its guard and its block, and nowhere else.
+    private Expr patternSwitch(Node.PatternSwitch switch_) {
+        DeclaredToken<?> type = switch_.type();
+        Node.Operand selector = seen(switch_.selector());
+        mentions(type);
+        mentions(selector.type());
+        Expr selected = expr(selector.node(), Typing.EXACT);
+        Stream<SwitchCase> cases = switch_.cases().stream().map(this::patternCase);
+        Stream<SwitchCase> otherwise = (switch (switch_.otherwise()) {
+                    case Node.Default.None _ -> Stream.<Node.Arm>empty();
+                    case Node.Default.Of(var arm) -> Stream.of(arm);
+                })
+                .map(arm -> new SwitchCase(NonEmptyList.copyOf(List.<CaseLabel>of(new DefaultLabel())), caseBody(arm)));
+        return new SwitchExpr(selected, Stream.concat(cases, otherwise).toList());
+    }
+
+    /// A case of a [Node.PatternSwitch]: its label, with the bindings of its
+    /// pattern declared, its guard, and its body, all in the name scope the
+    /// case opens.
+    private SwitchCase patternCase(Node.PatternCase case_) {
+        names.push();
+        try {
+            CaseLabel label =
+                    switch (case_.label()) {
+                        case Node.PatternCase.Label.Of(TypedPattern<?> pattern) ->
+                            new PatternLabel(pattern(pattern), case_.guard().map(this::expr));
+                        case Node.PatternCase.Label.Null _ -> new ConstantLabel(Exprs.literalNull());
+                        case Node.PatternCase.Label.Constant(EnumConstant<?> constant) ->
+                            new ConstantLabel(new FieldAccessExpr(Optional.empty(), constant.name()));
+                    };
+            return new SwitchCase(NonEmptyList.copyOf(List.of(label)), caseBody(case_.arm()));
+        } finally {
+            names.pop();
+        }
     }
 }

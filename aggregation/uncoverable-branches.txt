@@ -290,6 +290,12 @@ me/supcheg/javafile/render/Precedence.java :: case FloatLiteral(var value) -> fl
 
 # ---- what cannot happen: worded checks neither a test nor a type removes ----
 
+me/supcheg/javafile/typed/Patterns.java :: && !(declared.typeRef() instanceof ParameterizedTypeRef)
+    a case pattern that is a parameterization is no subtype of a sealed selector, and is refused where the case is added: no case before another is a parameterization, and a selector is a declared type whose erasure the subtype proof reads
+
+me/supcheg/javafile/typed/Patterns.java :: case PrimitiveTypeRef _, ArrayTypeRef _, TypeVarRef _ -> false;
+    a case of several type patterns: javac tests each label once more after it matched; the label of a type variable is a component of a generic record, and a record pattern of one is refused before its components are matched
+
 me/supcheg/javafile/render/StandardRenderer.java :: !imports.stale(),
     the second rendering of a file knows what the first learned it declares, and a file declares the same however often it is rendered: the check words what would be a bug of the import manager
 
